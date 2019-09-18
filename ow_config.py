@@ -103,6 +103,3 @@ lo_system_configuration = {
 
     # only use historical data that are within +/- yyy dbar from float data
     'MAP_P_DELTA': 250}
-
-for i in lo_system_configuration:
-    print(i,": ", lo_system_configuration[i])
