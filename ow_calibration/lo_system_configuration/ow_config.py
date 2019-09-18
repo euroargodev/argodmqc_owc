@@ -102,4 +102,5 @@ lo_system_configuration = {
     'MAP_P_EXCLUDE': 200,
 
     # only use historical data that are within +/- yyy dbar from float data
-    'MAP_P_DELTA': 250}
+    'MAP_P_DELTA': 250
+}
