@@ -1,0 +1,25 @@
+image: "python:3.7"
+
+before_script:
+  - python --version
+  - pip install -r requirements.txt
+
+stages:
+  - Static Analysis
+  - Test
+
+test commands:
+  stage: Static Analysis
+  script:
+    - pwd
+    - ls -l
+
+flake8:
+  stage: Static Analysis
+  script:
+  - flake8 --max-line-length=120 /*.py
+
+Test:
+  stage: Test
+  script:
+    - python -m unittest discover --verbose . "*_test.py"
