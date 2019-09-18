@@ -1,87 +1,102 @@
-# ===============================
-#
-#    Climatology Data Input Paths
-#
+"""
+-----Load Configuration File-----
 
-HISTORICAL_DIRECTORY=/home/awong/argo/OW/data/climatology
-HISTORICAL_CTD_PREFIX=/historical_ctd/ctd_
-HISTORICAL_BOTTLE_PREFIX=/historical_bot/bot_
-HISTORICAL_ARGO_PREFIX=/argo_profiles/argo_
+Written by: Edward Small
+When: 18/09/2019
+Converted to python by: N/A
+When: N/A
 
-# ===============================
-#
-#    Float Input Path
-#
+Contains the configuration settings of the user for an analysis. The variables are saved in a dictionary.
+This means that values are accessible both via index and via key.
+"""
+lo_system_configuration = {
 
-FLOAT_SOURCE_DIRECTORY=/home/awong/argo/OW/data/float_source/
-FLOAT_SOURCE_POSTFIX=.mat
+    # ===============================
+    #
+    #    Climatology Data Input Paths
 
-# ===============================
-#
-#    Mapping Output Path
-#
+    'HISTORICAL_DIRECTORY': "/home/awong/argo/OW/data/climatology",
+    'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
+    'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
+    'HISTORICAL_ARGO_PREFIX': "/argo_profiles/argo_",
 
-FLOAT_MAPPED_DIRECTORY=/home/awong/argo/OW/data/float_mapped/
-FLOAT_MAPPED_PREFIX=map_
-FLOAT_MAPPED_POSTFIX=.mat
+    # ===============================
+    #
+    #    Float Input Path
+    #
 
-# ===============================
-#
-#    Calibration Output Path
-#
+    'FLOAT_SOURCE_DIRECTORY': "/home/awong/argo/OW/data/float_source/",
+    'FLOAT_SOURCE_POSTFIX': ".mat",
 
-FLOAT_CALIB_DIRECTORY=/home/awong/argo/OW/data/float_calib/
-FLOAT_CALIB_PREFIX=cal_
-FLOAT_CALSERIES_PREFIX=calseries_
-FLOAT_CALIB_POSTFIX=.mat
+    # ===============================
+    #
+    #    Mapping Output Path
+    #
 
-# ===============================
-#
-#    Diagnostic Plots Output Path
-#
+    'FLOAT_MAPPED_DIRECTORY': "/home/awong/argo/OW/data/float_mapped/",
+    'FLOAT_MAPPED_PREFIX': "map_",
+    'FLOAT_MAPPED_POSTFIX': ".mat",
 
-FLOAT_PLOTS_DIRECTORY=/home/awong/argo/OW/data/float_plots/
+    # ===============================
+    #
+    #    Calibration Output Path
+    #
 
-# ===============================
-#
-#    Constants File Path
-#
+    'FLOAT_CALIB_DIRECTORY': "/home/awong/argo/OW/data/float_calib/",
+    'FLOAT_CALIB_PREFIX': "cal_",
+    'FLOAT_CALSERIES_PREFIX': "calseries_",
+    'FLOAT_CALIB_POSTFIX': ".mat",
 
-CONFIG_DIRECTORY=/home/awong/argo/OW/data/constants/
-CONFIG_COASTLINES=coastdat.mat
-CONFIG_WMO_BOXES=wmo_boxes.mat
-CONFIG_SAF=TypicalProfileAroundSAF.mat
+    # ===============================
+    #
+    #    Diagnostic Plots Output Path
+    #
 
-# ===============================
-#
-#    Objective Mapping Parameters
-#
+    'FLOAT_PLOTS_DIRECTORY': "/home/awong/argo/OW/data/float_plots/",
 
-# max number of historical casts used in objective mapping
-CONFIG_MAX_CASTS=300
+    # ===============================
+    #
+    #    Constants File Path
+    #
 
-# 1=use PV constraint, 0=don't use PV constraint, in objective mapping
-MAP_USE_PV=0
+    'CONFIG_DIRECTORY': "/home/awong/argo/OW/data/constants/",
+    'CONFIG_COASTLINES': "coastdat.mat",
+    'CONFIG_WMO_BOXES': "wmo_boxes.mat",
+    'CONFIG_SAF': "TypicalProfileAroundSAF.mat",
 
-# 1=use SAF separation criteria, 0=don't use SAF separation criteria, in objective mapping
-MAP_USE_SAF=0
+    # ===============================
+    #
+    #    Objective Mapping Parameters
+    #
 
-# spatial decorrelation scales, in degrees
-MAPSCALE_LONGITUDE_LARGE=8
-MAPSCALE_LONGITUDE_SMALL=4
-MAPSCALE_LATITUDE_LARGE=4
-MAPSCALE_LATITUDE_SMALL=2
+    # max number of historical casts used in objective mapping
+    'CONFIG_MAX_CASTS': 300,
 
-# cross-isobath scales, dimensionless, see BS(2005)
-MAPSCALE_PHI_LARGE=0.5
-MAPSCALE_PHI_SMALL=0.1
+    # 1=use PV constraint, 0=don't use PV constraint, in objective mapping
+    'MAP_USE_PV': 0,
 
-# temporal decorrelation scale, in years
-MAPSCALE_AGE=10
-MAPSCALE_AGE_LARGE=20
+    # 1=use SAF separation criteria, 0=don't use SAF separation criteria, in objective mapping
+    'MAP_USE_SAF': 0,
 
-# exclude the top xxx dbar of the water column
-MAP_P_EXCLUDE=200
+    # spatial decorrelation scales, in degrees
+    'MAPSCALE_LONGITUDE_LARGE': 8,
+    'MAPSCALE_LONGITUDE_SMALL': 4,
+    'MAPSCALE_LATITUDE_LARGE': 4,
+    'MAPSCALE_LATITUDE_SMALL': 2,
 
-# only use historical data that are within +/- yyy dbar from float data
-MAP_P_DELTA=250
+    # cross-isobath scales, dimensionless, see BS(2005)
+    'MAPSCALE_PHI_LARGE': 0.5,
+    'MAPSCALE_PHI_SMALL': 0.1,
+
+    # temporal decorrelation scale, in years
+    'MAPSCALE_AGE': 10,
+    'MAPSCALE_AGE_LARGE': 20,
+
+    # exclude the top xxx dbar of the water column
+    'MAP_P_EXCLUDE': 200,
+
+    # only use historical data that are within +/- yyy dbar from float data
+    'MAP_P_DELTA': 250}
+
+for i in lo_system_configuration:
+    print(i,": ", lo_system_configuration[i])
