@@ -8,7 +8,13 @@ When: N/A
 
 Contains the configuration settings of the user for an analysis. The variables are saved in a dictionary.
 This means that values are accessible both via index and via key.
+
+For information on how to use this file, check the README at either:
+
+https://github.com/ArgoDMQC/matlab_owc
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
+
 lo_system_configuration = {
 
     # ===============================
