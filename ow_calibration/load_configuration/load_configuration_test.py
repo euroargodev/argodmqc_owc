@@ -1,5 +1,5 @@
 import unittest
-from load_configuration import load_configuration
+from .load_configuration import load_configuration
 
 
 class LoSystemConfigurationTestCase(unittest.TestCase):
