@@ -14,24 +14,24 @@ import unittest
 from .load_configuration import load_configuration
 
 
-class LoSystemConfigurationTestCase(unittest.TestCase):
+class LoadConfigurationTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.lo_system_configuration = load_configuration()
 
     def test_is_dict(self):
         print("Testing that load_configuration() returns a dictionary...\n")
-        lo_system_configuration = load_configuration()
-        self.assertTrue(isinstance(lo_system_configuration, dict))
+        self.assertTrue(isinstance(self.lo_system_configuration, dict))
 
     def test_contains_correct_number_of_keys(self):
         print("Testing length of dictionary...\n")
-        lo_system_configuration = load_configuration()
-        self.assertEqual(lo_system_configuration.__len__(), 31)
+        self.assertEqual(self.lo_system_configuration.__len__(), 31)
 
     def test_all_keys_have_value(self):
         print("Testing that the keys in the dictionary all have a value...\n")
-        lo_system_configuration = load_configuration()
-        for i in lo_system_configuration:
+        for i in self.lo_system_configuration:
             #print(i, ": ", lo_system_configuration[i]) #uncomment this line to find error location
-            self.assertNotEqual(lo_system_configuration[i], '')
+            self.assertNotEqual(self.lo_system_configuration[i], '')
 
 
 if __name__ == '__main__':
