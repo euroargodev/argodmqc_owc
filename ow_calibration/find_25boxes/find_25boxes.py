@@ -25,6 +25,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
+import scipy.io as scipy
 
 
 def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
@@ -58,7 +59,21 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     la_lookup_y = np.full((38, 18), la_y, dtype=int).transpose()
     vector_y = np.concatenate(la_lookup_y.transpose(), axis=0)
 
-    print(vector_y)
+    """
+    Create an 18x36 matrix of
+    [631  1  19  37  ...  631  1
+     632  2  20  38  ...  632  2
+     ...                      ...
+     648 18  36  54  ...  648  18]
+     """
+    la_lookup_no = np.full((1, 648), np.arange(1,649), dtype=int).reshape(36, 18)
+    la_lookup_no = np.insert(la_lookup_no, 0, la_lookup_no[la_lookup_no.shape[0]-1]).reshape(37, 18)
+    la_lookup_no = np.insert(la_lookup_no, 666, la_lookup_no[1]).reshape(38, 18)
+    la_lookup_no = la_lookup_no.transpose()
 
 
-find_25boxes(1,2,3)
+wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
+print(wmo_boxes)
+longitude = 57.1794
+latitude = -59.1868
+find_25boxes(longitude,latitude,wmo_boxes)
