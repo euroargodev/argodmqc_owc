@@ -17,8 +17,14 @@ from .cal2dec import cal2dec
 class MyTestCase(unittest.TestCase):
 
     def test_returns_float(self):
-        date = cal2dec(0, 0, 0, 0)
+        date = cal2dec(0, 0)
         self.assertEqual(type(date), float, "return type isn't float")
+
+    def test_throws_error_month_too_large(self):
+        self.assertRaises(cal2dec(13, 0, 0, 0), "Should raise exception for month out of scope")
+
+    def test_returns_0_for_args_0(self):
+        self.assertEqual(cal2dec(0, 0, 0, 0), 0, "Should return 0 when all arguments equal 0")
 
 
 if __name__ == '__main__':
