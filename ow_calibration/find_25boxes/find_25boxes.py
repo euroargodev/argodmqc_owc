@@ -101,13 +101,17 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
         ln_x4 -= 360
 
     test_x = la_lookup_x[0]
-    print(test_x)
     test_y = la_lookup_y.transpose()[0][::-1]
-    print(test_y)
 
-    test = RectBivariateSpline(test_x, test_y, la_lookup_no.transpose(), kx=2, ky=2)
+    test = RectBivariateSpline(test_x, test_y, la_lookup_no.transpose(), kx=1, ky=1)
     test2 = interp2d(test_x, test_y, la_lookup_no, kind='linear')
+    print(np.linalg.matrix_rank((ln_x1, ln_y1)))
+    #test3 = map_coordinates((test_x, test_y), (ln_x1, ln_y1), mode='nearest')
 
+    print(la_lookup_no)
+
+    print(ln_x1)
+    print(ln_y1)
     print(test2(ln_x1, ln_y1))
     print(test.ev(ln_x1, ln_y1))
 
@@ -115,4 +119,4 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
 wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
 longitude = 57.1794
 latitude = -59.1868
-find_25boxes(longitude, latitude, wmo_boxes)
+find_25boxes(60, -40, wmo_boxes)
