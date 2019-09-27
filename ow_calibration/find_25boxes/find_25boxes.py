@@ -70,7 +70,7 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
      """
     la_lookup_no = np.full((1, 648), np.arange(1, 649), dtype=int).reshape(36, 18)
     la_lookup_no = np.insert(la_lookup_no, 0, la_lookup_no[la_lookup_no.shape[0] - 1]).reshape(37, 18)
-    la_lookup_no = np.insert(la_lookup_no, 666, la_lookup_no[1]).reshape(38,18).transpose()
+    la_lookup_no = np.insert(la_lookup_no, 666, la_lookup_no[1]).reshape(38, 18).transpose()
 
     ln_x1 = pn_float_long + .01
     ln_x2 = pn_float_long + 10.01
@@ -100,9 +100,17 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     if ln_x4 >= 360:
         ln_x4 -= 360
 
-    print(np.sort(la_lookup_x.flatten()))
+    test_x = la_lookup_x[0]
+    print(test_x)
+    test_y = la_lookup_y.transpose()[0][::-1]
+    print(test_y)
 
-    test = RectBivariateSpline(np.sort(la_lookup_x.flatten()), np.sort(la_lookup_y.flatten()), la_lookup_no.flatten())
+    test = RectBivariateSpline(test_x, test_y, la_lookup_no.transpose(), kx=2, ky=2)
+    test2 = interp2d(test_x, test_y, la_lookup_no, kind='linear')
+
+    print(test2(ln_x1, ln_y1))
+    print(test.ev(ln_x1, ln_y1))
+
 
 wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
 longitude = 57.1794
