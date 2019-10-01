@@ -29,6 +29,10 @@ def cal2dec(pa_month, pa_day, pa_hour = 0, pa_minute = 0):
     ln_cumulative_months = np.cumsum([0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
 
     try:
-        return float(ln_cumulative_months[pa_month] + pa_day - 1 + pa_hour/24 + pa_minute/60/24)
+        dec_date = float(ln_cumulative_months[pa_month] + pa_day - 1 + pa_hour/24 + pa_minute/60/24)
+        if dec_date > 366:
+            raise ValueError("Day is out of scope of the year")
+        else:
+            return dec_date
     except IndexError:
         raise ValueError('Month is out of scope')
