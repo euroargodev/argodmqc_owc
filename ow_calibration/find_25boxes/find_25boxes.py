@@ -31,7 +31,15 @@ from scipy.ndimage import map_coordinates
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 
-def lookupNearest(x, y, data, x0, y0):
+def nearest_neighbour(x, y, data, x0, y0):
+    """
+    :param x: x-axis values
+    :param y: y-axis values
+    :param data: grid data
+    :param x0: data to interpolate
+    :param y0: data to interpolate
+    :return: nearest neighbour
+    """
     xi = np.abs(x-x0).argmin()
     yi = np.abs(y-y0).argmin()
     return data[yi, xi]
@@ -42,39 +50,32 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     :param pn_float_lat: float latitude, float
     :param pa_wmo_boxes: wmo boxes (explained above), matrix
     :return: (explained above), 25x4 matrix
+
+    First, we need to create a look-up table in the form of
+
+        | -5    5   15  ...  355  365
+    ----|----------------------------
+     85 | 631   1   19  ...  631   1
+     75 | 632   2   20  ...  632   2
+     65 | 633   3   21  ...  633   3
+     ...|...   ...  ... ...  ...  ...
+     -85| 648   18  36  ...  648   18
+
+     We do this using 3 matrices:
+
+     - A 1-D matrix for the x axis (la_lookup_x)
+     - A 1-D matrix for the y axis (la_lookup_y)
+     - A 2-D matrix for the grid data (la_lookup_no)
     """
 
-    """
-    Create matrix with 18 rows of
-    [-5, 5, 15, ..., 355, 365]
-    """
-    la_x = np.arange(-5, 366, 10, int)  # Goes to 366 to ensure inclusion of 365
-    la_lookup_x = np.full((18, 38), la_x, dtype=int)
+    la_lookup_x = np.arange(-5, 366, 10, int)
 
-    """
-    Create matrix with 18 columns of
-    [
-    85,
-    75,
-    65,
-    ...,
-    -75,
-    -85
-    ]
-    """
-    la_y = np.arange(85, -86, -10)
-    la_lookup_y = np.full((38, 18), la_y, dtype=int).transpose()
-    vector_y = np.concatenate(la_lookup_y.transpose(), axis=0)
-    """
-    Create an 18x36 matrix of
-    [631  1  19  37  ...  631  1
-     632  2  20  38  ...  632  2
-     ...                      ...
-     648 18  36  54  ...  648  18]
-     """
+    la_lookup_y = np.arange(85, -86, -10).transpose()
+
     la_lookup_no = np.full((1, 648), np.arange(1, 649), dtype=int).reshape(36, 18)
     la_lookup_no = np.insert(la_lookup_no, 0, la_lookup_no[la_lookup_no.shape[0] - 1]).reshape(37, 18)
     la_lookup_no = np.insert(la_lookup_no, 666, la_lookup_no[1]).reshape(38, 18).transpose()
+
 
     ln_x1 = pn_float_long + .01
     ln_x2 = pn_float_long + 10.01
@@ -104,28 +105,17 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     if ln_x4 >= 360:
         ln_x4 -= 360
 
-    print(la_lookup_x.shape)
-    print(la_lookup_y)
-
     test_x = la_lookup_x[0]
-    test_y = la_lookup_y.transpose()[0][::-1]
+    test_y = la_lookup_y.transpose()
 
-    test = RectBivariateSpline(test_x, test_y, la_lookup_no.transpose(), kx=1, ky=1, s=0)
-    test2 = interp2d(test_x, test_y, la_lookup_no, kind='linear')
-    print(np.linalg.matrix_rank((test_x, test_y)))
-    #test3 = map_coordinates(la_lookup_no, [ln_x1, ln_y1], [test_x, test_y], mode='nearest', order=1)
-    #test4 = interpn(la_lookup_x, la_lookup_no.transpose(), (ln_x1, ln_y1), method='nearest')
-    #test5 = NearestNDInterpolator((test_x, test_y), la_lookup_no.transpose())
-    test6 = lookupNearest(test_x, test_y, la_lookup_no, ln_x1, ln_y1)
+    test6 = nearest_neighbour(test_x, test_y, la_lookup_no, ln_x1, ln_y1)
+
     print(test6)
-    print(test2(ln_x1, ln_y1))
-    print(test.ev(ln_x1, ln_y1))
-    #print(test3)
 
 
 wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
 longitude = 57.1794
 latitude = -59.1868
-find_25boxes(60, -40, wmo_boxes)
+find_25boxes(57.1894, -59.1768, wmo_boxes)
 
 
