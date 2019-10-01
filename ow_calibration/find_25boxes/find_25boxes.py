@@ -26,11 +26,15 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import numpy as np
 import scipy.io as scipy
-from scipy.interpolate import griddata, interp2d, LinearNDInterpolator, RectBivariateSpline
+from scipy.interpolate import griddata, interp2d, LinearNDInterpolator, RectBivariateSpline, interpn, NearestNDInterpolator
 from scipy.ndimage import map_coordinates
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 
+def lookupNearest(x, y, data, x0, y0):
+    xi = np.abs(x-x0).argmin()
+    yi = np.abs(y-y0).argmin()
+    return data[yi, xi]
 
 def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     """
@@ -100,23 +104,28 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     if ln_x4 >= 360:
         ln_x4 -= 360
 
+    print(la_lookup_x.shape)
+    print(la_lookup_y)
+
     test_x = la_lookup_x[0]
     test_y = la_lookup_y.transpose()[0][::-1]
 
-    test = RectBivariateSpline(test_x, test_y, la_lookup_no.transpose(), kx=1, ky=1)
+    test = RectBivariateSpline(test_x, test_y, la_lookup_no.transpose(), kx=1, ky=1, s=0)
     test2 = interp2d(test_x, test_y, la_lookup_no, kind='linear')
-    print(np.linalg.matrix_rank((ln_x1, ln_y1)))
-    #test3 = map_coordinates((test_x, test_y), (ln_x1, ln_y1), mode='nearest')
-
-    print(la_lookup_no)
-
-    print(ln_x1)
-    print(ln_y1)
+    print(np.linalg.matrix_rank((test_x, test_y)))
+    #test3 = map_coordinates(la_lookup_no, [ln_x1, ln_y1], [test_x, test_y], mode='nearest', order=1)
+    #test4 = interpn(la_lookup_x, la_lookup_no.transpose(), (ln_x1, ln_y1), method='nearest')
+    #test5 = NearestNDInterpolator((test_x, test_y), la_lookup_no.transpose())
+    test6 = lookupNearest(test_x, test_y, la_lookup_no, ln_x1, ln_y1)
+    print(test6)
     print(test2(ln_x1, ln_y1))
     print(test.ev(ln_x1, ln_y1))
+    #print(test3)
 
 
 wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
 longitude = 57.1794
 latitude = -59.1868
 find_25boxes(60, -40, wmo_boxes)
+
+
