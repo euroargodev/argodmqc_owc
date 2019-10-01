@@ -16,7 +16,10 @@ Column 3 - Do we have bottle data (1 = yes, 0 = no)
 Column 4 - do we have Argo data (1 = yes, 0 = no)
 
 N.B. Change to code on the xx/11/2014: extend la_x so interp2 does not think that longitudes in
-the range [5W 5E] are out-of-bound with matlab version >=R2012b
+the range [5W 5E] are out-of-bound with matlab version >=R2012b - C Cabanes
+
+N.B. Change during conversion to python on the 01/10/2019. Struggled to find an interpolation
+function that exactly mirrored Matlab's, so I wrote my own - Edward Small
 
 For information on how to use this file, check the README at either:
 
@@ -25,24 +28,21 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
-import scipy.io as scipy
-from scipy.interpolate import griddata, interp2d, LinearNDInterpolator, RectBivariateSpline, interpn, NearestNDInterpolator
-from scipy.ndimage import map_coordinates
-from matplotlib import pyplot
-from mpl_toolkits.mplot3d import Axes3D
 
-def nearest_neighbour(x, y, data, x0, y0):
+
+def nearest_neighbour(x_axis, y_axis, table, x_input, y_input):
     """
-    :param x: x-axis values
-    :param y: y-axis values
-    :param data: grid data
-    :param x0: data to interpolate
-    :param y0: data to interpolate
+    :param x_axis: x-axis values
+    :param y_axis: y-axis values
+    :param table: grid data
+    :param x_input: data to interpolate
+    :param y_input: data to interpolate
     :return: nearest neighbour
     """
-    xi = np.abs(x-x0).argmin()
-    yi = np.abs(y-y0).argmin()
-    return data[yi, xi]
+    x_output = np.abs(x_axis - x_input).argmin()
+    y_output = np.abs(y_axis - y_input).argmin()
+    return table[y_output, x_output]
+
 
 def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     """
@@ -76,46 +76,49 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     la_lookup_no = np.insert(la_lookup_no, 0, la_lookup_no[la_lookup_no.shape[0] - 1]).reshape(37, 18)
     la_lookup_no = np.insert(la_lookup_no, 666, la_lookup_no[1]).reshape(38, 18).transpose()
 
+    # Set up longitudinal and latitudinal values
+    ln_x = []
+    ln_y = []
+    ln_x.append(pn_float_long + .01)
+    ln_x.append(pn_float_long + 10.01)
+    ln_x.append(pn_float_long - 9.99)
+    ln_x.append(pn_float_long + 20.01)
+    ln_x.append(pn_float_long - 19.99)
 
-    ln_x1 = pn_float_long + .01
-    ln_x2 = pn_float_long + 10.01
-    ln_x3 = pn_float_long - 9.99
-    ln_x4 = pn_float_long + 20.01
-    ln_x5 = pn_float_long - 19.99
-
-    ln_y1 = pn_float_lat + .01
-    ln_y2 = pn_float_lat + 10.01
-    ln_y3 = pn_float_lat - 9.99
-    ln_y4 = pn_float_lat + 20.01
-    ln_y5 = pn_float_lat - 19.99
+    ln_y.append(pn_float_lat + .01)
+    ln_y.append(pn_float_lat + 10.01)
+    ln_y.append(pn_float_lat - 9.99)
+    ln_y.append(pn_float_lat + 20.01)
+    ln_y.append(pn_float_lat - 19.99)
 
     # wrap longitudinal values
-    if ln_x3 < 0:
-        ln_x3 += 360
+    if ln_x[2] < 0:
+        ln_x[2] += 360
 
-    if ln_x5 < 0:
-        ln_x5 += 360
+    if ln_x[4] < 0:
+        ln_x[4] += 360
 
-    if ln_x1 >= 360:
-        ln_x1 -= 360
+    if ln_x[0] >= 360:
+        ln_x[0] -= 360
 
-    if ln_x2 >= 360:
-        ln_x2 -= 360
+    if ln_x[1] >= 360:
+        ln_x[1] -= 360
 
-    if ln_x4 >= 360:
-        ln_x4 -= 360
+    if ln_x[3] >= 360:
+        ln_x[3] -= 360
 
-    test_x = la_lookup_x[0]
-    test_y = la_lookup_y.transpose()
+    if not np.isnan(pn_float_long) and not np.isnan(pn_float_lat):
+        ln_i = []
+        for i in range(0, 5):
+            for j in range(0, 5):
+                ln_i.append(nearest_neighbour(la_lookup_x, la_lookup_y, la_lookup_no, ln_x[j], ln_y[i]))
 
-    test6 = nearest_neighbour(test_x, test_y, la_lookup_no, ln_x1, ln_y1)
+    else:
+        ln_i = np.full(25, np.nan)
 
-    print(test6)
+    pa_wmo_numbers = np.full((25, 4), np.nan)
+    for i in range(0, 25):
+        if not np.isnan(ln_i[i]):
+            pa_wmo_numbers[i] = pa_wmo_boxes.get('la_wmo_boxes')[ln_i[i] - 1]
 
-
-wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
-longitude = 57.1794
-latitude = -59.1868
-find_25boxes(57.1894, -59.1768, wmo_boxes)
-
-
+    return pa_wmo_numbers
