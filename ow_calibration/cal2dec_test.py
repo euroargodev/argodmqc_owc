@@ -36,7 +36,7 @@ class MyTestCase(unittest.TestCase):
         print("Testing that the 24th hour on the last day returns 365")
         self.assertEqual(cal2dec(11, 31, 24, 0), 365, "last value should be 365")
 
-    def test_no_day_larger_than_365(self):
+    def test_no_day_larger_than_366(self):
         print("Testing that an error is thrown if a date exceeds 365")
         with self.assertRaises(Exception) as date_out_of_scope:
             cal2dec(11, 31, 300, 300)
