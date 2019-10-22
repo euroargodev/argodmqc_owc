@@ -22,4 +22,4 @@ flake8:
 Test:
   stage: Test
   script:
-    - python -m unittest discover --verbose . "*_test.py"
+    - python -m unittest discover -p "*_test.py"
