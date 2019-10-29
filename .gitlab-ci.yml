@@ -1,7 +1,7 @@
 before_script:
   - pwd
   - whoami
-  - source ~./bashrc
+  - source ~/.bashrc
   - python --version
 
 stages:
