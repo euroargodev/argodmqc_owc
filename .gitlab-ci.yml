@@ -6,6 +6,7 @@ before_script:
 
 stages:
   - Setup
+  - Code Quality
 
 Setup:
   stage: Setup
@@ -13,3 +14,8 @@ Setup:
     - pip install -r requirements.txt
   tags:
     - nonrooted
+
+Code Quality:
+  stage: Code Quality
+  script:
+    - pylint **/*.py
