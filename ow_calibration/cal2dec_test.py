@@ -43,5 +43,6 @@ class MyTestCase(unittest.TestCase):
 
         self.assertTrue('Day is out of scope of the year' in str(date_out_of_scope.exception))
 
+
 if __name__ == '__main__':
     unittest.main()
