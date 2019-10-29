@@ -7,6 +7,7 @@ before_script:
 stages:
   - Setup
   - Code Quality
+  - Unit Tests
 
 Setup:
   stage: Setup
@@ -19,3 +20,12 @@ Code Quality:
   stage: Code Quality
   script:
     - pylint **/*.py
+  tags:
+    - nonrooted
+
+Unit Tests:
+  stage: Unit Tests
+  script:
+    - python -m unittest discover --verbose . "*_test.py"
+  tags:
+    - nonrooted
