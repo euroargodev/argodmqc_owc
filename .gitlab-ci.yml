@@ -1,5 +1,3 @@
-image: "python:3.7"
-
 before_script:
   - pwd
   - whoami
@@ -7,6 +5,7 @@ before_script:
   - python --version
 
 stages:
+<<<<<<< HEAD
   - Set Up
 
 Set Up:
@@ -15,3 +14,29 @@ Set Up:
     - pip install numpy
   tags:
     - nonrooted
+=======
+  - Setup
+  - Code Quality
+  - Unit Tests
+
+Setup:
+  stage: Setup
+  script:
+    - pip install -r requirements.txt
+  tags:
+    - nonrooted
+
+Code Quality:
+  stage: Code Quality
+  script:
+    - pylint **/*.py
+  tags:
+    - nonrooted
+
+Unit Tests:
+  stage: Unit Tests
+  script:
+    - python -m unittest discover --verbose . "*_test.py"
+  tags:
+    - nonrooted
+>>>>>>> ce8799cf953dc1cfb3303f4b845d44f5fceec983
