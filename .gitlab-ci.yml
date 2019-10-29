@@ -1,25 +1,15 @@
-image: "python:3.7"
-
 before_script:
+  - pwd
+  - whoami
+  - source ~./bashrc
   - python --version
-  - pip install -r requirements.txt
 
 stages:
-  - Static Analysis
-  - Test
+  - Setup
 
-test commands:
-  stage: Static Analysis
+Setup:
+  stage: Setup
   script:
-    - pwd
-    - ls -l
-
-flake8:
-  stage: Static Analysis
-  script:
-  - flake8 --max-line-length=120 /*.py
-
-Test:
-  stage: Test
-  script:
-    - python -m unittest discover --verbose . "*_test.py"
+    - pip install numpy
+  tags:
+    - nonrooted
