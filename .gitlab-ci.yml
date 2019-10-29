@@ -11,5 +11,6 @@ Setup:
   stage: Setup
   script:
     - pip install numpy
+    - pip install scipy
   tags:
     - nonrooted
