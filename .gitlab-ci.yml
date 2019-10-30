@@ -26,6 +26,6 @@ Code Quality:
 Unit Tests:
   stage: Unit Tests
   script:
-    - python -m unittest discover --verbose . "*_test.py"
+    - python -m unittest discover -s ow_calibration -p "*_test.py"
   tags:
     - nonrooted
