@@ -73,7 +73,9 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     la_lookup_y = np.arange(85, -86, -10).transpose()
 
     la_lookup_no = np.full((1, 648), np.arange(1, 649), dtype=int).reshape(36, 18)
-    la_lookup_no = np.insert(la_lookup_no, 0, la_lookup_no[la_lookup_no.shape[0] - 1]).reshape(37, 18)
+    la_lookup_no = np.insert(
+        la_lookup_no, 0, la_lookup_no[la_lookup_no.shape[0] - 1]
+    ).reshape(37, 18)
     la_lookup_no = np.insert(la_lookup_no, 666, la_lookup_no[1]).reshape(38, 18).transpose()
 
     # Set up longitudinal and latitudinal values
@@ -111,7 +113,9 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
         ln_i = []
         for i in range(0, 5):
             for j in range(0, 5):
-                ln_i.append(nearest_neighbour(la_lookup_x, la_lookup_y, la_lookup_no, ln_x[j], ln_y[i]))
+                ln_i.append(
+                    nearest_neighbour(la_lookup_x, la_lookup_y, la_lookup_no, ln_x[j], ln_y[i])
+                )
 
     else:
         ln_i = np.full(25, np.nan)
