@@ -27,7 +27,7 @@ class Find25BoxesTestCase(unittest.TestCase):
         Is run before each test case
         :return: Nothing
         """
-        self.pa_wmo_boxes = scipy.loadmat('../data/constants/wmo_boxes.mat')
+        self.pa_wmo_boxes = scipy.loadmat('data/constants/wmo_boxes.mat')
         self.pn_float_long = 57.1794
         self.pn_float_lat = -59.1868
 
