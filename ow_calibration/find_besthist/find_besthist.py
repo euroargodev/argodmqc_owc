@@ -19,3 +19,16 @@ For information on how to use this file, check the README at either:
 https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
+
+import numpy as np
+import math
+
+
+def calc_barotropic_potential_vorticity(lat, z):
+    """
+    Calculates potential vorticity (PV)
+    :param lat: latitude
+    :param z: depth
+    """
+
+    return (2 * 7.292 * 10 ** -5 * math.sin(lat * math.pi / 180)) / z
