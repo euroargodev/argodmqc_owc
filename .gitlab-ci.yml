@@ -19,13 +19,13 @@ Setup:
 Code Quality:
   stage: Code Quality
   script:
-    - pylint **/*.py
+    - find . -iname "*.py" | xargs pylint
   tags:
     - nonrooted
 
 Unit Tests:
   stage: Unit Tests
   script:
-    - python -m unittest discover --verbose . "*_test.py"
+    - python -m unittest discover -s ow_calibration -p "*_test.py"
   tags:
     - nonrooted
