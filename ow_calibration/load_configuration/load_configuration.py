@@ -6,7 +6,8 @@ When: 18/09/2019
 Converted to python by: N/A
 When: N/A
 
-Contains the configuration settings of the user for an analysis. The variables are saved in a dictionary.
+Contains the configuration settings of the user for an analysis.
+The variables are saved in a dictionary.
 This means that values are accessible both via index and via key.
 
 For information on how to use this file, check the README at either:
@@ -16,6 +17,12 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 def load_configuration():
+
+    """
+    Takes in no arguments
+    :return: A dictionary containing mapped pairs of
+    {PARAMETER_NAME: parameter_value}
+    """
 
     return {
 
