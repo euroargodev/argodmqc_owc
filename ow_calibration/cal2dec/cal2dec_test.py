@@ -11,7 +11,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-from ow_calibration.cal2dec import cal2dec
+from ow_calibration.cal2dec.cal2dec import cal2dec
 
 
 class Cal2decTestCase(unittest.TestCase):
