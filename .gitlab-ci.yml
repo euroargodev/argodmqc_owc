@@ -19,7 +19,7 @@ Setup:
 Code Quality:
   stage: Code Quality
   script:
-    - pylint **/*.py
+    - find . -iname "*.py" | xargs pylint
   tags:
     - nonrooted
 
