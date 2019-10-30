@@ -5,16 +5,6 @@ before_script:
   - python --version
 
 stages:
-<<<<<<< HEAD
-  - Set Up
-
-Set Up:
-  stage: Set Up
-  script:
-    - pip install numpy
-  tags:
-    - nonrooted
-=======
   - Setup
   - Code Quality
   - Unit Tests
@@ -39,4 +29,3 @@ Unit Tests:
     - python -m unittest discover --verbose . "*_test.py"
   tags:
     - nonrooted
->>>>>>> ce8799cf953dc1cfb3303f4b845d44f5fceec983
