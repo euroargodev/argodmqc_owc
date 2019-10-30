@@ -1,25 +1,31 @@
-image: "python:3.7"
-
 before_script:
+  - pwd
+  - whoami
+  - source ~/.bashrc
   - python --version
-  - pip install -r requirements.txt
 
 stages:
-  - Static Analysis
-  - Test
+  - Setup
+  - Code Quality
+  - Unit Tests
 
-test commands:
-  stage: Static Analysis
+Setup:
+  stage: Setup
   script:
-    - pwd
-    - ls -l
+    - pip install -r requirements.txt
+  tags:
+    - nonrooted
 
-flake8:
-  stage: Static Analysis
+Code Quality:
+  stage: Code Quality
   script:
-  - flake8 --max-line-length=120 /*.py
+    - find . -iname "*.py" | xargs pylint
+  tags:
+    - nonrooted
 
-Test:
-  stage: Test
+Unit Tests:
+  stage: Unit Tests
   script:
-    - python -m unittest discover -p "*_test.py"
+    - python -m unittest discover -s ow_calibration -p "*_test.py"
+  tags:
+    - nonrooted
