@@ -24,11 +24,18 @@ import numpy as np
 import math
 
 
-def calc_barotropic_potential_vorticity(lat, z):
+def barotropic_potential_vorticity(lat, z):
     """
-    Calculates potential vorticity (PV)
+    Calculates barotropic potential vorticity (pv)
     :param lat: latitude
     :param z: depth
     """
+    earth_angular_velocity = 2 * 7.292 * 10 ** -5
+    lat_radians = lat * math.pi / 180
 
-    return (2 * 7.292 * 10 ** -5 * math.sin(lat * math.pi / 180)) / z
+    pv = (earth_angular_velocity * math.sin(lat_radians)) / z
+
+    if pv == 0:
+        pv = 1 * 10 ** -5
+
+    return pv
