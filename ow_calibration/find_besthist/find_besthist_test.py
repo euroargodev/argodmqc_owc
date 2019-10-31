@@ -105,6 +105,7 @@ class FindBestHistTestCase(unittest.TestCase):
         """
         print("Testing that spatial_correlation returns an array")
 
+        # pylint: disable=too-many-locals
         hist_long = [53.195, 51.954, 53.107]
         float_long = 57.1794
         longitude_large = 8
