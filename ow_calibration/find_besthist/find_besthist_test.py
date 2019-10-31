@@ -126,6 +126,75 @@ class FindBestHistTestCase(unittest.TestCase):
 
         self.assertTrue(isinstance(sc_result, np.ndarray), "spatial correlation is not array")
 
+    # pylint: disable=too-many-locals
+    def test_spatial_correlation_returns_expected_float(self):
+        """
+        Check that spatial_correlation returns the correct answer if given a float
+        with or without potential vorticity
+        :return: Nothing
+        """
+        print("Testing that spatial_correlation returns correct float value")
+
+        # Without potential vorticity
+        hist_long = 53.195
+        float_long = 57.1794
+        longitude_large = 8
+        hist_lat = -57.996
+        float_lat = -59.1868
+        latitude_large = 4
+        hist_dates = 1.9741 * 10 ** 3
+        float_date = 2.018 * 10 ** 3
+        age_large = 20
+        phi_large = 0.5
+        sc_result = spatial_correlation(hist_long, float_long, longitude_large,
+                                        hist_lat, float_lat, latitude_large,
+                                        hist_dates, float_date, age_large,
+                                        phi_large)
+
+        self.assertEqual(round(sc_result, 4), 5.1547)
+
+        # With potential vorticity
+        pv_hist = -0.0236 * 10 ** -6
+        pv_float = -2.452
+        sc_pv_result = spatial_correlation(hist_long, float_long, longitude_large,
+                                           hist_lat, float_lat, latitude_large,
+                                           hist_dates, float_date, age_large,
+                                           phi_large, pv_hist, pv_float)
+
+        self.assertEqual(round(sc_pv_result, 4), 1.1547)
+
+    # pylint: disable=too-many-locals
+    def test_spatial_correlation_returns_expected_array(self):
+        """
+                Check that spatial_correlation returns an array if given an array
+                :return: Nothing
+                """
+        print("Testing that spatial_correlation returns an array")
+
+        hist_long = [53.195, 51.954, 53.107]
+        float_long = 57.1794
+        longitude_large = 8
+        hist_lat = [-57.996, -56.375, -54.496]
+        float_lat = -59.1868
+        latitude_large = 4
+        hist_dates = [1.9741 * 10 ** 3, 1.9471 * 10 ** 3, 1.9472 * 10 ** 3]
+        float_date = 2.018 * 10 ** 3
+        age_large = 20
+        phi_large = 0.5
+        pv_hist = [-0.0236 * 10 ** -6, -0.0233 * 10 ** -6, -0.0267 * 10 ** -6]
+        pv_float = -2.452
+        spatial_correlation_vec = np.vectorize(spatial_correlation)
+        sc_expected = [1.1547, 9.4878, 10.166]
+        sc_result = spatial_correlation_vec(hist_long, float_long, longitude_large,
+                                            hist_lat, float_lat, latitude_large,
+                                            hist_dates, float_date, age_large,
+                                            phi_large, pv_hist, pv_float)
+
+        for i in range(0, sc_expected.__len__()):
+            self.assertEqual(
+                round(sc_result[i], 4), sc_expected[i], "spatial_correlation arrays aren't equal"
+            )
+
 
 if __name__ == '__main__':
     unittest.main()
