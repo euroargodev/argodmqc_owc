@@ -68,8 +68,8 @@ class FindBestHistTestCase(unittest.TestCase):
         lat = -59.1868
         z_value = 5108.3
         pv_result = barotropic_potential_vorticity(lat, z_value)
-        self.assertAlmostEqual(pv_result*1000, -2.452*10**-8*1000)
-    
+        self.assertAlmostEqual(pv_result * 1000, -2.452 * 10 ** -8 * 1000)
+
     def test_bpv_returns_expected_array(self):
         """
         Check that barotropic_potential_vorticity returns the expected array after calculation
@@ -82,42 +82,49 @@ class FindBestHistTestCase(unittest.TestCase):
         barotropic_potential_vorticity_vec = np.vectorize(barotropic_potential_vorticity)
 
         pv_result = barotropic_potential_vorticity_vec(lat, z_value)
-        pv_expected = [-0.2365*10**-7, -0.2325*10**-7, -0.267*10**-7]
+        pv_expected = [-0.2365 * 10 ** -7, -0.2325 * 10 ** -7, -0.267 * 10 ** -7]
 
         for i in range(0, lat.__len__()):
-            self.assertAlmostEqual(pv_result[i]*1000, pv_expected[i]*1000)
+            self.assertAlmostEqual(pv_result[i] * 1000, pv_expected[i] * 1000)
 
+    def test_spatial_correlation_returns_float(self):
+        """
+        Check that spatial_correlation returns a float if given a float
+        :return: Nothing
+        """
+        print("Testing that spatial_correlation returns a float")
+
+        sc_result = spatial_correlation(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+
+        self.assertTrue(isinstance(sc_result, float), "spatial correlation is not a float")
+
+    def test_spatial_correlation_returns_array(self):
+        """
+        Check that spatial_correlation returns an array if given an array
+        :return: Nothing
+        """
+        print("Testing that spatial_correlation returns an array")
+
+        hist_long = [53.195, 51.954, 53.107]
+        float_long = 57.1794
+        longitude_large = 8
+        hist_lat = [-57.996, -56.375, -54.496]
+        float_lat = -59.1868
+        latitude_large = 4
+        hist_dates = [1.9741 * 10 ** 3, 1.9471 * 10 ** 3, 1.9472 * 10 ** 3]
+        float_date = 2.018 * 10 ** 3
+        age_large = 20
+        phi_large = 0.5
+        pv_hist = [-0.0236 * 10 ** -6, -0.0233 * 10 ** -6, -0.0267 * 10 ** -6]
+        pv_float = -2.452
+        spatial_correlation_vec = np.vectorize(spatial_correlation)
+        sc_result = spatial_correlation_vec(hist_long, float_long, longitude_large,
+                                            hist_lat, float_lat, latitude_large,
+                                            hist_dates, float_date, age_large,
+                                            phi_large, pv_hist, pv_float)
+
+        self.assertTrue(isinstance(sc_result, np.ndarray), "spatial correlation is not array")
 
 
 if __name__ == '__main__':
     unittest.main()
-
-"""barotropic_potential_vorticity_vec = np.vectorize(barotropic_potential_vorticity)
-
-grid_lat = [-57.996, -56.375, -54.496]
-grid_z = [523, 522.31, 444.71]
-
-ans = barotropic_potential_vorticity(-59.1868, 5108.3)
-ans_vec = barotropic_potential_vorticity_vec(grid_lat, grid_z)
-print(ans)
-print(ans_vec)
-
-remain_hist_long = [53.195, 51.954, 53.107]
-LONG = 57.1794
-longitude_large = 8
-remain_hist_lat = [-57.996, -56.375, -54.496]
-LAT = -59.1868
-latitude_large = 4
-remain_hist_dates = [1.9741 * 10 ** 3, 1.9471 * 10 ** 3, 1.9472 * 10 ** 3]
-DATES = 2.018 * 10 ** 3
-age_large = 20
-PV_float = -2.452
-PV_hist = [-0.0236 * 10 ** -6, -0.0233 * 10 ** -6, -0.0267 * 10 ** -6]
-phi_large = 0.5
-
-ans = spatial_correlation(remain_hist_long[0], LONG, longitude_large,
-                          remain_hist_lat[0], LAT, latitude_large,
-                          remain_hist_dates[0], DATES, age_large,
-                          phi_large, PV_hist[0], PV_float)
-
-print(ans)"""
