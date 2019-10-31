@@ -45,8 +45,34 @@ def barotropic_potential_vorticity(lat, z):
 
     return pv
 
-def correlation(
-        longitude_1, longitude_2, ellipse_longitude,latitude_1, latitude_2,
-        ellipse_latitude, phi, pv_float = 0, pv_hist = 0
-):
 
+def spatial_correlation(
+        longitude_1, longitude_2, ellipse_longitude, latitude_1, latitude_2,
+        ellipse_latitude, dates_1, dates_2, ellipse_age, phi, pv_1=0, pv_2=0
+):
+    """
+    Calculates the spatial correlation between two points.
+    Can be done with or without potential vorticity
+    :param longitude_1: longitude of point 1
+    :param longitude_2: longitude if point 2
+    :param ellipse_longitude: longitudinal size of ellipse
+    :param latitude_1: latitude of point 1
+    :param latitude_2: latitude of point 2
+    :param ellipse_latitude: latitudinal size of ellipse
+    :param dates_1: dates of data for point 1
+    :param dates_2: dates of data for point 2
+    :param ellipse_age: age of data wanted in ellipse
+    :param phi: potential gradient
+    :param pv_1: potential vorticity of point 1
+    :param pv_2: potential vorticity of point 2
+    :return: spatial correlation between points
+    """
+    if pv_1 == 0 or pv_2 == 0
+        correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude + \
+                      (latitude_1 - latitude_2) ** 2 / ellipse_latitude + \
+                      (dates_1 - dates_2) ** 2 / ellipse_age
+
+    if pv_1 != 0 or pv_2 != 0:
+        correlation = correlation + ((pv_2 - pv_1) / math.sqrt(pv_2**2+pv_1**2)/phi)**2
+
+    return correlation
