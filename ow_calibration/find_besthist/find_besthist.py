@@ -67,7 +67,7 @@ def spatial_correlation(
     :param pv_2: potential vorticity of point 2
     :return: spatial correlation between points
     """
-    if pv_1 == 0 or pv_2 == 0
+    if pv_1 == 0 or pv_2 == 0:
         correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude + \
                       (latitude_1 - latitude_2) ** 2 / ellipse_latitude + \
                       (dates_1 - dates_2) ** 2 / ellipse_age
