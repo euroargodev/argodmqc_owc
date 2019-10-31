@@ -25,27 +25,27 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import numpy as np
 import math
 
 
-def barotropic_potential_vorticity(lat, z):
+def barotropic_potential_vorticity(lat, z_value):
     """
     Calculates barotropic potential vorticity (pv)
     :param lat: latitude
-    :param z: depth
+    :param z_value: depth
     """
     earth_angular_velocity = 2 * 7.292 * 10 ** -5
     lat_radians = lat * math.pi / 180
 
-    pv = (earth_angular_velocity * math.sin(lat_radians)) / z
+    potential_vorticity = (earth_angular_velocity * math.sin(lat_radians)) / z_value
 
-    if pv == 0:
-        pv = 1 * 10 ** -5
+    if potential_vorticity == 0:
+        potential_vorticity = 1 * 10 ** -5
 
-    return pv
+    return potential_vorticity
 
 
+# pylint: disable=too-many-arguments
 def spatial_correlation(
         longitude_1, longitude_2, ellipse_longitude, latitude_1, latitude_2,
         ellipse_latitude, dates_1, dates_2, ellipse_age, phi, pv_1=0, pv_2=0
@@ -67,12 +67,13 @@ def spatial_correlation(
     :param pv_2: potential vorticity of point 2
     :return: spatial correlation between points
     """
-    if pv_1 == 0 or pv_2 == 0:
-        correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude + \
-                      (latitude_1 - latitude_2) ** 2 / ellipse_latitude + \
-                      (dates_1 - dates_2) ** 2 / ellipse_age
+
+    pv_correlation = 0
+    correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude**2 + \
+                  (latitude_1 - latitude_2) ** 2 / ellipse_latitude**2 + \
+                  (dates_1 - dates_2) ** 2 / ellipse_age**2
 
     if pv_1 != 0 or pv_2 != 0:
-        correlation = correlation + ((pv_2 - pv_1) / math.sqrt(pv_2**2+pv_1**2)/phi)**2
+        pv_correlation = ((pv_2 - pv_1) / math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi) ** 2
 
-    return correlation
+    return correlation - pv_correlation
