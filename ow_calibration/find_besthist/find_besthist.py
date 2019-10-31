@@ -14,6 +14,11 @@ and to return index of the station list
 N.B. Change to code on the xx/06/2013: add age_large when computing correlation_large
 - C Cabanes
 
+N.B Change during conversion to python on the 31/10/2019: Potential Vorticity and Correlation
+are calculated multiple times, so I moved them into their own function. These functions can be
+vectorised using the numpy library (numpy.vectorize(function)) to use the functions on arrays.
+- Edward Small
+
 For information on how to use this file, check the README at either:
 
 https://github.com/ArgoDMQC/matlab_owc
@@ -39,3 +44,9 @@ def barotropic_potential_vorticity(lat, z):
         pv = 1 * 10 ** -5
 
     return pv
+
+def correlation(
+        longitude_1, longitude_2, ellipse_longitude,latitude_1, latitude_2,
+        ellipse_latitude, phi, pv_float = 0, pv_hist = 0
+):
+
