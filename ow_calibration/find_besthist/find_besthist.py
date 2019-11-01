@@ -97,7 +97,7 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
     :return: float. If <1, it exists inside the ellipse
     """
 
-    total_pv = 1
+    total_pv = 0
     if data_pv != 0 and ellipse_pv != 0:
         total_pv = (ellipse_pv - data_pv) / math.sqrt(ellipse_pv ** 2 + data_pv ** 2) / phi
 
@@ -163,5 +163,8 @@ def find_besthist(
 ans = find_ellipse(53.195, 57.1794, 8,
                    -57.996, -59.1868, 4,
                    0.5, -2.3547*10**-8, -2.452*10**-8)
-
+print(ans)
+ans = find_ellipse(53.195, 57.1794, 8,
+                   -57.996, -59.1868, 4,
+                   0.5)
 print(ans)
