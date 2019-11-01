@@ -108,10 +108,10 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
     return ellipse
 
 
-"""TODO:"""
+# pylint: disable=fixme
+# TODO: ARGODEV-155
+# Refactor this code to take an object instead of a ludicrous amount of arguments
 
-
-# pylint: disable=too-many-arguments
 def find_besthist(
         grid_lat, grid_long, grid_dates, grid_z_value,
         lat, long, dates, z_value,
@@ -159,12 +159,20 @@ def find_besthist(
     ellipse = find_ellipse_vec(grid_long, long, longitude_large, grid_lat, lat, latitude_large,
                                phi_large, pv_hist, pv_float)
 
+    # find points that lie within the ellipse
+    hist_long = []
+    hist_lat = []
+    hist_dates = []
+    hist_z_value = []
+    index_ellipse = np.argwhere(ellipse < 1)
+    for i in index_ellipse:
+        hist_long.append(grid_long[i[0]])
+        hist_lat.append(grid_lat[i[0]])
+        hist_dates.append(grid_dates[i[0]])
+        hist_z_value.append(grid_z_value[i[0]])
+        
 
-ans = find_ellipse(53.195, 57.1794, 8,
-                   -57.996, -59.1868, 4,
-                   0.5, -2.3547*10**-8, -2.452*10**-8)
-print(ans)
-ans = find_ellipse(53.195, 57.1794, 8,
-                   -57.996, -59.1868, 4,
-                   0.5)
-print(ans)
+find_besthist([-57.996, -56.375], [53.195, 51.954],
+              [1.9741 * 10 ** 3, 1.9741 * 10 ** 3], [5.23 * 10 ** 3, 5.2231 * 10 ** 3],
+              -59.1868, 57.1794, 2.018 * 10 ** 3, 5.1083 * 10 ** 3,
+              4, 2, 8, 4, 0.5, 0.1, 10, 20, 0, 300)
