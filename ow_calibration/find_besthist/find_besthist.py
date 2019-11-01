@@ -26,6 +26,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import math
+import numpy as np
 
 
 def barotropic_potential_vorticity(lat, z_value):
@@ -69,11 +70,100 @@ def spatial_correlation(
     """
 
     pv_correlation = 0
-    correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude**2 + \
-                  (latitude_1 - latitude_2) ** 2 / ellipse_latitude**2 + \
-                  (dates_1 - dates_2) ** 2 / ellipse_age**2
+    correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude ** 2 + \
+                  (latitude_1 - latitude_2) ** 2 / ellipse_latitude ** 2 + \
+                  (dates_1 - dates_2) ** 2 / ellipse_age ** 2
 
-    if pv_1 != 0 or pv_2 != 0:
+    if pv_1 != 0 and pv_2 != 0:
         pv_correlation = ((pv_2 - pv_1) / math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi) ** 2
 
     return correlation - pv_correlation
+
+
+def find_ellipse(data_long, ellipse_long, ellipse_size_long,
+                 data_lat, ellipse_lat, ellipse_size_lat,
+                 phi, data_pv=0, ellipse_pv=0):
+    """
+    Finds whether a data point exists inside an ellipse
+    :param data_long: longitude of the data point
+    :param ellipse_long: longitude of the centre of the ellipse
+    :param ellipse_size_long: size of the ellipse in the longitudinal direction
+    :param data_lat: latitude of the data point
+    :param ellipse_lat: latitude of the centre of the ellipse
+    :param ellipse_size_lat: size of the ellipse in the latitudinal direction
+    :param phi: cross-isobath scale for ellipse
+    :param data_pv: potential vorticity of the data point
+    :param ellipse_pv: potential vorticity of the centre of the ellipse
+    :return: float. If <1, it exists inside the ellipse
+    """
+
+    ellipse = math.sqrt((data_long - ellipse_long) ** 2 / (ellipse_size_long * 3) ** 2 + \
+                        (data_lat - ellipse_lat) ** 2 / (ellipse_size_lat * 3) ** 2 + \
+                        ((ellipse_pv - data_pv) / math.sqrt(ellipse_pv ** 2 + \
+                                                            data_pv ** 2) / phi) ** 2)
+
+    print((data_long - ellipse_long) ** 2 / (ellipse_size_long * 3) ** 2)
+    print((data_lat - ellipse_lat) ** 2 / (ellipse_size_lat * 3) ** 2)
+    print((ellipse_pv - data_pv) / math.sqrt(ellipse_pv ** 2 + \
+                                             data_pv ** 2) / phi)
+
+    return ellipse
+
+
+"""TODO:"""
+
+
+# pylint: disable=too-many-arguments
+def find_besthist(
+        grid_lat, grid_long, grid_dates, grid_z_value,
+        lat, long, dates, z_value,
+        latitude_large, latitude_small, longitude_large, longitude_small,
+        phi_large, phi_small, age_large, age_small, map_pv_use, max_casts
+):
+    """
+    Finds ln_max_casts number of unique historical data points that are most strongly correlated
+    with the float profile being processed
+    :param grid_lat: array of latitudes of historical data
+    :param grid_long: array of longitudes of historical data
+    :param grid_dates: array of ages of the historical data
+    :param grid_z_value: array of depths of the historical data
+    :param lat: latitude of the float profile
+    :param long: longitude of the float profile
+    :param dates: age of the float profile
+    :param z_value: depth of the float profile
+    :param latitude_large: latitude of large ellipse
+    :param latitude_small: latitude of small ellipse
+    :param longitude_large: longitude of large ellipse
+    :param longitude_small: longitude of small ellipse
+    :param phi_large: cross-isobath scale for large ellipse
+    :param phi_small: cross-isobath scale for small ellipse
+    :param age_large: age of data in large ellipse
+    :param age_small: age of data in small ellipse
+    :param map_pv_use: flag for whether to use potential vorticity (see load_configuration.py)
+    :param max_casts: maximum number of data points wanted
+    :return: indices of historical data to use
+    """
+
+    # set up potential vorticity
+    pv_float = 0
+    pv_hist = 0
+
+    # if we are using potential vorticity, calculate it
+    if map_pv_use == 1:
+        pv_float = barotropic_potential_vorticity(lat, z_value)
+
+        # need vectorised version of function for operating on array
+        barotropic_potential_vorticity_vec = np.vectorize(barotropic_potential_vorticity)
+        pv_hist = barotropic_potential_vorticity_vec(grid_lat, grid_z_value)
+
+    # calculate ellipse
+    find_ellipse_vec = np.vectorize(find_ellipse)
+    ellipse = find_ellipse_vec(grid_long, long, longitude_large, grid_lat, lat, latitude_large,
+                               phi_large, pv_hist, pv_float)
+
+
+ans = find_ellipse(53.195, 57.1794, 8,
+                   -57.996, -59.1868, 4,
+                   0.5, -2.3647 * 10 ** -8, -2.452 * 10 ** -8)
+
+print(ans)
