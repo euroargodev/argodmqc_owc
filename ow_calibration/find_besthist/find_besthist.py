@@ -14,9 +14,10 @@ and to return index of the station list
 N.B. Change to code on the xx/06/2013: add age_large when computing correlation_large
 - C Cabanes
 
-N.B Change during conversion to python on the 31/10/2019: Potential Vorticity and Correlation
-are calculated multiple times, so I moved them into their own function. These functions can be
-vectorised using the numpy library (numpy.vectorize(function)) to use the functions on arrays.
+N.B Change during conversion to python on the 31/10/2019: Potential Vorticity, Correlation, and
+ellipse are calculated multiple times, so I moved them into their own function.
+These functions can be vectorised using the numpy library (numpy.vectorize(function))
+to use the functions on arrays.
 - Edward Small
 
 For information on how to use this file, check the README at either:
@@ -26,6 +27,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import math
+import random
 import numpy as np
 
 
@@ -110,7 +112,7 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
 
 # pylint: disable=fixme
 # TODO: ARGODEV-155
-# Refactor this code to take an object instead of a ludicrous amount of arguments
+# Refactor this code to take objects and dictionaries instead of a ludicrous amount of arguments
 
 def find_besthist(
         grid_lat, grid_long, grid_dates, grid_z_value,
@@ -170,9 +172,41 @@ def find_besthist(
         hist_lat.append(grid_lat[i[0]])
         hist_dates.append(grid_dates[i[0]])
         hist_z_value.append(grid_z_value[i[0]])
-        
 
-find_besthist([-57.996, -56.375], [53.195, 51.954],
-              [1.9741 * 10 ** 3, 1.9741 * 10 ** 3], [5.23 * 10 ** 3, 5.2231 * 10 ** 3],
+    # check to see if too many data points were found
+    if index_ellipse.__len__() > max_casts:
+        # uses pseudo-random numbers so the same random numbers are selected for each run
+        np.random.seed(index_ellipse.__len__())
+
+        # pick max_casts/3 random points
+        rand_matrix = np.random.rand(1, math.ceil(max_casts / 3))
+        index_rand = np.round(rand_matrix * index_ellipse.__len__())
+
+        # make sure the points are all unique
+        index_rand = np.unique(index_rand)
+
+        # create an array containing the remaining reference data
+        # (index_ellipse array without index_rand array)
+        index_remain = index_ellipse
+        num_removed = 0
+        for i in index_rand:
+            index_remain = np.delete(index_remain, int(i) - num_removed)
+            num_removed += 1
+
+
+
+
+# random.seed(1)
+lat_test = np.full(500, -57.996 + (random.random() * random.choice([-1, 1])))
+long_test = np.full(500, 53.195 + (random.random() * random.choice([-1, 1])))
+z_test = np.full(500, 1.9741 * 10 ** 3 + (random.random() * random.choice([-1, 1])))
+age_test = np.full(500, 5.23 * 10 ** 3 + (random.random() * random.choice([-1, 1])))
+
+find_besthist(lat_test, long_test, z_test, age_test,
               -59.1868, 57.1794, 2.018 * 10 ** 3, 5.1083 * 10 ** 3,
               4, 2, 8, 4, 0.5, 0.1, 10, 20, 0, 300)
+
+"""find_besthist([-57.996, -56.375], [53.195, 51.954],
+              [1.9741 * 10 ** 3, 1.9741 * 10 ** 3], [5.23 * 10 ** 3, 5.2231 * 10 ** 3],
+              -59.1868, 57.1794, 2.018 * 10 ** 3, 5.1083 * 10 ** 3,
+              4, 2, 8, 4, 0.5, 0.1, 10, 20, 0, 300)"""
