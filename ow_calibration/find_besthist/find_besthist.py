@@ -78,10 +78,6 @@ def spatial_correlation(
 
     if pv_1 != 0 and pv_2 != 0:
         pv_correlation = ((pv_2 - pv_1) / (math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi)) ** 2
-    print("age: ", ellipse_age)
-    print("date 1: ", dates_1)
-    print("date_2: ", dates_2)
-    print("ages: ", (dates_1 - dates_2) ** 2 / ellipse_age ** 2)
 
     return correlation + pv_correlation
 
@@ -180,7 +176,7 @@ def find_besthist(
 
     # check to see if too many data points were found
     if index_ellipse.__len__() > max_casts:
-        print("got here")
+
         # uses pseudo-random numbers so the same random numbers are selected for each run
         np.random.seed(index_ellipse.__len__())
 
@@ -262,7 +258,6 @@ def find_besthist(
                                                 date, age_small,
                                                 pv_hist, pv_float, phi_small)
 
-        print(sorted(correlation_small))
         # create arrays to hold the remaining values to use
         remain_hist_lat_correlation_small = []
         remain_hist_long_correlation_small = []
