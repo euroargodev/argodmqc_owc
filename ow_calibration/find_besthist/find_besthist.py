@@ -219,9 +219,35 @@ def find_besthist(
 
         # now sort the correlation into ascending order and keep the index of each correlation
         correlation_large_sorted = sorted(correlation_large)
-        print(correlation_large_sorted)
         correlation_large_sorted_index = np.argsort(correlation_large)
-        print(correlation_large_sorted_index)
+
+        # also need to sort the historical data into order of correlation
+        remain_hist_lat_correlation_large = []
+        remain_hist_long_correlation_large = []
+        remain_hist_z_value_correlation_large = []
+        remain_hist_dates_correlation_large = []
+        for i in correlation_large_sorted_index:
+            remain_hist_lat_correlation_large = np.append(
+                remain_hist_lat_correlation_large, remain_hist_lat[i]
+            )
+
+            remain_hist_long_correlation_large = np.append(
+                remain_hist_long_correlation_large, remain_hist_long[i]
+            )
+            remain_hist_z_value_correlation_large = np.append(
+                remain_hist_z_value_correlation_large, remain_hist_z_value[i]
+            )
+            remain_hist_dates_correlation_large = np.append(
+                remain_hist_dates_correlation_large, remain_hist_dates[i]
+            )
+
+        # sort the remaining points by short spatial and temporal correlations
+        lsegment2 = 2*math.ceil(max_casts/3) - index_rand.__len__()
+        print(lsegment2)
+
+
+
+
 
 
 
