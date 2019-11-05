@@ -116,7 +116,7 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
 
 def find_besthist(
         grid_lat, grid_long, grid_dates, grid_z_value,
-        lat, long, dates, z_value,
+        lat, long, date, z_value,
         latitude_large, latitude_small, longitude_large, longitude_small,
         phi_large, phi_small, age_large, age_small, map_pv_use, max_casts
 ):
@@ -129,7 +129,7 @@ def find_besthist(
     :param grid_z_value: array of depths of the historical data
     :param lat: latitude of the float profile
     :param long: longitude of the float profile
-    :param dates: age of the float profile
+    :param date: age of the float profile
     :param z_value: depth of the float profile
     :param latitude_large: latitude of large ellipse
     :param latitude_small: latitude of small ellipse
@@ -145,6 +145,7 @@ def find_besthist(
     """
 
     # set up potential vorticity
+    barotropic_potential_vorticity_vec = np.vectorize(barotropic_potential_vorticity)
     pv_float = 0
     pv_hist = 0
 
@@ -179,28 +180,58 @@ def find_besthist(
         np.random.seed(index_ellipse.__len__())
 
         # pick max_casts/3 random points
-        rand_matrix = np.random.rand(1, math.ceil(max_casts / 3))
-        index_rand = np.round(rand_matrix * index_ellipse.__len__())
+        rand_matrix = np.random.rand(math.ceil(max_casts / 3))
+        index_rand = np.floor(rand_matrix * index_ellipse.__len__())
 
         # make sure the points are all unique
         index_rand = np.unique(index_rand)
 
-        # create an array containing the remaining reference data
+        # create an array containing the indices of the remaining reference data
         # (index_ellipse array without index_rand array)
+        # Then create arrays containing the remaining reference lat, long, age, and z_value
         index_remain = index_ellipse
-        num_removed = 0
+        remain_hist_lat = []
+        remain_hist_long = []
+        remain_hist_z_value = []
+        remain_hist_dates = []
+        removed = 0
         for i in index_rand:
-            index_remain = np.delete(index_remain, int(i) - num_removed)
-            num_removed += 1
+            index_remain = np.delete(index_remain, int(i) - removed)
+            removed += 1
+
+        for i in index_remain:
+            remain_hist_lat = np.append(remain_hist_lat, grid_lat[int(i)])
+            remain_hist_long = np.append(remain_hist_long, grid_long[int(i)])
+            remain_hist_z_value = np.append(remain_hist_z_value, grid_z_value[int(i)])
+            remain_hist_dates = np.append(remain_hist_dates, grid_dates[int(i)])
+
+        # sort remaining points by large spatial correlations
+        # calculate potential vorticity for remaining data
+        if map_pv_use == 1:
+            # calculate potential vorticity for remaining data
+            pv_hist = barotropic_potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
+
+        spatial_correlation_vec = np.vectorize(spatial_correlation)
+        correlation_large = spatial_correlation(remain_hist_long, long, longitude_large,
+                                          remain_hist_lat, lat, latitude_large,
+                                          remain_hist_dates, date, age_large,
+                                          pv_hist, pv_float, phi_large)
+
+        # now sort the correlation into ascending order and keep the index of each correlation
+        correlation_large_sorted = sorted(correlation_large)
+        print(correlation_large_sorted)
+        correlation_large_sorted_index = np.argsort(correlation_large)
+        print(correlation_large_sorted_index)
 
 
 
 
 # random.seed(1)
-lat_test = np.full(500, -57.996 + (random.random() * random.choice([-1, 1])))
-long_test = np.full(500, 53.195 + (random.random() * random.choice([-1, 1])))
-z_test = np.full(500, 1.9741 * 10 ** 3 + (random.random() * random.choice([-1, 1])))
-age_test = np.full(500, 5.23 * 10 ** 3 + (random.random() * random.choice([-1, 1])))
+lat_test = np.random.rand(5000)*25 * random.choice([-1, 1]) + -59.1868
+# lat_test = np.full(500, -57.996 + (random.randint(0, 1000) * 0.01 * random.choice([-1, 1])))
+long_test = np.random.rand(5000)*25 * random.choice([-1, 1]) +  57.1794
+z_test = np.random.rand(5000)*25 * random.choice([-1, 1]) +  2.018 * 10 ** 3
+age_test = np.random.rand(5000)*25 * random.choice([-1, 1]) +  5.1083 * 10 ** 3
 
 find_besthist(lat_test, long_test, z_test, age_test,
               -59.1868, 57.1794, 2.018 * 10 ** 3, 5.1083 * 10 ** 3,
