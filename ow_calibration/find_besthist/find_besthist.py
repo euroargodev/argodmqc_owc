@@ -72,14 +72,18 @@ def spatial_correlation(
     """
 
     pv_correlation = 0
-    correlation = (longitude_1 - longitude_2) ** 2 / ellipse_longitude ** 2 + \
-                  (latitude_1 - latitude_2) ** 2 / ellipse_latitude ** 2 + \
-                  (dates_1 - dates_2) ** 2 / ellipse_age ** 2
+    correlation = ((longitude_1 - longitude_2) ** 2 / (ellipse_longitude ** 2)) + \
+                  ((latitude_1 - latitude_2) ** 2 / (ellipse_latitude ** 2)) + \
+                  ((dates_1 - dates_2) ** 2 / (ellipse_age ** 2))
 
     if pv_1 != 0 and pv_2 != 0:
-        pv_correlation = ((pv_2 - pv_1) / math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi) ** 2
+        pv_correlation = ((pv_2 - pv_1) / (math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi)) ** 2
+    print("age: ", ellipse_age)
+    print("date 1: ", dates_1)
+    print("date_2: ", dates_2)
+    print("ages: ", (dates_1 - dates_2) ** 2 / ellipse_age ** 2)
 
-    return correlation - pv_correlation
+    return correlation + pv_correlation
 
 
 def find_ellipse(data_long, ellipse_long, ellipse_size_long,
@@ -176,6 +180,7 @@ def find_besthist(
 
     # check to see if too many data points were found
     if index_ellipse.__len__() > max_casts:
+        print("got here")
         # uses pseudo-random numbers so the same random numbers are selected for each run
         np.random.seed(index_ellipse.__len__())
 
@@ -213,9 +218,9 @@ def find_besthist(
 
         spatial_correlation_vec = np.vectorize(spatial_correlation)
         correlation_large = spatial_correlation(remain_hist_long, long, longitude_large,
-                                          remain_hist_lat, lat, latitude_large,
-                                          remain_hist_dates, date, age_large,
-                                          pv_hist, pv_float, phi_large)
+                                                remain_hist_lat, lat, latitude_large,
+                                                remain_hist_dates, date, age_large,
+                                                pv_hist, pv_float, phi_large)
 
         # now sort the correlation into ascending order and keep the index of each correlation
         correlation_large_sorted = sorted(correlation_large)
@@ -242,26 +247,38 @@ def find_besthist(
             )
 
         # sort the remaining points by short spatial and temporal correlations
-        lsegment2 = 2*math.ceil(max_casts/3) - index_rand.__len__()
-        print(lsegment2)
+        lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
+        index_corrleation_small = np.arange(start=lsegment2 + 1, stop=remain_hist_long.__len__())
 
+        if map_pv_use == 1:
+            pv_hist = barotropic_potential_vorticity_vec(
+                remain_hist_lat_correlation_large, remain_hist_z_value_correlation_large)
 
+        correlation_small = spatial_correlation(remain_hist_long_correlation_large,
+                                                long, longitude_small,
+                                                remain_hist_lat_correlation_large,
+                                                lat, latitude_small,
+                                                remain_hist_dates_correlation_large,
+                                                date, age_small,
+                                                pv_hist, pv_float, phi_small)
 
-
-
-
+        print(sorted(correlation_small))
+        # create arrays to hold the remaining values to use
+        remain_hist_lat_correlation_small = []
+        remain_hist_long_correlation_small = []
+        remain_hist_z_value_correlation_small = []
+        remain_hist_dates_correlation_small = []
 
 
 # random.seed(1)
-lat_test = np.random.rand(5000)*25 * random.choice([-1, 1]) + -59.1868
-# lat_test = np.full(500, -57.996 + (random.randint(0, 1000) * 0.01 * random.choice([-1, 1])))
-long_test = np.random.rand(5000)*25 * random.choice([-1, 1]) +  57.1794
-z_test = np.random.rand(5000)*25 * random.choice([-1, 1]) +  2.018 * 10 ** 3
-age_test = np.random.rand(5000)*25 * random.choice([-1, 1]) +  5.1083 * 10 ** 3
+lat_test = np.random.rand(5000) * random.choice([-1, 1]) + -57.996
+long_test = np.random.rand(5000) * random.choice([-1, 1]) + 57.1794
+z_test = np.random.rand(5000) * random.choice([-1, 1]) + 2.018 * 10 ** 3
+age_test = np.random.rand(5000) * random.choice([-1, 1]) + 5.1083 * 10 ** 3
 
 find_besthist(lat_test, long_test, z_test, age_test,
               -59.1868, 57.1794, 2.018 * 10 ** 3, 5.1083 * 10 ** 3,
-              4, 2, 8, 4, 0.5, 0.1, 10, 20, 0, 300)
+              4, 2, 8, 4, 0.5, 0.1, 20, 10, 1, 300)
 
 """find_besthist([-57.996, -56.375], [53.195, 51.954],
               [1.9741 * 10 ** 3, 1.9741 * 10 ** 3], [5.23 * 10 ** 3, 5.2231 * 10 ** 3],
