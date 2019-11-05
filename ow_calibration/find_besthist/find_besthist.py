@@ -213,10 +213,10 @@ def find_besthist(
             pv_hist = barotropic_potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
 
         spatial_correlation_vec = np.vectorize(spatial_correlation)
-        correlation_large = spatial_correlation(remain_hist_long, long, longitude_large,
-                                                remain_hist_lat, lat, latitude_large,
-                                                remain_hist_dates, date, age_large,
-                                                pv_hist, pv_float, phi_large)
+        correlation_large = spatial_correlation_vec(remain_hist_long, long, longitude_large,
+                                                    remain_hist_lat, lat, latitude_large,
+                                                    remain_hist_dates, date, age_large,
+                                                    pv_hist, pv_float, phi_large)
 
         # now sort the correlation into ascending order and keep the index of each correlation
         correlation_large_sorted = sorted(correlation_large)
@@ -227,11 +227,19 @@ def find_besthist(
         remain_hist_long_correlation_large = []
         remain_hist_z_value_correlation_large = []
         remain_hist_dates_correlation_large = []
-        for i in correlation_large_sorted_index:
+
+        # work out how many large spatial data points needed
+        lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
+
+        #select the best large spatial data points, and then remove them from remaining data
+        index_large_spatial = []
+        for i in range(0, lsegment2):
+            index_large_spatial = np.append(index_large_spatial, correlation_large_sorted_index[i])
+
+        for i in range(lsegment2, remain_hist_lat.__len__()):
             remain_hist_lat_correlation_large = np.append(
                 remain_hist_lat_correlation_large, remain_hist_lat[i]
             )
-
             remain_hist_long_correlation_large = np.append(
                 remain_hist_long_correlation_large, remain_hist_long[i]
             )
@@ -242,15 +250,16 @@ def find_besthist(
                 remain_hist_dates_correlation_large, remain_hist_dates[i]
             )
 
+
+
         # sort the remaining points by short spatial and temporal correlations
-        lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
-        index_corrleation_small = np.arange(start=lsegment2 + 1, stop=remain_hist_long.__len__())
+        index_correlation_small = np.arange(start=lsegment2, stop=remain_hist_long.__len__())
 
         if map_pv_use == 1:
             pv_hist = barotropic_potential_vorticity_vec(
                 remain_hist_lat_correlation_large, remain_hist_z_value_correlation_large)
 
-        correlation_small = spatial_correlation(remain_hist_long_correlation_large,
+        correlation_small = spatial_correlation_vec(remain_hist_long_correlation_large,
                                                 long, longitude_small,
                                                 remain_hist_lat_correlation_large,
                                                 lat, latitude_small,
@@ -258,11 +267,12 @@ def find_besthist(
                                                 date, age_small,
                                                 pv_hist, pv_float, phi_small)
 
-        # create arrays to hold the remaining values to use
-        remain_hist_lat_correlation_small = []
-        remain_hist_long_correlation_small = []
-        remain_hist_z_value_correlation_small = []
-        remain_hist_dates_correlation_small = []
+        correlation_small_sorted = sorted(correlation_small)
+        correlation_small_sorted_index = np.argsort(correlation_small)
+
+        print(index_rand.__len__())
+        print(correlation_large_sorted_index.__len__())
+
 
 
 # random.seed(1)
