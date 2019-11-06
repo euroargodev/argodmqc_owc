@@ -226,12 +226,8 @@ def find_besthist(
                                                     remain_hist_lat, lat, latitude_large,
                                                     remain_hist_dates, date, age_large,
                                                     pv_hist, pv_float, phi_large)
-        """correlation_large = spatial_correlation_vec(grid_lat, long, longitude_large,
-                                                    grid_lat, lat, latitude_large,
-                                                    grid_dates, date, age_large,
-                                                    pv_hist, pv_float, phi_large)"""
 
-        # combine the spatial correlation with their indices in a 2d matrix
+        # combine the large spatial correlation with their indices in a 2d matrix
         correlation_large_combined = np.stack((index_remain, correlation_large)).transpose()
         # sort the matrix in ascending order of correlation
         correlation_large_combined_sorted = correlation_large_combined[correlation_large_combined[:,1].argsort()]
@@ -239,86 +235,59 @@ def find_besthist(
         # work out how many large spatial data points needed
         lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
 
-        # select the best large spatial data points, and then remove them from remaining data
+        # select the best large spatial data points
         index_large_spatial = []
         for i in range(0, lsegment2):
             index_large_spatial = np.append(index_large_spatial, correlation_large_combined_sorted[i][0])
 
-        print(index_large_spatial.__len__())
-        print(index_rand.__len__())
-        test = np.concatenate((index_rand, index_large_spatial))
-        print("number of unique points between large and random: ", np.unique(test).__len__())
+        # create array to hold selected indices from random and spatial selection
+        rand_large_index = np.concatenate((index_rand, index_large_spatial))
+        # sort into ascending order
+        rand_large_index.sort()
 
-        correlation_large_sorted = sorted(correlation_large)
-        correlation_large_sorted_index = np.argsort(correlation_large)
-        test = correlation_large_sorted_index
+        # remove the currently selected indices again
+        index_remain = index_ellipse.flatten()
+        remain_hist_lat = []
+        remain_hist_long = []
+        remain_hist_z_value = []
+        remain_hist_dates = []
         removed = 0
-
-        remain_hist_lat_correlation_large = []
-        remain_hist_long_correlation_large = []
-        remain_hist_z_value_correlation_large = []
-        remain_hist_dates_correlation_large = []
-
-        # work out how many large spatial data points needed
-        lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
-
-        #select the best large spatial data points, and then remove them from remaining data
-        index_large_spatial = []
-        print("correlated large sorted index: ", correlation_large_sorted_index.__len__())
-        for i in range(0, lsegment2):
-            index_large_spatial = np.append(index_large_spatial, correlation_large_sorted_index[i])
-
-        # sort the large spatial correlation indices into order
-        index_large_spatial = np.sort(index_large_spatial)
-        print(index_large_spatial)
-        # find the remaining indices
-        removed = 0
-        """for i in index_large_spatial:
+        for i in rand_large_index:
             index_remain = np.delete(index_remain, int(i) - removed)
-            removed += 1"""
+            removed += 1
 
-        print("index remaining after large spatial: ", index_remain.__len__())
-
-        for i in range(lsegment2, remain_hist_lat.__len__()):
-            remain_hist_lat_correlation_large = np.append(
-                remain_hist_lat_correlation_large, remain_hist_lat[correlation_large_sorted_index[i]]
-            )
-            remain_hist_long_correlation_large = np.append(
-                remain_hist_long_correlation_large, remain_hist_long[correlation_large_sorted_index[i]]
-            )
-            remain_hist_z_value_correlation_large = np.append(
-                remain_hist_z_value_correlation_large, remain_hist_z_value[correlation_large_sorted_index[i]]
-            )
-            remain_hist_dates_correlation_large = np.append(
-                remain_hist_dates_correlation_large, remain_hist_dates[correlation_large_sorted_index[i]]
-            )
-
-
+        for i in index_remain:
+            remain_hist_lat = np.append(remain_hist_lat, grid_lat[int(i)])
+            remain_hist_long = np.append(remain_hist_long, grid_long[int(i)])
+            remain_hist_z_value = np.append(remain_hist_z_value, grid_z_value[int(i)])
+            remain_hist_dates = np.append(remain_hist_dates, grid_dates[int(i)])
 
         # sort the remaining points by short spatial and temporal correlations
         index_correlation_small = np.arange(start=lsegment2, stop=remain_hist_long.__len__())
 
         if map_pv_use == 1:
             pv_hist = barotropic_potential_vorticity_vec(
-                remain_hist_lat_correlation_large, remain_hist_z_value_correlation_large)
+                remain_hist_lat, remain_hist_z_value)
 
-        correlation_small = spatial_correlation_vec(remain_hist_long_correlation_large,
+        correlation_small = spatial_correlation_vec(remain_hist_long,
                                                 long, longitude_small,
-                                                remain_hist_lat_correlation_large,
+                                                remain_hist_lat,
                                                 lat, latitude_small,
-                                                remain_hist_dates_correlation_large,
+                                                remain_hist_dates,
                                                 date, age_small,
                                                 pv_hist, pv_float, phi_small)
 
-        correlation_small_sorted = sorted(correlation_small)
-        correlation_small_sorted_index = np.argsort(correlation_small)
+        # combine the small spatial correlation with their indices in a 2d matrix
+        correlation_small_combined = np.stack((index_remain, correlation_small)).transpose()
+        # sort the matrix in ascending order of correlation
+        correlation_small_combined_sorted = correlation_small_combined[correlation_small_combined[:,1].argsort()]
 
         # select the amount we need for short spatial/temporal correlation
         leftover = max_casts - index_rand.__len__() - lsegment2
 
         index_small_spatial = []
         for i in range(0, leftover):
-            index_small_spatial = np.append(index_small_spatial, correlation_small_sorted_index[i])
+            index_small_spatial = np.append(index_small_spatial, correlation_small_combined_sorted[i][0])
 
         # put together the best random data, large spatial data, and small spatial data
         index = np.concatenate((index_rand, index_large_spatial, index_small_spatial))
@@ -333,16 +302,18 @@ def find_besthist(
         print("unique points between random and small: ", np.unique(index_2).__len__())
         print("unique points between spatials: ", np.unique(index_3).__len__())
 
+        return index
+
 
 # random.seed(1)
-lat_test = np.random.rand(100) * 5 * random.choice([-1, 1]) + -57.996
-long_test = np.random.rand(100) * 5 * random.choice([-1, 1]) + 57.1794
-z_test = np.random.rand(100) * 5 * random.choice([-1, 1]) + 2.018 * 10 ** 3
-age_test = np.random.rand(100) * 5 * random.choice([-1, 1]) + 5.1083 * 10 ** 3
+lat_test = np.random.rand(1000) * 5 * random.choice([-1, 1]) + -57.996
+long_test = np.random.rand(1000) * 5 * random.choice([-1, 1]) + 57.1794
+z_test = np.random.rand(1000) * 5 * random.choice([-1, 1]) + 2.018 * 10 ** 3
+age_test = np.random.rand(1000) * 5 * random.choice([-1, 1]) + 5.1083 * 10 ** 3
 
 find_besthist(lat_test, long_test, z_test, age_test,
               -59.1868, 57.1794, 2.018 * 10 ** 3, 5.1083 * 10 ** 3,
-              4, 2, 8, 4, 0.5, 0.1, 20, 10, 1, 60)
+              4, 2, 8, 4, 0.5, 0.1, 20, 10, 1, 300)
 
 """find_besthist([-57.996, -56.375], [53.195, 51.954],
               [1.9741 * 10 ** 3, 1.9741 * 10 ** 3], [5.23 * 10 ** 3, 5.2231 * 10 ** 3],
