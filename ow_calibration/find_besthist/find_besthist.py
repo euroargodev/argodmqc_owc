@@ -231,21 +231,28 @@ def find_besthist(
                                                     grid_dates, date, age_large,
                                                     pv_hist, pv_float, phi_large)"""
 
-        # now sort the correlation into ascending order and keep the index of each correlation
-        correlation_large_combined = []
-        for i in range(0, index_remain.__len__()):
-            correlation_large_combined = np.append(
-                correlation_large_combined, [index_remain[i], correlation_large[i]])
-            
-        print(correlation_large_combined)
+        # combine the spatial correlation with their indices in a 2d matrix
+        correlation_large_combined = np.stack((index_remain, correlation_large)).transpose()
+        # sort the matrix in ascending order of correlation
+        correlation_large_combined_sorted = correlation_large_combined[correlation_large_combined[:,1].argsort()]
+
+        # work out how many large spatial data points needed
+        lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
+
+        # select the best large spatial data points, and then remove them from remaining data
+        index_large_spatial = []
+        for i in range(0, lsegment2):
+            index_large_spatial = np.append(index_large_spatial, correlation_large_combined_sorted[i][0])
+
+        print(index_large_spatial.__len__())
+        print(index_rand.__len__())
+        test = np.concatenate((index_rand, index_large_spatial))
+        print("number of unique points between large and random: ", np.unique(test).__len__())
+
         correlation_large_sorted = sorted(correlation_large)
         correlation_large_sorted_index = np.argsort(correlation_large)
         test = correlation_large_sorted_index
         removed = 0
-
-
-        print(sorted(index_rand))
-        print(sorted(test))
 
         remain_hist_lat_correlation_large = []
         remain_hist_long_correlation_large = []
