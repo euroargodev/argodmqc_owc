@@ -2,9 +2,9 @@
 -----Potential Vorticity Test File-----
 
 Written by: Edward Small
-When: 31/10/2019
+When: 07/11/2019
 
-Contains unit tests to check the functionality of the `fpotential_vorticity` function
+Contains unit tests to check the functionality of the `potential_vorticity` function
 
 To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
