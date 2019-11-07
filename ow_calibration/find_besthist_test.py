@@ -110,7 +110,7 @@ class FindBestHistTestCase(unittest.TestCase):
         that it removes data that isn't inside the ellipse
         :return: Nothing
         """
-        print("Testing that find_bestihst gives back an array containing expected values")
+        print("Testing that find_besthist gives back an array containing expected values")
         grid_lat = np.array([1, 1, -60, -58])
         grid_long = np.array([10, 10, 59, 57])
         grid_dates = np.array([1, 1, 5.108 * 10 ** 3, 5.109 * 10 ** 3])
