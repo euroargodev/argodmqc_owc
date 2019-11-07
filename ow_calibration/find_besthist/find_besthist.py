@@ -105,7 +105,7 @@ def find_besthist(
 
     index = index_ellipse
     # check to see if too many data points were found
-    if index.__len__() > max_casts:
+    if index.__len__() > max_casts and index.__len__() > 0:
 
         # uses pseudo-random numbers so the same random numbers are selected for each run
         np.random.seed(index_ellipse.__len__())
