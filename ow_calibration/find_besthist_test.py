@@ -12,8 +12,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-import numpy as np
 import random
+import numpy as np
 from ow_calibration.find_besthist.find_besthist import find_besthist
 
 
@@ -22,6 +22,7 @@ class FindBestHistTestCase(unittest.TestCase):
     Test cases for find_besthist function
     """
 
+    # pylint: disable=too-many-instance-attributes
     def setUp(self):
         """
         Set up for the tests. Creates 1000 historical random data points that
