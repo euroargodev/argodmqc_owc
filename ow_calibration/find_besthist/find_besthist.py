@@ -27,93 +27,19 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import math
-import random
 import numpy as np
-
-
-def barotropic_potential_vorticity(lat, z_value):
-    """
-    Calculates barotropic potential vorticity (pv)
-    :param lat: latitude
-    :param z_value: depth
-    """
-    earth_angular_velocity = 2 * 7.292 * 10 ** -5
-    lat_radians = lat * math.pi / 180
-
-    potential_vorticity = (earth_angular_velocity * math.sin(lat_radians)) / z_value
-
-    if potential_vorticity == 0:
-        potential_vorticity = 1 * 10 ** -5
-
-    return potential_vorticity
-
-
-# pylint: disable=too-many-arguments
-def spatial_correlation(
-        longitude_1, longitude_2, ellipse_longitude, latitude_1, latitude_2,
-        ellipse_latitude, dates_1, dates_2, ellipse_age, phi, pv_1=0, pv_2=0
-):
-    """
-    Calculates the spatial correlation between two points.
-    Can be done with or without potential vorticity
-    :param longitude_1: longitude of point 1
-    :param longitude_2: longitude if point 2
-    :param ellipse_longitude: longitudinal size of ellipse
-    :param latitude_1: latitude of point 1
-    :param latitude_2: latitude of point 2
-    :param ellipse_latitude: latitudinal size of ellipse
-    :param dates_1: dates of data for point 1
-    :param dates_2: dates of data for point 2
-    :param ellipse_age: age of data wanted in ellipse
-    :param phi: potential gradient
-    :param pv_1: potential vorticity of point 1
-    :param pv_2: potential vorticity of point 2
-    :return: spatial correlation between points
-    """
-
-    pv_correlation = 0
-    correlation = ((longitude_1 - longitude_2) ** 2 / (ellipse_longitude ** 2)) + \
-                  ((latitude_1 - latitude_2) ** 2 / (ellipse_latitude ** 2)) + \
-                  ((dates_1 - dates_2) ** 2 / (ellipse_age ** 2))
-
-    if pv_1 != 0 and pv_2 != 0:
-        pv_correlation = ((pv_2 - pv_1) / (math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi)) ** 2
-
-    return correlation + pv_correlation
-
-
-def find_ellipse(data_long, ellipse_long, ellipse_size_long,
-                 data_lat, ellipse_lat, ellipse_size_lat,
-                 phi, data_pv=0, ellipse_pv=0):
-    """
-    Finds whether a data point exists inside an ellipse
-    :param data_long: longitude of the data point
-    :param ellipse_long: longitude of the centre of the ellipse
-    :param ellipse_size_long: size of the ellipse in the longitudinal direction
-    :param data_lat: latitude of the data point
-    :param ellipse_lat: latitude of the centre of the ellipse
-    :param ellipse_size_lat: size of the ellipse in the latitudinal direction
-    :param phi: cross-isobath scale for ellipse
-    :param data_pv: potential vorticity of the data point
-    :param ellipse_pv: potential vorticity of the centre of the ellipse
-    :return: float. If <1, it exists inside the ellipse
-    """
-
-    total_pv = 0
-    if data_pv != 0 and ellipse_pv != 0:
-        total_pv = (ellipse_pv - data_pv) / math.sqrt(ellipse_pv ** 2 + data_pv ** 2) / phi
-
-    ellipse = math.sqrt((data_long - ellipse_long) ** 2 / (ellipse_size_long * 3) ** 2 + \
-                        (data_lat - ellipse_lat) ** 2 / (ellipse_size_lat * 3) ** 2 + \
-                        total_pv ** 2)
-
-    return ellipse
-
+from ..potential_vorticity.potential_vorticity import potential_vorticity
+from ..spatial_correlation.spatial_correlation import spatial_correlation
+from ..find_ellipse.find_ellipse import find_ellipse
 
 # pylint: disable=fixme
 # TODO: ARGODEV-155
 # Refactor this code to take objects and dictionaries instead of a ludicrous amount of arguments
-
+# In fact, this function still requires a serious refactor, because it is doing far too much
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def find_besthist(
         grid_lat, grid_long, grid_dates, grid_z_value,
         lat, long, date, z_value,
@@ -151,14 +77,14 @@ def find_besthist(
     grid_dates = grid_dates.flatten()
 
     # set up potential vorticity
-    barotropic_potential_vorticity_vec = np.vectorize(barotropic_potential_vorticity)
+    potential_vorticity_vec = np.vectorize(potential_vorticity)
     pv_float = 0
     pv_hist = 0
 
     # if we are using potential vorticity, calculate it
     if map_pv_use == 1:
-        pv_float = barotropic_potential_vorticity(lat, z_value)
-        pv_hist = barotropic_potential_vorticity_vec(grid_lat, grid_z_value)
+        pv_float = potential_vorticity(lat, z_value)
+        pv_hist = potential_vorticity_vec(grid_lat, grid_z_value)
 
     # calculate ellipse
     find_ellipse_vec = np.vectorize(find_ellipse)
@@ -179,7 +105,7 @@ def find_besthist(
 
     index = index_ellipse
     # check to see if too many data points were found
-    if index_ellipse.__len__() > max_casts:
+    if index.__len__() > max_casts:
 
         # uses pseudo-random numbers so the same random numbers are selected for each run
         np.random.seed(index_ellipse.__len__())
@@ -215,7 +141,7 @@ def find_besthist(
         # sort remaining points by large spatial correlations
         # if using potential vorticity, calculate it for remaining data
         if map_pv_use == 1:
-            pv_hist = barotropic_potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
+            pv_hist = potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
 
         # calculate the large spatial corellation for each point
         spatial_correlation_vec = np.vectorize(spatial_correlation)
@@ -237,7 +163,9 @@ def find_besthist(
         # select the best large spatial data points
         index_large_spatial = []
         for i in range(0, lsegment2):
-            index_large_spatial = np.append(index_large_spatial, correlation_large_combined_sorted[i][0])
+            index_large_spatial = np.append(
+                index_large_spatial, correlation_large_combined_sorted[i][0]
+            )
 
         # create array to hold selected indices from random and spatial selection
         rand_large_index = np.concatenate((index_rand, index_large_spatial))
@@ -263,7 +191,7 @@ def find_besthist(
         # sort the remaining points by short spatial and temporal correlations
         # if using potential vorticity, calculate it
         if map_pv_use == 1:
-            pv_hist = barotropic_potential_vorticity_vec(
+            pv_hist = potential_vorticity_vec(
                 remain_hist_lat, remain_hist_z_value)
 
         # calculate the small spatial correlation for each point
@@ -278,7 +206,9 @@ def find_besthist(
         # combine the small spatial correlation with their indices in a 2d matrix
         correlation_small_combined = np.stack((index_remain, correlation_small)).transpose()
         # sort the matrix in ascending order of correlation
-        correlation_small_combined_sorted = correlation_small_combined[correlation_small_combined[:, 1].argsort()]
+        correlation_small_combined_sorted = correlation_small_combined[
+            correlation_small_combined[:, 1].argsort()
+        ]
 
         # select the amount we need for short spatial/temporal correlation
         leftover = max_casts - index_rand.__len__() - lsegment2
