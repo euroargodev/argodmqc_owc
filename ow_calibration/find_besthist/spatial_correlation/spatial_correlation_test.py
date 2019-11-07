@@ -70,32 +70,32 @@ class MyTestCase(unittest.TestCase):
         print("Testing that spatial_correlation returns correct float value")
 
         # Without potential vorticity
-        hist_long = 53.195
-        float_long = 57.1794
-        longitude_large = 8
-        hist_lat = -57.996
-        float_lat = -59.1868
-        latitude_large = 4
-        hist_dates = 1.9741 * 10 ** 3
-        float_date = 2.018 * 10 ** 3
-        age_large = 20
-        phi_large = 0.5
+        hist_long = 54
+        float_long = 55
+        longitude_large = 4
+        hist_lat = -58
+        float_lat = -59
+        latitude_large = 2
+        hist_dates = 2 * 10 ** 3
+        float_date = 2.01 * 10 ** 3
+        age_large = 10
+        phi_large = 0.1
         sc_result = spatial_correlation(hist_long, float_long, longitude_large,
                                         hist_lat, float_lat, latitude_large,
                                         hist_dates, float_date, age_large,
                                         phi_large)
 
-        self.assertEqual(round(sc_result, 4), 5.1547)
+        self.assertEqual(round(sc_result, 4), 1.3125)
 
         # With potential vorticity
-        pv_hist = -0.0236 * 10 ** -6
-        pv_float = -2.452
+        pv_hist = -0.3 * 10 ** -7
+        pv_float = -0.35 * 10 ** -7
         sc_pv_result = spatial_correlation(hist_long, float_long, longitude_large,
                                            hist_lat, float_lat, latitude_large,
                                            hist_dates, float_date, age_large,
                                            phi_large, pv_hist, pv_float)
 
-        self.assertEqual(round(sc_pv_result, 4), 1.1547)
+        self.assertEqual(round(sc_pv_result, 4), 2.489)
 
     # pylint: disable=too-many-locals
     def test_spatial_correlation_returns_expected_array(self):
@@ -115,10 +115,10 @@ class MyTestCase(unittest.TestCase):
         float_date = 2.018 * 10 ** 3
         age_large = 20
         phi_large = 0.5
-        pv_hist = [-0.0236 * 10 ** -6, -0.0233 * 10 ** -6, -0.0267 * 10 ** -6]
-        pv_float = -2.452
+        pv_hist = [-0.2354*10**-7, -0.2325*10**-7, -0.267*10**-7]
+        pv_float = -2.452 * 10 ** -8
         spatial_correlation_vec = np.vectorize(spatial_correlation)
-        sc_expected = [1.1547, 9.4878, 10.166]
+        sc_expected = [5.158, 13.4935, 14.1804]
         sc_result = spatial_correlation_vec(hist_long, float_long, longitude_large,
                                             hist_lat, float_lat, latitude_large,
                                             hist_dates, float_date, age_large,

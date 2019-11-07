@@ -47,6 +47,6 @@ def spatial_correlation(
                   ((dates_1 - dates_2) ** 2 / (ellipse_age ** 2))
 
     if pv_1 != 0 and pv_2 != 0:
-        pv_correlation = ((pv_2 - pv_1) / (math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi)) ** 2
+        pv_correlation = ((pv_2 - pv_1) / math.sqrt(pv_2 ** 2 + pv_1 ** 2) / phi) ** 2
 
     return correlation + pv_correlation
