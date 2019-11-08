@@ -18,7 +18,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
-from ow_calibration.change_dates.cal2dec import cal2dec
+from ow_calibration.change_dates.cal2dec.cal2dec import cal2dec
 
 
 def change_dates(cal_dates):
@@ -30,10 +30,28 @@ def change_dates(cal_dates):
     """
 
     # might need to return zeroes for bad dates
-    dec_dates = np.full(len(cal_dates), 0)
+    dec_dates = np.full(cal_dates.__len__(), 0, dtype=float)
 
-    # cannot interate through integers, so convert calendar dates into array of strings
+    # cannot iterate through integers, so convert calendar dates into array of strings
     cal_dates_string = list(map(str, cal_dates))
 
+    # go through and decimalise dates
+    for i in range(0, cal_dates_string.__len__()):
+        try:
+            # select the separate date entities (year, month, day, etc)
+            year = int(cal_dates_string[i][0:4])
+            month = int(cal_dates_string[i][4:6])
+            day = int(cal_dates_string[i][6:8])
+            hour = int(cal_dates_string[i][8:10])
+            minute = int(cal_dates_string[i][10:12])
 
-change_dates([123, 456, 789])
+            if 13 > month > 0:
+                if 32 > day > 0:
+                    day = year + (cal2dec(month, day, hour, minute) / 365)
+                    dec_dates[i] = day
+
+        except ValueError:
+            print("date is incorrect length or format")
+            dec_dates[i] = 0
+
+    print(dec_dates)
