@@ -54,4 +54,4 @@ def change_dates(cal_dates):
             print("date is incorrect length or format")
             dec_dates[i] = 0
 
-    print(dec_dates)
+    return dec_dates
