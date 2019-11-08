@@ -47,7 +47,7 @@ def change_dates(cal_dates):
 
             if 13 > month > 0:
                 if 32 > day > 0:
-                    day = year + (cal2dec(month, day, hour, minute) / 365)
+                    day = year + (cal2dec(month - 1, day, hour, minute) / 365)
                     dec_dates[i] = day
 
         except ValueError:
