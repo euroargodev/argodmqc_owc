@@ -28,9 +28,9 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import math
 import numpy as np
-from ..potential_vorticity.potential_vorticity import potential_vorticity
-from ..spatial_correlation.spatial_correlation import spatial_correlation
-from ..find_ellipse.find_ellipse import find_ellipse
+from .potential_vorticity.potential_vorticity import potential_vorticity
+from .spatial_correlation.spatial_correlation import spatial_correlation
+from .find_ellipse.find_ellipse import find_ellipse
 
 # pylint: disable=fixme
 # TODO: ARGODEV-155

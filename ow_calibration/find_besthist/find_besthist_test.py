@@ -15,7 +15,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import unittest
 import random
 import numpy as np
-from ow_calibration.find_besthist.find_besthist import find_besthist
+from .find_besthist import find_besthist
 
 
 class FindBestHistTestCase(unittest.TestCase):
