@@ -10,10 +10,10 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-from ow_calibration.change_dates.change_dates import change_dates
 import unittest
-import math
 import numpy as np
+from ow_calibration.change_dates.change_dates import change_dates
+
 
 
 class MyTestCase(unittest.TestCase):
@@ -57,13 +57,43 @@ class MyTestCase(unittest.TestCase):
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
+    def test_returns_date_for_missing_minutes(self):
+        """
+        Check that, even if the calendar date has no minutes, we can
+        still get a decimalised date
+        :return: Nothing
+        """
+        print("Testing that change_dates returns date if minutes missing")
+
+        not_expected = [0, 0]
+
+        date = change_dates([197402012237, 197402021719])
+
+        for i in range(0, date.__len__()):
+            self.assertNotEqual(round(date[i], 6), round(not_expected[i], 6))
+
+    def test_returns_date_for_missing_hours(self):
+        """
+        Check that, even if the calendar date has no hours, we can
+        still get a decimalised date
+        :return: Nothing
+        """
+        print("Testing that change_dates returns date if hours missing")
+
+        not_expected = [0, 0]
+
+        date = change_dates([1974020122, 1974020217])
+
+        for i in range(0, date.__len__()):
+            self.assertNotEqual(round(date[i], 6), round(not_expected[i], 6))
+
     def test_returns_zeroes_for_negative_date(self):
         """
         Check that giving n negative dates will force the function to
         return array of 0's of length n
         :return: Nothing
         """
-        print("Testing that chane_dates returns 0's for negatives")
+        print("Testing that change_dates returns 0's for negatives")
 
         expected = [0, 0, 0]
 
@@ -72,8 +102,21 @@ class MyTestCase(unittest.TestCase):
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
+    def test_returns_zeroes_for_short_date(self):
+        """
+        Check that giving dates that are too short
+        :return: Nothing
+        """
+        print("Testing that change_dates returns 0's for short dates")
+
+        expected = [0, 0, 0]
+
+        date = change_dates([444, 123456, 101])
+
+        for i in range(0, date.__len__()):
+            self.assertEqual(round(date[i], 6), round(expected[i], 6))
+
+
 
 if __name__ == '__main__':
     unittest.main()
-
-change_dates([19740201223748, 19740202171947, 19740326211012, 0])

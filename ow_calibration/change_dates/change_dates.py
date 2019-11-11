@@ -39,11 +39,17 @@ def change_dates(cal_dates):
     for i in range(0, cal_dates_string.__len__()):
         try:
             # select the separate date entities (year, month, day, etc)
+            hour = 0
+            minute = 0
             year = int(cal_dates_string[i][0:4])
             month = int(cal_dates_string[i][4:6])
             day = int(cal_dates_string[i][6:8])
-            hour = int(cal_dates_string[i][8:10])
-            minute = int(cal_dates_string[i][10:12])
+
+            if cal_dates_string[i].__len__() > 9:
+                hour = int(cal_dates_string[i][8:10])
+
+            if cal_dates_string[i].__len__() > 11:
+                minute = int(cal_dates_string[i][10:12])
 
             if 13 > month > 0:
                 if 32 > day > 0:
@@ -51,7 +57,7 @@ def change_dates(cal_dates):
                     dec_dates[i] = day
 
         except ValueError:
-            print("date is incorrect length or format")
-            dec_dates[i] = 0
+            print("Date is incorrect length or format")
+            continue
 
     return dec_dates
