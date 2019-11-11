@@ -15,11 +15,11 @@ import numpy as np
 from ow_calibration.change_dates.change_dates import change_dates
 
 
-
 class MyTestCase(unittest.TestCase):
     """
     Test cases for change_dates function
     """
+
     def setUp(self):
         """
         Set up variables for testing
@@ -104,7 +104,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_returns_zeroes_for_short_date(self):
         """
-        Check that giving dates that are too short
+        Check that giving dates that are too short returns 0s
         :return: Nothing
         """
         print("Testing that change_dates returns 0's for short dates")
@@ -116,6 +116,19 @@ class MyTestCase(unittest.TestCase):
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
+    def test_returns_zeroes_for_character_date(self):
+        """
+        Check that giving dates that are not numbers reutnrs 0's
+        :return: Nothing
+        """
+        print("Testing that change_dates returns 0's for character dates")
+
+        expected = [0, 0, 0]
+
+        date = change_dates(["<very>", "{bad}", "(date) 'given'"])
+
+        for i in range(0, date.__len__()):
+            self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
 
 if __name__ == '__main__':
