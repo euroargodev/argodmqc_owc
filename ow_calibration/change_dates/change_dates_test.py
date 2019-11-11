@@ -46,7 +46,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_returns_correct_array(self):
         """
-        Check that the function reutnrs the expected values
+        Check that the function returns the expected values
         :return: Nothing
         """
         print("Testing that change_dates returns expected values")
@@ -54,6 +54,21 @@ class MyTestCase(unittest.TestCase):
         expected = [1974.087513318113, 1974.089648021309, 1974.232553272451]
 
         date = change_dates([self.good_date1, self.good_date2, self.good_date3])
+        for i in range(0, date.__len__()):
+            self.assertEqual(round(date[i], 6), round(expected[i], 6))
+
+    def test_returns_zeroes_for_negative_date(self):
+        """
+        Check that giving n negative dates will force the function to
+        return array of 0's of length n
+        :return: Nothing
+        """
+        print("Testing that chane_dates returns 0's for negatives")
+
+        expected = [0, 0, 0]
+
+        date = change_dates([self.bad_date3, -7, -10])
+
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
