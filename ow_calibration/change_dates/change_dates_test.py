@@ -15,11 +15,11 @@ import numpy as np
 from ow_calibration.change_dates.change_dates import change_dates
 
 
-
 class MyTestCase(unittest.TestCase):
     """
     Test cases for change_dates function
     """
+
     def setUp(self):
         """
         Set up variables for testing
@@ -129,7 +129,6 @@ class MyTestCase(unittest.TestCase):
 
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
-
 
 
 if __name__ == '__main__':
