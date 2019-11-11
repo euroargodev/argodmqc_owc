@@ -11,7 +11,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-from ow_calibration.cal2dec.cal2dec import cal2dec
+from ow_calibration.change_dates.cal2dec.cal2dec import cal2dec
 
 
 class Cal2decTestCase(unittest.TestCase):
@@ -27,6 +27,8 @@ class Cal2decTestCase(unittest.TestCase):
         print("Testing return type is a float...")
         date = cal2dec(0, 1)
         self.assertTrue(isinstance(date, float), "cal2dec should return a float")
+
+    #PUT RETURN HERE
 
     def test_throws_error_if_month_too_large(self):
         """

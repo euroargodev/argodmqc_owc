@@ -38,3 +38,4 @@ def cal2dec(pa_month, pa_day, pa_hour=0, pa_minute=0):
 
     except IndexError:
         raise ValueError('Month is out of scope')
+    
