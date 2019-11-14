@@ -102,11 +102,10 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that the returned covariance matrix is the correct shape")
 
-        covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
-                             np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
-                             self.lat, self.long, self.age, self.phi, self.p_v)
+        covar = covar_xyt_pv(self.points1, self.points2, self.lat, self.long,
+                             self.age, self.phi, self.p_v)
 
-        expected = (2, 2)
+        expected = (3, 3)
 
         for i in range(0, covar.shape.__len__()):
             self.assertEqual(covar.shape[i], expected[i], "covariance matrix is wrong shape")
