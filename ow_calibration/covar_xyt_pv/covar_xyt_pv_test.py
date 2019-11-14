@@ -60,6 +60,57 @@ class Covarxytpv(unittest.TestCase):
         self.assertTrue("A set of points has no length associated with it"
                         in str(no_length.exception))
 
+    def test_returns_ones_for_same_value(self):
+        """
+        Check that entering the same value for points 1 and 2 gives a matrix of ones
+        :return: Nothing
+        """
+        print("Testing that we return 1's if input points are identical")
+
+        covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
+                             np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
+                             self.lat, self.long, self.age, self.phi, self.p_v)
+        expected = np.array([[1, 1], [1, 1]])
+
+        for i in range(0, covar.__len__()):
+            for j in range(0, covar[i].__len__()):
+                self.assertEqual(covar[i][j], expected[i][j], "covariance isn't just 1's")
+
+    def test_returns_zeroes_for_extremely_different_value(self):
+        """
+        Check that entering extreme value for points 1 and 2 gives a matrix of zeroes
+        :return: Nothing
+        """
+        print("Testing that we return 0's if input points are extremely different")
+
+        covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1000, 2000, 3000, 4000]]),
+                             np.array([[-1000, -2000, -3000, 4000],
+                                       [-1*9999, 2*9999, -3*9999, -4*999]]),
+                             self.lat, self.long, self.age, self.phi, self.p_v)
+        expected = np.array([[0, 0], [0, 0]])
+
+        for i in range(0, covar.__len__()):
+            for j in range(0, covar[i].__len__()):
+                self.assertAlmostEqual(covar[i][j]*1000000, expected[i][j]*1000000,
+                                       "covariance isn't just 1's")
+
+    def test_return_matrix_shape_correct(self):
+        """
+        Check that, if given an m*4 points 1 matrix and a n n*5 points 2 matrix
+        the function returns an m*n matrix
+        :return: Nothing
+        """
+        print("Testing that the returned covariance matrix is the correct shape")
+
+        covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
+                             np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
+                             self.lat, self.long, self.age, self.phi, self.p_v)
+
+        expected = (2, 2)
+
+        for i in range(0, covar.shape.__len__()):
+            self.assertEqual(covar.shape[i], expected[i], "covariance matrix is wrong shape")
+
 
 if __name__ == '__main__':
     unittest.main()
