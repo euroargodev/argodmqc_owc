@@ -19,7 +19,19 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-x = 1
+def covar_xyt(x, y, lat, long, age, phi, p_v):
+    """
+    Calculates how "close" two sets of points are to each other, taking into account
+    space, time and (if wanted) potential vorticity. The closer two values are to
+    each other, the closer their value will be to 1. Points that differ greatly will be
+    nearer to 0.
+    :param x: m*4 matrix containing the latitude, longitude, date, and depth of each data point
+    :param y: n*4 matrix containing the latitude, longitude, date, and depth of each data point
+    :param lat: float, the characteristic latitude
+    :param long: float, the characteristic longitude
+    :param age: float, the characteristic time scale
+    :param phi: float, the chracteristic cross-sobaric scale (for depth dependence)
+    :param p_v: int, flag for using vorticity (1=include)
+    :return: m*n matrix containing the covariance of each point
+    """
 
-for i in x:
-    print(i)
