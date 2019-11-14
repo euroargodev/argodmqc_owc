@@ -14,6 +14,7 @@ import unittest
 import numpy as np
 from .covar_xyt_pv import covar_xyt_pv
 
+
 class Covarxytpv(unittest.TestCase):
     """
     Test cases for covar_xyt_pv function
@@ -25,8 +26,8 @@ class Covarxytpv(unittest.TestCase):
         :return: Nothing
         """
         self.points1 = np.array([[-0.057996, 0.053195, 1.9740875, 5.229838],
-              [-0.0564902, 0.0631170, 1.9870367, 4.6300392],
-              [-0.05208, 0.0619770, 1.9941118, 4.6536932]]) * 10 ** 3
+                                 [-0.0564902, 0.0631170, 1.9870367, 4.6300392],
+                                 [-0.05208, 0.0619770, 1.9941118, 4.6536932]]) * 10 ** 3
         self.points2 = self.points1
         self.lat = 4
         self.long = 8
@@ -58,7 +59,6 @@ class Covarxytpv(unittest.TestCase):
 
         self.assertTrue("A set of points has no length associated with it"
                         in str(no_length.exception))
-
 
 
 if __name__ == '__main__':
