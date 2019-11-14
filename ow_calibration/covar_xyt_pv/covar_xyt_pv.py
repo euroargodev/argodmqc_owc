@@ -43,7 +43,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
     """
 
     # create the m*n covariance matrix filled with 0's
-    grid_covar = np.full((points1.__len__(), points2.__len__()), 0, float)
+    points_covar = np.full((points1.__len__(), points2.__len__()), 0, float)
 
     for i in range(0, points1.__len__()):
         for j in range(0, points2.__len__()):
@@ -66,6 +66,6 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
             if p_v == 1:
                 print("pv not yet included. Phi: ", phi)
 
-            grid_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
+            points_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
 
-    return grid_covar
+    return points_covar
