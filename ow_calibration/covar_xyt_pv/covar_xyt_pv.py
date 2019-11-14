@@ -50,15 +50,12 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
 
             # calculate the absolute difference between points over length scale
             lat_covar = ((points1[i][0] - points2[j][0]) / lat) ** 2
-            print("latitude: ", lat_covar)
             long_covar = ((points1[i][1] - points2[j][1]) / long) ** 2
-            print("longitude: ", long_covar)
             age_covar = 0
             p_v_covar = 0
 
             if age != 0:
                 age_covar = ((points1[i][2] - points2[j][2]) / age) ** 2
-                print("age: ", age_covar)
 
             # pylint: disable=fixme
             # TODO: ARGODEV-163
