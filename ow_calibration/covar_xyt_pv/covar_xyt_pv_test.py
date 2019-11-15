@@ -65,7 +65,7 @@ class Covarxytpv(unittest.TestCase):
         Check that entering the same value for points 1 and 2 gives a matrix of ones
         :return: Nothing
         """
-        print("Testing that we return 1's if input points are identical")
+        print("Testing that covar_xyt_pv return 1's if input points are identical")
 
         covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
                              np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
@@ -81,7 +81,7 @@ class Covarxytpv(unittest.TestCase):
         Check that entering extreme value for points 1 and 2 gives a matrix of zeroes
         :return: Nothing
         """
-        print("Testing that we return 0's if input points are extremely different")
+        print("Testing that covar_xyt_pv return 0's if input points are extremely different")
 
         covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1000, 2000, 3000, 4000]]),
                              np.array([[-1000, -2000, -3000, 4000],
@@ -100,7 +100,7 @@ class Covarxytpv(unittest.TestCase):
         the function returns an m*n matrix
         :return: Nothing
         """
-        print("Testing that the returned covariance matrix is the correct shape")
+        print("Testing that covar_xyt_pv returns matrix of the correct shape")
 
         covar = covar_xyt_pv(self.points1, self.points2, self.lat, self.long,
                              self.age, self.phi, self.p_v)
@@ -109,6 +109,12 @@ class Covarxytpv(unittest.TestCase):
 
         for i in range(0, covar.shape.__len__()):
             self.assertEqual(covar.shape[i], expected[i], "covariance matrix is wrong shape")
+
+    def test_returns_expected_answers(self):
+        """
+        Check that
+        :return:
+        """
 
 
 if __name__ == '__main__':
