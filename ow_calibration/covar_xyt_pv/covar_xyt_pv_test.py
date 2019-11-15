@@ -85,13 +85,13 @@ class Covarxytpv(unittest.TestCase):
 
         covar = covar_xyt_pv(np.array([[1, 2, 3, 4], [1000, 2000, 3000, 4000]]),
                              np.array([[-1000, -2000, -3000, 4000],
-                                       [-1*9999, 2*9999, -3*9999, -4*999]]),
+                                       [-1 * 9999, 2 * 9999, -3 * 9999, -4 * 999]]),
                              self.lat, self.long, self.age, self.phi, self.p_v)
         expected = np.array([[0, 0], [0, 0]])
 
         for i in range(0, covar.__len__()):
             for j in range(0, covar[i].__len__()):
-                self.assertAlmostEqual(covar[i][j]*1000000, expected[i][j]*1000000,
+                self.assertAlmostEqual(covar[i][j] * 1000000, expected[i][j] * 1000000,
                                        "covariance isn't just 1's")
 
     def test_return_matrix_shape_correct(self):
@@ -112,9 +112,21 @@ class Covarxytpv(unittest.TestCase):
 
     def test_returns_expected_answers(self):
         """
-        Check that
-        :return:
+        Check that we get the answers we expect
+        :return: Nothing
         """
+        print("Testing that covar_xyt_pv returns the expected result")
+
+        expected = np.array([[1, 0.122561894349782, 0.012339774448825],
+                             [0.122561894349782, 1, 0.256387488346962],
+                             [0.012339774448825, 0.256387488346962, 1]])
+        covar = covar_xyt_pv(self.points1, self.points2, self.lat, self.long,
+                             self.age, self.phi, self.p_v)
+
+        for i in range(0, covar.__len__()):
+            for j in range(0, covar[i].__len__()):
+                self.assertAlmostEqual(covar[i][j], expected[i][j], 15,
+                                       "covariances is not as expected")
 
 
 if __name__ == '__main__':
