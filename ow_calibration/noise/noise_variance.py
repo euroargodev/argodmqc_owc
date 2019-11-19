@@ -8,7 +8,12 @@ When: 19/11/2019
 
 Finds the variance for the noise of each salinity measurement by comparing it
 to the noise of all the other measurements. Can be thought of as the average
-difference between measured salinity and expected salinity.
+difference between measured salinity and expected salinity:
+
+noise_variance = (sum(x - u)^2) / N where
+x is the current observation
+u is the closest observation (spatially)
+N is the number of elements
 
 For information on how to use this file, check the README at either:
 
@@ -28,10 +33,10 @@ def noise_variance(sal, lat, long):
     :return: the variance in the noise
     """
     # set up our numpy matrix for memory efficiency
-    sal_diff = np.zeros(sal.shape, dtype=float)
+    sal_noise = np.zeros(sal.shape, dtype=float)
 
-    # find the difference in salinities between each point and its closest other point
-    for i in range(0, lat.__len__()):
+    # find the difference in salinities between each point and its closest other point (x-u)
+    for i in range(0, sal.__len__()):
         # find the nearest spatial point to lat[i], long[i]
         distances = (long - long[i]) ** 2 + (lat - lat[i]) ** 2
 
@@ -44,7 +49,16 @@ def noise_variance(sal, lat, long):
         min_index = np.argwhere(distances == min_distance)
 
         # store the differences in salinities between these two points
-        sal_diff[i] = sal[i] - sal[min_index]
+        sal_noise[i] = sal[i] - sal[min_index]
+
+    # make sure we have unique points
+    index = np.argwhere(sal_noise != 0)
+
+    # find the variance in the nose by summing the difference squared
+    # and dividing it
+    sal_noise_var = sum(sal_noise ** 2) / (2 * index.__len__())
+
+    return sal_noise_var
 
 
 sal = np.array([34.4988, 34.3267, 34.0346])
