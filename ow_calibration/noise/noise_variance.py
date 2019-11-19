@@ -10,10 +10,15 @@ Finds the variance for the noise of each salinity measurement by comparing it
 to the noise of all the other measurements. Can be thought of as the average
 difference between measured salinity and expected salinity:
 
-noise_variance = (sum(x - u)^2) / N where
+noise_variance = (sum(x - u)^2) / 2*N where
 x is the current observation
 u is the closest observation (spatially)
 N is the number of elements
+
+This is because we assume that the noise is uncorrelated over distance, that is has
+uniform variance, and that the signal has a longer correlation distance than the
+data separation (WJO 2003, Delayed-Mode Calibration of Autonomous CTD Profiling
+Float Salinity Data by θS Climatology).
 
 For information on how to use this file, check the README at either:
 
@@ -56,7 +61,7 @@ def noise_variance(sal, lat, long):
 
     # find the variance in the nose by summing the difference squared
     # and dividing it
-    sal_noise_var = sum(sal_noise ** 2) / (2 * index.__len__())
+    sal_noise_var = sum(sal_noise[index] ** 2) / (2 * index.__len__())
 
     return sal_noise_var
 
@@ -65,4 +70,4 @@ sal = np.array([34.4988, 34.3267, 34.0346])
 lat = np.array([-57.9960, -56.4902, -52.0800])
 long = np.array([53.1950, 63.1170, 61.9770])
 
-noise_variance(sal, lat, long)
+print(noise_variance(sal, lat, long))
