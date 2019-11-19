@@ -27,7 +27,10 @@ def noise_variance(sal, lat, long):
     :param long: vector of longitudes of each cast
     :return: the variance in the noise
     """
+    # set up our numpy matrix for memory efficiency
+    sal_diff = np.zeros(sal.shape, dtype=float)
 
+    # find the difference in salinities between each point and its closest other point
     for i in range(0, lat.__len__()):
         # find the nearest spatial point to lat[i], long[i]
         distances = (long - long[i]) ** 2 + (lat - lat[i]) ** 2
@@ -37,7 +40,11 @@ def noise_variance(sal, lat, long):
         # between points (> 0), and then finding the minimum of these instances
         min_distance = np.min(distances[np.nonzero(distances)])
 
-        print(min_distance)
+        # find index of the minimum distance
+        min_index = np.argwhere(distances == min_distance)
+
+        # store the differences in salinities between these two points
+        sal_diff[i] = sal[i] - sal[min_index]
 
 
 sal = np.array([34.4988, 34.3267, 34.0346])
