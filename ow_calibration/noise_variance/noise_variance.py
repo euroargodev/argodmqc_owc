@@ -10,9 +10,9 @@ Finds the variance for the noise variance of each salinity measurement by compar
 to the noise_variance of all the other measurements. Can be thought of as the average
 difference between measured salinity and expected salinity:
 
-noise_variance = (sum(x - u)^2) / 2*N where
+noise_variance = (sum(x - y)^2) / 2*N where
 x is the current observation
-u is the closest observation (spatially)
+y is the closest observation (spatially)
 N is the number of elements
 
 This is because we assume that the noise variance is uncorrelated over distance, that it has

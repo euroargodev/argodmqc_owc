@@ -48,6 +48,18 @@ class NoiseVarianceTestCase(unittest.TestCase):
         noise_var = noise_variance(np.array([0, 0]), np.array([-1, -1]), np.array([1, 1]))
         self.assertEqual(noise_var, 0, "Variance is not 0 for equal points")
 
+    def test_returns_expected(self):
+        """
+        Check that noise_variance returns the expected answer
+        :return: Nothing
+        """
+        print("Testing that noise_variance returns the expected value")
+
+        expected = 0.033377205000001
+        noise_var = noise_variance(self.sal, self.lat, self.long)
+
+        self.assertAlmostEqual(noise_var, expected, 16, "Did not receive expected answer")
+
 
 if __name__ == '__main__':
     unittest.main()
