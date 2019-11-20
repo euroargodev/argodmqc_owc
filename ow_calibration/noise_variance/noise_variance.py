@@ -48,7 +48,12 @@ def noise_variance(sal, lat, long):
         # find the smallest distance between this point and another point
         # we do this by first finding the instances where there is some distance
         # between points (> 0), and then finding the minimum of these instances
-        min_distance = np.min(distances[np.nonzero(distances)])
+        try:
+            min_distance = np.min(distances[np.nonzero(distances)])
+
+        except ValueError:
+            print("no unique points")
+            return 0
 
         # find index of the minimum distance
         min_index = np.argwhere(distances == min_distance)
@@ -61,6 +66,9 @@ def noise_variance(sal, lat, long):
 
     # find the variance in the noise by summing the difference squared
     # and dividing it
-    sal_noise_var = sum(sal_noise[index] ** 2) / (2 * index.__len__())
+    sal_noise_var = (sum(sal_noise[index] ** 2) / (2 * index.__len__()))
+
+    # change data type from numpy array to float
+    sal_noise_var = sal_noise_var[0]
 
     return sal_noise_var
