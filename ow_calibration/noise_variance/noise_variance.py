@@ -1,8 +1,8 @@
 """
 -----noise_variance-----
 
-Written by:
-When:
+Written by: X X
+When: xx/xx/xxxx
 Converted to python by: Edward Small
 When: 19/11/2019
 
@@ -15,7 +15,7 @@ x is the current observation
 u is the closest observation (spatially)
 N is the number of elements
 
-This is because we assume that the noise variance is uncorrelated over distance, that is has
+This is because we assume that the noise variance is uncorrelated over distance, that it has
 uniform variance, and that the signal has a longer correlation distance than the
 data separation (WJO 2003, Delayed-Mode Calibration of Autonomous CTD Profiling
 Float Salinity Data by θS Climatology).
