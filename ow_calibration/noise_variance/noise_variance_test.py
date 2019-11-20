@@ -32,8 +32,11 @@ class NoiseVarianceTestCase(unittest.TestCase):
         """
         print("Testing that noise_variance returns a float")
 
-        noise_var = noise_variance(self.sal, self.lat, self.long)
-        self.assertTrue(isinstance(noise_var, float), "noise variance is not a float")
+        noise_var1 = noise_variance(self.sal, self.lat, self.long)
+        noise_var2 = noise_variance(np.array([0, 2]), np.array([1, -1]), np.array([-1, 1]))
+
+        self.assertTrue(isinstance(noise_var1, float), "noise variance is not a float")
+        self.assertTrue(isinstance(noise_var2, float), "noise variance is not a float")
 
     def test_returns_0_if_no_unique_points(self):
         """

@@ -52,7 +52,7 @@ def noise_variance(sal, lat, long):
             min_distance = np.min(distances[np.nonzero(distances)])
 
         except ValueError:
-            print("no unique points")
+            print("WARNING: no unique points")
             return 0
 
         # find index of the minimum distance
