@@ -59,7 +59,7 @@ def noise_variance(sal, lat, long):
     # make sure we have unique points
     index = np.argwhere(sal_noise != 0)
 
-    # find the variance in the nose by summing the difference squared
+    # find the variance in the noise by summing the difference squared
     # and dividing it
     sal_noise_var = sum(sal_noise[index] ** 2) / (2 * index.__len__())
 
