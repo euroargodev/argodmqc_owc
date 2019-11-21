@@ -37,9 +37,14 @@ def signal_variance(sal):
         if sal[i] != 0 and not math.isnan(sal[i]):
             sal_no_nan.append(sal[i])
 
+    # check that we have got some valid values. If not, raise an exception
+    n = sal_no_nan.__len__()
+    if n == 0:
+        raise Exception("Received no valid salinity values when calculating signal variance")
+
     # approximate the signal variance
     sal_mean = np.mean(sal_no_nan)
     signal = (sal_no_nan - sal_mean)
-    variance = np.sum(signal ** 2) / sal_no_nan.__len__()
+    variance = np.sum(signal ** 2) / n
 
     return variance
