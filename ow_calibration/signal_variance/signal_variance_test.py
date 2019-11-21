@@ -12,6 +12,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 
 import unittest
+from .signal_variance import signal_variance
 
 
 class SignalVarianceTestCase(unittest.TestCase):
@@ -19,7 +20,15 @@ class SignalVarianceTestCase(unittest.TestCase):
     Test cases for signal_variance function
     """
 
-    def
+    def test_returns_float(self):
+        """
+        Check that we return a float if given some data
+        :return: Nothing
+        """
+        print("Testing that signal_variance returns a float")
+
+        var = signal_variance([1, 2, 3, 4, 5])
+        self.assertTrue(isinstance(var, float), "signal variance is not a float")
 
 
 if __name__ == '__main__':
