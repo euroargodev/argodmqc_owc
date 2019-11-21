@@ -12,7 +12,7 @@ Calculates an estimate of the signal variance at a given level using:
 
 where di is a data point in d (which is a collection of salinities at a given level,
  <d> is the mean of all the data points in d, and N is the number of data points
- in D.
+ in d.
 
 For information on how to use this file, check the README at either:
 
