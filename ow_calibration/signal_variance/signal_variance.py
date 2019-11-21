@@ -39,7 +39,7 @@ def signal_variance(sal):
 
     # check that we have got some valid values. If not, raise an exception
     num_sal = sal_no_nan.__len__()
-    if n == 0:
+    if num_sal == 0:
         raise Exception("Received no valid salinity values when calculating signal variance")
 
     # approximate the signal variance
