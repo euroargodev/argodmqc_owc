@@ -36,9 +36,11 @@ def signal_variance(sal):
             sal_no_nan = np.delete(sal[i])
 
     sal_mean = np.mean(sal_no_nan)
-    signal = sal_no_nan - sal_mean
-    signal_variance = np.sum(signal)**2/sal.__len__()
-    print(signal_variance)
+    signal = (sal_no_nan - sal_mean)
+    variance = np.sum(signal**2)/sal.__len__()
+
+    return variance
 
 
-signal_variance(np.array([1, 2, 3, 4, 5, 20]))
+ans = signal_variance(np.array([1000, 10, -1000]))
+print(ans)
