@@ -22,6 +22,9 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import numpy as np
+from ow_calibration.map_data_grid.covar_xyt_pv.covar_xyt_pv import covar_xyt_pv
+
 
 # pylint: disable=too-many-arguments
 def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
@@ -41,3 +44,34 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     :return: tuple containing mapped fields, error estimates of mapped fields,
              mapped fields on original locations, and their error estimates
     """
+
+    # create the data-data covariance matrix
+    data_pos_covar = covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
+    data_data_covar = np.linalg.inv(signal_variance * data_pos_covar + \
+                      noise_variance * np.identity(data_pos.__len__()))
+
+    # estimate the mean field and weights
+    sum_data_data_covar = sum(sum(data_data_covar))
+    mean_field = sum(np.dot(data_data_covar, sal.transpose()))/sum_data_data_covar
+    weight = np.dot(data_data_covar, (sal - mean_field))
+
+    # calculate the objectively mapped fields on position data and grid data
+    ans = covar_xyt_pv(grid_pos, data_pos, lat, long, age, phi, map_pv_use)
+    print(ans)
+
+
+
+sal = np.array([34.5, 34.3, 34])
+grid = np.array([-59.1, 57.2, 2018, 5108])
+data = np.array([-58, 53.2, 1974, 5224,
+                 -56.5, 63.1, 1987, 4630,
+                 -52.1, 62, 1994, 4657]).reshape((3, 4))
+lat = 4
+long = 8
+q = 20
+s = 0.0337
+e = 0.0045
+phi = 0.5
+pv = 0
+
+map_data_grid(sal, grid, data, lat, long, q, s, e, phi, pv)
