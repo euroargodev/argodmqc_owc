@@ -128,6 +128,22 @@ class Covarxytpv(unittest.TestCase):
                 self.assertAlmostEqual(covar[i][j], expected[i][j], 15,
                                        "covariances is not as expected")
 
+    def test_allows_1_dimensional_data(self):
+        """
+        Check that using 1 dimensional data sets does not through an error
+        :return: Nothing
+        """
+        print("Testing that covar_xyt_pv can use one dimensional data")
+
+        covar = covar_xyt_pv(np.array([-0.057996, 0.053195, 1.9740875, 5.229838]) * 10 ** 3,
+                             self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
+        expected_shape = (1, 3)
+        expected_ans = [1, 0.122561894349782, 0.012339774448825]
+
+        self.assertEqual(covar.shape, expected_shape, "did not use one dimensional data correctly")
+        for i in range(covar.__len__()):
+            self.assertAlmostEqual(covar[0][i], expected_ans[i], 15,
+                                   "unexpected answer with one dimensional data")
 
 if __name__ == '__main__':
     unittest.main()
