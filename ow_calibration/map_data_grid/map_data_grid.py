@@ -21,3 +21,23 @@ For information on how to use this file, check the README at either:
 https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
+
+
+# pylint: disable=too-many-arguments
+def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
+                  signal_variance, noise_variance, phi, map_pv_use):
+    """
+    maps historical float data onto a single float
+    :param sal: array of salinities of the historical float data
+    :param grid_pos: array containing single float data [lat, long, age, depth]
+    :param data_pos: n*4 array containing historical float data [lat, long, age, depth]
+    :param lat: scalar latitude
+    :param long: scalar longitude
+    :param age: scalar age
+    :param signal_variance: scalar signal variance
+    :param noise_variance: scalar noise variance
+    :param phi: scalar cross isobaric scale
+    :param map_pv_use: flag for including vorticity (1=include)
+    :return: tuple containing mapped fields, error estimates of mapped fields,
+             mapped fields on original locations, and their error estimates
+    """
