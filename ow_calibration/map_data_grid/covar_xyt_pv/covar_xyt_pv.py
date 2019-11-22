@@ -49,10 +49,14 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
     except AttributeError:
         raise AttributeError("A set of points has no length associated with it")
 
+    if points1.shape.__len__() < 2:
+        points1 = np.array([points1])
+        points_covar = np.array([points_covar[0]])
+
     for i in range(0, points1.__len__()):
         for j in range(0, points2.__len__()):
 
-            # calculate the absolute difference between points over chracteristic length scale
+            # calculate the absolute difference between points over characteristic length scale
             lat_covar = ((points1[i][0] - points2[j][0]) / lat) ** 2
             long_covar = ((points1[i][1] - points2[j][1]) / long) ** 2
             age_covar = 0
