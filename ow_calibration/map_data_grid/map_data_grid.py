@@ -56,8 +56,10 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     weight = np.dot(data_data_covar, (sal - mean_field))
 
     # calculate the objectively mapped fields on position data and grid data
-    ans = covar_xyt_pv(grid_pos, data_pos, lat, long, age, phi, map_pv_use)
-    print(ans)
+    data_grid_covar = signal_variance * data_pos_covar
+    sal_weight_covar = np.dot(data_grid_covar, weight) + mean_field
+    print(sal_weight_covar)
+
 
 
 
