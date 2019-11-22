@@ -145,5 +145,6 @@ class Covarxytpv(unittest.TestCase):
             self.assertAlmostEqual(covar[0][i], expected_ans[i], 15,
                                    "unexpected answer with one dimensional data")
 
+
 if __name__ == '__main__':
     unittest.main()
