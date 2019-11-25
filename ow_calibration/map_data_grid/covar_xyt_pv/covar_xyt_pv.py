@@ -24,7 +24,7 @@ import numpy as np
 
 
 # pylint: disable=too-many-arguments
-def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
+def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
     """
     Calculates how "close" two sets of points are to each other, taking into account
     space, time and (if wanted) potential vorticity. The closer two values are to
@@ -68,7 +68,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
             # pylint: disable=fixme
             # TODO: ARGODEV-163
             # use the potential vorticity function made in ARGODEV-150
-            if p_v == 1:
+            if map_pv_use == 1:
                 print("pv not yet included. Phi: ", phi)
 
             points_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
