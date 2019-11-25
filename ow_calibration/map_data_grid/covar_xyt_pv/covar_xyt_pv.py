@@ -24,7 +24,7 @@ import numpy as np
 
 
 # pylint: disable=too-many-arguments
-def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
+def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
     """
     Calculates how "close" two sets of points are to each other, taking into account
     space, time and (if wanted) potential vorticity. The closer two values are to
@@ -38,21 +38,24 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
     :param long: float, the characteristic longitude
     :param age: float, the characteristic time scale
     :param phi: float, the characteristic cross-isobaric scale (for depth dependence)
-    :param p_v: int, flag for using vorticity (1=include)
+    :param map_pv_use: int, flag for using vorticity (1=include)
     :return: m*n matrix containing the covariance of each point
     """
 
     # create the m*n covariance matrix filled with 0's
-    try:
-        points_covar = np.full((points1.__len__(), points2.__len__()), 0, float)
+    if points1.shape.__len__() < 2:
+        points1 = np.array([points1])
 
-    except AttributeError:
-        raise AttributeError("A set of points has no length associated with it")
+    if points2.shape.__len__() < 2:
+        points2 = np.array([points2])
+
+    points_covar = np.full((points1.shape[0], points2.shape[0]), 0, float)
 
     for i in range(0, points1.__len__()):
         for j in range(0, points2.__len__()):
 
-            # calculate the absolute difference between points over chracteristic length scale
+
+            # calculate the absolute difference between points over characteristic length scale
             lat_covar = ((points1[i][0] - points2[j][0]) / lat) ** 2
             long_covar = ((points1[i][1] - points2[j][1]) / long) ** 2
             age_covar = 0
@@ -64,7 +67,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, p_v):
             # pylint: disable=fixme
             # TODO: ARGODEV-163
             # use the potential vorticity function made in ARGODEV-150
-            if p_v == 1:
+            if map_pv_use == 1:
                 print("pv not yet included. Phi: ", phi)
 
             points_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
