@@ -102,7 +102,7 @@ class Covarxytpv(unittest.TestCase):
         the function returns an 1*n matrix (m > 1)
         :return: Nothing
         """
-        print("Testing that covar_xyt_pv returns matrix of the correct shape one demensional")
+        print("Testing that covar_xyt_pv returns matrix of the correct shape one dimensional")
 
         covar = covar_xyt_pv(np.array([-0.057996, 0.053195, 1.9740875, 5.229838]) * 10 ** 3,
                              self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
