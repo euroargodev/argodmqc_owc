@@ -94,13 +94,13 @@ class Covarxytpv(unittest.TestCase):
                 self.assertAlmostEqual(covar[i][j] * 1000000, expected[i][j] * 1000000,
                                        "covariance isn't just 1's")
 
-    def test_return_matrix_shape_correct(self):
+    def test_return_matrix_shape_correct_multidimensional(self):
         """
         Check that, if given an m*4 points 1 matrix and a n n*5 points 2 matrix
-        the function returns an m*n matrix
+        the function returns an m*n matrix (m > 1)
         :return: Nothing
         """
-        print("Testing that covar_xyt_pv returns matrix of the correct shape")
+        print("Testing that covar_xyt_pv returns matrix of the correct shape for multidemensional")
 
         covar = covar_xyt_pv(self.points1, self.points2, self.lat, self.long,
                              self.age, self.phi, self.p_v)
@@ -109,6 +109,20 @@ class Covarxytpv(unittest.TestCase):
 
         for i in range(0, covar.shape.__len__()):
             self.assertEqual(covar.shape[i], expected[i], "covariance matrix is wrong shape")
+
+    def test_return_matrix_shape_correct_one_demensional(self):
+        """
+        Check that, if given an 1*4 points 1 matrix and a n n*5 points 2 matrix
+        the function returns an 1*n matrix (m > 1)
+        :return: Nothing
+        """
+        print("Testing that covar_xyt_pv returns matrix of the correct shape one demensional")
+
+        covar = covar_xyt_pv(np.array([-0.057996, 0.053195, 1.9740875, 5.229838]) * 10 ** 3,
+                             self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
+        expected_shape = (1, 3)
+
+        self.assertEqual(covar.shape, expected_shape, "covariance matrix is wrong shape")
 
     def test_returns_expected_answers(self):
         """
@@ -137,10 +151,9 @@ class Covarxytpv(unittest.TestCase):
 
         covar = covar_xyt_pv(np.array([-0.057996, 0.053195, 1.9740875, 5.229838]) * 10 ** 3,
                              self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
-        expected_shape = (1, 3)
+
         expected_ans = [1, 0.122561894349782, 0.012339774448825]
 
-        self.assertEqual(covar.shape, expected_shape, "did not use one dimensional data correctly")
         for i in range(covar.__len__()):
             self.assertAlmostEqual(covar[0][i], expected_ans[i], 15,
                                    "unexpected answer with one dimensional data")
