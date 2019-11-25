@@ -78,4 +78,5 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     grid_weight_covar_error = np.sqrt(signal_variance - dot_covar_diag +
                                       ((1 - covar_sum) ** 2) / sum_data_data_covar)
 
-    return grid_weight_covar, grid_weight_covar_error, data_weight_covar, data_weight_covar_error
+    return grid_weight_covar[0], grid_weight_covar_error[0], \
+           data_weight_covar, data_weight_covar_error
