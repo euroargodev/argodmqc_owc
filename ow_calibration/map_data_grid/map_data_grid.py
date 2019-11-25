@@ -48,7 +48,7 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
 
     # create the data-data covariance matrix
     data_pos_covar = covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
-    data_data_covar = np.linalg.inv(signal_variance * data_pos_covar + \
+    data_data_covar = np.linalg.inv(signal_variance * data_pos_covar +
                                     noise_variance * np.identity(data_pos.__len__()))
 
     # estimate the mean field and weights
