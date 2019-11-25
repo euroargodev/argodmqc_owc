@@ -1,5 +1,5 @@
 """
------LSignal Variance Test File-----
+-----Signal Variance Test File-----
 
 Written by: Edward Small
 When: 21/11/2019
