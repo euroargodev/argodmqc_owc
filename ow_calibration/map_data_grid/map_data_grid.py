@@ -22,9 +22,9 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+
 import numpy as np
 from ow_calibration.map_data_grid.covar_xyt_pv.covar_xyt_pv import covar_xyt_pv
-
 
 # pylint: disable=too-many-arguments
 def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
@@ -58,8 +58,14 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     # calculate the objectively mapped fields on position data and grid data
     data_grid_covar = signal_variance * data_pos_covar
     sal_weight_covar = np.dot(data_grid_covar, weight) + mean_field
-    print(sal_weight_covar)
 
+    #include the error in the mean (from Brethrerton, 1975)
+    dot_covar_diag = np.diag(np.dot(
+                                    np.dot(data_grid_covar, data_data_covar),
+                             np.transpose(data_grid_covar)))
+    covar_sum = np.sum(np.dot(data_grid_covar, data_data_covar), axis=1)
+    sal_weight_covar_error = np.sqrt(signal_variance - dot_covar_diag +
+                                     ((1-covar_sum) ** 2)/sum_data_data_covar)
 
 
 
