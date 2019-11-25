@@ -15,6 +15,7 @@ import numpy as np
 from .map_data_grid import map_data_grid
 
 
+# pylint: disable=too-many-instance-attributes
 class MapDataGridTestCase(unittest.TestCase):
     """
     Test cases for map_data_grid function
@@ -61,12 +62,41 @@ class MapDataGridTestCase(unittest.TestCase):
                             self.lat, self.long, self.age,
                             self.signal_var, self.noise_var, self.phi, self.map_pv_use)
 
+        expected = self.data.__len__()
+
         self.assertEqual(ans.__len__(), 4, "should contain 4 answers")
-        self.assertEqual(ans[2].__len__(), self.data.shape[0],
+        self.assertEqual(ans[2].__len__(), expected,
                          "Should contain same amount of values as unique points in grid")
-        self.assertEqual(ans[3].__len__(), self.data.shape[0],
+        self.assertEqual(ans[3].__len__(), expected,
                          "Should contain same amount of values as unique points in grid")
 
+    def test_return_values(self):
+        """
+        Test that we get the expected values
+        :return: Nothing
+        """
+        print("Testing that map_data_grid returns the expected values")
+
+        ans = map_data_grid(self.sal, self.grid, self.data,
+                            self.lat, self.long, self.age,
+                            self.signal_var, self.noise_var, self.phi, self.map_pv_use)
+        expected_grid = 34.274526264867376
+        expected_grid_error = 0.219686272627492
+        expected_data = np.array([34.473801088291665,
+                                  34.291856891235525,
+                                  34.034342020472813])
+        expected_data_error = np.array([0.064372688289488,
+                                        0.063588530055491,
+                                        0.063941901824480])
+
+        self.assertAlmostEqual(ans[0], expected_grid, 15, "grid mapped field is not as expected")
+        self.assertAlmostEqual(ans[1], expected_grid_error, 15, "grid error is not as expected")
+
+        for i in range(0, ans[2].__len__()):
+            self.assertAlmostEqual(ans[2][i], expected_data[i], 15,
+                                   "grid mapped field is not as expected")
+            self.assertAlmostEqual(ans[3][i], expected_data_error[i], 15,
+                                   "grid error is not as expected")
 
 if __name__ == '__main__':
     unittest.main()
