@@ -46,20 +46,6 @@ class Covarxytpv(unittest.TestCase):
 
         self.assertTrue(isinstance(covar, np.ndarray), "Covariance isn't numpy array")
 
-    def test_throws_error(self):
-        """
-        Check that the function throws an exception if "pointsx" has no length
-        :return: Nothing
-        """
-        print("Testing that covar_xyt_pv throws exception if points is not a matrix")
-
-        with self.assertRaises(Exception) as no_length:
-            covar_xyt_pv(1, "hello", self.lat, self.long,
-                         self.age, self.phi, self.p_v)
-
-        self.assertTrue("A set of points has no length associated with it"
-                        in str(no_length.exception))
-
     def test_returns_ones_for_same_value(self):
         """
         Check that entering the same value for points 1 and 2 gives a matrix of ones
