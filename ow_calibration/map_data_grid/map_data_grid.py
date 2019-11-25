@@ -27,6 +27,7 @@ from ow_calibration.map_data_grid.covar_xyt_pv.covar_xyt_pv import covar_xyt_pv
 
 
 # pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
                   signal_variance, noise_variance, phi, map_pv_use):
     """
