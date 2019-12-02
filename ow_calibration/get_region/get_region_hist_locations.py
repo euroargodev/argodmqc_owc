@@ -6,7 +6,6 @@ import scipy.io as scipy
 
 config = load_configuration()
 pa_wmo_boxes = scipy.loadmat('../../data/constants/wmo_boxes.mat')
-argo = scipy.loadmat('../../data/climatology/historical_argo/argo_3505.mat')
 pn_float_long = 57.1794
 pn_float_lat = -59.1868
 
@@ -31,12 +30,10 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, pa_config_data):
             if wmo_box[data_type] == 1 and data_type == 1:
                 data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_CTD_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
-                print(data['lat'][0].__len__())
 
             if wmo_box[data_type] == 1 and data_type == 2:
                 data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_BOTTLE_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
-                print(data['lat'][0].__len__())
 
             if wmo_box[data_type] == 1 and data_type == 3:
                 data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_ARGO_PREFIX'] +
@@ -48,17 +45,23 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, pa_config_data):
                         not_use.append(i)
 
                 data['lat'] = [np.delete(data['lat'], not_use)]
-                data['long'] = np.array(np.delete(data['long'], not_use))
-                data['dates'] = np.array(np.delete(data['dates'], not_use))
-                print(data['lat'][0].__len__())
+                data['long'] = [np.delete(data['long'], not_use)]
+                data['dates'] = [np.delete(data['dates'], not_use)]
 
+            # if we have data, combine it with the other data
             if data:
                 grid_lat = np.concatenate([grid_lat, data['lat'][0]])
-                grid_long.append(data['long'])
-                grid_dates.append(data['dates'])
+                grid_long = np.concatenate([grid_long, data['long'][0]])
+                grid_dates = np.concatenate([grid_dates, data['dates'][0]])
 
-    print(grid_lat.__len__())
+    if grid_lat.__len__() == 0:
+        grid_lat = 999
+        grid_long = 999
+        grid_dates = 'NaN'
 
+    # convert longitude to 0 to 360 degrees
+    neg_long = np.argwhere(grid_long < 0)
+    grid_long[neg_long] = grid_long[neg_long] + 360
 
 
 
