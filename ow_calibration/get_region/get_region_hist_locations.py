@@ -63,8 +63,20 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, pa_config_data):
     neg_long = np.argwhere(grid_long < 0)
     grid_long[neg_long] = grid_long[neg_long] + 360
 
+    # if we have data close to upper boundary (360), then wrap some of the data round
+    # so it appears on the map
+    top_long = np.argwhere(320 <= grid_long)
+    if top_long.__len__() != 0:
+        bottom_long = np.argwhere(grid_long <= 40)
+        grid_long[bottom_long] = 360 + grid_long[bottom_long]
 
+    # decimalise dates
+    grid_dates = change_dates(grid_dates)
 
+    for i in range(0, grid_lat.__len__()):
+        print("historial data: ", grid_lat[i], " ", grid_long[i], " ", grid_dates[i])
+
+    return grid_lat, grid_long, grid_dates
 
 
 boxes = np.array([[3505, 1, 1, 1]])
