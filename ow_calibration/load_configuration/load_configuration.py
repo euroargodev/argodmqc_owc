@@ -33,7 +33,7 @@ def load_configuration():
         'HISTORICAL_DIRECTORY': "../../data/climatology",
         'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
         'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
-        'HISTORICAL_ARGO_PREFIX': "/argo_profiles/argo_",
+        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",
 
         # ===============================
         #
