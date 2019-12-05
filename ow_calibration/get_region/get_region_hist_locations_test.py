@@ -10,9 +10,10 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 import numpy as np
 import unittest
+from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
+
 
 
 class MyTestCase(unittest.TestCase):
@@ -74,7 +75,7 @@ class MyTestCase(unittest.TestCase):
         self.assertGreater(long_no_rem.__len__(), long_rem.__len__(),
                            "Should have more values for the data with no argo removal")
 
-        self.assertEqual(long_no_rem.__len__() - long_rem.__len__(), 30,
+        self.assertEqual(age_no_rem.__len__() - age_rem.__len__(), 30,
                          "should have removed 30 values")
 
     def test_no_data(self):
