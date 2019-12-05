@@ -15,7 +15,6 @@ import numpy as np
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 
 
-
 class MyTestCase(unittest.TestCase):
     """
     Test cases for get_hist_region_locations function
@@ -32,8 +31,7 @@ class MyTestCase(unittest.TestCase):
                        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"}
         self.float_name = '1900193'
         self.wmo_box = np.array([[3505, 1, 0, 0]])
-        self.wmo_boxes = np.array([[3505, 1, 0, 0], [3506, 1, 0, 0]])
-        self.wmo_boxes_all = np.array([[3505, 1, 1, 1], [3506, 1, 1, 1]])
+        self.wmo_boxes = np.array([[3505, 1, 1, 1], [3506, 1, 1, 1]])
 
     def test_returns_three(self):
         """
@@ -80,7 +78,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_no_data(self):
         """
-        Check that if we recieve no data then we return the expected values
+        Check that if we receive no data then we return the expected values
         :return: Nothing
         """
         print("Testing that get_region_hist_locations returns expected values for no data")
@@ -93,7 +91,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(lat_no_data, long_no_data, "latitude and longitude should be equal (999)")
         self.assertEqual(age_no_data, 'NaN', "age should be NaN")
 
-    def test_we_can_choose_data(self):
+    def test_can_choose_data(self):
         """
         Check that, by applying different flags, we can fetch differing data types
         :return: Nothing
@@ -115,6 +113,33 @@ class MyTestCase(unittest.TestCase):
                                 "Should have different data for argo and bottle")
             self.assertNotEqual(data_bot[i].__len__(), data_ctd[i].__len__(),
                                 "Should have different data for argo and bottle")
+
+    def test_can_combine_data(self):
+        """
+        Test that flags can be set to retrieve all the data
+        :return: Nothing
+        """
+        print("Testing that get_region_hist_locations can fetch all the data")
+
+        wmo_box_all = np.array([[3505, 1, 1, 1]])
+        all_data = get_region_hist_locations(wmo_box_all, 'none', self.config)
+
+        for data in all_data:
+            self.assertEqual(data.__len__(), 843, "Should get the same amount of data as matlab")
+
+    def test_can_combine_boxes(self):
+        """
+        Test that it works with multiple boxes
+        :return: Nothing
+        """
+        print("Testing that get_region_hist_loc will fetch data from multiple WMO boxes")
+
+        all_data = get_region_hist_locations(self.wmo_boxes, 'none', self.config)
+        some_data = get_region_hist_locations([self.wmo_boxes[0]], 'none', self.config)
+
+        for i in range(0, all_data.__len__()):
+            self.assertGreater(all_data[i].__len__(), some_data[i].__len__(),
+                               "Should have more data when using multiple boxes")
 
 
 if __name__ == '__main__':
