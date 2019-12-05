@@ -10,8 +10,8 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import numpy as np
 import unittest
+import numpy as np
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 
 
