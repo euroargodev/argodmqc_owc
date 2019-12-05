@@ -20,10 +20,9 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-from ow_calibration.load_configuration.load_configuration import load_configuration
-from ow_calibration.change_dates.change_dates import change_dates
 import numpy as np
 import scipy.io as scipy
+from ow_calibration.change_dates.change_dates import change_dates
 
 
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
@@ -52,15 +51,18 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
 
             # check if we should use this data. If so, get the data
             if wmo_box[data_type] == 1 and data_type == 1:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_CTD_PREFIX'] +
+                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
+                                     config['HISTORICAL_CTD_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
 
             if wmo_box[data_type] == 1 and data_type == 2:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_BOTTLE_PREFIX'] +
+                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
+                                     config['HISTORICAL_BOTTLE_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
 
             if wmo_box[data_type] == 1 and data_type == 3:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_ARGO_PREFIX'] +
+                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
+                                     config['HISTORICAL_ARGO_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
 
                 # remove the argo float being analysed from the data
@@ -90,7 +92,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
 
     # if we have data close to upper boundary (360), then wrap some of the data round
     # so it appears on the map
-    top_long = np.argwhere(320 <= grid_long)
+    top_long = np.argwhere(grid_long >= 320)
     if top_long.__len__() != 0:
         bottom_long = np.argwhere(grid_long <= 40)
         grid_long[bottom_long] = 360 + grid_long[bottom_long]
@@ -99,12 +101,3 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     grid_dates = change_dates(grid_dates)
 
     return grid_lat, grid_long, grid_dates
-
-
-config = load_configuration()
-
-boxes = np.array([[3505, 1, 0, 0]])
-
-lat, long, age = get_region_hist_locations(boxes, '1900193', config)
-
-print(lat.__len__())
