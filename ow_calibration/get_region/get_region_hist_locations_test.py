@@ -136,10 +136,15 @@ class MyTestCase(unittest.TestCase):
 
         all_data = get_region_hist_locations(self.wmo_boxes, 'none', self.config)
         some_data = get_region_hist_locations([self.wmo_boxes[0]], 'none', self.config)
+        half_data = get_region_hist_locations([self.wmo_boxes[0], [3506, 0, 0, 0]],
+                                              'none', self.config)
 
         for i in range(0, all_data.__len__()):
             self.assertGreater(all_data[i].__len__(), some_data[i].__len__(),
                                "Should have more data when using multiple boxes")
+            self.assertEqual(some_data[i].__len__(), half_data[i].__len__(),
+                             "Should get equal data with using one ox and using "
+                             "two boxes, but getting no data from second box")
 
 
 if __name__ == '__main__':
