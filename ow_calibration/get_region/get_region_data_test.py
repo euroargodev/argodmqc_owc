@@ -13,7 +13,6 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import unittest
 import numpy as np
 from ow_calibration.get_region.get_region_data import get_region_data
-from ow_calibration.load_configuration.load_configuration import load_configuration
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
@@ -22,7 +21,11 @@ class MyTestCase(unittest.TestCase):
         float_name = "3901960"
         index = np.array([1, 5, 6, 12, 14])
         pres = np.array([3, 5, 15.1, 25.1, 36])
-        config = load_configuration()
+        config = config = {'HISTORICAL_DIRECTORY': "data/climatology",
+                       'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
+                       'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
+                       'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",
+                           'MAP_P_DELTA': 250}
 
         get_region_data(wmo, float_name, config, index, pres)
 
