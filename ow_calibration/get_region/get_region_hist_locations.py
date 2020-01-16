@@ -1,5 +1,5 @@
 """
------Get Historical Region Data-----
+-----Get Historical Region Location Data-----
 
 Written by: Breck Owens
 When: xx/12/2006
