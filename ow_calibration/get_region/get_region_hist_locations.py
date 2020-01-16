@@ -36,7 +36,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     and file containing data
     :return: the latitude, longitude and age of each data point we want
     """
-    
+
     # set up matrices to hold data
     grid_lat = []
     grid_long = []
