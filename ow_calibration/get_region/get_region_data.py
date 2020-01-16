@@ -38,3 +38,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     :return: The salinity, potential temperature, pressure, latitude, longitude, and age of each
     historical cast selected to use
     """
+
+    max_pres = pa_float_pres.max() + config["MAP_P_DELTA"]
+    print(max_pres)
+
