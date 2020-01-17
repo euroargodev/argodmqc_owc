@@ -29,3 +29,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     :return: matrices [number of floats x number of historical profiles] of
     interpolated salinity and interpolated pressure on float theta surface
     """
+
+    n_grid = grid_sal.shape
+    print(n_grid)
+    n_float = float_sal.__len__()
+    print(n_float)
