@@ -39,6 +39,34 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     historical cast selected to use
     """
 
+    # maximum depth to retrieve data from (deepest float measurement + MAP_P_DELTA
     max_pres = pa_float_pres.max() + config["MAP_P_DELTA"]
-    print(max_pres)
 
+    # set up empty arrays to hold the data to return
+    grid_sal = []
+    grid_ptmp = []
+    grid_pres = []
+    grid_lat = []
+    grid_long = []
+    grid_dates = []
+
+    # set up current maximum depth and number of columns
+    max_depth = 0
+    how_many_cols = 0
+
+    # go through each of the WMO boxes
+    for wmo_box in pa_wmo_numbers:
+
+        # go through each of the columns denoting whether we should use CTD, bottle, and/or argo
+        for data_type in range(1, 4):
+
+            # check if we should use this data. If so, get the data
+            if wmo_box[data_type] == 1 and data_type == 1:
+                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
+                                     config['HISTORICAL_CTD_PREFIX'] +
+                                     str(int(wmo_box[0])) + '.mat')
+
+            if wmo_box[data_type] == 1 and data_type == 1:
+                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
+                                     config['HISTORICAL_BOTTLE_PREFIX'] +
+                                     str(int(wmo_box[0])) + '.mat')
