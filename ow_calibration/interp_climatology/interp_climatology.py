@@ -39,11 +39,20 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     # check that the climatology data has no infinite (bad) values in the middle
     # of the profiles. Truncate the number of levels to the maximum level that has
     # available data
+    max_level = 0
     for n in range(0, grid_station):
         # find where data is not missing
         good_sal = np.isfinite(grid_sal[:, n])
         good_theta = np.isfinite(grid_theta[:, n])
-        good_pres = np.isfinite(grid_theta[:, n])
+        good_pres = np.isfinite(grid_pres[:, n])
 
         # find indices of good data
-        good_data_index = np.argwhere(np.equal(good_sal, good_theta, good_pres))
+        good_data_index = (good_sal == good_theta)
+        good_data_index = np.argwhere(good_data_index == good_pres)
+
+        # now find the max level
+        if good_data_index.__len__() != 0:
+            print("here")
+
+        else:
+            print("bad bad bad")
