@@ -134,6 +134,6 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 wt = Decimal(Decimal(delta_theta[i2, m]) / \
                              (Decimal(delta_theta[i2, m]) - Decimal(delta_theta[i2 + 1, m])))
                 interp_pres = Decimal(wt * Decimal(delta_pres[i2 + 1, m]) + \
-                              Decimal(1 - wt) * Decimal(delta_pres[i2, m]))
+                                      Decimal(1 - wt) * Decimal(delta_pres[i2, m]))
                 interp_sal = wt * Decimal(Decimal(delta_sal[i2 + 1, m]) + \
-                              Decimal(1 - wt) * Decimal(delta_sal[i2, m]))
+                                          Decimal(1 - wt) * Decimal(delta_sal[i2, m]))
