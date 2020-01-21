@@ -16,8 +16,6 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
-from decimal import *
-
 
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
     """
@@ -25,7 +23,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     :param grid_sal: historical salinity
     :param grid_theta: historical potential temperature
     :param grid_pres: historical pressure
-    :param float_sal: currentfloat salinity
+    :param float_sal: current float salinity
     :param float_theta: current float potential temperature
     :param float_pres: current float pressure
     :return: matrices [number of floats x number of historical profiles] of
@@ -116,10 +114,6 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
             grid_theta_above_pres = np.argwhere(tst[0:delta_pres_min_index[m]] < 0)
             max_grid_theta = []
 
-            # here, numbers can become incredibly small, so override python default precision
-            # and use the Decimal class to define numbers to higher precision
-            getcontext().prec = 32
-
             # initialise arrays to hold interpolated pressure and salinity
             interp_pres = []
             interp_sal = []
@@ -140,4 +134,5 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 wt = delta_theta[i2, m] / (delta_theta[i2, m] - delta_theta[i2 + 1, m])
                 interp_pres.append(wt * delta_pres[i2 + 1, m] + (1 - wt) * delta_pres[i2, m])
                 interp_sal.append(wt * delta_sal[i2 + 1, m] + (1 - wt) * delta_sal[i2, m])
+
 
