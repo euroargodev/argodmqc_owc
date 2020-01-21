@@ -16,6 +16,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
+from decimal import *
 
 
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
@@ -115,13 +116,24 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
             grid_theta_above_pres = np.argwhere(tst[0:delta_pres_min_index[m]] < 0)
             max_grid_theta = []
 
-            grid_theta_below_pres = [3, 2, 1]
+            # here, numbers can become incredibly small, so override python default precision
+            getcontext().prec = 32
 
-            # there is a theta level at a deeper level
+            # there is a theta value at a deeper level
+            grid_theta_below_pres = [1, 2, 4, 9]
             if grid_theta_below_pres.__len__() > 0:
-
-                min_grid_theta_index = np.argmin(grid_theta_below_pres)
+                min_grid_theta_index = np.min(grid_theta_below_pres)
                 i1 = min_grid_theta_index + delta_pres_min_index[m]
                 wt = delta_theta[i1, m] / (delta_theta[i1, m] - delta_theta[i1 - 1, m])
-                pres_1 = wt * delta_pres[i1 - 1, m] + (1 - wt) * delta_pres[i1, m]
-                sal_1 = wt * delta_sal[i1 - 1, m] + (1 - wt) * delta_sal[i1, m]
+                interp_pres = wt * delta_pres[i1 - 1, m] + (1 - wt) * delta_pres[i1, m]
+                interp_sal = wt * delta_sal[i1 - 1, m] + (1 - wt) * delta_sal[i1, m]
+
+            # there is a theta value at a shallower level
+            if grid_theta_above_pres.__len__() > 0:
+                i2 = np.max(grid_theta_above_pres) - 1
+                wt = Decimal(Decimal(delta_theta[i2, m]) / \
+                             (Decimal(delta_theta[i2, m]) - Decimal(delta_theta[i2 + 1, m])))
+                interp_pres = Decimal(wt * Decimal(delta_pres[i2 + 1, m]) + \
+                              Decimal(1 - wt) * Decimal(delta_pres[i2, m]))
+                interp_sal = wt * Decimal(Decimal(delta_sal[i2 + 1, m]) + \
+                              Decimal(1 - wt) * Decimal(delta_sal[i2, m]))
