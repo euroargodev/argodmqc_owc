@@ -17,6 +17,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import numpy as np
 
+
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
     """
     interpolate historical salinity and pressure data on the float theta
@@ -120,7 +121,6 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
             # there is a theta value at a deeper level
             if grid_theta_below_pres.__len__() > 0:
-
                 min_grid_theta_index = np.min(grid_theta_below_pres)
                 i1 = min_grid_theta_index + delta_pres_min_index[m] - 1
                 wt = delta_theta[i1, m] / (delta_theta[i1, m] - delta_theta[i1 - 1, m])
@@ -129,10 +129,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
             # there is a theta value at a shallower level
             if grid_theta_above_pres.__len__() > 0:
-
                 i2 = np.max(grid_theta_above_pres) - 1
                 wt = delta_theta[i2, m] / (delta_theta[i2, m] - delta_theta[i2 + 1, m])
                 interp_pres.append(wt * delta_pres[i2 + 1, m] + (1 - wt) * delta_pres[i2, m])
                 interp_sal.append(wt * delta_sal[i2 + 1, m] + (1 - wt) * delta_sal[i2, m])
-
-
