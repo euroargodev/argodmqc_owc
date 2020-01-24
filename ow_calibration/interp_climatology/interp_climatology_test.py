@@ -42,6 +42,7 @@ class MyTestCase(unittest.TestCase):
 
         # load in the data for testing
         test = scipy.loadmat('testfile.mat')
+        results = scipy.loadmat('results.mat')
 
         # set the test variables from the loaded .mat file
         grid_sal = test['S']
@@ -50,13 +51,13 @@ class MyTestCase(unittest.TestCase):
         float_sal = test['S_f']
         float_theta = test['Theta_f']
         float_pres = test['P_f']
-        #expected_interp_pres = test['P_h']
-        #expected_interp_sal = test['S_h']
+        expected_interp_pres = results['P_h']
+        expected_interp_sal = results['S_h']
 
         sal, pres = interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres)
-        print("pres sample: ", pres[194, 299])
-        print("sal sample: ", sal[194, 299])
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+
+        print(sal)
+
 if __name__ == '__main__':
     unittest.main()
 
