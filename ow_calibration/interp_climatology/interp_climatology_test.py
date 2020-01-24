@@ -56,7 +56,9 @@ class MyTestCase(unittest.TestCase):
 
         sal, pres = interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres)
 
-        print(sal)
+        print(sal[50:53, 43:46])
+        print(expected_interp_sal[50:53, 43:46])
+
 
 if __name__ == '__main__':
     unittest.main()

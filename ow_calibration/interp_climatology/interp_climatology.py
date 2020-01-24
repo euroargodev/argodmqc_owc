@@ -36,10 +36,6 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     grid_station = grid_sal.shape[1]
     float_len = float_sal.shape[0]
 
-    # initialise array to hold interpolated values
-    interp_sal_final = np.full((float_len, grid_station), np.nan)
-    interp_pres_final = np.full((float_len, grid_station), np.nan)
-
     # initialise variables to hold the interpolated values
     interp_sal_final = np.full((float_len, grid_station), np.nan, dtype=np.float64)
     interp_pres_final = np.full((float_len, grid_station), np.nan, dtype=np.float64)
@@ -54,14 +50,11 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         grid_good_theta = np.isfinite(grid_theta[:, n])
         grid_good_pres = np.isfinite(grid_pres[:, n])
 
-
         # find indices of good data
         grid_good_data_index = []
         for i in range(0, grid_level):
-            if grid_good_sal[i]:
-                if grid_good_theta[i]:
-                    if grid_good_pres[i]:
-                        grid_good_data_index.append(i)
+            if grid_good_sal[i] and grid_good_theta[i] and grid_good_pres[i]:
+                grid_good_data_index.append(i)
 
         # now find the max level
         grid_good_data_len = grid_good_data_index.__len__()
@@ -89,10 +82,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     # get the indices of the good float data
     float_good_data_index = []
     for i in range(0, float_len):
-        if float_good_sal[i]:
-            if float_good_theta[i]:
-                if float_good_pres[i]:
-                    float_good_data_index.append(i)
+        if float_good_sal[i] and float_good_theta[i] and float_good_pres[i]:
+            float_good_data_index.append(i)
 
     # get the number of good float data observations
     float_data_len = float_good_data_index.__len__()
@@ -118,7 +109,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
             # find if delta_theta is different to delta_theta for closest pressure
             # (equals -1 if different)
-            tst = np.sign(delta_theta[:, m]) * np.sign(delta_theta[delta_pres_min_index[n], n])
+            tst = np.sign(delta_theta[:, m]) * np.sign(delta_theta[delta_pres_min_index[m], m])
 
             # look for a theta match below the float pressure
             grid_theta_below_pres = np.argwhere(tst[delta_pres_min_index[m]:grid_level] < 0)
@@ -131,17 +122,15 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
             # there is a theta value at a deeper level
             if grid_theta_below_pres.__len__() > 0:
-
                 min_grid_theta_index = np.min(grid_theta_below_pres)
-                i1 = min_grid_theta_index + delta_pres_min_index[m] - 1
+                i1 = min_grid_theta_index + delta_pres_min_index[m]
                 wt = delta_theta[i1, m] / (delta_theta[i1, m] - delta_theta[i1 - 1, m])
                 interp_pres.append(wt * delta_pres[i1 - 1, m] + (1 - wt) * delta_pres[i1, m])
                 interp_sal.append(wt * delta_sal[i1 - 1, m] + (1 - wt) * delta_sal[i1, m])
 
             # there is a theta value at a shallower level
             if grid_theta_above_pres.__len__() > 0:
-
-                i2 = np.max(grid_theta_above_pres) - 1
+                i2 = np.max(grid_theta_above_pres)
                 wt = delta_theta[i2, m] / (delta_theta[i2, m] - delta_theta[i2 + 1, m])
                 interp_pres.append(wt * delta_pres[i2 + 1, m] + (1 - wt) * delta_pres[i2, m])
                 interp_sal.append(wt * delta_sal[i2 + 1, m] + (1 - wt) * delta_sal[i2, m])
