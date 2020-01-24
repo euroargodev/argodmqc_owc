@@ -1,10 +1,12 @@
 import unittest
 import numpy as np
 from ow_calibration.interp_climatology.interp_climatology import interp_climatology
+import scipy.io as scipy
 
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
+        """
         grid_sal = np.array([[33.6620, 33.7630, 33.9060, 33.8380, 33.8650],
                              [np.inf, 33.7615, 33.9060, 33.8380, 33.8650],
                              [np.inf, 33.7630, 33.9060, 33.8380, 33.8660],
@@ -36,10 +38,24 @@ class MyTestCase(unittest.TestCase):
                                15.1000,
                                25.1000,
                                36.0000])
+                               """
 
-        a, b = interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres)
-        print(a)
-        print(b)
+        # load in the data for testing
+        test = scipy.loadmat('testfile.mat')
+
+        # set the test variables from the loaded .mat file
+        grid_sal = test['S']
+        grid_theta = test['Theta']
+        grid_pres = test['P']
+        float_sal = test['S_f']
+        float_theta = test['Theta_f']
+        float_pres = test['P_f']
+        #expected_interp_pres = test['P_h']
+        #expected_interp_sal = test['S_h']
+
+        sal, pres = interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres)
+        print("pres sample: ", pres[194, 299])
+        print("sal sample: ", sal[194, 299])
         print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 if __name__ == '__main__':
     unittest.main()
