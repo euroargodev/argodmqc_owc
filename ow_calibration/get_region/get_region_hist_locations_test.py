@@ -110,9 +110,10 @@ class MyTestCase(unittest.TestCase):
             self.assertNotEqual(data_argo[i].__len__(), data_bot[i].__len__(),
                                 "Should have different data for argo and bottle")
             self.assertNotEqual(data_argo[i].__len__(), data_ctd[i].__len__(),
-                                "Should have different data for argo and bottle")
+                                "Should have different data for argo and ctd")
+            # no bottle database reference,
             self.assertNotEqual(data_bot[i].__len__(), data_ctd[i].__len__(),
-                                "Should have different data for argo and bottle")
+                                "Should have different data for bottle and ctd")
 
     def test_can_combine_data(self):
         """
