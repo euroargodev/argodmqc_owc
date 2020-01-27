@@ -12,10 +12,11 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from ow_calibration.interp_climatology.interp_climatology import interp_climatology
 import scipy.io as scipy
+from ow_calibration.interp_climatology.interp_climatology import interp_climatology
 
 
+# pylint: disable=too-many-instance-attributes
 class InterpClimatologyTestCase(unittest.TestCase):
     """
     Test cases for interp_climatology function
@@ -38,18 +39,9 @@ class InterpClimatologyTestCase(unittest.TestCase):
         self.float_sal = test['S_f']
         self.float_theta = test['Theta_f']
         self.float_pres = test['P_f']
+
         self.expected_interp_pres = results['P_h']
         self.expected_interp_sal = results['S_h']
-
-        """
-        for i in range(0, sal_shape[0]):
-            for j in range(0, sal_shape[1]):
-                if not (np.isnan(sal[i, j]) and np.isnan(expected_interp_sal[i, j])):
-                    if sal[i, j] != expected_interp_sal[i, j]:
-                        print("bad values: ", i, " ", j, " ", sal[i, j], " ", expected_interp_sal[i, j])
-                    else:
-                        print(i*j)
-        """
 
     def test_throws_error(self):
         """
@@ -61,8 +53,8 @@ class InterpClimatologyTestCase(unittest.TestCase):
         bad_grid_sal = np.full((5, 5), np.inf)
 
         with self.assertRaises(ValueError) as bad_climatology:
-            sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
-                                           self.float_sal, self.float_theta, self.float_pres)
+            interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
+                               self.float_sal, self.float_theta, self.float_pres)
 
         self.assertTrue("No good climatological data has been found"
                         in str(bad_climatology.exception))
