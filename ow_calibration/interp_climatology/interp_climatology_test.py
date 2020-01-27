@@ -56,8 +56,19 @@ class MyTestCase(unittest.TestCase):
 
         sal, pres = interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres)
 
-        print(sal[50:53, 43:46])
-        print(expected_interp_sal[50:53, 43:46])
+        print("calculated type: ", type(sal[204, 0]))
+        print("expected type: ", type(expected_interp_sal[204, 0]))
+        print("calculated value: ", sal[204, 0])
+        print("expected value: ", expected_interp_sal[204, 0])
+        print("Are they equal: ", np.isnan(sal[204, 0]) and np.isnan(expected_interp_sal[204, 0]))
+
+        sal_shape = sal.shape
+
+        for i in range(0, sal_shape[0]):
+            for j in range(0, sal_shape[1]):
+                if not (np.isnan(sal[i, j]) and np.isnan(expected_interp_sal[i, j])):
+                    if sal[i, j] != expected_interp_sal[i, j]:
+                        print("bad values: ", i, " ", j, " ", sal[i, j] ," ", expected_interp_sal[i, j])
 
 
 if __name__ == '__main__':
