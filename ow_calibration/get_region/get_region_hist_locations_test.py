@@ -126,7 +126,7 @@ class MyTestCase(unittest.TestCase):
         all_data = get_region_hist_locations(wmo_box_all, 'none', self.config)
 
         for data in all_data:
-            self.assertEqual(data.__len__(), 843, "Should get the same amount of data as matlab")
+            self.assertEqual(data.__len__(), 830, "Should get the same amount of data as matlab")
 
     def test_can_combine_boxes(self):
         """
