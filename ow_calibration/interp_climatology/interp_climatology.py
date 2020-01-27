@@ -55,9 +55,9 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
         # find indices of good data
         grid_good_data_index = []
-        for i in range(0, grid_level):
-            if grid_good_sal[i] and grid_good_theta[i] and grid_good_pres[i]:
-                grid_good_data_index.append(i)
+        for j in range(0, grid_level):
+            if grid_good_sal[j] and grid_good_theta[j] and grid_good_pres[j]:
+                grid_good_data_index.append(j)
 
         # now find the max level
         grid_good_data_len = grid_good_data_index.__len__()
