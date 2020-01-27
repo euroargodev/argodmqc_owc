@@ -6,7 +6,7 @@ When: xx/07/2005
 Converted to python by: Edward Small
 When: 17/01/2020
 
-Routine to interpolate climi=atological salinity and pressure data onto float's
+Routine to interpolate climatological salinity and pressure data onto float's
 potential temperature.
 
 For information on how to use this file, check the README at either:

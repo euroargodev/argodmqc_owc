@@ -1,4 +1,14 @@
+"""
+-----Interpolate Climatology Test File-----
 
+Written by: Edward Small
+When: 27/01/2020
+
+Contains unit tests to check the functionality of the `interp_climatology` function
+
+To run this test specifically, look at the documentation at:
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+"""
 
 import unittest
 import numpy as np
@@ -6,60 +16,32 @@ from ow_calibration.interp_climatology.interp_climatology import interp_climatol
 import scipy.io as scipy
 
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        """
-        grid_sal = np.array([[33.6620, 33.7630, 33.9060, 33.8380, 33.8650],
-                             [np.inf, 33.7615, 33.9060, 33.8380, 33.8650],
-                             [np.inf, 33.7630, 33.9060, 33.8380, 33.8660],
-                             [np.inf, 33.7605, 33.9070, 33.8380, 33.8660],
-                             [33.6623, 33.7620, 33.9065, 33.8390, 33.8660]])
-        # grid_sal = np.full((5, 5), np.inf)
-        grid_theta = np.array([[np.inf, 5.4031, 3.8174, 5.0465, 4.7226],
-                               [1.2131, 5.3989, 3.8168, 5.0455, 4.7224],
-                               [1.2124, 5.4023, 3.8163, 5.0434, 4.7223],
-                               [1.2143, 5.3962, 3.8150, 5.0433, 4.7221],
-                               [1.2120, 5.3851, 3.8165, 5.0442, 4.7230]])
-        grid_pres = np.array([[12, 7, 9, 6, 6],
-                             [13, 8, 10, 7, 8],
-                             [14, 9, 11, 8, 10],
-                             [15, 10, 15, 9, 12],
-                             [np.inf, 11, 16, 10, 14]])
-        float_sal = np.array([33.8030,
-                              33.8050,
-                              33.8030,
-                              33.8050,
-                              33.8270])
-        float_theta = np.array([1.0769,
-                                1.0758,
-                                1.0794,
-                                1.0609,
-                                0.7645])
-        float_pres = np.array([3.0000,
-                               5.0000,
-                               15.1000,
-                               25.1000,
-                               36.0000])
-                               """
+class InterpClimatologyTestCase(unittest.TestCase):
+    """
+    Test cases for interp_climatology function
+    """
 
+    def setUp(self):
+        """
+        Set up some values for testing, pulling from matlab matrices.
+        The matlab matrices were used in the matlab version of this code, so answers should match
+        :return: Nothing
+        """
         # load in the data for testing
         test = scipy.loadmat('data/test_data/testfile.mat')
         results = scipy.loadmat('data/test_data/results.mat')
 
         # set the test variables from the loaded .mat file
-        grid_sal = test['S']
-        grid_theta = test['Theta']
-        grid_pres = test['P']
-        float_sal = test['S_f']
-        float_theta = test['Theta_f']
-        float_pres = test['P_f']
-        expected_interp_pres = results['P_h']
-        expected_interp_sal = results['S_h']
+        self.grid_sal = test['S']
+        self.grid_theta = test['Theta']
+        self.grid_pres = test['P']
+        self.float_sal = test['S_f']
+        self.float_theta = test['Theta_f']
+        self.float_pres = test['P_f']
+        self.expected_interp_pres = results['P_h']
+        self.expected_interp_sal = results['S_h']
 
-        sal, pres = interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres)
-
-        sal_shape = sal.shape
-
+        """
         for i in range(0, sal_shape[0]):
             for j in range(0, sal_shape[1]):
                 if not (np.isnan(sal[i, j]) and np.isnan(expected_interp_sal[i, j])):
@@ -67,6 +49,71 @@ class MyTestCase(unittest.TestCase):
                         print("bad values: ", i, " ", j, " ", sal[i, j], " ", expected_interp_sal[i, j])
                     else:
                         print(i*j)
+        """
+
+    def test_throws_error(self):
+        """
+        Test that an error is thrown if we have no good climatology data
+        :return: Nothing
+        """
+        print("Testing that interp_climatology throws an error if all data is bad")
+
+        bad_grid_sal = np.full((5, 5), np.inf)
+
+        with self.assertRaises(ValueError) as bad_climatology:
+            sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
+                                           self.float_sal, self.float_theta, self.float_pres)
+
+        self.assertTrue("No good climatological data has been found"
+                        in str(bad_climatology.exception))
+
+    def test_returns_correct_shape(self):
+        """
+        Test that the returned matrix is the shape we expect it to be
+        :return: Nothing
+        """
+        print("Testing that interp_climatology returns a matrix of the correct shape")
+
+        sal, pres = interp_climatology(self.grid_sal, self.grid_theta, self.grid_pres,
+                                       self.float_sal, self.float_theta, self.float_pres)
+
+        self.assertTrue(sal.shape == self.expected_interp_sal.shape,
+                        "salinity matrix shape is incorrect")
+        self.assertTrue(pres.shape == self.expected_interp_pres.shape,
+                        "pressure matrix shape is incorrect")
+
+    def test_returns_same_shape(self):
+        """
+        Test that the salinity and pressures matrices are equal shapes
+        :return: Nothing
+        """
+        print("Testing that interp_climatology returns a matrices of the same shape")
+
+        sal, pres = interp_climatology(self.grid_sal, self.grid_theta, self.grid_pres,
+                                       self.float_sal, self.float_theta, self.float_pres)
+
+        self.assertTrue(sal.shape == pres.shape,
+                        "salinity and pressure matrices shaped differently")
+
+    def test_returns_correct_values(self):
+        """
+        Test that the output of this function matches the matlab version value by value.
+        We cannot compare NaNs directly (as it will always give false, so only do a direct
+        comparison if they are both not NaN
+        :return: Nothing
+        """
+        print("Testing that interp_climatology returns matrices with correct values")
+
+        sal, pres = interp_climatology(self.grid_sal, self.grid_theta, self.grid_pres,
+                                       self.float_sal, self.float_theta, self.float_pres)
+
+        for i in range(0, sal.shape[0]):
+            for j in range(0, sal.shape[1]):
+                if not (np.isnan(sal[i, j]) and np.isnan(self.expected_interp_sal[i, j])):
+                    self.assertTrue(sal[i, j] == self.expected_interp_sal[i, j],
+                                    ("Values at ", i, " and ", j, " do not match for salinity"))
+                    self.assertTrue(pres[i, j] == self.expected_interp_pres[i, j],
+                                    ("Values at ", i, " and ", j, " do not match for pressure"))
 
 
 if __name__ == '__main__':
