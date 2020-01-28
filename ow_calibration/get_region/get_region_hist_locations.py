@@ -41,7 +41,6 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     grid_lat = []
     grid_long = []
     grid_dates = []
-    not_use = []
     data = []
 
     # go through each of the WMO boxes
@@ -67,6 +66,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
                                      str(int(wmo_box[0])) + '.mat')
 
                 # remove the argo float being analysed from the data
+                not_use = []
                 for i in range(0, data['lat'][0].__len__()):
                     if str(data['source'][0][i]).find(pa_float_name) != -1:
                         not_use.append(i)

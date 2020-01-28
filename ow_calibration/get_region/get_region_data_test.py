@@ -20,6 +20,7 @@ class MyTestCase(unittest.TestCase):
         wmo = np.array([[3505, 1, 1, 1],
                         [3506, 1, 1, 1]])
         float_name = "3901960"
+        float_name = "1900479" # should be removed
         index = np.array([1, 5, 6, 12, 14])
         pres = np.array([3, 5, 15.1, 25.1, 36])
         config = {'HISTORICAL_DIRECTORY': "data/climatology",
