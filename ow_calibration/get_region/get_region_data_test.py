@@ -17,8 +17,8 @@ from ow_calibration.get_region.get_region_data import get_region_data
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        wmo = np.array([[3505, 1, 1, 0],
-                        [3506, 1, 1, 0]])
+        wmo = np.array([[3505, 1, 1, 1],
+                        [3506, 1, 1, 1]])
         float_name = "3901960"
         index = np.array([1, 5, 6, 12, 14])
         pres = np.array([3, 5, 15.1, 25.1, 36])

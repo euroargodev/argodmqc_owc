@@ -49,6 +49,8 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     grid_lat = []
     grid_long = []
     grid_dates = []
+    not_use = []
+    data = []
 
     # set up current maximum depth and number of columns
     max_depth = 0
@@ -70,7 +72,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                 data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
                                      config['HISTORICAL_BOTTLE_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
-                print(data)
+
                 # if data dimensions don't match, transpose to avoid indexing issues
                 if (data['lat'].size == data['pres'].size and
                         data['lat'].shape[1] == data['pres'].shape[1]):
@@ -78,3 +80,20 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     data['ptmp'] = data['ptmp'].T
                     data['sal'] = data['sal'].T
                     data['temp'] = data['temp'].T
+
+            if wmo_box[data_type] == 1 and data_type == 3:
+                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
+                                     config['HISTORICAL_ARGO_PREFIX'] +
+                                     str(int(wmo_box[0])) + '.mat')
+
+                # remove the argo float being analysed from the data
+                for i in range(0, data['lat'][0].__len__()):
+                    if str(data['source'][0][i]).find(pa_float_name) != -1:
+                        not_use.append(i)
+
+                data['lat'] = np.delete(data['lat'], not_use)
+                data['long'] = np.delete(data['long'], not_use)
+                data['dates'] = np.delete(data['dates'], not_use)
+                data['sal'] = np.delete(data['sal'], not_use, axis=1)
+                data['ptmp'] = np.delete(data['ptmp'], not_use, axis=1)
+                data['pres'] = np.delete(data['pres'], not_use, axis=1)
