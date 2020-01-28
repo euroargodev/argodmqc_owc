@@ -55,6 +55,9 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     max_depth = 0
     how_many_cols = 0
 
+    # set up variable to save beginning index for each set of data
+    grid_index = 0
+
     # go through each of the WMO boxes
     for wmo_box in pa_wmo_numbers:
 
@@ -91,13 +94,15 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     if str(data['source'][0][i]).find(pa_float_name) != -1:
                         not_use.append(i)
 
-                print(not_use.__len__())
-                print(data['lat'].shape)
-                data['lat'] = np.delete(data['lat'], not_use)
-                data['long'] = np.delete(data['long'], not_use)
-                data['dates'] = np.delete(data['dates'], not_use)
-                data['sal'] = np.delete(data['sal'], not_use, axis=1)
-                data['ptmp'] = np.delete(data['ptmp'], not_use, axis=1)
-                data['pres'] = np.delete(data['pres'], not_use, axis=1)
-                print(data['lat'].shape)
+                data['lat'] = [np.delete(data['lat'], not_use)]
+                data['long'] = [np.delete(data['long'], not_use)]
+                data['dates'] = [np.delete(data['dates'], not_use)]
+                data['sal'] = [np.delete(data['sal'], not_use, axis=1)]
+                data['ptmp'] = [np.delete(data['ptmp'], not_use, axis=1)]
+                data['pres'] = [np.delete(data['pres'], not_use, axis=1)]
+
+            data_length = data['lat'][0].__len__()
+            print(data['lat'][0])
+            print(data_length)
+            input("--------------------")
 
