@@ -66,7 +66,15 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                                      config['HISTORICAL_CTD_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
 
-            if wmo_box[data_type] == 1 and data_type == 1:
+            if wmo_box[data_type] == 1 and data_type == 2:
                 data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
                                      config['HISTORICAL_BOTTLE_PREFIX'] +
                                      str(int(wmo_box[0])) + '.mat')
+                print(data)
+                # if data dimensions don't match, transpose to avoid indexing issues
+                if (data['lat'].size == data['pres'].size and
+                        data['lat'].shape[1] == data['pres'].shape[1]):
+                    data['pres'] = data['pres'].T
+                    data['ptmp'] = data['ptmp'].T
+                    data['sal'] = data['sal'].T
+                    data['temp'] = data['temp'].T
