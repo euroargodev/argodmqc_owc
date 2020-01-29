@@ -21,7 +21,7 @@ class MyTestCase(unittest.TestCase):
                         [3506, 1, 1, 1]])
         float_name = "3901960"
         float_name = "1900479" # should be removed
-        index = np.array([1, 5, 6, 12, 14])
+        index = np.array([0, 4, 5, 11, 13])
         pres = np.array([3, 5, 15.1, 25.1, 36])
         config = {'HISTORICAL_DIRECTORY': "data/climatology",
                   'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",

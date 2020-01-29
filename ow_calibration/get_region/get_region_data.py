@@ -56,7 +56,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     how_many_cols = 0
 
     # set up variable to save beginning index for each set of data
-    grid_index = 0
+    starting_index = 0
 
     # go through each of the WMO boxes
     for wmo_box in pa_wmo_numbers:
@@ -101,8 +101,63 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                 data['ptmp'] = [np.delete(data['ptmp'], not_use, axis=1)]
                 data['pres'] = [np.delete(data['pres'], not_use, axis=1)]
 
+            #  check the index of each station to see if it should be loaded
             data_length = data['lat'][0].__len__()
-            print(data['lat'][0])
-            print(data_length)
-            input("--------------------")
+            data_indices = np.arange(0, data_length) + starting_index
 
+            # remember location of last entry
+            starting_index = starting_index + data_length
+
+            # load each station
+            for i in range(0, data_length):
+
+                good_indices = np.argwhere(index == data_indices[i])
+
+                if good_indices.__len__() > 0:
+                    # only use non-NaN values
+                    not_nan = np.argwhere(np.isnan(data['pres'][:, i]) == 0)
+
+                    # get the non-NaN values
+                    pres = data['pres'][not_nan, i]
+                    sal = data['sal'][not_nan, i]
+                    ptmp = data['ptmp'][not_nan, i]
+
+                    # remove values where pressure exceeds the maximum we want
+                    too_deep = np.argwhere(pres > max_pres)
+                    pres = np.delete(pres, too_deep[:, 0])
+                    sal = np.delete(sal, too_deep[:, 0])
+                    ptmp = np.delete(ptmp, too_deep[:, 0])
+                    new_depth = pres.__len__()
+                    how_many_rows = np.max([new_depth, max_depth])
+                    print(new_depth)
+                    print(max_depth)
+                    print(how_many_rows)
+
+                    # if the new data we are adding is longer than our columns, we need to fill in
+                    # NaNs in the other columns
+                    if new_depth > max_depth != 0:
+                        grid_pres = np.append(grid_pres, np.ones(
+                            (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
+                                              ).reshape((how_many_cols, how_many_rows))
+
+                    elif new_depth < max_depth:
+                        pres = np.append(pres, np.ones((max_depth - new_depth, 1)) * np.nan)
+
+                    if grid_pres.__len__() == 0:
+
+                        grid_pres = pres.reshape((1, pres.__len__()))
+
+
+                    else:
+                        # grid_sal = np.append(grid_sal, sal)
+                        # grid_ptmp = np.append(grid_ptmp, ptmp)
+                        grid_pres = np.append(grid_pres, pres).reshape(how_many_cols + 1, how_many_rows)
+                        # grid_pres = np.append(grid_pres, pres)
+                        # grid_lat = np.append(grid_lat, data['lat'][0, i])
+                        # grid_long = np.append(grid_long, data['long'][0, i])
+                        # grid_dates = np.append(grid_dates, data['dates'][0, i])
+                        # print(grid_pres)
+                    max_depth = grid_pres.shape[1]
+                    how_many_cols = grid_pres.shape[0]
+                    print(grid_pres)
+                    input("--------------------------------")
