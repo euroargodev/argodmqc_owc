@@ -182,8 +182,6 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     neg_long = np.argwhere(grid_long < 0)
     grid_long[neg_long] = grid_long[neg_long] + 360
 
-    grid_long = np.array([100,330,60,355,10])
-
     # if we have data close to upper boundary (360), then wrap some of the data round
     # so it appears on the map
     top_long = np.argwhere(grid_long >= 320)
@@ -191,4 +189,22 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
         bottom_long = np.argwhere(grid_long <= 40)
         grid_long[bottom_long] = 360 + grid_long[bottom_long]
 
-    print(grid_long)
+    # make sure salinity, pressure, and potential temperature data have all the same NaNs
+    sal_nans = np.argwhere(np.isnan(grid_sal))
+    for nan in sal_nans:
+        grid_pres[nan[0], nan[1]] = np.nan
+        grid_ptmp[nan[0], nan[1]] = np.nan
+
+    pres_nans = np.argwhere(np.isnan(grid_pres))
+    for nan in pres_nans:
+        grid_sal[nan[0], nan[1]] = np.nan
+        grid_ptmp[nan[0], nan[1]] = np.nan
+
+    ptmp_nans = np.argwhere(np.isnan(grid_ptmp))
+    for nan in ptmp_nans:
+        grid_sal[nan[0], nan[1]] = np.nan
+        grid_pres[nan[0], nan[1]] = np.nan
+
+    print(np.argwhere(np.isnan(grid_ptmp)).__len__())
+    print(np.argwhere(np.isnan(grid_sal)).__len__())
+    print(np.argwhere(np.isnan(grid_pres)).__len__())
