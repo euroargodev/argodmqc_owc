@@ -206,3 +206,10 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
         grid_pres[nan[0], nan[1]] = np.nan
 
     grid_dates = change_dates(grid_dates)
+
+    # transpose data
+    grid_sal = grid_sal.T
+    grid_pres = grid_pres.T
+    grid_ptmp = grid_ptmp.T
+
+    return grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates

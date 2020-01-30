@@ -29,7 +29,9 @@ class MyTestCase(unittest.TestCase):
                   'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",
                   'MAP_P_DELTA': 250}
 
-        get_region_data(wmo, float_name, config, index, pres)
+        test = get_region_data(wmo, float_name, config, index, pres)
+
+        print(test[4])
 
 
 if __name__ == '__main__':
