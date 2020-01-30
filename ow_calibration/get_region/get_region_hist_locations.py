@@ -21,7 +21,6 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
-import scipy.io as scipy
 from ow_calibration.change_dates.change_dates import change_dates
 from ow_calibration.get_region.get_data import get_data
 
