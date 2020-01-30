@@ -23,6 +23,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import numpy as np
 import scipy.io as scipy
 from ow_calibration.change_dates.change_dates import change_dates
+from ow_calibration.get_region.get_data import get_data
 
 
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
@@ -41,7 +42,6 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     grid_lat = []
     grid_long = []
     grid_dates = []
-    data = []
 
     # go through each of the WMO boxes
     for wmo_box in pa_wmo_numbers:
@@ -49,31 +49,8 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
         # go through each of the columns denoting whether we should use CTD, bottle, and/or argo
         for data_type in range(1, 4):
 
-            # check if we should use this data. If so, get the data
-            if wmo_box[data_type] == 1 and data_type == 1:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                                     config['HISTORICAL_CTD_PREFIX'] +
-                                     str(int(wmo_box[0])) + '.mat')
-
-            if wmo_box[data_type] == 1 and data_type == 2:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                                     config['HISTORICAL_BOTTLE_PREFIX'] +
-                                     str(int(wmo_box[0])) + '.mat')
-
-            if wmo_box[data_type] == 1 and data_type == 3:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                                     config['HISTORICAL_ARGO_PREFIX'] +
-                                     str(int(wmo_box[0])) + '.mat')
-
-                # remove the argo float being analysed from the data
-                not_use = []
-                for i in range(0, data['lat'][0].__len__()):
-                    if str(data['source'][0][i]).find(pa_float_name) != -1:
-                        not_use.append(i)
-
-                data['lat'] = [np.delete(data['lat'], not_use)]
-                data['long'] = [np.delete(data['long'], not_use)]
-                data['dates'] = [np.delete(data['dates'], not_use)]
+            # get the data
+            data = get_data(wmo_box, data_type, config, pa_float_name)
 
             # if we have data, combine it with the other data then reset it
             if data:

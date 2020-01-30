@@ -4,12 +4,13 @@
 Written by: Edward Small
 When: 05/12/2019
 
-Contains unit tests to check the functionality of the `get_hist_region_locations` function
+Contains unit tests to check the functionality of the `get_hist_region_locations` function.
 
-To run this test specifically, look at the documentation at:
+For information on how to use this file, check the README at either:
+
+https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
-
 import unittest
 import numpy as np
 from ow_calibration.get_region.get_region_data import get_region_data
