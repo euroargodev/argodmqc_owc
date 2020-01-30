@@ -143,25 +143,37 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                             (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
                                               ).reshape((how_many_cols, how_many_rows))
 
+                    # if the new data we are adding is shorter than our columns, then we need to
+                    # fill in the rest with NaNs so it's the same length
                     elif new_depth < max_depth:
                         pres = np.append(pres, np.ones((max_depth - new_depth, 1)) * np.nan)
                         ptmp = np.append(ptmp, np.ones((max_depth - new_depth, 1)) * np.nan)
                         sal = np.append(sal, np.ones((max_depth - new_depth, 1)) * np.nan)
 
+                    # if we don't have any data saved yet, create the grid matrix with the
+                    # first data set
                     if grid_pres.__len__() == 0:
 
                         grid_pres = pres.reshape((1, pres.__len__()))
                         grid_ptmp = ptmp.reshape((1, pres.__len__()))
                         grid_sal = sal.reshape((1, pres.__len__()))
 
+                    # if we already have data saved, add the new data to the saved data
                     else:
 
-                        grid_pres = np.append(grid_pres, pres).reshape(how_many_cols + 1, how_many_rows)
-                        grid_ptmp = np.append(grid_ptmp, ptmp).reshape(how_many_cols + 1, how_many_rows)
-                        grid_sal = np.append(grid_sal, sal).reshape(how_many_cols + 1, how_many_rows)
+                        grid_pres = np.append(grid_pres, pres).reshape(
+                            how_many_cols + 1, how_many_rows)
+                        grid_ptmp = np.append(grid_ptmp, ptmp).reshape(
+                            how_many_cols + 1, how_many_rows)
+                        grid_sal = np.append(grid_sal, sal).reshape(
+                            how_many_cols + 1, how_many_rows)
 
+                    # save the latitude, longitude, and date of the new data
                     grid_lat = np.append(grid_lat, data['lat'][0, i])
                     grid_long = np.append(grid_long, data['long'][0, i])
                     grid_dates = np.append(grid_dates, data['dates'][0, i])
+
+                    # readjust our values so we know what column to add the new data to,
+                    # and what shape we should expect the data to be
                     max_depth = grid_pres.shape[1]
                     how_many_cols = grid_pres.shape[0]
