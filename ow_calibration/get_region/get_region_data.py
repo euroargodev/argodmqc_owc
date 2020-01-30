@@ -141,7 +141,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                                               ).reshape((how_many_cols, how_many_rows))
                         grid_sal = np.append(grid_sal, np.ones(
                             (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
-                                              ).reshape((how_many_cols, how_many_rows))
+                                             ).reshape((how_many_cols, how_many_rows))
 
                     # if the new data we are adding is shorter than our columns, then we need to
                     # fill in the rest with NaNs so it's the same length
@@ -177,3 +177,18 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     # and what shape we should expect the data to be
                     max_depth = grid_pres.shape[1]
                     how_many_cols = grid_pres.shape[0]
+
+    # convert longitude to 0 to 360 degrees
+    neg_long = np.argwhere(grid_long < 0)
+    grid_long[neg_long] = grid_long[neg_long] + 360
+
+    grid_long = np.array([100,330,60,355,10])
+
+    # if we have data close to upper boundary (360), then wrap some of the data round
+    # so it appears on the map
+    top_long = np.argwhere(grid_long >= 320)
+    if top_long.__len__() != 0:
+        bottom_long = np.argwhere(grid_long <= 40)
+        grid_long[bottom_long] = 360 + grid_long[bottom_long]
+
+    print(grid_long)
