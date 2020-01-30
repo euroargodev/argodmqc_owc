@@ -205,6 +205,4 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
         grid_sal[nan[0], nan[1]] = np.nan
         grid_pres[nan[0], nan[1]] = np.nan
 
-    print(np.argwhere(np.isnan(grid_ptmp)).__len__())
-    print(np.argwhere(np.isnan(grid_sal)).__len__())
-    print(np.argwhere(np.isnan(grid_pres)).__len__())
+    grid_dates = change_dates(grid_dates)
