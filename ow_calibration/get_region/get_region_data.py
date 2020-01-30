@@ -159,14 +159,9 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                         grid_pres = np.append(grid_pres, pres).reshape(how_many_cols + 1, how_many_rows)
                         grid_ptmp = np.append(grid_ptmp, ptmp).reshape(how_many_cols + 1, how_many_rows)
                         grid_sal = np.append(grid_sal, sal).reshape(how_many_cols + 1, how_many_rows)
-                        # grid_pres = np.append(grid_pres, pres)
-                        # grid_lat = np.append(grid_lat, data['lat'][0, i])
-                        # grid_long = np.append(grid_long, data['long'][0, i])
-                        # grid_dates = np.append(grid_dates, data['dates'][0, i])
-                        # print(grid_pres)
+
+                    grid_lat = np.append(grid_lat, data['lat'][0, i])
+                    grid_long = np.append(grid_long, data['long'][0, i])
+                    grid_dates = np.append(grid_dates, data['dates'][0, i])
                     max_depth = grid_pres.shape[1]
                     how_many_cols = grid_pres.shape[0]
-                    print(grid_pres)
-                    print(grid_ptmp)
-                    print(grid_sal)
-                    input("--------------------------------")
