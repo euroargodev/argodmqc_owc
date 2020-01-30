@@ -16,6 +16,9 @@ from ow_calibration.get_region.get_region_data import get_region_data
 
 
 class MyTestCase(unittest.TestCase):
+    """
+    Test cases for get_region_data function
+    """
     def setUp(self):
         self.wmo_boxes = np.array([[3505, 1, 1, 1],
                                    [3506, 1, 1, 1]])

@@ -24,7 +24,9 @@ import numpy as np
 import scipy.io as scipy
 from ow_calibration.change_dates.change_dates import change_dates
 
-
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pyling: disable=too-many-branches
 def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres):
     """
     Get the historical pressure, salinity, and temperature of selected casts
