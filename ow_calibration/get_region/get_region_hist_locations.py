@@ -23,6 +23,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import numpy as np
 from ow_calibration.change_dates.change_dates import change_dates
 from ow_calibration.get_region.get_data import get_data
+from ow_calibration.get_region.wrap_longitude import wrap_longitude
 
 
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
@@ -64,6 +65,8 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
         grid_dates = 'NaN'
 
     else:
+        grid_long = wrap_longitude(grid_long)
+        """
         # convert longitude to 0 to 360 degrees
         neg_long = np.argwhere(grid_long < 0)
         grid_long[neg_long] = grid_long[neg_long] + 360
@@ -74,6 +77,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
         if top_long.__len__() != 0:
             bottom_long = np.argwhere(grid_long <= 40)
             grid_long[bottom_long] = 360 + grid_long[bottom_long]
+            """
 
         # decimalise dates
         grid_dates = change_dates(grid_dates)

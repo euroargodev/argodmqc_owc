@@ -23,6 +23,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import numpy as np
 from ow_calibration.change_dates.change_dates import change_dates
 from ow_calibration.get_region.get_data import get_data
+from ow_calibration.get_region.wrap_longitude import wrap_longitude
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
@@ -148,6 +149,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     how_many_cols = grid_pres.shape[0]
 
     # convert longitude to 0 to 360 degrees
+    """
     neg_long = np.argwhere(grid_long < 0)
     grid_long[neg_long] = grid_long[neg_long] + 360
 
@@ -157,6 +159,9 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     if top_long.__len__() != 0:
         bottom_long = np.argwhere(grid_long <= 40)
         grid_long[bottom_long] = 360 + grid_long[bottom_long]
+        """
+
+    grid_long = wrap_longitude(grid_long)
 
     # make sure salinity, pressure, and potential temperature data have all the same NaNs
     sal_nans = np.argwhere(np.isnan(grid_sal))
