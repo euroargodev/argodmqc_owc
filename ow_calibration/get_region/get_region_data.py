@@ -21,8 +21,9 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
-import scipy.io as scipy
 from ow_calibration.change_dates.change_dates import change_dates
+from ow_calibration.get_region.data_functions.get_data import get_data
+from ow_calibration.get_region.data_functions.wrap_longitude import wrap_longitude
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
@@ -67,42 +68,8 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
         # go through each of the columns denoting whether we should use CTD, bottle, and/or argo
         for data_type in range(1, 4):
 
-            # check if we should use this data. If so, get the data
-            if wmo_box[data_type] == 1 and data_type == 1:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                                     config['HISTORICAL_CTD_PREFIX'] +
-                                     str(int(wmo_box[0])) + '.mat')
-
-            if wmo_box[data_type] == 1 and data_type == 2:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                                     config['HISTORICAL_BOTTLE_PREFIX'] +
-                                     str(int(wmo_box[0])) + '.mat')
-
-                # if data dimensions don't match, transpose to avoid indexing issues
-                if (data['lat'].size == data['pres'].size and
-                        data['lat'].shape[1] == data['pres'].shape[1]):
-                    data['pres'] = data['pres'].T
-                    data['ptmp'] = data['ptmp'].T
-                    data['sal'] = data['sal'].T
-                    data['temp'] = data['temp'].T
-
-            if wmo_box[data_type] == 1 and data_type == 3:
-                data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                                     config['HISTORICAL_ARGO_PREFIX'] +
-                                     str(int(wmo_box[0])) + '.mat')
-
-                # remove the argo float being analysed from the data
-                not_use = []
-                for i in range(0, data['lat'][0].__len__()):
-                    if str(data['source'][0][i]).find(pa_float_name) != -1:
-                        not_use.append(i)
-
-                data['lat'] = [np.delete(data['lat'], not_use)]
-                data['long'] = [np.delete(data['long'], not_use)]
-                data['dates'] = [np.delete(data['dates'], not_use)]
-                data['sal'] = [np.delete(data['sal'], not_use, axis=1)]
-                data['ptmp'] = [np.delete(data['ptmp'], not_use, axis=1)]
-                data['pres'] = [np.delete(data['pres'], not_use, axis=1)]
+            # get the data
+            data = get_data(wmo_box, data_type, config, pa_float_name)
 
             #  check the index of each station to see if it should be loaded
             data_length = data['lat'][0].__len__()
@@ -182,15 +149,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     how_many_cols = grid_pres.shape[0]
 
     # convert longitude to 0 to 360 degrees
-    neg_long = np.argwhere(grid_long < 0)
-    grid_long[neg_long] = grid_long[neg_long] + 360
-
-    # if we have data close to upper boundary (360), then wrap some of the data round
-    # so it appears on the map
-    top_long = np.argwhere(grid_long >= 320)
-    if top_long.__len__() != 0:
-        bottom_long = np.argwhere(grid_long <= 40)
-        grid_long[bottom_long] = 360 + grid_long[bottom_long]
+    grid_long = wrap_longitude(grid_long)
 
     # make sure salinity, pressure, and potential temperature data have all the same NaNs
     sal_nans = np.argwhere(np.isnan(grid_sal))
