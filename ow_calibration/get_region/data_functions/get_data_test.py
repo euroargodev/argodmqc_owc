@@ -56,13 +56,16 @@ class GetDataTestCase(unittest.TestCase):
         wmo_boxes = np.array([3505, 1, 1, 1])
 
         data_ctd = get_data(wmo_boxes, 1, self.config, self.float_name)
-        self.assertTrue(data_ctd['long'].shape[1] == 10, "should return some data when fetching ctd")
+        self.assertTrue(data_ctd['long'].shape[1] == 10,
+                        "should return some data when fetching ctd")
 
         data_bot = get_data(wmo_boxes, 2, self.config, self.float_name)
-        self.assertTrue(data_bot['long'].shape[1] == 33, "should return some data when fetching argo")
+        self.assertTrue(data_bot['long'].shape[1] == 33,
+                        "should return some data when fetching argo")
 
         data_argo = get_data(wmo_boxes, 3, self.config, self.float_name)
-        self.assertTrue(data_argo['long'][0].__len__() == 787, "should return some data when fetching argo")
+        self.assertTrue(data_argo['long'][0].__len__() == 787,
+                        "should return some data when fetching argo")
 
     def test_removes_argo_float(self):
         """
