@@ -20,7 +20,7 @@ import scipy.io as scipy
 def get_data(wmo_box, data_type, config, pa_float_name):
     """
     Gets all the data we highlight we want from regions specified by the WMO boxes
-    :param pa_wmo_numbers: 2D array containing the name of the WMO boxes that cover the area
+    :param wmo_box: 2D array containing the name of the WMO boxes that cover the area
     of interest, and flags for whether we want to use argo, bottle, and/or CTD data
     :param data_type: Which type of data we are checking for
     :param config: Dictionary containing configuration settings. Used to find locations of folders
@@ -30,16 +30,17 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     """
 
     data = []
+    box_name = str(int(wmo_box[0]))
     # check if we should use this data. If so, get the data
     if wmo_box[data_type] == 1 and data_type == 1:
         data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
                              config['HISTORICAL_CTD_PREFIX'] +
-                             str(int(wmo_box[0])) + '.mat')
+                             box_name + '.mat')
 
     if wmo_box[data_type] == 1 and data_type == 2:
         data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
                              config['HISTORICAL_BOTTLE_PREFIX'] +
-                             str(int(wmo_box[0])) + '.mat')
+                             box_name + '.mat')
 
         # if data dimensions don't match, transpose to avoid indexing issues
         if (data['lat'].size == data['pres'].size and
@@ -52,7 +53,7 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     if wmo_box[data_type] == 1 and data_type == 3:
         data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
                              config['HISTORICAL_ARGO_PREFIX'] +
-                             str(int(wmo_box[0])) + '.mat')
+                             box_name + '.mat')
 
         # remove the argo float being analysed from the data
         not_use = []
