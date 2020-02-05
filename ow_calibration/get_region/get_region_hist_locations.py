@@ -60,26 +60,14 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
                 data = []
 
     if grid_lat.__len__() == 0:
+
         grid_lat = 999
         grid_long = 999
         grid_dates = 'NaN'
 
     else:
-        grid_long = wrap_longitude(grid_long)
-        """
-        # convert longitude to 0 to 360 degrees
-        neg_long = np.argwhere(grid_long < 0)
-        grid_long[neg_long] = grid_long[neg_long] + 360
 
-        # if we have data close to upper boundary (360), then wrap some of the data round
-        # so it appears on the map
-        top_long = np.argwhere(grid_long >= 320)
-        if top_long.__len__() != 0:
-            bottom_long = np.argwhere(grid_long <= 40)
-            grid_long[bottom_long] = 360 + grid_long[bottom_long]
-            """
-
-        # decimalise dates
+        grid_long = wrap_longitude(grid_long)        # decimalise dates
         grid_dates = change_dates(grid_dates)
 
     return grid_lat, grid_long, grid_dates

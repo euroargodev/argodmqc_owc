@@ -149,18 +149,6 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     how_many_cols = grid_pres.shape[0]
 
     # convert longitude to 0 to 360 degrees
-    """
-    neg_long = np.argwhere(grid_long < 0)
-    grid_long[neg_long] = grid_long[neg_long] + 360
-
-    # if we have data close to upper boundary (360), then wrap some of the data round
-    # so it appears on the map
-    top_long = np.argwhere(grid_long >= 320)
-    if top_long.__len__() != 0:
-        bottom_long = np.argwhere(grid_long <= 40)
-        grid_long[bottom_long] = 360 + grid_long[bottom_long]
-        """
-
     grid_long = wrap_longitude(grid_long)
 
     # make sure salinity, pressure, and potential temperature data have all the same NaNs
