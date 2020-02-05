@@ -29,12 +29,10 @@ class GetDataTestCase(unittest.TestCase):
         """
 
         self.float_name = "3901960"
-        # self.float_name_removed = "1900479"
         self.config = {'HISTORICAL_DIRECTORY': "data/climatology",
                        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
                        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
-                       'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",
-                       'MAP_P_DELTA': 250}
+                       'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"}
 
     def test_returns_no_data(self):
         """
