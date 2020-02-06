@@ -92,7 +92,7 @@ class MyTestCase(unittest.TestCase):
         print("Testing that get_region returns correct amount of data")
 
         test_many = get_region_data(self.wmo_boxes, self.float_name, self.config,
-                                   self.index, self.pres)
+                                    self.index, self.pres)
 
         self.assertTrue(test_many[0].shape[1] == self.index.__len__())
 
@@ -119,7 +119,6 @@ class MyTestCase(unittest.TestCase):
                             [99999999999999999], self.pres)
 
         self.assertTrue('NO DATA FOUND' in str(big_index.exception))
-
 
 
 if __name__ == '__main__':
