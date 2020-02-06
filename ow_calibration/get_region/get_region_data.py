@@ -25,6 +25,7 @@ from ow_calibration.change_dates.change_dates import change_dates
 from ow_calibration.get_region.data_functions.get_data import get_data
 from ow_calibration.get_region.data_functions.wrap_longitude import wrap_longitude
 
+
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-branches
@@ -77,9 +78,9 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                     data['pres'] = data['pres'][0]
                     data['sal'] = data['sal'][0]
                     data['ptmp'] = data['ptmp'][0]
-                    data['lat'] = data['lat'][0].reshape(-1,1)
-                    data['long'] = data['long'][0].reshape(-1,1)
-                    data['dates'] = data['dates'][0].reshape(-1,1)
+                    data['lat'] = data['lat'][0].reshape(-1, 1)
+                    data['long'] = data['long'][0].reshape(-1, 1)
+                    data['dates'] = data['dates'][0].reshape(-1, 1)
 
                 #  check the index of each station to see if it should be loaded
                 data_length = data['lat'][0].__len__()
@@ -110,8 +111,8 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                         new_depth = pres.__len__()
                         how_many_rows = np.max([new_depth, max_depth])
 
-                        # if the new data we are adding is longer than our columns, we need to fill in
-                        # NaNs in the other columns
+                        # if the new data we are adding is longer than our columns, we need to
+                        # fill in NaNs in the other columns
                         if new_depth > max_depth != 0:
                             grid_pres = np.append(grid_pres, np.ones(
                                 (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
