@@ -30,6 +30,7 @@ from ow_calibration.get_region.data_functions.wrap_longitude import wrap_longitu
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-nested-blocks
 def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres):
     """
     Get the historical pressure, salinity, and temperature of selected casts
