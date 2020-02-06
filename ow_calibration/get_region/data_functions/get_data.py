@@ -45,6 +45,7 @@ def get_data(wmo_box, data_type, config, pa_float_name):
         # if data dimensions don't match, transpose to avoid indexing issues
         if (data['lat'].size == data['pres'].size and
                 data['lat'].shape[1] == data['pres'].shape[1]):
+            input("GOT HERE")
             data['pres'] = data['pres'].T
             data['ptmp'] = data['ptmp'].T
             data['sal'] = data['sal'].T

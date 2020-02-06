@@ -71,107 +71,121 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
             # get the data
             data = get_data(wmo_box, data_type, config, pa_float_name)
 
-            #  check the index of each station to see if it should be loaded
-            data_length = data['lat'][0].__len__()
-            data_indices = np.arange(0, data_length) + starting_index
+            if data:
+                # Sometimes the data comes in wrapped in as a 3d array, so convert to 2d
+                if data['pres'].__len__() == 1:
+                    data['pres'] = data['pres'][0]
+                    data['sal'] = data['sal'][0]
+                    data['ptmp'] = data['ptmp'][0]
+                    data['lat'] = data['lat'][0].reshape(-1,1)
+                    data['long'] = data['long'][0].reshape(-1,1)
+                    data['dates'] = data['dates'][0].reshape(-1,1)
 
-            # remember location of last entry
-            starting_index = starting_index + data_length
+                #  check the index of each station to see if it should be loaded
+                data_length = data['lat'][0].__len__()
+                data_indices = np.arange(0, data_length) + starting_index
 
-            # load each station
-            for i in range(0, data_length):
+                # remember location of last entry
+                starting_index = starting_index + data_length
 
-                good_indices = np.argwhere(index == data_indices[i])
+                # load each station
+                for i in range(0, data_length):
 
-                if good_indices.__len__() > 0:
-                    # only use non-NaN values
-                    not_nan = np.argwhere(np.isnan(data['pres'][:, i]) == 0)
+                    good_indices = np.argwhere(index == data_indices[i])
 
-                    # get the non-NaN values
-                    pres = data['pres'][not_nan, i]
-                    sal = data['sal'][not_nan, i]
-                    ptmp = data['ptmp'][not_nan, i]
+                    if good_indices.__len__() > 0:
+                        # only use non-NaN values
+                        not_nan = np.argwhere(np.isnan(data['pres'][:, i]) == 0)
 
-                    # remove values where pressure exceeds the maximum we want
-                    too_deep = np.argwhere(pres > max_pres)
-                    pres = np.delete(pres, too_deep[:, 0])
-                    sal = np.delete(sal, too_deep[:, 0])
-                    ptmp = np.delete(ptmp, too_deep[:, 0])
-                    new_depth = pres.__len__()
-                    how_many_rows = np.max([new_depth, max_depth])
+                        # get the non-NaN values
+                        pres = data['pres'][not_nan, i]
+                        sal = data['sal'][not_nan, i]
+                        ptmp = data['ptmp'][not_nan, i]
 
-                    # if the new data we are adding is longer than our columns, we need to fill in
-                    # NaNs in the other columns
-                    if new_depth > max_depth != 0:
-                        grid_pres = np.append(grid_pres, np.ones(
-                            (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
-                                              ).reshape((how_many_cols, how_many_rows))
-                        grid_ptmp = np.append(grid_ptmp, np.ones(
-                            (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
-                                              ).reshape((how_many_cols, how_many_rows))
-                        grid_sal = np.append(grid_sal, np.ones(
-                            (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
-                                             ).reshape((how_many_cols, how_many_rows))
+                        # remove values where pressure exceeds the maximum we want
+                        too_deep = np.argwhere(pres > max_pres)
+                        pres = np.delete(pres, too_deep[:, 0])
+                        sal = np.delete(sal, too_deep[:, 0])
+                        ptmp = np.delete(ptmp, too_deep[:, 0])
+                        new_depth = pres.__len__()
+                        how_many_rows = np.max([new_depth, max_depth])
 
-                    # if the new data we are adding is shorter than our columns, then we need to
-                    # fill in the rest with NaNs so it's the same length
-                    elif new_depth < max_depth:
-                        pres = np.append(pres, np.ones((max_depth - new_depth, 1)) * np.nan)
-                        ptmp = np.append(ptmp, np.ones((max_depth - new_depth, 1)) * np.nan)
-                        sal = np.append(sal, np.ones((max_depth - new_depth, 1)) * np.nan)
+                        # if the new data we are adding is longer than our columns, we need to fill in
+                        # NaNs in the other columns
+                        if new_depth > max_depth != 0:
+                            grid_pres = np.append(grid_pres, np.ones(
+                                (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
+                                                  ).reshape((how_many_cols, how_many_rows))
+                            grid_ptmp = np.append(grid_ptmp, np.ones(
+                                (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
+                                                  ).reshape((how_many_cols, how_many_rows))
+                            grid_sal = np.append(grid_sal, np.ones(
+                                (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
+                                                 ).reshape((how_many_cols, how_many_rows))
 
-                    # if we don't have any data saved yet, create the grid matrix with the
-                    # first data set
-                    if grid_pres.__len__() == 0:
+                        # if the new data we are adding is shorter than our columns, then we need to
+                        # fill in the rest with NaNs so it's the same length
+                        elif new_depth < max_depth:
+                            pres = np.append(pres, np.ones((max_depth - new_depth, 1)) * np.nan)
+                            ptmp = np.append(ptmp, np.ones((max_depth - new_depth, 1)) * np.nan)
+                            sal = np.append(sal, np.ones((max_depth - new_depth, 1)) * np.nan)
 
-                        grid_pres = pres.reshape((1, pres.__len__()))
-                        grid_ptmp = ptmp.reshape((1, pres.__len__()))
-                        grid_sal = sal.reshape((1, pres.__len__()))
+                        # if we don't have any data saved yet, create the grid matrix with the
+                        # first data set
+                        if grid_pres.__len__() == 0:
 
-                    # if we already have data saved, add the new data to the saved data
-                    else:
+                            grid_pres = pres.reshape((1, pres.__len__()))
+                            grid_ptmp = ptmp.reshape((1, pres.__len__()))
+                            grid_sal = sal.reshape((1, pres.__len__()))
 
-                        grid_pres = np.append(grid_pres, pres).reshape(
-                            how_many_cols + 1, how_many_rows)
-                        grid_ptmp = np.append(grid_ptmp, ptmp).reshape(
-                            how_many_cols + 1, how_many_rows)
-                        grid_sal = np.append(grid_sal, sal).reshape(
-                            how_many_cols + 1, how_many_rows)
+                        # if we already have data saved, add the new data to the saved data
+                        else:
 
-                    # save the latitude, longitude, and date of the new data
-                    grid_lat = np.append(grid_lat, data['lat'][0, i])
-                    grid_long = np.append(grid_long, data['long'][0, i])
-                    grid_dates = np.append(grid_dates, data['dates'][0, i])
+                            grid_pres = np.append(grid_pres, pres).reshape(
+                                how_many_cols + 1, how_many_rows)
+                            grid_ptmp = np.append(grid_ptmp, ptmp).reshape(
+                                how_many_cols + 1, how_many_rows)
+                            grid_sal = np.append(grid_sal, sal).reshape(
+                                how_many_cols + 1, how_many_rows)
 
-                    # readjust our values so we know what column to add the new data to,
-                    # and what shape we should expect the data to be
-                    max_depth = grid_pres.shape[1]
-                    how_many_cols = grid_pres.shape[0]
+                        # save the latitude, longitude, and date of the new data
+                        grid_lat = np.append(grid_lat, data['lat'][0, i])
+                        grid_long = np.append(grid_long, data['long'][0, i])
+                        grid_dates = np.append(grid_dates, data['dates'][0, i])
+
+                        # readjust our values so we know what column to add the new data to,
+                        # and what shape we should expect the data to be
+                        max_depth = grid_pres.shape[1]
+                        how_many_cols = grid_pres.shape[0]
 
     # convert longitude to 0 to 360 degrees
-    grid_long = wrap_longitude(grid_long)
+    try:
+        grid_long = wrap_longitude(grid_long)
 
-    # make sure salinity, pressure, and potential temperature data have all the same NaNs
-    sal_nans = np.argwhere(np.isnan(grid_sal))
-    for nan in sal_nans:
-        grid_pres[nan[0], nan[1]] = np.nan
-        grid_ptmp[nan[0], nan[1]] = np.nan
+        # make sure salinity, pressure, and potential temperature data have all the same NaNs
+        sal_nans = np.argwhere(np.isnan(grid_sal))
+        for nan in sal_nans:
+            grid_pres[nan[0], nan[1]] = np.nan
+            grid_ptmp[nan[0], nan[1]] = np.nan
 
-    pres_nans = np.argwhere(np.isnan(grid_pres))
-    for nan in pres_nans:
-        grid_sal[nan[0], nan[1]] = np.nan
-        grid_ptmp[nan[0], nan[1]] = np.nan
+        pres_nans = np.argwhere(np.isnan(grid_pres))
+        for nan in pres_nans:
+            grid_sal[nan[0], nan[1]] = np.nan
+            grid_ptmp[nan[0], nan[1]] = np.nan
 
-    ptmp_nans = np.argwhere(np.isnan(grid_ptmp))
-    for nan in ptmp_nans:
-        grid_sal[nan[0], nan[1]] = np.nan
-        grid_pres[nan[0], nan[1]] = np.nan
+        ptmp_nans = np.argwhere(np.isnan(grid_ptmp))
+        for nan in ptmp_nans:
+            grid_sal[nan[0], nan[1]] = np.nan
+            grid_pres[nan[0], nan[1]] = np.nan
 
-    grid_dates = change_dates(grid_dates)
+        grid_dates = change_dates(grid_dates)
 
-    # transpose data
-    grid_sal = grid_sal.T
-    grid_pres = grid_pres.T
-    grid_ptmp = grid_ptmp.T
+        # transpose data
+        grid_sal = grid_sal.T
+        grid_pres = grid_pres.T
+        grid_ptmp = grid_ptmp.T
+
+    except:
+        raise Exception("NO DATA FOUND")
 
     return grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates

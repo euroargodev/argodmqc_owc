@@ -20,11 +20,11 @@ class MyTestCase(unittest.TestCase):
     """
     Test cases for get_region_data function
     """
+
     def setUp(self):
         self.wmo_boxes = np.array([[3505, 1, 1, 1],
                                    [3506, 1, 1, 1]])
         self.float_name = "3901960"
-        self.float_name_removed = "1900479"
         self.index = np.array([0, 4, 5, 11, 13, 15, 20, 21, 42])
         self.pres = np.array([3, 5, 15.1, 25.1, 36, 40, 45, 46, 500000])
         self.config = {'HISTORICAL_DIRECTORY': "data/climatology",
@@ -64,6 +64,62 @@ class MyTestCase(unittest.TestCase):
                         test[3].shape[0] == test[4].shape[0] == test[5].shape[0] ==
                         self.index.__len__(),
                         "Should get the same number of casts as we have asked for")
+
+    def test_gets_different_data(self):
+        """
+        Check that we can fetch different combinations of data
+        :return: Nothing
+        """
+        print("Testing that get_region_data can return different data types")
+
+        test_ctd = get_region_data(np.array([[3505, 1, 0, 0]]), self.float_name, self.config,
+                                   self.index, self.pres)
+        test_bot = get_region_data(np.array([[3505, 0, 1, 0]]), self.float_name, self.config,
+                                   self.index, self.pres)
+        test_argo = get_region_data(np.array([[3505, 0, 0, 1]]), self.float_name, self.config,
+                                    self.index, self.pres)
+
+        self.assertTrue(test_ctd[0].shape[1] != test_argo[0].shape[1],
+                        "Should get a different data set, if we have specified it")
+        self.assertTrue(test_bot[0].shape[1] != test_argo[0].shape[1],
+                        "Should get a different data set, if we have specified it")
+
+    def test_should_only_get_specific_indices(self):
+        """
+        If we only give n indices, we should get n data points back
+        :return: Nothing
+        """
+        print("Testing that get_region returns correct amount of data")
+
+        test_many = get_region_data(self.wmo_boxes, self.float_name, self.config,
+                                   self.index, self.pres)
+
+        self.assertTrue(test_many[0].shape[1] == self.index.__len__())
+
+        test_one = get_region_data(self.wmo_boxes, self.float_name, self.config,
+                                   [50], self.pres)
+
+        self.assertTrue(test_one[0].shape[1] == 1)
+
+    def test_raise_exception_bad_indices(self):
+        """
+        Check that, if only bad indices are given, an exception is raised
+        :return: Nothing
+        """
+        print("Testing exception is raised if indices are bad")
+
+        with self.assertRaises(Exception) as no_index:
+            get_region_data(self.wmo_boxes, self.float_name, self.config,
+                            [], self.pres)
+
+        self.assertTrue('NO DATA FOUND' in str(no_index.exception))
+
+        with self.assertRaises(Exception) as big_index:
+            get_region_data(self.wmo_boxes, self.float_name, self.config,
+                            [99999999999999999], self.pres)
+
+        self.assertTrue('NO DATA FOUND' in str(big_index.exception))
+
 
 
 if __name__ == '__main__':
