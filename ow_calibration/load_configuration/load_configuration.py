@@ -16,8 +16,8 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-def load_configuration():
 
+def load_configuration():
     """
     Takes in no arguments
     :return: A dictionary containing mapped pairs of

@@ -1,5 +1,5 @@
 """
------Get Region Historical Data Test File-----
+-----Get Historical Region Location Data Test File-----
 
 Written by: Edward Small
 When: 05/12/2019
@@ -110,9 +110,10 @@ class MyTestCase(unittest.TestCase):
             self.assertNotEqual(data_argo[i].__len__(), data_bot[i].__len__(),
                                 "Should have different data for argo and bottle")
             self.assertNotEqual(data_argo[i].__len__(), data_ctd[i].__len__(),
-                                "Should have different data for argo and bottle")
+                                "Should have different data for argo and ctd")
+            # no bottle database reference,
             self.assertNotEqual(data_bot[i].__len__(), data_ctd[i].__len__(),
-                                "Should have different data for argo and bottle")
+                                "Should have different data for bottle and ctd")
 
     def test_can_combine_data(self):
         """
@@ -125,7 +126,7 @@ class MyTestCase(unittest.TestCase):
         all_data = get_region_hist_locations(wmo_box_all, 'none', self.config)
 
         for data in all_data:
-            self.assertEqual(data.__len__(), 843, "Should get the same amount of data as matlab")
+            self.assertEqual(data.__len__(), 830, "Should get the same amount of data as matlab")
 
     def test_can_combine_boxes(self):
         """
