@@ -8,7 +8,9 @@ When: 16/01/2020
 
 Function returns the needed spatial, temporal, and ocean characteristic (salinity, temp, pressure)
 data from each of the historical data points inside the WMO boxes it is given, excluding the
-current float being processed. The WMO boxes are passed in the form of [WMO name, use ctd data,
+current float being processed. It then filters out the data that was not chosen as a good fit.
+
+The WMO boxes are passed in the form of [WMO name, use ctd data,
 use bottle data, use argo data], and the configuration is also passed in, which is used to locate
 the different data locally. The configuration can be changed in load_configuration.py
 
