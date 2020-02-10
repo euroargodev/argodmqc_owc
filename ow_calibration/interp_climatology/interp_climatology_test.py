@@ -29,8 +29,8 @@ class InterpClimatologyTestCase(unittest.TestCase):
         :return: Nothing
         """
         # load in the data for testing
-        test = scipy.loadmat('data/test_data/testfile.mat')
-        results = scipy.loadmat('data/test_data/results.mat')
+        test = scipy.loadmat('data/test_data/interp_climatology/testfile.mat')
+        results = scipy.loadmat('data/test_data/interp_climatology/results.mat')
 
         # set the test variables from the loaded .mat file
         self.grid_sal = test['S']
