@@ -6,7 +6,7 @@ When: xx/11/2007
 Converted to python by: Edward Small
 When: 02/02/2020
 
-Annie Wong, xx June. 2007: Unexplained changes
+Annie Wong, xx June. 2010: Unexplained changes
 
 Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used to map the large scale field
 
@@ -20,3 +20,14 @@ For information on how to use this file, check the README at either:
 https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
+
+
+def update_salinity_mapping(float_dir, float_name, config):
+    """
+    Calculates values needed for analysis. Saves them to memory to use later
+
+    :param float_dir: directory where the float being analysed is stored
+    :param float_name: name of the float being analysed
+    :param config: configuration settings set by the user
+    :return: Nothing, but does save values
+    """
