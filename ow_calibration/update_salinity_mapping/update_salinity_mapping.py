@@ -21,7 +21,6 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-from ow_calibration.load_configuration.load_configuration import load_configuration
 
 def update_salinity_mapping(float_dir, float_name, config):
     """
