@@ -40,7 +40,7 @@ def load_configuration():
         #    Float Input Path
         #
 
-        'FLOAT_SOURCE_DIRECTORY': "/home/awong/argo/OW/data/float_source/",
+        'FLOAT_SOURCE_DIRECTORY': "../../data/float_source",
         'FLOAT_SOURCE_POSTFIX': ".mat",
 
         # ===============================
