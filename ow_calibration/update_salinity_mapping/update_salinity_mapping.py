@@ -62,7 +62,19 @@ def update_salinity_mapping(float_dir, float_name, config):
     phi_small = config['MAPSCALE_PHI_SMALL']
     map_age_large = config['MAPSCALE_AGE_LARGE']
     map_age_small = config['MAPSCALE_AGE_SMALL']
+    map_p_delta = config['MAP_P_DELTA']
+    map_p_exclude = config['MAP_P_EXCLUDE']
 
+    # Load precalculated mapped data -------------------------------------
 
+    try:
+        float_mapped_filename = scipy.loadmat(config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
+                                              config['FLOAT_MAPPED_PREFIX'] + float_name +
+                                              config['FLOAT_MAPPED_POSTFIX'])
 
+    except FileNotFoundError:
 
+        print("__________________________________________________________")
+        print("No precaulcated data\n")
+
+        float_mapped_filename = np.nan
