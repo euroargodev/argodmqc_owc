@@ -24,6 +24,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import scipy.io as scipy
 import numpy as np
 
+
 def update_salinity_mapping(float_dir, float_name, config):
     """
     Calculates values needed for analysis. Saves them to memory to use later
@@ -34,9 +35,34 @@ def update_salinity_mapping(float_dir, float_name, config):
     :return: Nothing, but does save values
     """
 
-    # Get float file name config['FLOAT_SOURCE_DIRECTORY']
+    # Load float source data ---------------------------------------------
+
+    # Get float file name
     filename = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + float_name + config['FLOAT_SOURCE_POSTFIX']
+
+    # Load the float data
     float_source_data = scipy.loadmat(filename)
 
-    print(float_source_data)
+    # Get the profile number and size of the data in the profile
+    profile_no = float_source_data['PROFILE_NO'][0]
+    float_level_count = float_source_data['SAL'].shape[0]
+    float_profile_count = float_source_data['SAL'].shape[1]
+
+    # Load all the mapping parameters, including the WMO boxes -----------
+
+    wmo_boxes = scipy.loadmat(config['CONFIG_DIRECTORY'] + config['CONFIG_WMO_BOXES'])['la_wmo_boxes']
+    max_casts = config['CONFIG_MAX_CASTS']
+    map_use_pv = config['MAP_USE_PV']
+    map_use_saf = config['MAP_USE_SAF']
+    long_large = config['MAPSCALE_LONGITUDE_LARGE']
+    long_small = config['MAPSCALE_LONGITUDE_SMALL']
+    lat_large = config['MAPSCALE_LATITUDE_LARGE']
+    lat_small = config['MAPSCALE_LATITUDE_SMALL']
+    phi_large = config['MAPSCALE_PHI_LARGE']
+    phi_small = config['MAPSCALE_PHI_SMALL']
+    map_age_large = config['MAPSCALE_AGE_LARGE']
+    map_age_small = config['MAPSCALE_AGE_SMALL']
+
+
+
 

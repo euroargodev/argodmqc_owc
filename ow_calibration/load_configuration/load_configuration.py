@@ -74,7 +74,7 @@ def load_configuration():
         #    Constants File Path
         #
 
-        'CONFIG_DIRECTORY': "/home/awong/argo/OW/data/constants/",
+        'CONFIG_DIRECTORY': "data/constants/",
         'CONFIG_COASTLINES': "coastdat.mat",
         'CONFIG_WMO_BOXES': "wmo_boxes.mat",
         'CONFIG_SAF': "TypicalProfileAroundSAF.mat",
@@ -104,8 +104,8 @@ def load_configuration():
         'MAPSCALE_PHI_SMALL': 0.1,
 
         # temporal decorrelation scale, in years
-        'MAPSCALE_AGE': 10,
         'MAPSCALE_AGE_LARGE': 20,
+        'MAPSCALE_AGE_SMALL': 10,
 
         # exclude the top xxx dbar of the water column
         'MAP_P_EXCLUDE': 200,
