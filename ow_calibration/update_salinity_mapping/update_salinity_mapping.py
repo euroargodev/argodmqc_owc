@@ -114,16 +114,18 @@ def update_salinity_mapping(float_dir, float_name, config):
         # if we have more data available than in the current mapped data, we need to extend
         # the matrices so we can add this data
 
-        new_depth = 206 #TODO: REMOVE THIS
-        
+        new_depth = 206  # TODO: REMOVE THIS
+
         if new_depth > max_depth != 0:
-
             la_mapped_sal = np.insert(la_mapped_sal, la_mapped_sal.shape[0],
-                                      np.ones((new_depth-max_depth, how_many_cols)) * np.nan,
+                                      np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
                                       axis=0)
-
-
-
+            la_mapsalerrors = np.insert(la_mapsalerrors, la_mapsalerrors.shape[0],
+                                        np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
+                                        axis=0)
+            la_noise_sal = np.insert(la_noise_sal, la_noise_sal.shape[0],
+                                     np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
+                                     axis=0)
 
         print("Using precaulcated data: ", config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
               config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX'])
