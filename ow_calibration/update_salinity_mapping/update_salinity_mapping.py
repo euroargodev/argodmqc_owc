@@ -65,16 +65,47 @@ def update_salinity_mapping(float_dir, float_name, config):
     map_p_delta = config['MAP_P_DELTA']
     map_p_exclude = config['MAP_P_EXCLUDE']
 
+    # Display the configuration to the user ------------------------------
+
+    print("\nCONFIGURATION PARAMETERS")
+    print("__________________________________________________________")
+    print("WMO box file: ", config['CONFIG_WMO_BOXES'])
+    print("max_casts: ", max_casts)
+    print("map_use_pv: ", map_use_pv)
+    print("map_use_saf: ", map_use_saf)
+    print("long_large: ", long_large)
+    print("long_small: ", long_small)
+    print("lat_large: ", lat_large)
+    print("lat_small: ", lat_small)
+    print("phi_large: ", phi_large)
+    print("phi_small: ", phi_small)
+    print("map_age_large: ", map_age_large)
+    print("map_age_small: ", map_age_small)
+    print("map_p_delta: ", map_p_delta)
+    print("map_p_exclude: ", map_p_exclude)
+    print("__________________________________________________________")
+
     # Load precalculated mapped data -------------------------------------
 
     try:
-        float_mapped_filename = scipy.loadmat(config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
-                                              config['FLOAT_MAPPED_PREFIX'] + float_name +
-                                              config['FLOAT_MAPPED_POSTFIX'])
+
+        float_mapped_data = scipy.loadmat(config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
+                                          config['FLOAT_MAPPED_PREFIX'] + float_name +
+                                          config['FLOAT_MAPPED_POSTFIX'])
+
+        profile_index = (float_mapped_data['la_mapped_sal'], 2)
+
+        # Check to see if this is an older version run without the saf constraint
+        if "use_saf" in float_mapped_data:
+            use_saf = np.zeros(float_mapped_data['use_pv'].shape)
+
+        print("Using precaulcated data: ", config['FLOAT_MAPPED_PREFIX'] + float_name +
+              config['FLOAT_MAPPED_POSTFIX'])
+        print("__________________________________________________________")
 
     except FileNotFoundError:
 
-        print("__________________________________________________________")
-        print("No precaulcated data\n")
+        print("No precaulcated data")
+        print("__________________________________________________________\n")
 
         float_mapped_filename = np.nan
