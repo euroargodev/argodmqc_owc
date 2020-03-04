@@ -5,7 +5,7 @@ from ow_calibration.update_salinity_mapping.update_salinity_mapping import updat
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        update_salinity_mapping("hello/", "1111", load_configuration())
+        update_salinity_mapping("/", "3901960", load_configuration())
 
 
 if __name__ == '__main__':

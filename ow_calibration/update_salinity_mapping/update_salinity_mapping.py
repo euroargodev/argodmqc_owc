@@ -21,6 +21,8 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import scipy.io as scipy
+import numpy as np
 
 def update_salinity_mapping(float_dir, float_name, config):
     """
@@ -32,7 +34,9 @@ def update_salinity_mapping(float_dir, float_name, config):
     :return: Nothing, but does save values
     """
 
-    # Get float file name
+    # Get float file name config['FLOAT_SOURCE_DIRECTORY']
     filename = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + float_name + config['FLOAT_SOURCE_POSTFIX']
-    print(filename)
+    float_source_data = scipy.loadmat(filename)
+
+    print(float_source_data)
 
