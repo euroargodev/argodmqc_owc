@@ -23,6 +23,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import scipy.io as scipy
 import numpy as np
+import time
 
 
 def update_salinity_mapping(float_dir, float_name, config):
@@ -143,7 +144,7 @@ def update_salinity_mapping(float_dir, float_name, config):
     except FileNotFoundError:
 
         profile_index = 0
-        la_profile_no = np.nan
+        la_profile_no = np.empty(0)
         selected_hist = []
 
         print("No precaulcated data")
@@ -157,3 +158,20 @@ def update_salinity_mapping(float_dir, float_name, config):
         profiles = np.argwhere(la_profile_no == profile_no[i])
         if profiles.size == 0:
             missing_profile_index.append(i)
+
+    # update mapped data with missing profiles ---------------------------
+    print(la_profile_no)
+    print(missing_profile_index)
+    for i in range(0, missing_profile_index.__len__()):
+
+        # start the timer
+        start_time = time.perf_counter()
+
+        print("UPDATE_SALINITY_MAPPING: Working on profile ", i)
+
+        # Get the current profile being worked on
+        missing_profile = missing_profile_index[i]
+
+        # append profile numbers
+        la_profile_no = np.insert(la_profile_no, profile_index, profile_no[missing_profile])
+        profile_index += 1

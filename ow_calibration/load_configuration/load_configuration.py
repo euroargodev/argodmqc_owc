@@ -48,7 +48,7 @@ def load_configuration():
         #    Mapping Output Path
         #
 
-        'FLOAT_MAPPED_DIRECTORY': "data/float_mapped",
+        'FLOAT_MAPPED_DIRECTORY': "data/float_mapped/NO_FILE",
         'FLOAT_MAPPED_PREFIX': "map_",
         'FLOAT_MAPPED_POSTFIX': ".mat",
 
