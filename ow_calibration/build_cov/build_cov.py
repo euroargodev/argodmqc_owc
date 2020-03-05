@@ -35,11 +35,17 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import numpy as np
 
-def build_cov(ptmp, coord_float_config):
+
+def build_cov(ptmp, coord_float, config):
     """
     Build the covariance matrix
     :param ptmp: matrix of potential temperatures
     :param coord_float_config: the x, y, z position of the float
     :return: covariance matrix
     """
+
+    # Set up theta boundaries for water masses
+
+    ptboundaries = np.array([30, 24, 18, 12, 8, 4, 2.5, 1, -2])
