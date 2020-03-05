@@ -87,6 +87,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
     # Load precalculated mapped data -------------------------------------
 
+    # Check to see if we have any precalculated mapped data
     try:
 
         # open up mapped data
@@ -100,6 +101,7 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_noise_sal = float_mapped_data['la_noise_sal']
         la_signal_sal = float_mapped_data['la_signal_sal']
         la_ptmp = float_mapped_data['la_ptmp']
+        la_profile_no = float_mapped_data['la_profile_no']
 
         # Check to see if this is an older version run without the saf constraint
         if "use_saf" in float_mapped_data:
@@ -126,14 +128,32 @@ def update_salinity_mapping(float_dir, float_name, config):
             la_noise_sal = np.insert(la_noise_sal, la_noise_sal.shape[0],
                                      np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
                                      axis=0)
+            la_signal_sal = np.insert(la_signal_sal, la_signal_sal.shape[0],
+                                      np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
+                                      axis=0)
+            la_ptmp = np.insert(la_ptmp, la_ptmp.shape[0],
+                                np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
+                                axis=0)
 
         print("Using precaulcated data: ", config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
               config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX'])
         print("__________________________________________________________")
 
+    # If we don't have any precalculated mapped data
     except FileNotFoundError:
+
+        profile_index = 0
+        la_profile_no = np.nan
+        selected_hist = []
 
         print("No precaulcated data")
         print("__________________________________________________________\n")
 
-        float_mapped_filename = np.nan
+    # Compare profile numbers in the float source against the mapped data matrix -
+
+    missing_profile_index = []
+
+    for i in range(0, profile_no.__len__()):
+        profiles = np.argwhere(la_profile_no == profile_no[i])
+        if profiles.size == 0:
+            missing_profile_index.append(i)
