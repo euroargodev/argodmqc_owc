@@ -117,8 +117,6 @@ def update_salinity_mapping(float_dir, float_name, config):
         # if we have more data available than in the current mapped data, we need to extend
         # the matrices so we can add this data
 
-        new_depth = 206  # TODO: REMOVE THIS
-
         if new_depth > max_depth != 0:
             la_mapped_sal = np.insert(la_mapped_sal, la_mapped_sal.shape[0],
                                       np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
@@ -143,9 +141,11 @@ def update_salinity_mapping(float_dir, float_name, config):
     # If we don't have any precalculated mapped data
     except FileNotFoundError:
 
+        # initialise variables
         profile_index = 0
         la_profile_no = np.empty(0)
         selected_hist = []
+        la_ptmp = np.empty((0, 2))
 
         print("No precaulcated data")
         print("__________________________________________________________\n")
@@ -160,10 +160,8 @@ def update_salinity_mapping(float_dir, float_name, config):
             missing_profile_index.append(i)
 
     # update mapped data with missing profiles ---------------------------
-    print(la_profile_no)
-    print(missing_profile_index)
-    for i in range(0, missing_profile_index.__len__()):
 
+    for i in range(0, missing_profile_index.__len__()):
         # start the timer
         start_time = time.perf_counter()
 
@@ -174,4 +172,10 @@ def update_salinity_mapping(float_dir, float_name, config):
 
         # append profile numbers
         la_profile_no = np.insert(la_profile_no, profile_index, profile_no[missing_profile])
+        # Construct elements for this profile
+
+        la_ptmp = np.hstack((la_ptmp, np.nan * np.ones((float_level_count, 1))))
+        print(la_ptmp)
+        input("----------------------")
+
         profile_index += 1
