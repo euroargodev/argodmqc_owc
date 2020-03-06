@@ -36,6 +36,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
+import scipy.interpolate as interpolate
 
 
 def build_cov(ptmp, coord_float, config):
@@ -49,3 +50,53 @@ def build_cov(ptmp, coord_float, config):
     # Set up theta boundaries for water masses
 
     ptboundaries = np.array([30, 24, 18, 12, 8, 4, 2.5, 1, -2])
+    ptscale_down = np.array([6, 6, 6, 4, 4, 1.5, 1.5, 1, 1])
+    ptscale_up = np.array([6, 6, 6, 6, 4, 4, 1.5, 1.5, 1])
+
+    # Set up the building tile = vertical covariance matrix
+
+    # The upper triangle of the matrix (top right values) are the covariance of each ptlevel with
+    # every ptlevel below it, looking down the water column from the diagonal
+    # The lower triangle of the matrix (bottom left values) are the covariance of each ptlevel with
+    # every ptlevel above it, looking up the water column from the diagonal
+
+    ptmp_rows = ptmp.shape[0]
+    ptmp_columns = ptmp.shape[1]
+
+    # set up the covariance matrix
+    cov = np.zeros((ptmp_rows * ptmp_columns, ptmp_rows))
+
+    # set up interpolation grids
+    upper_interp = interpolate.interp1d(ptboundaries, ptscale_down)
+    lower_interp = interpolate.interp1d(ptboundaries, ptscale_up)
+
+    # go through each profile
+    for profile in range(0, ptmp_columns):
+
+        profile_1 = profile * ptmp_rows
+
+        # go through each level
+        for i in range(0, ptmp_rows):
+            for j in range(0, ptmp_rows):
+
+                # belongs in the upper triangle, look down water column for vertical scale
+                if i < j:
+                    l_theta = upper_interp(ptmp[i, profile])
+                    cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2
+                                                   / l_theta**2)
+
+                # belongs in the lower triangle, look up water column for vertical scale
+                elif i > j:
+                    l_theta = lower_interp(ptmp[i, profile])
+                    cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2
+                                                   / l_theta ** 2)
+
+                # it is in the leading diagonal, so make it equal to 1
+                else:
+                    cov[i + profile_1, j] = 1
+
+                # if we don't have a value, make it equal to 1
+                if np.isnan(cov[i + profile_1, j]):
+                    cov[i + profile_1, j] = 1
+
+
