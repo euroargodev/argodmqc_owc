@@ -26,9 +26,11 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     z_input_coords = input_coords[2]
     z_coords = coords[:, 2]
 
-    print(input_coords[0])
-    print(np.sin(input_coords[0]))
-    print(z_input_coords)
+    # define a vectorized function to calculation potential vorticity
+    pv = np.vectorize(lambda lat, depth: (2 * 7.292 * 10 ** -5 * np.sin(lat * np.pi/180))/depth)
 
-    pv_input_coords = (2 * 7.292 * 10 ** -5 * np.sin(input_coords[0] * np.pi/180))/z_input_coords
-    print(pv_input_coords)
+    # calculate potential vorticity
+    pv_input_coords = pv(input_coords[0], z_input_coords)
+    pv_coords = pv(coords[:, 0], z_coords)
+
+    #
