@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     """
     Returns a matrix for the horizontal covariance
@@ -27,10 +28,22 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     z_coords = coords[:, 2]
 
     # define a vectorized function to calculation potential vorticity
-    pv = np.vectorize(lambda lat, depth: (2 * 7.292 * 10 ** -5 * np.sin(lat * np.pi/180))/depth)
+    pv = np.vectorize(lambda lat, depth: (2 * 7.292 * 10 ** -5 * np.sin(lat * np.pi / 180)) / depth)
 
     # calculate potential vorticity
     pv_input_coords = pv(input_coords[0], z_input_coords)
     pv_coords = pv(coords[:, 0], z_coords)
 
-    #
+    # calculate correlation
+    cor_term = ((input_coords[0] - coords[:, 0]) / lat) ** 2 + ((input_coords[1] - coords[:, 1]) / long) ** 2
+
+    # include potential vorticity in correlation, if the user has asked for it
+
+    if use_pv and pv_input_coords.any() and pv_coords.any() != 0:
+        cor_term = cor_term + ((pv_input_coords - pv_coords) /
+                               np.sqrt(pv_input_coords ** 2 + pv_coords ** 2) /
+                               phi) ** 2
+
+    cov_term = np.exp(-cor_term.transpose())
+
+    return cov_term
