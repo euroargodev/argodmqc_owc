@@ -1,6 +1,21 @@
+"""
+-----Build Covariance Matrix-----
+
+Written by: Edward Small
+When: 10/03/2020
+
+Finds the correlation between spatial and temporal data, and uses this
+to construct the covariance
+
+For information on how to use this file, check the README at either:
+
+https://github.com/ArgoDMQC/matlab_owc
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+"""
+
 import numpy as np
 
-
+# pylint: disable=too-many-arguments
 def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     """
     Returns a matrix for the horizontal covariance
@@ -13,14 +28,6 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     :return: horizontal covariance matrix
     """
 
-    # Get data dimensions
-    input_coord_rows = input_coords.shape[0]
-    coord_rows = coords.shape[0]
-
-    # Set up matrices
-    cov = np.zeros((input_coord_rows, coord_rows))
-    one = np.ones((coord_rows, 1))
-
     # Derive the planetary vorticity at each point
 
     # Get the depth for each data point
@@ -28,14 +35,17 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     z_coords = coords[:, 2]
 
     # define a vectorized function to calculation potential vorticity
-    pv = np.vectorize(lambda lat, depth: (2 * 7.292 * 10 ** -5 * np.sin(lat * np.pi / 180)) / depth)
+    potential_vorticity = np.vectorize(lambda latitude, depth:
+                                       (2 * 7.292 * 10 ** -5 *
+                                        np.sin(latitude * np.pi / 180)) / depth)
 
     # calculate potential vorticity
-    pv_input_coords = pv(input_coords[0], z_input_coords)
-    pv_coords = pv(coords[:, 0], z_coords)
+    pv_input_coords = potential_vorticity(input_coords[0], z_input_coords)
+    pv_coords = potential_vorticity(coords[:, 0], z_coords)
 
     # calculate correlation
-    cor_term = ((input_coords[0] - coords[:, 0]) / lat) ** 2 + ((input_coords[1] - coords[:, 1]) / long) ** 2
+    cor_term = ((input_coords[0] - coords[:, 0]) / lat) ** 2 + \
+               ((input_coords[1] - coords[:, 1]) / long) ** 2
 
     # include potential vorticity in correlation, if the user has asked for it
 

@@ -37,6 +37,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import numpy as np
 import scipy.interpolate as interpolate
+from ow_calibration.build_cov.covarxy_pv.covarxy_pv import covarxy_pv
 
 
 def build_cov(ptmp, coord_float, config):
@@ -83,7 +84,7 @@ def build_cov(ptmp, coord_float, config):
                 if i < j:
                     l_theta = upper_interp(ptmp[i, profile])
                     cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2
-                                                   / l_theta**2)
+                                                   / l_theta ** 2)
 
                 # belongs in the lower triangle, look up water column for vertical scale
                 elif i > j:
@@ -99,4 +100,19 @@ def build_cov(ptmp, coord_float, config):
                 if np.isnan(cov[i + profile_1, j]):
                     cov[i + profile_1, j] = 1
 
+    # set up matrix to hold horizontal covariance
+    h_cov = np.ones((ptmp_columns, ptmp_columns)) * np.nan
 
+    for profile in range(0, ptmp_columns):
+        h_cov[profile, :] = covarxy_pv(coord_float[profile], coord_float,
+                                         config['MAPSCALE_LONGITUDE_SMALL'],
+                                         config['MAPSCALE_LATITUDE_SMALL'],
+                                         config['MAPSCALE_PHI_SMALL'],
+                                         config['MAPSCALE_USE_PV'])
+
+    h_cov = h_cov[:, 0:ptmp_columns]
+
+    # build final covariance matrix, using horizontal and vertical covariance
+
+    cov_n = np.tile(cov, [1, ptmp_columns])
+    

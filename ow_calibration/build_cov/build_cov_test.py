@@ -7,8 +7,8 @@ class MyTestCase(unittest.TestCase):
     def test_something(self):
         config = {"MAPSCALE_LONGITUDE_SMALL": 4,
                   "MAPSCALE_LATITUDE_SMALL": 2,
-                  "MAPSCALE_PHU_SMALL": 0.1,
-                  "MAP_USE_PV": 0}
+                  "MAPSCALE_PHI_SMALL": 0.1,
+                  "MAPSCALE_USE_PV": 0}
         ptmp = np.array([[0.7058, 0.7039, 0.8285],
                          [0.6713, 0.6664, 0.7432],
                          [0.8257, 0.8224, 0.7804],
