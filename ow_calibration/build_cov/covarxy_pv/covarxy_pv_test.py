@@ -16,6 +16,10 @@ from ow_calibration.build_cov.covarxy_pv.covarxy_pv import covarxy_pv
 
 
 class MyTestCase(unittest.TestCase):
+    """
+    Test cases for covarxy_pv function
+    """
+
     def setUp(self):
         """
         Set up for test
@@ -77,7 +81,6 @@ class MyTestCase(unittest.TestCase):
             self.assertAlmostEqual(ans[i], cov[i],
                                    4, "elements in covarxy_pv matrix are not correct")
 
-
     def test_returns_ones(self):
         """
         Check that we get a matrix of almost ones if data is very close (according to scale)
@@ -89,6 +92,7 @@ class MyTestCase(unittest.TestCase):
         cov = covarxy_pv(self.input_coords, self.coords, 99999999, 99999999, self.phi, self.no_pv)
         for i in cov:
             self.assertAlmostEqual(i, 1, 15, "elements in covarxy_pv matrix are not correct")
+
 
 if __name__ == '__main__':
     unittest.main()

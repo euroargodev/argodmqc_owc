@@ -17,6 +17,10 @@ from ow_calibration.build_cov.build_cov import build_cov
 
 
 class MyTestCase(unittest.TestCase):
+    """
+    Test cases for build_cov function
+    """
+
     def setUp(self):
         """
         Set up for test
