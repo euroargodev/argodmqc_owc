@@ -1,3 +1,15 @@
+"""
+-----Covariance x, y, potential vorticity matrix Test File-----
+
+Written by: Edward Small
+When: 12/03/2020
+
+Contains unit tests to check functionality of the `covarxy_pv` function
+
+To run this test specifically, look at the documentation at:
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+"""
+
 import unittest
 import numpy as np
 from ow_calibration.build_cov.covarxy_pv.covarxy_pv import covarxy_pv
@@ -5,6 +17,11 @@ from ow_calibration.build_cov.covarxy_pv.covarxy_pv import covarxy_pv
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
+        """
+        Set up for test
+        :return: Nothing
+        """
+
         self.input_coords = np.array([0.0572, -0.0592, 5.1083]) * 1.0e+03
         self.coords = np.array([[0.0572, -0.0592, 5.1083],
                                 [0.0578, -0.0591, 5.0993],
