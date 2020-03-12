@@ -105,14 +105,28 @@ def build_cov(ptmp, coord_float, config):
 
     for profile in range(0, ptmp_columns):
         h_cov[profile, :] = covarxy_pv(coord_float[profile], coord_float,
-                                         config['MAPSCALE_LONGITUDE_SMALL'],
-                                         config['MAPSCALE_LATITUDE_SMALL'],
-                                         config['MAPSCALE_PHI_SMALL'],
-                                         config['MAPSCALE_USE_PV'])
+                                       config['MAPSCALE_LONGITUDE_SMALL'],
+                                       config['MAPSCALE_LATITUDE_SMALL'],
+                                       config['MAPSCALE_PHI_SMALL'],
+                                       config['MAPSCALE_USE_PV'])
 
     h_cov = h_cov[:, 0:ptmp_columns]
 
     # build final covariance matrix, using horizontal and vertical covariance
 
-    cov_n = np.tile(cov, [1, ptmp_columns])
-    
+    n_cov = np.tile(cov, [1, ptmp_columns])
+
+    # Have to find the covariance for each profile against all other profiles
+    for profile in range(0, ptmp_columns):
+
+        lower = profile * ptmp_rows
+        upper = (profile + 1) * ptmp_rows
+
+        # go through each profile
+        for profile_1 in range(0, ptmp_columns):
+            lower_1 = profile_1 * ptmp_rows
+            upper_1 = (profile_1 + 1) * ptmp_rows
+            n_cov[lower:upper, lower_1:upper_1] = h_cov[profile, profile_1] * \
+                                                  n_cov[lower:upper, lower_1:upper_1]
+
+    return n_cov
