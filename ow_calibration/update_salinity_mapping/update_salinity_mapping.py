@@ -145,7 +145,7 @@ def update_salinity_mapping(float_dir, float_name, config):
         profile_index = 0
         la_profile_no = np.empty(0)
         selected_hist = []
-        la_ptmp = np.empty((0, 2))
+        la_ptmp = np.empty((float_level_count, 0))
 
         print("No precaulcated data")
         print("__________________________________________________________\n")
