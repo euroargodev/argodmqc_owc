@@ -174,8 +174,10 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_profile_no = np.insert(la_profile_no, profile_index, profile_no[missing_profile])
         # Construct elements for this profile
 
-        la_ptmp = np.hstack((la_ptmp, np.nan * np.ones((float_level_count, 1))))
-        print(la_ptmp)
-        input("----------------------")
+        if profile_index > la_ptmp.shape[1]:
+            la_ptmp = np.insert(la_ptmp, profile_index, np.nan * np.ones(float_level_count), axis=1)
+
+        else:
+            la_ptmp = np.hstack((la_ptmp, np.nan * np.ones((float_level_count, 1))))
 
         profile_index += 1
