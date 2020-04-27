@@ -30,7 +30,7 @@ def load_configuration():
         #
         #    Climatology Data Input Paths
 
-        'HISTORICAL_DIRECTORY': "../../data/climatology",
+        'HISTORICAL_DIRECTORY': "data/climatology",
         'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
         'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
         'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",

@@ -50,14 +50,18 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
         for data_type in range(1, 4):
 
             # get the data
-            data = get_data(wmo_box, data_type, config, pa_float_name)
+            try:
+                data = get_data(wmo_box, data_type, config, pa_float_name)
 
-            # if we have data, combine it with the other data then reset it
-            if data:
-                grid_lat = np.concatenate([grid_lat, data['lat'][0]])
-                grid_long = np.concatenate([grid_long, data['long'][0]])
-                grid_dates = np.concatenate([grid_dates, data['dates'][0]])
-                data = []
+                # if we have data, combine it with the other data then reset it
+                if data:
+                    grid_lat = np.concatenate([grid_lat, data['lat'][0]])
+                    grid_long = np.concatenate([grid_long, data['long'][0]])
+                    grid_dates = np.concatenate([grid_dates, data['dates'][0]])
+                    data = []
+
+            except:
+                print("no file found for box: ", wmo_box[0])
 
     if grid_lat.__len__() == 0:
 

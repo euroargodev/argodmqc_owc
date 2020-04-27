@@ -24,6 +24,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import scipy.io as scipy
 import numpy as np
 import time
+from ow_calibration.find_25boxes.find_25boxes import find_25boxes
+from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 
 
 def update_salinity_mapping(float_dir, float_name, config):
@@ -51,7 +53,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
     # Load all the mapping parameters, including the WMO boxes -----------
 
-    wmo_boxes = scipy.loadmat(config['CONFIG_DIRECTORY'] + config['CONFIG_WMO_BOXES'])['la_wmo_boxes']
+    wmo_boxes = scipy.loadmat(config['CONFIG_DIRECTORY'] + config['CONFIG_WMO_BOXES'])
     max_casts = config['CONFIG_MAX_CASTS']
     map_use_pv = config['MAP_USE_PV']
     map_use_saf = config['MAP_USE_SAF']
@@ -146,18 +148,35 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_profile_no = np.empty(0)
         selected_hist = []
         la_ptmp = np.empty((float_level_count, 0))
+        la_mapped_sal = np.empty((float_level_count, 0))
+        la_mapsalerrors = np.empty((float_level_count, 0))
+        la_noise_sal = np.empty((float_level_count, 0))
+        la_signal_sal = np.empty((float_level_count, 0))
 
         print("No precaulcated data")
         print("__________________________________________________________\n")
 
     # Compare profile numbers in the float source against the mapped data matrix -
-
     missing_profile_index = []
 
     for i in range(0, profile_no.__len__()):
         profiles = np.argwhere(la_profile_no == profile_no[i])
         if profiles.size == 0:
             missing_profile_index.append(i)
+
+    # initalise vectors for holding parameters
+    scale_long_large = []
+    scale_lat_large = []
+    scale_long__small = []
+    scale_lat_small = []
+    scale_phi_large = []
+    scale_phi_small = []
+    scale_age_large = []
+    scale_age_small = []
+    use_pav = []
+    use_saf = []
+    p_delta = []
+    p_exclude = []
 
     # update mapped data with missing profiles ---------------------------
 
@@ -174,10 +193,52 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_profile_no = np.insert(la_profile_no, profile_index, profile_no[missing_profile])
         # Construct elements for this profile
 
-        if profile_index > la_ptmp.shape[1]:
-            la_ptmp = np.insert(la_ptmp, profile_index, np.nan * np.ones(float_level_count), axis=1)
+        # if we are inserting changing a column in existing data
+        if profile_index < la_ptmp.shape[1]:
+            la_ptmp[:, profile_index] = np.nan * np.ones(float_level_count)
+            la_mapped_sal[:, profile_index] = np.nan * np.ones(float_level_count)
+            la_mapsalerrors[:, profile_index] = np.nan * np.ones(float_level_count)
+            la_noise_sal[:, profile_index] = np.nan * np.ones(float_level_count)
+            la_signal_sal[:, profile_index] = np.nan * np.ones(float_level_count)
 
+        # if we are adding a new column
         else:
             la_ptmp = np.hstack((la_ptmp, np.nan * np.ones((float_level_count, 1))))
+            la_mapped_sal = np.hstack((la_mapped_sal, np.nan * np.ones((float_level_count, 1))))
+            la_mapsalerrors = np.hstack((la_mapsalerrors, np.nan * np.ones((float_level_count, 1))))
+            la_noise_sal = np.hstack((la_noise_sal, np.nan * np.ones((float_level_count, 1))))
+            la_signal_sal = np.hstack((la_signal_sal, np.nan * np.ones((float_level_count, 1))))
+
+        # initialise matrices to hold and save parameter settings
+        scale_long_large.append(np.nan)
+        scale_lat_large.append(np.nan)
+        scale_long__small.append(np.nan)
+        scale_lat_small.append(np.nan)
+        scale_phi_large.append(np.nan)
+        scale_phi_small.append(np.nan)
+        scale_age_large.append(np.nan)
+        scale_age_small.append(np.nan)
+        use_pav.append(np.nan)
+        use_saf.append(np.nan)
+        p_delta.append(np.nan)
+        p_exclude.append(np.nan)
+
+        # get data from float
+        float_lat = float_source_data['LAT'][0, missing_profile]
+        float_long = float_source_data['LONG'][0, missing_profile]
+        float_date = float_source_data['DATES'][0, missing_profile]
+        float_sal = float_source_data['SAL'][:, missing_profile]
+        float_ptmp = float_source_data['PTMP'][:, missing_profile]
+        float_pres = float_source_data['PRES'][:, missing_profile]
+
+        # if we have any good location data and pressure data from the float
+        if not np.isnan(float_long) \
+                and not np.isnan(float_lat) \
+                and np.argwhere(np.isnan(float_pres) == 0).any():
+
+            wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
+            grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers,
+                                                                        float_name,
+                                                                        config)
 
         profile_index += 1
