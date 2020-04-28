@@ -21,15 +21,13 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import array
 import struct
-import scipy.io as scipy
-import numpy as np
 import time
-import matplotlib.pyplot as plt
-import elevation
-from mpl_toolkits.basemap import Basemap
+import numpy as np
+import scipy.io as scipy
+import scipy.interpolate as interpolate
 from ow_calibration.find_25boxes.find_25boxes import find_25boxes
+from ow_calibration.find_25boxes.find_25boxes import nearest_neighbour
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 
 
@@ -40,9 +38,10 @@ def fread(fid, nelements, dtype):
         dt = dtype
 
     data_array = np.fromfile(fid, dt, nelements)
-    #data_array.shape = (nelements, 1)
+    # data_array.shape = (nelements, 1)
 
     return data_array
+
 
 def update_salinity_mapping(float_dir, float_name, config):
     """
@@ -279,6 +278,7 @@ def update_salinity_mapping(float_dir, float_name, config):
             print(z)
             input("-------------_")
             """
+
             def get_topo_grid(min_long, max_long, min_lat, max_lat):
 
                 # manipulate input values to match file for decoding
@@ -288,8 +288,8 @@ def update_salinity_mapping(float_dir, float_name, config):
                 rlong = int(np.ceil(max_long * 12))
 
                 # use these values to form the grid
-                lgs = np.arange(llong, rlong+1, 1)/12
-                lts = np.flip(np.arange(blat, tlat, 1)/12, axis=0)
+                lgs = np.arange(llong, rlong + 1, 1) / 12
+                lts = np.flip(np.arange(blat, tlat + 1, 1) / 12, axis=0)
 
                 if rlong > 360 * 12 - 1:
                     rlong = rlong - 360 * 12
@@ -302,8 +302,8 @@ def update_salinity_mapping(float_dir, float_name, config):
                 decoder = [llong, rlong, 90 * 12 - blat, 90 * 12 - tlat]
 
                 # get the amount of elevation values we need
-                nlat = int(round(decoder[2] - decoder[3]))
-                nlong = int(round(decoder[1] - decoder[0]))
+                nlat = int(round(decoder[2] - decoder[3])) + 1
+                nlong = int(round(decoder[1] - decoder[0])) + 1
 
                 # initialise matrix to hold z values
                 topo = np.zeros((nlat, nlong))
@@ -323,10 +323,19 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                 return topo, longs, lats
 
-
-
-            get_topo_grid(float_long-1, float_long+1, float_lat-1, float_lat+1)
-
+            elev, x, y = get_topo_grid(float_long - 1, float_long + 1, float_lat - 1, float_lat + 1)
+            print(elev.shape)
+            print(x[0,:])
+            print(y[:,0])
+            print(float_lat)
+            print(float_long)
+            input("***")
+            Z = nearest_neighbour(x[0,:], y[:,0], elev, float_long, float_lat)
+            interp_grid = interpolate.RectBivariateSpline(x[0,:], np.flip(y[:,0], axis=0), np.flip(elev, axis=1), kx=1, ky=1)
+            interp = interpolate.interp2d(x[0,:], y[:,0], elev, kind='linear')
+            print(-interp_grid(float_long, float_lat))
+            print(-Z)
+            print(interp(float_long, float_lat))
             input("---------")
             wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
             grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers,
@@ -334,4 +343,3 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                                         config)
 
         profile_index += 1
-
