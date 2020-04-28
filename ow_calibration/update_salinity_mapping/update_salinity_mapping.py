@@ -21,12 +21,28 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import array
+import struct
 import scipy.io as scipy
 import numpy as np
 import time
+import matplotlib.pyplot as plt
+import elevation
+from mpl_toolkits.basemap import Basemap
 from ow_calibration.find_25boxes.find_25boxes import find_25boxes
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 
+
+def fread(fid, nelements, dtype):
+    if dtype is np.str:
+        dt = np.uint16  # WARNING: assuming 8-bit ASCII for np.str!
+    else:
+        dt = dtype
+
+    data_array = np.fromfile(fid, dt, nelements)
+    #data_array.shape = (nelements, 1)
+
+    return data_array
 
 def update_salinity_mapping(float_dir, float_name, config):
     """
@@ -236,9 +252,28 @@ def update_salinity_mapping(float_dir, float_name, config):
                 and not np.isnan(float_lat) \
                 and np.argwhere(np.isnan(float_pres) == 0).any():
 
+            """
+            f = open("data/constants/tbase.int", "r")
+            no = f.seek(15363268)
+            a = fread(f, 5, np.str)
+            print(a)
+
+            test = np.fromfile("data/constants/tbase.int", dtype="uint16")
+            print(test.shape)
+            """
+
+            f = open("data/constants/tbase.int", "rb")
+            print(f.seek(20))
+            print(struct.unpack('h', f.read(2)))
+
+            input("-------------_")
+
+
+
             wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
             grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers,
                                                                         float_name,
                                                                         config)
 
         profile_index += 1
+
