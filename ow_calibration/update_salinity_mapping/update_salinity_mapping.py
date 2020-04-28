@@ -261,15 +261,73 @@ def update_salinity_mapping(float_dir, float_name, config):
             test = np.fromfile("data/constants/tbase.int", dtype="uint16")
             print(test.shape)
             """
-
+            """
+            z = []
             f = open("data/constants/tbase.int", "rb")
-            print(f.seek(20))
-            print(struct.unpack('h', f.read(2)))
+            print(float_lat + 1)
+            calc_float_lat = np.ceil((float_lat + 1) * 12)
+            print(calc_float_lat)
+            test = 90*12-calc_float_lat
+            print(test)
+            test_2 = test*360*12*2+674*2
+            print(test_2)
+            input("££££££££££££")
+            print(f.seek(15363268))
+            for x in range(25):
+                z.append(struct.unpack('h', f.read(2))[0])
 
+            print(z)
             input("-------------_")
+            """
+            def get_topo_grid(min_long, max_long, min_lat, max_lat):
+
+                # manipulate input values to match file for decoding
+                blat = int(np.max((np.floor(min_lat * 12), -90 * 12 + 1)))
+                tlat = int(np.ceil(max_lat * 12))
+                llong = int(np.floor(min_long * 12))
+                rlong = int(np.ceil(max_long * 12))
+
+                # use these values to form the grid
+                lgs = np.arange(llong, rlong+1, 1)/12
+                lts = np.flip(np.arange(blat, tlat, 1)/12, axis=0)
+
+                if rlong > 360 * 12 - 1:
+                    rlong = rlong - 360 * 12
+                    llong = llong - 360 * 12
+
+                if llong < 0:
+                    rlong = rlong + 360 * 12
+                    llong = llong + 360 * 12
+
+                decoder = [llong, rlong, 90 * 12 - blat, 90 * 12 - tlat]
+
+                # get the amount of elevation values we need
+                nlat = int(round(decoder[2] - decoder[3]))
+                nlong = int(round(decoder[1] - decoder[0]))
+
+                # initialise matrix to hold z values
+                topo = np.zeros((nlat, nlong))
+
+                # Open the binary file
+                elev_file = open("data/constants/tbase.int", "rb")
+
+                # decode the file, and get values
+                for i in range(nlat):
+                    elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)
+
+                    for j in range(nlong):
+                        topo[i, j] = struct.unpack('h', elev_file.read(2))[0]
+
+                # make the grid
+                longs, lats = np.meshgrid(lgs, lts)
+
+                return topo, longs, lats
 
 
 
+            get_topo_grid(float_long-1, float_long+1, float_lat-1, float_lat+1)
+
+            input("---------")
             wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
             grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers,
                                                                         float_name,
