@@ -27,7 +27,7 @@ import numpy as np
 import scipy.io as scipy
 import scipy.interpolate as interpolate
 from ow_calibration.find_25boxes.find_25boxes import find_25boxes
-from ow_calibration.find_25boxes.find_25boxes import nearest_neighbour
+from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 
 
@@ -251,95 +251,44 @@ def update_salinity_mapping(float_dir, float_name, config):
                 and not np.isnan(float_lat) \
                 and np.argwhere(np.isnan(float_pres) == 0).any():
 
-            """
-            f = open("data/constants/tbase.int", "r")
-            no = f.seek(15363268)
-            a = fread(f, 5, np.str)
-            print(a)
+            # tbase.int file requires longitudes from 0 to +/-180
+            float_long_tbase = float_long
+            if float_long_tbase > 180:
+                float_long_tbase -= 360
 
-            test = np.fromfile("data/constants/tbase.int", dtype="uint16")
-            print(test.shape)
-            """
-            """
-            z = []
-            f = open("data/constants/tbase.int", "rb")
-            print(float_lat + 1)
-            calc_float_lat = np.ceil((float_lat + 1) * 12)
-            print(calc_float_lat)
-            test = 90*12-calc_float_lat
-            print(test)
-            test_2 = test*360*12*2+674*2
-            print(test_2)
-            input("££££££££££££")
-            print(f.seek(15363268))
-            for x in range(25):
-                z.append(struct.unpack('h', f.read(2))[0])
+            # find the depth of the ocean at the float location
+            float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1, float_long_tbase + 1,
+                                                         float_lat - 1, float_lat + 1)
+            float_interp = interpolate.interp2d(float_x[0, :], float_y[:, 0], float_elev, kind='linear')
+            float_z = -float_interp(float_long, float_lat)
 
-            print(z)
-            input("-------------_")
-            """
-
-            def get_topo_grid(min_long, max_long, min_lat, max_lat):
-
-                # manipulate input values to match file for decoding
-                blat = int(np.max((np.floor(min_lat * 12), -90 * 12 + 1)))
-                tlat = int(np.ceil(max_lat * 12))
-                llong = int(np.floor(min_long * 12))
-                rlong = int(np.ceil(max_long * 12))
-
-                # use these values to form the grid
-                lgs = np.arange(llong, rlong + 1, 1) / 12
-                lts = np.flip(np.arange(blat, tlat + 1, 1) / 12, axis=0)
-
-                if rlong > 360 * 12 - 1:
-                    rlong = rlong - 360 * 12
-                    llong = llong - 360 * 12
-
-                if llong < 0:
-                    rlong = rlong + 360 * 12
-                    llong = llong + 360 * 12
-
-                decoder = [llong, rlong, 90 * 12 - blat, 90 * 12 - tlat]
-
-                # get the amount of elevation values we need
-                nlat = int(round(decoder[2] - decoder[3])) + 1
-                nlong = int(round(decoder[1] - decoder[0])) + 1
-
-                # initialise matrix to hold z values
-                topo = np.zeros((nlat, nlong))
-
-                # Open the binary file
-                elev_file = open("data/constants/tbase.int", "rb")
-
-                # decode the file, and get values
-                for i in range(nlat):
-                    elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)
-
-                    for j in range(nlong):
-                        topo[i, j] = struct.unpack('h', elev_file.read(2))[0]
-
-                # make the grid
-                longs, lats = np.meshgrid(lgs, lts)
-
-                return topo, longs, lats
-
-            elev, x, y = get_topo_grid(float_long - 1, float_long + 1, float_lat - 1, float_lat + 1)
-            print(elev.shape)
-            print(x[0,:])
-            print(y[:,0])
-            print(float_lat)
-            print(float_long)
-            input("***")
-            Z = nearest_neighbour(x[0,:], y[:,0], elev, float_long, float_lat)
-            interp_grid = interpolate.RectBivariateSpline(x[0,:], np.flip(y[:,0], axis=0), np.flip(elev, axis=1), kx=1, ky=1)
-            interp = interpolate.interp2d(x[0,:], y[:,0], elev, kind='linear')
-            print(-interp_grid(float_long, float_lat))
-            print(-Z)
-            print(interp(float_long, float_lat))
-            input("---------")
+            # gather data from area surrounding the float location
             wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
             grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers,
                                                                         float_name,
                                                                         config)
+
+            # if we have data in the surrouding area, find depths at these points
+            if grid_lat.__len__() > 0:
+                # tbase.int file requires longitudes from 0 to +/-180
+                grid_long_tbase = grid_long
+                g_180 = np.argwhere(grid_long_tbase > 180)
+                grid_long_tbase[g_180] -= 360
+
+                # find depth of the ocean at historical locations
+                grid_elev, grid_x, grid_y = get_topo_grid(np.amin(grid_long_tbase) - 1,
+                                                          np.amax(grid_long_tbase) + 1,
+                                                          np.amin(grid_lat) - 1,
+                                                          np.amax(grid_lat) + 1)
+
+                grid_interp = interpolate.interp2d(grid_x[0], grid_y[:, 0],
+                                                   grid_elev, kind='linear')
+                """
+                As a note, the reason we vectorise the function here is because we do not 
+                want to compare every longitudinal value to ever latitude. Rather, we simply 
+                want to interpolate each pair of longitudes and latitudes.
+                """
+                grid_z = -np.vectorize(grid_interp)(grid_long_tbase, grid_lat)
+
 
         profile_index += 1
