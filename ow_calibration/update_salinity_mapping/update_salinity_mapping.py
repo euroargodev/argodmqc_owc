@@ -31,6 +31,7 @@ from ow_calibration.find_25boxes.find_25boxes import find_25boxes
 from ow_calibration.interp_climatology.interp_climatology import interp_climatology
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 from ow_calibration.get_region.get_region_data import get_region_data
+from ow_calibration.map_data_grid.map_data_grid import map_data_grid
 from ow_calibration.noise_variance.noise_variance import noise_variance
 from ow_calibration.signal_variance.signal_variance import signal_variance
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
@@ -253,7 +254,7 @@ def update_salinity_mapping(float_dir, float_name, config):
             float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1, float_long_tbase + 1,
                                                          float_lat - 1, float_lat + 1)
             float_interp = interpolate.interp2d(float_x[0, :], float_y[:, 0], float_elev, kind='linear')
-            float_z = -float_interp(float_long, float_lat)
+            float_z = -float_interp(float_long, float_lat)[0]
 
             # gather data from area surrounding the float location
             wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
@@ -388,9 +389,24 @@ def update_salinity_mapping(float_dir, float_name, config):
                             noise_sal = noise_variance(hist_sal.flatten(),
                                                        hist_lat.flatten(),
                                                        hist_long.flatten())
-                            print(noise_sal)
+                            signal_sal = signal_variance(hist_sal)
+
+                            # map residuals
+                            hist_data = np.array([hist_lat, hist_long,
+                                                  hist_dates, hist_z]).transpose()[0]
+
+                            mapped_values = map_data_grid(hist_sal.flatten(),
+                                                          np.array([float_lat, float_long,
+                                                                    float_date, float_z]),
+                                                          hist_data,
+                                                          long_large, lat_large,
+                                                          map_age_large,
+                                                          signal_sal, noise_sal,
+                                                          phi_large, map_use_pv)
+                            print(mapped_values)
+                            input("*****")
+
         print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
         input("***")
-
 
         profile_index += 1
