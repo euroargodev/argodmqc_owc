@@ -26,9 +26,11 @@ import time
 import numpy as np
 import scipy.io as scipy
 import scipy.interpolate as interpolate
+from ow_calibration.find_besthist.find_besthist import find_besthist
 from ow_calibration.find_25boxes.find_25boxes import find_25boxes
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
+from ow_calibration.get_region.get_region_data import get_region_data
 
 
 def fread(fid, nelements, dtype):
@@ -290,5 +292,32 @@ def update_salinity_mapping(float_dir, float_name, config):
                 """
                 grid_z = -np.vectorize(grid_interp)(grid_long_tbase, grid_lat)
 
+                # make sure that the grid and float longitudes match at the 0-360 mark
+                float_long_0 = float_long
+                if np.argwhere(grid_long>360).__len__() > 0:
+                    if 0 <= float_long <= 20:
+                        float_long_0 += 360
+
+                index = find_besthist(grid_lat, grid_long, grid_dates, grid_z,
+                                      float_lat, float_long_0, float_date, float_z,
+                                      lat_large, lat_small, long_large, long_small,
+                                      phi_large, phi_small, map_age_large, map_age_small,
+                                      map_use_pv, max_casts)
+
+                if map_use_saf == 1:
+                    # TODO: Add the SAF functions here
+                    print("SAF functions unavailable in the current version")
+
+                # Now that we have the indices of the best spatial and temporal data
+                # we can get the rest of the data from these casts
+
+                [best_hist_sal, best_hist_ptmp, best_hist_pres,
+                best_hist_lat, best_hist_long, best_hist_dates] = get_region_data(wmo_numbers,
+                                                                                 float_name,
+                                                                                 config,
+                                                                                 index,
+                                                                                 float_pres)
+
+                
 
         profile_index += 1
