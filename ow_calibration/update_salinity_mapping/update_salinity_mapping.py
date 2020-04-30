@@ -28,21 +28,12 @@ import scipy.io as scipy
 import scipy.interpolate as interpolate
 from ow_calibration.find_besthist.find_besthist import find_besthist
 from ow_calibration.find_25boxes.find_25boxes import find_25boxes
-from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
+from ow_calibration.interp_climatology.interp_climatology import interp_climatology
 from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
 from ow_calibration.get_region.get_region_data import get_region_data
-
-
-def fread(fid, nelements, dtype):
-    if dtype is np.str:
-        dt = np.uint16  # WARNING: assuming 8-bit ASCII for np.str!
-    else:
-        dt = dtype
-
-    data_array = np.fromfile(fid, dt, nelements)
-    # data_array.shape = (nelements, 1)
-
-    return data_array
+from ow_calibration.noise_variance.noise_variance import noise_variance
+from ow_calibration.signal_variance.signal_variance import signal_variance
+from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 
 
 def update_salinity_mapping(float_dir, float_name, config):
@@ -199,7 +190,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
     for i in range(0, missing_profile_index.__len__()):
         # start the timer
-        start_time = time.perf_counter()
+        start_time = time.time()
 
         print("UPDATE_SALINITY_MAPPING: Working on profile ", i)
 
@@ -294,7 +285,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                 # make sure that the grid and float longitudes match at the 0-360 mark
                 float_long_0 = float_long
-                if np.argwhere(grid_long>360).__len__() > 0:
+                if np.argwhere(grid_long > 360).__len__() > 0:
                     if 0 <= float_long <= 20:
                         float_long_0 += 360
 
@@ -304,20 +295,102 @@ def update_salinity_mapping(float_dir, float_name, config):
                                       phi_large, phi_small, map_age_large, map_age_small,
                                       map_use_pv, max_casts)
 
+                # Now that we have the indices of the best spatial and temporal data
+                # we can get the rest of the data from these casts
+                [best_hist_sal, best_hist_ptmp, best_hist_pres,
+                 best_hist_lat, best_hist_long, best_hist_dates] = get_region_data(wmo_numbers,
+                                                                                   float_name,
+                                                                                   config,
+                                                                                   index,
+                                                                                   float_pres)
+                best_hist_z = grid_z[index]
+
+                # Now that we have the best data historical data for this profile we can reset
+                # the grid matrices
+
+                grid_lat = []
+                grid_long = []
+                grid_dates = []
+
+                # If we are near the Subantarctic Front we need to figure out if
+                # the profile is north or south of it. Then we should remove data not on
+                # the same side the profile is on
                 if map_use_saf == 1:
                     # TODO: Add the SAF functions here
                     print("SAF functions unavailable in the current version")
 
-                # Now that we have the indices of the best spatial and temporal data
-                # we can get the rest of the data from these casts
+                # make the float longitude wrap around the 0-360 mark if the historical data has
+                if np.argwhere(best_hist_long > 360).__len__() > 0:
+                    if 0 <= float_long <= 20:
+                        float_long += 360
 
-                [best_hist_sal, best_hist_ptmp, best_hist_pres,
-                best_hist_lat, best_hist_long, best_hist_dates] = get_region_data(wmo_numbers,
-                                                                                 float_name,
-                                                                                 config,
-                                                                                 index,
-                                                                                 float_pres)
+                # interpolate historical data onto float theta levels
+                hist_interp_sal, hist_interp_pres = interp_climatology(best_hist_sal,
+                                                                       best_hist_ptmp,
+                                                                       best_hist_pres,
+                                                                       float_sal,
+                                                                       float_ptmp,
+                                                                       float_pres)
 
-                
+                # now that we have the interpolated data, we can reset the historical data matrices
+                best_hist_sal = []
+                best_hist_ptmp = []
+                best_hist_pres = []
+                wmo_numbers = []
+                index = []
+
+                # map float theta levels below the exclusion point
+
+                for n_level in range(float_level_count):
+
+                    # for each float theta level, only use interpolated salinity
+                    # that aren't NaN's
+                    if not np.isnan(float_sal[n_level]) and float_pres[n_level] >= map_p_exclude:
+
+                        max_hist_casts = np.argwhere(np.isnan(hist_interp_sal[n_level, :]) == 0)
+                        hist_sal = hist_interp_sal[n_level, max_hist_casts]
+                        hist_pres = hist_interp_pres[n_level, max_hist_casts]
+                        hist_long = best_hist_long[max_hist_casts]
+                        hist_lat = best_hist_lat[max_hist_casts]
+                        hist_dates = best_hist_dates[max_hist_casts]
+                        hist_z = best_hist_z[max_hist_casts]
+
+                        # Need points +/- map_p_delta of float pressure
+                        delta_index = np.argwhere(np.abs(hist_pres - float_pres[n_level])
+                                                  < map_p_delta)[:, 0]
+                        hist_sal = hist_sal[delta_index]
+                        hist_pres = hist_pres[delta_index]
+                        hist_long = hist_long[delta_index]
+                        hist_lat = hist_lat[delta_index]
+                        hist_dates = hist_dates[delta_index]
+                        hist_z = hist_z[delta_index]
+
+                        # only proceed with analysis if we have more than 5 points
+                        if hist_sal.__len__() > 5:
+
+                            # Need to check for statistical outliers
+                            mean_sal = np.mean(hist_sal)
+                            signal_sal = signal_variance(hist_sal)
+                            outlier = np.argwhere(np.abs(hist_sal - mean_sal) /
+                                                  np.sqrt(signal_sal) > 3)
+
+                            # remove the statstical outliers
+                            if outlier.__len__() > 0:
+                                hist_sal = np.delete(hist_sal, outlier)
+                                hist_pres = np.delete(hist_pres, outlier)
+                                hist_long = np.delete(hist_long, outlier)
+                                hist_lat = np.delete(hist_lat, outlier)
+                                hist_dates = np.delete(hist_dates, outlier)
+                                hist_z = np.delete(hist_z, outlier)
+
+                            # calculate signal and noise for complete data
+
+                            noise_sal = noise_variance(hist_sal.flatten(),
+                                                       hist_lat.flatten(),
+                                                       hist_long.flatten())
+                            print(noise_sal)
+        print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
+        input("***")
+
 
         profile_index += 1

@@ -56,9 +56,11 @@ def noise_variance(sal, lat, long):
             return 0
 
         # find index of the minimum distance
-        min_index = np.argwhere(distances == min_distance)
+        min_index = np.argwhere(distances == min_distance)[0]
 
         # store the differences in salinities between these two points
+        print(min_index)
+        input(")")
         sal_noise[i] = sal[i] - sal[min_index]
 
     # make sure we have unique points
