@@ -50,8 +50,7 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     data_pos_covar = covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
     data_data_covar = np.linalg.inv(signal_variance * data_pos_covar +
                                     noise_variance * np.identity(data_pos.__len__()))
-    print(data_pos_covar[20:25,30:35])
-    input(")")
+
     # estimate the mean field and weights
     sum_data_data_covar = sum(sum(data_data_covar))
     mean_field = sum(np.dot(data_data_covar, sal.transpose())) / sum_data_data_covar

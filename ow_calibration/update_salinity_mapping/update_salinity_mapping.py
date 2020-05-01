@@ -379,10 +379,10 @@ def update_salinity_mapping(float_dir, float_name, config):
                             if outlier.__len__() > 0:
                                 hist_sal = np.delete(hist_sal, outlier)
                                 hist_pres = np.delete(hist_pres, outlier)
-                                hist_long = np.delete(hist_long, outlier)
-                                hist_lat = np.delete(hist_lat, outlier)
-                                hist_dates = np.delete(hist_dates, outlier)
-                                hist_z = np.delete(hist_z, outlier)
+                                hist_long = np.delete(hist_long, outlier).reshape((-1,1))
+                                hist_lat = np.delete(hist_lat, outlier).reshape((-1,1))
+                                hist_dates = np.delete(hist_dates, outlier).reshape((-1,1))
+                                hist_z = np.delete(hist_z, outlier).reshape((-1,1))
 
                             # calculate signal and noise for complete data
 
@@ -393,20 +393,79 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             # map residuals
                             hist_data = np.array([hist_lat, hist_long,
-                                                  hist_dates, hist_z]).transpose()[0]
+                                                  hist_dates, hist_z])
 
                             mapped_values = map_data_grid(hist_sal.flatten(),
                                                           np.array([float_lat, float_long,
-                                                                    float_date, float_z]),
-                                                          hist_data,
+                                                                    float_date, float_z]).reshape((-1,4)),
+                                                          hist_data.reshape((-1,4)),
                                                           long_large, lat_large,
                                                           map_age_large,
                                                           signal_sal, noise_sal,
                                                           phi_large, map_use_pv)
-                            print(mapped_values)
-                            input("*****")
+
+                            # use short scales to map the residuals
+
+                            sal_residual = hist_sal.flatten() - mapped_values[2]
+                            sal_signal_residual = signal_variance(sal_residual)
+
+                            mapped_residuals = map_data_grid(sal_residual,
+                                                             np.array([float_lat, float_long,
+                                                                       float_date, float_z]).reshape((-1,4)),
+                                                             hist_data.reshape((-1,4)),
+                                                             long_small, lat_small,
+                                                             map_age_small,
+                                                             sal_signal_residual, noise_sal,
+                                                             phi_small, map_use_pv)
+
+                            la_ptmp[n_level, profile_index] = float_ptmp[n_level]
+                            la_mapped_sal[n_level, profile_index] = mapped_values[0] + mapped_residuals[0]
+                            la_mapsalerrors[n_level, profile_index] = np.sqrt(np.dot(mapped_values[1],
+                                                                                     mapped_values[1]) +
+                                                                              mapped_residuals[1] * mapped_residuals[1])
+                            la_noise_sal[n_level, profile_index] = noise_sal
+                            la_signal_sal[n_level, profile_index] = signal_sal
+                            scale_long_large[profile_index] = long_large
+                            scale_lat_large[profile_index] = lat_large
+                            scale_long__small[profile_index] = long_small
+                            scale_lat_small[profile_index] = lat_small
+                            scale_phi_large[profile_index] = phi_large
+                            scale_phi_small[profile_index] = phi_small
+                            scale_age_large[profile_index] = map_age_large
+                            scale_age_small[profile_index] = map_age_small
+                            use_pav[profile_index] = map_use_pv
+                            use_saf[profile_index] = map_use_saf
+                            p_delta[profile_index] = map_p_delta
+                            p_exclude[profile_index] = map_p_exclude
+
+                            # only save selected historical points
+                            if selected_hist.__len__() == 0:
+                                selected_hist = np.array(
+                                    [hist_long[0][0], hist_lat[0][0], la_profile_no[profile_index]])
+                                selected_hist = np.reshape(selected_hist, (1, 3))
+
+                            for j in range(hist_long.__len__()):
+                                m, n = selected_hist.shape
+                                b = np.array([hist_long[j][0], hist_lat[j][0]])
+                                c = selected_hist[:, 0:2] - np.ones((m, 1)) * b
+                                d = np.argwhere(np.abs(c[:, 0]) < 1 / 60)
+                                d_1 = np.argwhere(np.abs(c[d, 1]) < 1 / 60)
+                                if d_1.__len__() == 0:
+                                    selected_hist = np.vstack((selected_hist,
+                                                               np.array([hist_long[j][0], hist_lat[j][0],
+                                                                         la_profile_no[profile_index]])))
 
         print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
-        input("***")
-
         profile_index += 1
+
+    # as a quality control check, just make sure salinities are between 20 and 40
+    bad_sal_30 = np.argwhere(la_mapped_sal < 30)
+    bad_sal_40 = np.argwhere(la_mapped_sal > 40)
+    bad_sal = np.concatenate((bad_sal_30, bad_sal_40))
+
+    for sal in bad_sal:
+        la_mapped_sal[sal[0], sal[1]] = np.nan
+
+    
+
+

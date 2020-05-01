@@ -70,6 +70,5 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
                 print("pv not yet included. Phi: ", phi)
 
             points_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
-            print(points_covar[i][j])
-            input("")
+
     return points_covar
