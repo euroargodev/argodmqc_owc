@@ -379,10 +379,10 @@ def update_salinity_mapping(float_dir, float_name, config):
                             if outlier.__len__() > 0:
                                 hist_sal = np.delete(hist_sal, outlier)
                                 hist_pres = np.delete(hist_pres, outlier)
-                                hist_long = np.delete(hist_long, outlier).reshape((-1,1))
-                                hist_lat = np.delete(hist_lat, outlier).reshape((-1,1))
-                                hist_dates = np.delete(hist_dates, outlier).reshape((-1,1))
-                                hist_z = np.delete(hist_z, outlier).reshape((-1,1))
+                                hist_long = np.delete(hist_long, outlier).reshape((-1, 1))
+                                hist_lat = np.delete(hist_lat, outlier).reshape((-1, 1))
+                                hist_dates = np.delete(hist_dates, outlier).reshape((-1, 1))
+                                hist_z = np.delete(hist_z, outlier).reshape((-1, 1))
 
                             # calculate signal and noise for complete data
 
@@ -397,8 +397,8 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             mapped_values = map_data_grid(hist_sal.flatten(),
                                                           np.array([float_lat, float_long,
-                                                                    float_date, float_z]).reshape((-1,4)),
-                                                          hist_data.reshape((-1,4)),
+                                                                    float_date, float_z]).reshape((-1, 4)),
+                                                          hist_data.reshape((-1, 4)),
                                                           long_large, lat_large,
                                                           map_age_large,
                                                           signal_sal, noise_sal,
@@ -411,8 +411,8 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             mapped_residuals = map_data_grid(sal_residual,
                                                              np.array([float_lat, float_long,
-                                                                       float_date, float_z]).reshape((-1,4)),
-                                                             hist_data.reshape((-1,4)),
+                                                                       float_date, float_z]).reshape((-1, 4)),
+                                                             hist_data.reshape((-1, 4)),
                                                              long_small, lat_small,
                                                              map_age_small,
                                                              sal_signal_residual, noise_sal,
@@ -458,7 +458,7 @@ def update_salinity_mapping(float_dir, float_name, config):
         print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
         profile_index += 1
 
-    # as a quality control check, just make sure salinities are between 20 and 40
+    # as a quality control check, just make sure salinities are between 30 and 40
     bad_sal_30 = np.argwhere(la_mapped_sal < 30)
     bad_sal_40 = np.argwhere(la_mapped_sal > 40)
     bad_sal = np.concatenate((bad_sal_30, bad_sal_40))
@@ -466,6 +466,8 @@ def update_salinity_mapping(float_dir, float_name, config):
     for sal in bad_sal:
         la_mapped_sal[sal[0], sal[1]] = np.nan
 
-    
+    # sort the data by profile number
+    sorted_profile_no = np.sort(la_profile_no)
+    sorted_profile_index = la_profile_no.argsort()
 
-
+    la_ptmp = la_ptmp[:, sorted_profile_index]
