@@ -113,10 +113,23 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_noise_sal = float_mapped_data['la_noise_sal']
         la_signal_sal = float_mapped_data['la_signal_sal']
         la_ptmp = float_mapped_data['la_ptmp']
-        la_profile_no = float_mapped_data['la_profile_no']
+        la_profile_no = float_mapped_data['la_profile_no'].flatten()
+        scale_long_large = float_mapped_data['scale_long_large'].flatten()
+        scale_lat_large = float_mapped_data['scale_lat_large'].flatten()
+        scale_long_small = float_mapped_data['scale_long_small'].flatten()
+        scale_lat_small = float_mapped_data['scale_lat_small'].flatten()
+        scale_phi_large = float_mapped_data['scale_phi_large'].flatten()
+        scale_phi_small = float_mapped_data['scale_phi_small'].flatten()
+        scale_age_large = float_mapped_data['scale_age_large'].flatten()
+        scale_age_small = float_mapped_data['scale_age_small'].flatten()
+        use_pv = float_mapped_data['use_pv'].flatten()
+        use_saf = float_mapped_data['use_saf'].flatten()
+        p_delta = float_mapped_data['p_delta'].flatten()
+        p_exclude = float_mapped_data['p_exclude'].flatten()
+        selected_hist = float_mapped_data['selected_hist']
 
         # Check to see if this is an older version run without the saf constraint
-        if "use_saf" in float_mapped_data:
+        if not "use_saf" in float_mapped_data:
             use_saf = np.zeros(float_mapped_data['use_pv'].shape)
 
         # Get mapped data shape
@@ -161,6 +174,18 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_mapsalerrors = np.empty((float_level_count, 0))
         la_noise_sal = np.empty((float_level_count, 0))
         la_signal_sal = np.empty((float_level_count, 0))
+        scale_long_large = []
+        scale_lat_large = []
+        scale_long_small = []
+        scale_lat_small = []
+        scale_phi_large = []
+        scale_phi_small = []
+        scale_age_large = []
+        scale_age_small = []
+        use_pv = []
+        use_saf = []
+        p_delta = []
+        p_exclude = []
 
         print("No precaulcated data")
         print("__________________________________________________________\n")
@@ -173,19 +198,19 @@ def update_salinity_mapping(float_dir, float_name, config):
         if profiles.size == 0:
             missing_profile_index.append(i)
 
-    # initalise vectors for holding parameters
+    """# initalise vectors for holding parameters
     scale_long_large = []
     scale_lat_large = []
-    scale_long__small = []
+    scale_long_small = []
     scale_lat_small = []
     scale_phi_large = []
     scale_phi_small = []
     scale_age_large = []
     scale_age_small = []
-    use_pav = []
+    use_pv = []
     use_saf = []
     p_delta = []
-    p_exclude = []
+    p_exclude = []"""
 
     # update mapped data with missing profiles ---------------------------
 
@@ -221,13 +246,13 @@ def update_salinity_mapping(float_dir, float_name, config):
         # initialise matrices to hold and save parameter settings
         scale_long_large.append(np.nan)
         scale_lat_large.append(np.nan)
-        scale_long__small.append(np.nan)
+        scale_long_small.append(np.nan)
         scale_lat_small.append(np.nan)
         scale_phi_large.append(np.nan)
         scale_phi_small.append(np.nan)
         scale_age_large.append(np.nan)
         scale_age_small.append(np.nan)
-        use_pav.append(np.nan)
+        use_pv.append(np.nan)
         use_saf.append(np.nan)
         p_delta.append(np.nan)
         p_exclude.append(np.nan)
@@ -427,13 +452,13 @@ def update_salinity_mapping(float_dir, float_name, config):
                             la_signal_sal[n_level, profile_index] = signal_sal
                             scale_long_large[profile_index] = long_large
                             scale_lat_large[profile_index] = lat_large
-                            scale_long__small[profile_index] = long_small
+                            scale_long_small[profile_index] = long_small
                             scale_lat_small[profile_index] = lat_small
                             scale_phi_large[profile_index] = phi_large
                             scale_phi_small[profile_index] = phi_small
                             scale_age_large[profile_index] = map_age_large
                             scale_age_small[profile_index] = map_age_small
-                            use_pav[profile_index] = map_use_pv
+                            use_pv[profile_index] = map_use_pv
                             use_saf[profile_index] = map_use_saf
                             p_delta[profile_index] = map_p_delta
                             p_exclude[profile_index] = map_p_exclude
@@ -470,4 +495,67 @@ def update_salinity_mapping(float_dir, float_name, config):
     sorted_profile_no = np.sort(la_profile_no)
     sorted_profile_index = la_profile_no.argsort()
 
+    # finalise the data sorted by profile number, make data type numpy arrays
     la_ptmp = la_ptmp[:, sorted_profile_index]
+    la_mapped_sal = la_mapped_sal[:, sorted_profile_index]
+    la_mapsalerrors = la_mapsalerrors[:, sorted_profile_index]
+    la_noise_sal = la_noise_sal[:, sorted_profile_index]
+    la_signal_sal = la_signal_sal[:, sorted_profile_index]
+
+    if not isinstance(scale_long_large, np.ndarray):
+        scale_long_large = np.array(scale_long_large)
+        scale_lat_large = np.array(scale_lat_large)
+        scale_long_small = np.array(scale_long_small)
+        scale_lat_small = np.array(scale_lat_small)
+        scale_phi_large = np.array(scale_phi_large)
+        scale_phi_small = np.array(scale_phi_small)
+        scale_age_large = np.array(scale_age_large)
+        scale_age_small = np.array(scale_age_small)
+        use_pv = np.array(use_pv)
+        use_saf = np.array(use_saf)
+        p_delta = np.array(p_delta)
+        p_exclude = np.array(p_exclude)
+        la_profile_no = np.array(la_profile_no)
+
+    scale_long_large = scale_long_large[sorted_profile_index]
+    scale_lat_large = scale_lat_large[sorted_profile_index]
+    scale_long_small = scale_long_small[sorted_profile_index]
+    scale_lat_small = scale_lat_small[sorted_profile_index]
+    scale_phi_large = scale_phi_large[sorted_profile_index]
+    scale_phi_small = scale_phi_small[sorted_profile_index]
+    scale_age_large = scale_age_large[sorted_profile_index]
+    scale_age_small = scale_age_small[sorted_profile_index]
+    use_pv = use_pv[sorted_profile_index]
+    use_saf = use_saf[sorted_profile_index]
+    p_delta = p_delta[sorted_profile_index]
+    p_exclude = p_exclude[sorted_profile_index]
+    la_profile_no = la_profile_no[sorted_profile_index]
+
+    if selected_hist.__len__() > 0:
+        index = selected_hist[:, 2].argsort()
+        selected_hist = selected_hist[index, :]
+
+    # define the saving location
+    save_location = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
+                    float_name + config['FLOAT_MAPPED_POSTFIX']
+
+    # save the data
+    scipy.savemat(save_location, {'la_ptmp': la_ptmp,
+                                  'la_mapped_sal': la_mapped_sal,
+                                  'la_mapsalerrors': la_mapsalerrors,
+                                  'scale_long_large': scale_long_large,
+                                  'scale_lat_large': scale_lat_large,
+                                  'scale_long_small': scale_long_small,
+                                  'scale_lat_small': scale_lat_small,
+                                  'scale_phi_large': scale_phi_large,
+                                  'scale_phi_small': scale_phi_small,
+                                  'scale_age_large': scale_age_large,
+                                  'scale_age_small': scale_age_small,
+                                  'use_pv': use_pv,
+                                  'use_saf': use_saf,
+                                  'p_delta': p_delta,
+                                  'p_exclude': p_exclude,
+                                  'la_noise_sal': la_noise_sal,
+                                  'la_signal_sal': la_signal_sal,
+                                  'la_profile_no': la_profile_no,
+                                  'selected_hist': selected_hist})
