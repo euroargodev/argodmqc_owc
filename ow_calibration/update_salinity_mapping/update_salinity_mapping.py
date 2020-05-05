@@ -23,7 +23,6 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import struct
 import time
 import numpy as np
 import scipy.io as scipy
@@ -39,6 +38,11 @@ from ow_calibration.signal_variance.signal_variance import signal_variance
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=invald-name
+# pylint: disable=fixme
 def update_salinity_mapping(float_dir, float_name, config):
     """
     Calculates values needed for analysis. Saves them to memory to use later
@@ -201,20 +205,6 @@ def update_salinity_mapping(float_dir, float_name, config):
         if profiles.size == 0:
             missing_profile_index.append(i)
 
-    """# initalise vectors for holding parameters
-    scale_long_large = []
-    scale_lat_large = []
-    scale_long_small = []
-    scale_lat_small = []
-    scale_phi_large = []
-    scale_phi_small = []
-    scale_age_large = []
-    scale_age_small = []
-    use_pv = []
-    use_saf = []
-    p_delta = []
-    p_exclude = []"""
-
     # update mapped data with missing profiles ---------------------------
 
     for i in range(0, missing_profile_index.__len__()):
@@ -315,11 +305,11 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                 grid_interp = interpolate.interp2d(grid_x[0], grid_y[:, 0],
                                                    grid_elev, kind='linear')
-                """
-                As a note, the reason we vectorise the function here is because we do not 
-                want to compare every longitudinal value to ever latitude. Rather, we simply 
-                want to interpolate each pair of longitudes and latitudes.
-                """
+
+                # As a note, the reason we vectorise the function here is because we do not
+                # want to compare every longitudinal value to ever latitude. Rather, we simply
+                # want to interpolate each pair of longitudes and latitudes.
+
                 grid_z = -np.vectorize(grid_interp)(grid_long_tbase, grid_lat)
 
                 # make sure that the grid and float longitudes match at the 0-360 mark
@@ -344,13 +334,6 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                                                    float_pres)
                 best_hist_z = grid_z[index]
 
-                # Now that we have the best data historical data for this profile we can reset
-                # the grid matrices
-
-                grid_lat = []
-                grid_long = []
-                grid_dates = []
-
                 # If we are near the Subantarctic Front we need to figure out if
                 # the profile is north or south of it. Then we should remove data not on
                 # the same side the profile is on
@@ -370,13 +353,6 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                                        float_sal,
                                                                        float_ptmp,
                                                                        float_pres)
-
-                # now that we have the interpolated data, we can reset the historical data matrices
-                best_hist_sal = []
-                best_hist_ptmp = []
-                best_hist_pres = []
-                wmo_numbers = []
-                index = []
 
                 # map float theta levels below the exclusion point
 
