@@ -25,7 +25,7 @@ from ow_calibration.change_dates.change_dates import change_dates
 from ow_calibration.get_region.data_functions.get_data import get_data
 from ow_calibration.get_region.data_functions.wrap_longitude import wrap_longitude
 
-
+# pylint: disable=bare-except
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     """
     Uses the WMO boxes and to return all of the historical data in the given area,

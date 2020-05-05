@@ -20,10 +20,11 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import numpy as np
 import struct
+import numpy as np
 
 
+# pylint: disable=too-many-locals
 def get_topo_grid(min_long, max_long, min_lat, max_lat):
     """
     Find depth grid over given area using tbase.int file
