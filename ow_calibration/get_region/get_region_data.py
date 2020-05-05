@@ -33,6 +33,7 @@ from ow_calibration.get_region.data_functions.wrap_longitude import wrap_longitu
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-nested-blocks
+# pylint: disable=bare-except
 def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres):
     """
     Get the historical pressure, salinity, and temperature of selected casts
@@ -128,8 +129,8 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                                     (how_many_cols, new_depth - max_depth)) * np.nan, axis=1
                                                      ).reshape((how_many_cols, how_many_rows))
 
-                            # if the new data we are adding is shorter than our columns, then we need to
-                            # fill in the rest with NaNs so it's the same length
+                            # if the new data we are adding is shorter than our columns,
+                            # then we need to fill in the rest with NaNs so it's the same length
                             elif new_depth < max_depth:
                                 pres = np.append(pres, np.ones((max_depth - new_depth, 1)) * np.nan)
                                 ptmp = np.append(ptmp, np.ones((max_depth - new_depth, 1)) * np.nan)

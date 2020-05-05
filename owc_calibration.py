@@ -50,10 +50,10 @@ from ow_calibration.load_configuration.load_configuration import load_configurat
 from ow_calibration.update_salinity_mapping.update_salinity_mapping import update_salinity_mapping
 
 # store name for profile
-float_name = "3901960"
+FLOAT_NAME = "3901960"
 
 # fetch the configuration and parameters set by the user
-user_config = load_configuration()
+USER_CONFIG = load_configuration()
 
 # get historical salinity data for comparison
-update_salinity_mapping("/", float_name, user_config)
+update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
