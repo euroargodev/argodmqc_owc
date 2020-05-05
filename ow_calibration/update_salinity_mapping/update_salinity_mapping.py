@@ -310,7 +310,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 # want to compare every longitudinal value to ever latitude. Rather, we simply
                 # want to interpolate each pair of longitudes and latitudes.
 
-                grid_z = -np.vectorize(grid_interp)(grid_long_tbase, grid_lat)
+                grid_z = -1 * np.vectorize(grid_interp)(grid_long_tbase, grid_lat)
 
                 # make sure that the grid and float longitudes match at the 0-360 mark
                 float_long_0 = float_long
