@@ -80,14 +80,14 @@ class MapDataGridTestCase(unittest.TestCase):
         ans = map_data_grid(self.sal, self.grid, self.data,
                             self.lat, self.long, self.age,
                             self.signal_var, self.noise_var, self.phi, self.map_pv_use)
-        expected_grid = 34.274526264867376
-        expected_grid_error = 0.219686272627492
-        expected_data = np.array([34.473801088291665,
-                                  34.291856891235525,
-                                  34.034342020472813])
-        expected_data_error = np.array([0.064372688289488,
-                                        0.063588530055491,
-                                        0.063941901824480])
+        expected_grid = 34.294578006104572
+        expected_grid_error = 0.222578348841383
+        expected_data = np.array([34.476629765035661,
+                                  34.273698730996550,
+                                  34.049671503967787])
+        expected_data_error = np.array([0.064804321291622,
+                                        0.062091002213780,
+                                        0.062089602227937])
 
         self.assertAlmostEqual(ans[0], expected_grid, 15, "grid mapped field is not as expected")
         self.assertAlmostEqual(ans[1], expected_grid_error, 15, "grid error is not as expected")
