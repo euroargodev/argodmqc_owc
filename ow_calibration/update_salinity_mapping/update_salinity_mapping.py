@@ -41,7 +41,8 @@ from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
-# pylint: disable=invald-name
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=invalid-name
 # pylint: disable=fixme
 def update_salinity_mapping(float_dir, float_name, config):
     """
@@ -65,7 +66,6 @@ def update_salinity_mapping(float_dir, float_name, config):
     # Get the profile number and size of the data in the profile
     profile_no = float_source_data['PROFILE_NO'][0]
     float_level_count = float_source_data['SAL'].shape[0]
-    float_profile_count = float_source_data['SAL'].shape[1]
 
     # Load all the mapping parameters, including the WMO boxes -----------
 
@@ -465,7 +465,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                                 selected_hist = np.reshape(selected_hist, (1, 3))
 
                             for j in range(hist_long.__len__()):
-                                m, n = selected_hist.shape
+                                m = selected_hist.shape[0]
                                 b = np.array([hist_long[j][0], hist_lat[j][0]])
                                 c = selected_hist[:, 0:2] - np.ones((m, 1)) * b
                                 d = np.argwhere(np.abs(c[:, 0]) < 1 / 60)
@@ -489,7 +489,6 @@ def update_salinity_mapping(float_dir, float_name, config):
         la_mapped_sal[sal[0], sal[1]] = np.nan
 
     # sort the data by profile number
-    sorted_profile_no = np.sort(la_profile_no)
     sorted_profile_index = la_profile_no.argsort()
 
     # finalise the data sorted by profile number, make data type numpy arrays

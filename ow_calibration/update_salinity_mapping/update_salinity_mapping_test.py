@@ -51,20 +51,8 @@ class MyTestCase(unittest.TestCase):
 
         update_salinity_mapping("/", "3901960", load_configuration())
 
-    def test_ptmp_output(self):
-        """
-        check that ptmp matrices match across version
-        :return: Nothing
-        """
 
-        test = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")['la_ptmp']
-        result = scipy.loadmat("data/float_mapped/map_3901960.mat")['la_ptmp']
-
-        indices = test.shape
-        for i in range(indices[0]):
-            for j in range(indices[1]):
-                if not (np.isnan(test[i, j]) and np.isnan(result[i, j])):
-                    self.assertEqual(test[i, j], result[i, j])
+        self.assertTrue(os.path.exists("data/float_mapped/map_3901960.mat"))
 
     def test_ptmp_output(self):
         """
