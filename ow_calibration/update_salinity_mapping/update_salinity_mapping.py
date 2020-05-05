@@ -8,12 +8,14 @@ When: 02/02/2020
 
 Annie Wong, xx June. 2010: Unexplained changes
 
-Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used to map the large scale field
+Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used
+to map the large scale field
 
-Function used to store all the resulting variables needed to run the analysis for each float profile.
+Function used to store all the resulting variables needed to run the analysis
+for each float profile.
 
-Also saves all the settings used for the analysis, in case an operator wishes to either run the analysis
-again, or share the analysis with another operator.
+Also saves all the settings used for the analysis, in case an operator wishes
+to either run the analysis again, or share the analysis with another operator.
 
 For information on how to use this file, check the README at either:
 
@@ -50,7 +52,8 @@ def update_salinity_mapping(float_dir, float_name, config):
     # Load float source data ---------------------------------------------
 
     # Get float file name
-    filename = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + float_name + config['FLOAT_SOURCE_POSTFIX']
+    filename = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
+               float_name + config['FLOAT_SOURCE_POSTFIX']
 
     # Load the float data
     float_source_data = scipy.loadmat(filename)
@@ -237,11 +240,16 @@ def update_salinity_mapping(float_dir, float_name, config):
 
         # if we are adding a new column
         else:
-            la_ptmp = np.hstack((la_ptmp, np.nan * np.ones((float_level_count, 1))))
-            la_mapped_sal = np.hstack((la_mapped_sal, np.nan * np.ones((float_level_count, 1))))
-            la_mapsalerrors = np.hstack((la_mapsalerrors, np.nan * np.ones((float_level_count, 1))))
-            la_noise_sal = np.hstack((la_noise_sal, np.nan * np.ones((float_level_count, 1))))
-            la_signal_sal = np.hstack((la_signal_sal, np.nan * np.ones((float_level_count, 1))))
+            la_ptmp = np.hstack((la_ptmp,
+                                 np.nan * np.ones((float_level_count, 1))))
+            la_mapped_sal = np.hstack((la_mapped_sal,
+                                       np.nan * np.ones((float_level_count, 1))))
+            la_mapsalerrors = np.hstack((la_mapsalerrors,
+                                         np.nan * np.ones((float_level_count, 1))))
+            la_noise_sal = np.hstack((la_noise_sal,
+                                      np.nan * np.ones((float_level_count, 1))))
+            la_signal_sal = np.hstack((la_signal_sal,
+                                       np.nan * np.ones((float_level_count, 1))))
 
         # initialise matrices to hold and save parameter settings
         scale_long_large.append(np.nan)
@@ -276,9 +284,14 @@ def update_salinity_mapping(float_dir, float_name, config):
                 float_long_tbase -= 360
 
             # find the depth of the ocean at the float location
-            float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1, float_long_tbase + 1,
-                                                         float_lat - 1, float_lat + 1)
-            float_interp = interpolate.interp2d(float_x[0, :], float_y[:, 0], float_elev, kind='linear')
+            float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1,
+                                                         float_long_tbase + 1,
+                                                         float_lat - 1,
+                                                         float_lat + 1)
+            float_interp = interpolate.interp2d(float_x[0, :],
+                                                float_y[:, 0],
+                                                float_elev,
+                                                kind='linear')
             float_z = -float_interp(float_long, float_lat)[0]
 
             # gather data from area surrounding the float location
@@ -419,10 +432,13 @@ def update_salinity_mapping(float_dir, float_name, config):
                             # map residuals
                             hist_data = np.array([hist_lat, hist_long,
                                                   hist_dates, hist_z])
+                            float_data = np.array([float_lat,
+                                                   float_long,
+                                                   float_date,
+                                                   float_z]).reshape((-1, 4))
 
                             mapped_values = map_data_grid(hist_sal.flatten(),
-                                                          np.array([float_lat, float_long,
-                                                                    float_date, float_z]).reshape((-1, 4)),
+                                                          float_data,
                                                           hist_data.reshape((-1, 4)),
                                                           long_large, lat_large,
                                                           map_age_large,
@@ -435,8 +451,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                             sal_signal_residual = signal_variance(sal_residual)
 
                             mapped_residuals = map_data_grid(sal_residual,
-                                                             np.array([float_lat, float_long,
-                                                                       float_date, float_z]).reshape((-1, 4)),
+                                                             float_data,
                                                              hist_data.reshape((-1, 4)),
                                                              long_small, lat_small,
                                                              map_age_small,
@@ -444,10 +459,13 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                              phi_small, map_use_pv)
 
                             la_ptmp[n_level, profile_index] = float_ptmp[n_level]
-                            la_mapped_sal[n_level, profile_index] = mapped_values[0] + mapped_residuals[0]
-                            la_mapsalerrors[n_level, profile_index] = np.sqrt(np.dot(mapped_values[1],
-                                                                                     mapped_values[1]) +
-                                                                              mapped_residuals[1] * mapped_residuals[1])
+                            la_mapped_sal[n_level, profile_index] = mapped_values[0] + \
+                                                                    mapped_residuals[0]
+
+                            dot_map_values = np.dot(mapped_values[1], mapped_values[1])
+                            la_mapsalerrors[n_level, profile_index] = np.sqrt(dot_map_values +
+                                                                              mapped_residuals[1] *
+                                                                              mapped_residuals[1])
                             la_noise_sal[n_level, profile_index] = noise_sal
                             la_signal_sal[n_level, profile_index] = signal_sal
                             scale_long_large[profile_index] = long_large
@@ -465,8 +483,9 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             # only save selected historical points
                             if selected_hist.__len__() == 0:
-                                selected_hist = np.array(
-                                    [hist_long[0][0], hist_lat[0][0], la_profile_no[profile_index]])
+                                selected_hist = np.array([hist_long[0][0],
+                                                          hist_lat[0][0],
+                                                          la_profile_no[profile_index]])
                                 selected_hist = np.reshape(selected_hist, (1, 3))
 
                             for j in range(hist_long.__len__()):
@@ -476,9 +495,11 @@ def update_salinity_mapping(float_dir, float_name, config):
                                 d = np.argwhere(np.abs(c[:, 0]) < 1 / 60)
                                 d_1 = np.argwhere(np.abs(c[d, 1]) < 1 / 60)
                                 if d_1.__len__() == 0:
+                                    add_hist_data = np.array([hist_long[j][0],
+                                                              hist_lat[j][0],
+                                                              la_profile_no[profile_index]])
                                     selected_hist = np.vstack((selected_hist,
-                                                               np.array([hist_long[j][0], hist_lat[j][0],
-                                                                         la_profile_no[profile_index]])))
+                                                               add_hist_data))
 
         print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
         profile_index += 1
