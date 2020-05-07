@@ -2,8 +2,7 @@
 -----Update Salinity Mapping-----
 
 Written by: Breck Owens
-When: xx/11/2007
-Converted to python by: Edward Small
+When: xx/11/2007 Converted to python by: Edward Small
 When: 02/02/2020
 
 Annie Wong, xx June. 2010: Unexplained changes
@@ -23,6 +22,7 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import copy
 import time
 import numpy as np
 import scipy.io as scipy
@@ -293,7 +293,7 @@ def update_salinity_mapping(float_dir, float_name, config):
             # if we have data in the surrouding area, find depths at these points
             if grid_lat.__len__() > 0:
                 # tbase.int file requires longitudes from 0 to +/-180
-                grid_long_tbase = grid_long
+                grid_long_tbase = copy.deepcopy(grid_long)
                 g_180 = np.argwhere(grid_long_tbase > 180)
                 grid_long_tbase[g_180] -= 360
 
