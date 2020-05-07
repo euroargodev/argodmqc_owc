@@ -36,29 +36,13 @@ class MyTestCase(unittest.TestCase):
             print("Getting mapped data for testing...")
             update_salinity_mapping("/", "3901960", load_configuration())
 
-    def test_run_salinity_mapping(self):
-        """
-        We need to run update salinity mapping to check it runs through.
-        Save the output so we can test it
-        :return: Nothing
-        """
-
-        print("Testing that salinity mapping runs smoothly...")
-
-        # delete the mapped file, if it exists
-        if os.path.exists("data/float_mapped/map_3901960.mat"):
-            os.remove("data/float_mapped/map_3901960.mat")
-
-        update_salinity_mapping("/", "3901960", load_configuration())
-
-
-        self.assertTrue(os.path.exists("data/float_mapped/map_3901960.mat"))
-
     def test_ptmp_output(self):
         """
         check that ptmp matrices match across version
         :return: Nothing
         """
+
+        print("Testing update_salinity_mapping gives correct potential temperature")
 
         test = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")['la_ptmp']
         result = scipy.loadmat("data/float_mapped/map_3901960.mat")['la_ptmp']
@@ -68,6 +52,25 @@ class MyTestCase(unittest.TestCase):
             for j in range(indices[1]):
                 if not (np.isnan(test[i, j]) and np.isnan(result[i, j])):
                     self.assertEqual(test[i, j], result[i, j])
+
+    def test_mapped_sal_output(self):
+        """
+        check that ptmp matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct mapped salinity")
+
+        test = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")['la_mapped_sal']
+        result = scipy.loadmat("data/float_mapped/map_3901960.mat")['la_mapped_sal']
+
+        indices = test.shape
+        for i in range(indices[0]):
+            for j in range(indices[1]):
+                if not (np.isnan(test[i, j]) and np.isnan(result[i, j])):
+                    self.assertAlmostEqual(test[i, j], result[i, j], 2,
+
+                                     "error in element " + str(i) + " and " + str(j))
 
 
 if __name__ == '__main__':
