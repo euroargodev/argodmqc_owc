@@ -234,4 +234,8 @@ def find_besthist(
             print("unique large small: ", large_small.__len__(),
                   " : ", np.unique(large_small).__len__())
 
-    return index.flatten()
+    # ensure that the index is integers
+    index = index.flatten()
+    index = index.astype(int)
+
+    return index
