@@ -143,7 +143,7 @@ def find_besthist(
         if map_pv_use == 1:
             pv_hist = potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
 
-        # calculate the large spatial corellation for each point
+        # calculate the large spatial correlation for each point
         spatial_correlation_vec = np.vectorize(spatial_correlation)
         correlation_large = spatial_correlation_vec(remain_hist_long, long, longitude_large,
                                                     remain_hist_lat, lat, latitude_large,
@@ -234,4 +234,8 @@ def find_besthist(
             print("unique large small: ", large_small.__len__(),
                   " : ", np.unique(large_small).__len__())
 
-    return index.flatten()
+    # ensure that the index is integers
+    index = index.flatten()
+    index = index.astype(int)
+
+    return index

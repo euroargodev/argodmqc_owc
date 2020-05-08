@@ -54,10 +54,9 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
     for i in range(0, points1.__len__()):
         for j in range(0, points2.__len__()):
 
-
             # calculate the absolute difference between points over characteristic length scale
-            lat_covar = ((points1[i][0] - points2[j][0]) / lat) ** 2
-            long_covar = ((points1[i][1] - points2[j][1]) / long) ** 2
+            long_covar = ((points1[i][0] - points2[j][0]) / long) ** 2
+            lat_covar = ((points1[i][1] - points2[j][1]) / lat) ** 2
             age_covar = 0
             p_v_covar = 0
 

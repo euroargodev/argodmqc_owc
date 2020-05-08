@@ -117,9 +117,9 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that covar_xyt_pv returns the expected result")
 
-        expected = np.array([[1, 0.122561894349782, 0.012339774448825],
-                             [0.122561894349782, 1, 0.256387488346962],
-                             [0.012339774448825, 0.256387488346962, 1]])
+        expected = np.array([[1, 0.001350185414046, 0.001712995003897],
+                             [0.001350185414046, 1, 0.600332430927527],
+                             [0.001712995003897, 0.600332430927527, 1]])
         covar = covar_xyt_pv(self.points1, self.points2, self.lat, self.long,
                              self.age, self.phi, self.p_v)
 

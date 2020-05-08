@@ -48,7 +48,7 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     """
     :param pn_float_long: float longitude, float
     :param pn_float_lat: float latitude, float
-    :param pa_wmo_boxes: wmo boxes (explained above), matrix
+    :param pa_wmo_boxes: wmo boxes (explained above), data frame
     :return: (explained above), 25x4 matrix
 
     First, we need to create a look-up table in the form of
