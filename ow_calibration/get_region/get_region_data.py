@@ -202,15 +202,15 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     nans = 0
     for column in range(grid_sal.shape[1]):
 
-        if np.all(np.isnan(grid_sal[i: column - nans])) or \
-                np.all(np.isnan(grid_pres[i: column - nans])):
+        if np.all(np.isnan(grid_sal[:, column - nans])) or \
+                np.all(np.isnan(grid_pres[:, column - nans])):
 
             grid_sal = np.delete(grid_sal, column - nans, 1)
             grid_ptmp = np.delete(grid_ptmp, column - nans, 1)
             grid_pres = np.delete(grid_pres, column - nans, 1)
-            grid_lat = np.delete(grid_lat, column - nans, 1)
-            grid_long = np.delete(grid_long, column - nans, 1)
-            grid_dates = np.delete(grid_dates, column - nans, 1)
+            grid_lat = np.delete(grid_lat, column - nans)
+            grid_long = np.delete(grid_long, column - nans)
+            grid_dates = np.delete(grid_dates, column - nans)
             nans += 1
 
     if nans > 0:
