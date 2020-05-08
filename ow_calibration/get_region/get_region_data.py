@@ -197,4 +197,24 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     except:
         raise Exception("NO DATA FOUND")
 
+    # we have encountered a problem where some data coming in is all NaN
+    # these columns need to be removed from the data set
+    nans = 0
+    for column in range(grid_sal):
+
+        if np.all(np.isnan(grid_sal[i: column - nans])) or \
+                np.all(np.isnan(grid_pres[i: column - nans])):
+
+            grid_sal = np.delete(grid_sal, column - nans, 1)
+            grid_ptmp = np.delete(grid_ptmp, column - nans, 1)
+            grid_pres = np.delete(grid_pres, column - nans, 1)
+            grid_lat = np.delete(grid_lat, column - nans, 1)
+            grid_long = np.delete(grid_long, column - nans, 1)
+            grid_dates = np.delete(grid_dates, column - nans, 1)
+            nans += 1
+
+    if nans > 0:
+        print("Warning: found ", nans, " all NaNs in your dataset. These",
+                                       " water columns have been removed")
+
     return grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates
