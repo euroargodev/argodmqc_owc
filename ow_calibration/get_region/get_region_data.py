@@ -200,7 +200,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     # we have encountered a problem where some data coming in is all NaN
     # these columns need to be removed from the data set
     nans = 0
-    for column in range(grid_sal):
+    for column in range(grid_sal.shape[1]):
 
         if np.all(np.isnan(grid_sal[i: column - nans])) or \
                 np.all(np.isnan(grid_pres[i: column - nans])):
