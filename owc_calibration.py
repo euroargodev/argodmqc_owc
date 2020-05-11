@@ -6,8 +6,12 @@ When 01/05/2020
 
 Python file to run OWC analysis on float profiles
 
+Install dependencies by running the following command in terminal:
+
+pip install -r requirements.txt
+
 Before changing anything, run the code in your terminal by entering the
- owc_software_python directory and using the command:
+owc_software_python directory and using the command:
 
 python -W ignore owc_calibration.py
 
@@ -40,6 +44,15 @@ and enter a list of "/".
 Eventually this will all be put into a `for` loop so multiple floats can be
 processed all at once
 
+The trajectory plotting routine is included, but commented out. This is because some of the
+dependencies of geopandas require libraries wirrten in C. If you have anaconda, geopandas can be
+installed using:
+
+conda install geopandas.
+
+If you refuse to use anaconda, you can install using binary files. Check the documentation for
+geopandas online
+
 For information on how to use this file, check the README at either:
 
 https://github.com/ArgoDMQC/matlab_owc
@@ -48,7 +61,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 from ow_calibration.load_configuration.load_configuration import load_configuration
 from ow_calibration.update_salinity_mapping.update_salinity_mapping import update_salinity_mapping
-from ow_calibration.plot_diagnostics.plot_diagnostics import plot_diagnostics
+# from ow_calibration.plot_diagnostics.plot_diagnostics import plot_diagnostics
 
 # store name for profile
 FLOAT_NAME = "3901960"
@@ -60,4 +73,4 @@ USER_CONFIG = load_configuration()
 update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 
 # create the diagnostic plots
-plot_diagnostics("/", FLOAT_NAME, USER_CONFIG)
+# plot_diagnostics("/", FLOAT_NAME, USER_CONFIG)
