@@ -1,7 +1,24 @@
-import pandas as pd
+"""
+-----plot diagnostics----
+
+Written by: Breck Owens
+When: 14/06/2011
+ Converted to python by: Edward Small
+When: 09/05/2020
+
+Master function for loading and plotting all of the analysed data
+
+For information on how to use this file, check the README at either:
+
+https://github.com/ArgoDMQC/matlab_owc
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+"""
+
+
 import scipy.io as scipy
 import matplotlib.pyplot as plt
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
+from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
 
 
 def plot_diagnostics(float_dir, float_name, config):
@@ -15,22 +32,7 @@ def plot_diagnostics(float_dir, float_name, config):
     float_data = scipy.loadmat(float_data_loc)
 
     # create trajectory plot ------------------------------
-    grid_lat = grid_data['selected_hist'][:, 1].flatten()
-    grid_long = grid_data['selected_hist'][:, 0].flatten()
-
-    float_lat = float_data['LAT'].flatten()
-    float_long = float_data['LONG'].flatten()
-    float_no = float_data['PROFILE_NO'].flatten()
-
-    grid = pd.DataFrame(
-        {
-            'Latitude': grid_lat,
-            'Longitude': grid_long})
-
-    floats = pd.DataFrame(
-        {'number': float_no,
-         'Latitude': float_lat,
-         'Longitude': float_long})
+    grid, floats = create_dataframe(grid_data, float_data)
 
     trajectory_plot(0, 0, floats, grid, float_name)
 
