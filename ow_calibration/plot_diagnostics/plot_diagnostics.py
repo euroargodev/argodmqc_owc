@@ -1,6 +1,7 @@
 import pandas as pd
 import scipy.io as scipy
-from ow_calibration.diagnostic_plots.trajectory_plot.trajectory_plot import trajectory_plot
+import matplotlib.pyplot as plt
+from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
 
 
 def plot_diagnostics(float_dir, float_name, config):
@@ -31,4 +32,6 @@ def plot_diagnostics(float_dir, float_name, config):
          'Latitude': float_lat,
          'Longitude': float_long})
 
-    trajectory_plot(1, 1, floats, grid, float_name)
+    trajectory_plot(0, 0, floats, grid, float_name)
+
+    plt.show()

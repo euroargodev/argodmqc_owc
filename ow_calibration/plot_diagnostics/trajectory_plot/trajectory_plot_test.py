@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import scipy.io as scipy
-from ow_calibration.diagnostic_plots.trajectory_plot.trajectory_plot import trajectory_plot
+from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
 
 
 class MyTestCase(unittest.TestCase):
@@ -25,7 +25,11 @@ class MyTestCase(unittest.TestCase):
              'Latitude': float_lat,
              'Longitude': float_long})
 
-        trajectory_plot(1, 1, floats, grid, "3901960")
+        try:
+            trajectory_plot(1, 1, floats, grid, "3901960")
+
+        except:
+            self.fail("Trajectory plotting routine failed unexpectedly")
 
 
 if __name__ == '__main__':
