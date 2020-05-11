@@ -332,9 +332,6 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                                                    config,
                                                                                    index,
                                                                                    float_pres)
-                if profile_index == 13:
-                    print(best_hist_sal)
-                    input(")")
 
                 best_hist_z = grid_z[index]
 
@@ -349,9 +346,6 @@ def update_salinity_mapping(float_dir, float_name, config):
                 if np.argwhere(best_hist_long > 360).__len__() > 0:
                     if 0 <= float_long <= 20:
                         float_long += 360
-
-                if profile_index == 13:
-                    print("Bad profile")
 
                 # interpolate historical data onto float theta levels
                 hist_interp_sal, hist_interp_pres = interp_climatology(best_hist_sal,
