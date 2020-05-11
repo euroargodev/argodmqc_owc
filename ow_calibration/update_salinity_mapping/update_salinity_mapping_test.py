@@ -59,11 +59,12 @@ class MyTestCase(unittest.TestCase):
         result_mean = np.nanmean(result)
 
         self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
-                               "error: mean of potential temperatures differ between python andd matlab")
+                               "error: mean of potential temperatures differ "
+                               "between python and matlab")
 
     def test_mapped_sal_output(self):
         """
-        check that ptmp matrices match across version
+        check that mapped salinity matrices match across version
         :return: Nothing
         """
 
@@ -75,15 +76,16 @@ class MyTestCase(unittest.TestCase):
         result_mean = np.nanmean(result)
 
         self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
-                               "error: mean of mapped salinities differ between python andd matlab")
+                               "error: mean of mapped salinities "
+                               "differ between python andd matlab")
 
     def test_mapped_salerrors_output(self):
         """
-        check that ptmp matrices match across version
+        check that salinity errors matrices match across version
         :return: Nothing
         """
 
-        print("Testing update_salinity_mapping gives correct mapped salinity")
+        print("Testing update_salinity_mapping gives correct salinity errors")
 
         test = self.matlab_output['la_mapsalerrors']
         result = self.python_output['la_mapsalerrors']
@@ -91,15 +93,16 @@ class MyTestCase(unittest.TestCase):
         result_mean = np.nanmean(result)
 
         self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
-                               "error: mean of mapped salinities differ between python andd matlab")
+                               "error: mean of salinity errors "
+                               "differ between python andd matlab")
 
     def test_noise_sal_output(self):
         """
-        check that ptmp matrices match across version
+        check that noise salinity matrices match across version
         :return: Nothing
         """
 
-        print("Testing update_salinity_mapping gives correct mapped salinity")
+        print("Testing update_salinity_mapping gives correct noise salinity")
 
         test = self.matlab_output['la_noise_sal']
         result = self.python_output['la_noise_sal']
@@ -107,15 +110,16 @@ class MyTestCase(unittest.TestCase):
         result_mean = np.nanmean(result)
 
         self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
-                               "error: mean of mapped salinities differ between python andd matlab")
+                               "error: mean of noise salinity "
+                               "differ between python andd matlab")
 
     def test_signal_sal_output(self):
         """
-        check that ptmp matrices match across version
+        check that signal salinity matrices match across version
         :return: Nothing
         """
 
-        print("Testing update_salinity_mapping gives correct mapped salinity")
+        print("Testing update_salinity_mapping gives correct signal salinity")
 
         test = self.matlab_output['la_signal_sal']
         result = self.python_output['la_signal_sal']
@@ -123,7 +127,8 @@ class MyTestCase(unittest.TestCase):
         result_mean = np.nanmean(result)
 
         self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
-                               "error: mean of mapped salinities differ between python andd matlab")
+                               "error: mean of signal salinity "
+                               "differ between python andd matlab")
 
 
 if __name__ == '__main__':
