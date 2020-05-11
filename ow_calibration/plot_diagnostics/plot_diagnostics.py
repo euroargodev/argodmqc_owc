@@ -29,8 +29,7 @@ def plot_diagnostics(float_dir, float_name, config):
     :param config: user configuration dictionary
     :return: nothing, but will save the plots as PDFs
     """
-    
-    # load the data into dataframes
+
     grid_data_loc = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
                     float_name + config['FLOAT_MAPPED_POSTFIX']
     float_data_loc = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
