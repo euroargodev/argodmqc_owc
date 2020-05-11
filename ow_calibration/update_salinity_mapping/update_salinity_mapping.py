@@ -332,6 +332,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                                                    config,
                                                                                    index,
                                                                                    float_pres)
+
                 best_hist_z = grid_z[index]
 
                 # If we are near the Subantarctic Front we need to figure out if
@@ -413,9 +414,12 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                    float_date,
                                                    float_z]).reshape((-1, 4))
 
+                            hist_data = np.column_stack((hist_lat, hist_long,
+                                                         hist_dates, hist_z))
+
                             mapped_values = map_data_grid(hist_sal.flatten(),
                                                           float_data,
-                                                          hist_data.reshape((-1, 4)),
+                                                          hist_data,
                                                           long_large, lat_large,
                                                           map_age_large,
                                                           signal_sal, noise_sal,
@@ -428,7 +432,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             mapped_residuals = map_data_grid(sal_residual,
                                                              float_data,
-                                                             hist_data.reshape((-1, 4)),
+                                                             hist_data,
                                                              long_small, lat_small,
                                                              map_age_small,
                                                              sal_signal_residual, noise_sal,

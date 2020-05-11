@@ -21,6 +21,7 @@ from ow_calibration.load_configuration.load_configuration import load_configurat
 from ow_calibration.update_salinity_mapping.update_salinity_mapping import update_salinity_mapping
 
 
+# pylint: disable=bare-except
 class MyTestCase(unittest.TestCase):
     """
     Test cases for update_salinity_mapping function
@@ -32,27 +33,34 @@ class MyTestCase(unittest.TestCase):
         :return: Nothing
         """
 
-        if not os.path.exists("data/float_mapped/map_3901960.mat"):
-            print("Getting mapped data for testing...")
-            update_salinity_mapping("/", "3901960", load_configuration())
+        self.float_source = "3901960"
+        self.python_output_path = "data/float_mapped/map_" + self.float_source + ".mat"
+        matlab_output_path = "data/test_data/float_mapped_test/map_" + self.float_source + ".mat"
 
-    def test_run_salinity_mapping(self):
+        if not os.path.exists(self.python_output_path):
+            print("Getting mapped data for testing...")
+            update_salinity_mapping("/", self.float_source, load_configuration())
+
+        self.matlab_output = scipy.loadmat(matlab_output_path)
+        self.python_output = scipy.loadmat(self.python_output_path)
+        self.acceptable_diff = 3
+
+    def test_salinity_mapping(self):
         """
-        We need to run update salinity mapping to check it runs through.
-        Save the output so we can test it
+        Check that the salinity mapping protocol runs
         :return: Nothing
         """
 
-        print("Testing that salinity mapping runs smoothly...")
+        print("testing that update salinity mapping runs through")
 
-        # delete the mapped file, if it exists
-        if os.path.exists("data/float_mapped/map_3901960.mat"):
-            os.remove("data/float_mapped/map_3901960.mat")
+        if os.path.exists(self.python_output_path):
+            os.remove(self.python_output_path)
 
-        update_salinity_mapping("/", "3901960", load_configuration())
+        try:
+            update_salinity_mapping("/", self.float_source, load_configuration())
 
-
-        self.assertTrue(os.path.exists("data/float_mapped/map_3901960.mat"))
+        except:
+            self.fail("Update salinity mapping encountered an unexpected error")
 
     def test_ptmp_output(self):
         """
@@ -60,14 +68,85 @@ class MyTestCase(unittest.TestCase):
         :return: Nothing
         """
 
-        test = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")['la_ptmp']
-        result = scipy.loadmat("data/float_mapped/map_3901960.mat")['la_ptmp']
+        print("Testing update_salinity_mapping gives correct potential temperature")
 
-        indices = test.shape
-        for i in range(indices[0]):
-            for j in range(indices[1]):
-                if not (np.isnan(test[i, j]) and np.isnan(result[i, j])):
-                    self.assertEqual(test[i, j], result[i, j])
+        test = self.matlab_output['la_ptmp']
+        result = self.python_output['la_ptmp']
+
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of potential temperatures differ "
+                               "between python and matlab")
+
+    def test_mapped_sal_output(self):
+        """
+        check that mapped salinity matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct mapped salinity")
+
+        test = self.matlab_output['la_mapped_sal']
+        result = self.python_output['la_mapped_sal']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of mapped salinities "
+                               "differ between python andd matlab")
+
+    def test_mapped_salerrors_output(self):
+        """
+        check that salinity errors matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct salinity errors")
+
+        test = self.matlab_output['la_mapsalerrors']
+        result = self.python_output['la_mapsalerrors']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of salinity errors "
+                               "differ between python andd matlab")
+
+    def test_noise_sal_output(self):
+        """
+        check that noise salinity matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct noise salinity")
+
+        test = self.matlab_output['la_noise_sal']
+        result = self.python_output['la_noise_sal']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of noise salinity "
+                               "differ between python andd matlab")
+
+    def test_signal_sal_output(self):
+        """
+        check that signal salinity matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct signal salinity")
+
+        test = self.matlab_output['la_signal_sal']
+        result = self.python_output['la_signal_sal']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of signal salinity "
+                               "differ between python andd matlab")
 
 
 if __name__ == '__main__':
