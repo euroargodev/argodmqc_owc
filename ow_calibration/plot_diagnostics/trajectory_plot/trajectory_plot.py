@@ -18,13 +18,23 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 
-import geopandas as gdp
 import matplotlib.pyplot as plt
+import geopandas as gdp
 import numpy as np
 
 
-
+# pylint: disable=too-many-locals
+# pying: disable=too_many-statements
 def trajectory_plot(bath, reef, floats, climatology, float_name):
+    """
+
+    :param bath: should we plot bathymetry (1 == yes)
+    :param reef: should we plot reefs (1 == yes)
+    :param floats: float location data frame
+    :param climatology: climatology location dataframe
+    :param float_name: name of float
+    :return: nothing
+    """
 
     # load in the coastline data
     coastline = "data/constants/coastline/ne_10m_coastline.shp"
@@ -85,7 +95,8 @@ def trajectory_plot(bath, reef, floats, climatology, float_name):
                                                                    climatology.Latitude))
 
     traj_map = geo_floats.plot(ax=traj_map, color='red', marker="+", label='profile')
-    geo_climatology.plot(ax=traj_map, color='#00008B', marker="s", markersize=12, label='climatology')
+    geo_climatology.plot(ax=traj_map, color='#00008B', marker="s",
+                         markersize=12, label='climatology')
     plt.plot(floats['Longitude'], floats['Latitude'], color='red', linestyle='-')
     plt.title(("Locations of float " + float_name + " with historical data"))
     plt.xlabel("Longitude")
