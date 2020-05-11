@@ -19,12 +19,12 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 
 import matplotlib.pyplot as plt
-import geopandas as gdp
+import geopandas as gdp # pylint: disable=import-error
 import numpy as np
 
 
 # pylint: disable=too-many-locals
-# pying: disable=too_many-statements
+# pying: disable=too-many-statements
 def trajectory_plot(bath, reef, floats, climatology, float_name):
     """
 

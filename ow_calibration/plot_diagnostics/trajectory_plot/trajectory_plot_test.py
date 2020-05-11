@@ -1,11 +1,27 @@
+"""
+-----Trajectory Plot Test File-----
+
+Written by: Edward Small
+When: 11/05/2019
+
+Contains unit tests to check the functionality of the `trajectory_plot` function
+
+To run this test specifically, look at the documentation at:
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+"""
+
+
 import unittest
-import pandas as pd
 import scipy.io as scipy
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
 from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
 
 
+# pylint: disable=bare-except
 class MyTestCase(unittest.TestCase):
+    """
+    Test cases for trajectory_plot function
+    """
 
     def test_plot_runs(self):
         """

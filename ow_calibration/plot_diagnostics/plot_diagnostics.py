@@ -22,6 +22,14 @@ from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import cre
 
 
 def plot_diagnostics(float_dir, float_name, config):
+    """
+    run the plotting procedures
+    :param float_dir: location of float source
+    :param float_name: name of the float source
+    :param config: user configuration dictionary
+    :return: nothing, but will save the plots as PDFs
+    """
+    
     # load the data into dataframes
     grid_data_loc = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
                     float_name + config['FLOAT_MAPPED_POSTFIX']
