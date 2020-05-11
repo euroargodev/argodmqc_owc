@@ -32,9 +32,17 @@ class MyTestCase(unittest.TestCase):
         :return: Nothing
         """
 
-        if not os.path.exists("data/float_mapped/map_3901960.mat"):
+        float_source = "3901960"
+        python_output_path = "data/float_mapped/map_" + float_source + ".mat"
+        matlab_output_path = "data/test_data/float_mapped_test/map_" + float_source + ".mat"
+
+        if not os.path.exists(python_output_path):
             print("Getting mapped data for testing...")
-            update_salinity_mapping("/", "3901960", load_configuration())
+            update_salinity_mapping("/", float_source, load_configuration())
+
+        self.matlab_output = scipy.loadmat(matlab_output_path)
+        self.python_output = scipy.loadmat(python_output_path)
+        self.acceptable_diff = 3
 
     def test_ptmp_output(self):
         """
@@ -44,14 +52,14 @@ class MyTestCase(unittest.TestCase):
 
         print("Testing update_salinity_mapping gives correct potential temperature")
 
-        test = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")['la_ptmp']
-        result = scipy.loadmat("data/float_mapped/map_3901960.mat")['la_ptmp']
+        test = self.matlab_output['la_ptmp']
+        result = self.python_output['la_ptmp']
 
-        indices = test.shape
-        for i in range(indices[0]):
-            for j in range(indices[1]):
-                if not (np.isnan(test[i, j]) and np.isnan(result[i, j])):
-                    self.assertEqual(test[i, j], result[i, j])
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of potential temperatures differ between python andd matlab")
 
     def test_mapped_sal_output(self):
         """
@@ -61,16 +69,61 @@ class MyTestCase(unittest.TestCase):
 
         print("Testing update_salinity_mapping gives correct mapped salinity")
 
-        test = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")['la_mapped_sal']
-        result = scipy.loadmat("data/float_mapped/map_3901960.mat")['la_mapped_sal']
+        test = self.matlab_output['la_mapped_sal']
+        result = self.python_output['la_mapped_sal']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
 
-        indices = test.shape
-        for i in range(indices[0]):
-            for j in range(indices[1]):
-                if not (np.isnan(test[i, j]) and np.isnan(result[i, j])):
-                    self.assertAlmostEqual(test[i, j], result[i, j], 2,
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of mapped salinities differ between python andd matlab")
 
-                                     "error in element " + str(i) + " and " + str(j))
+    def test_mapped_salerrors_output(self):
+        """
+        check that ptmp matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct mapped salinity")
+
+        test = self.matlab_output['la_mapsalerrors']
+        result = self.python_output['la_mapsalerrors']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of mapped salinities differ between python andd matlab")
+
+    def test_noise_sal_output(self):
+        """
+        check that ptmp matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct mapped salinity")
+
+        test = self.matlab_output['la_noise_sal']
+        result = self.python_output['la_noise_sal']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of mapped salinities differ between python andd matlab")
+
+    def test_signal_sal_output(self):
+        """
+        check that ptmp matrices match across version
+        :return: Nothing
+        """
+
+        print("Testing update_salinity_mapping gives correct mapped salinity")
+
+        test = self.matlab_output['la_signal_sal']
+        result = self.python_output['la_signal_sal']
+        test_mean = np.nanmean(test)
+        result_mean = np.nanmean(result)
+
+        self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
+                               "error: mean of mapped salinities differ between python andd matlab")
 
 
 if __name__ == '__main__':
