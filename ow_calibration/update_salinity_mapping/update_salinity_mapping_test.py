@@ -21,6 +21,7 @@ from ow_calibration.load_configuration.load_configuration import load_configurat
 from ow_calibration.update_salinity_mapping.update_salinity_mapping import update_salinity_mapping
 
 
+# pylint: disable=bare-except
 class MyTestCase(unittest.TestCase):
     """
     Test cases for update_salinity_mapping function
@@ -32,17 +33,34 @@ class MyTestCase(unittest.TestCase):
         :return: Nothing
         """
 
-        float_source = "3901960"
-        python_output_path = "data/float_mapped/map_" + float_source + ".mat"
-        matlab_output_path = "data/test_data/float_mapped_test/map_" + float_source + ".mat"
+        self.float_source = "3901960"
+        self.python_output_path = "data/float_mapped/map_" + self.float_source + ".mat"
+        matlab_output_path = "data/test_data/float_mapped_test/map_" + self.float_source + ".mat"
 
-        if not os.path.exists(python_output_path):
+        if not os.path.exists(self.python_output_path):
             print("Getting mapped data for testing...")
-            update_salinity_mapping("/", float_source, load_configuration())
+            update_salinity_mapping("/", self.float_source, load_configuration())
 
         self.matlab_output = scipy.loadmat(matlab_output_path)
-        self.python_output = scipy.loadmat(python_output_path)
+        self.python_output = scipy.loadmat(self.python_output_path)
         self.acceptable_diff = 3
+
+    def test_salinity_mapping(self):
+        """
+        Check that the salinity mapping protocol runs
+        :return: Nothing
+        """
+
+        print("testing that update salinity mapping runs through")
+
+        if os.path.exists(self.python_output_path):
+            os.remove(self.python_output_path)
+
+        try:
+            update_salinity_mapping("/", self.float_source, load_configuration())
+
+        except:
+            self.fail("Update salinity mapping encountered an unexpected error")
 
     def test_ptmp_output(self):
         """
