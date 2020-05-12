@@ -60,8 +60,9 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
                     grid_dates = np.concatenate([grid_dates, data['dates'][0]])
                     data = []
 
+
             except:
-                print("no file found for box: ", wmo_box[0])
+                pass
 
     if grid_lat.__len__() == 0:
 

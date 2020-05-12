@@ -165,7 +165,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                             how_many_cols = grid_pres.shape[0]
 
             except:
-                print("no file found for box: ", wmo_box[0])
+                pass
 
     # convert longitude to 0 to 360 degrees
     try:
