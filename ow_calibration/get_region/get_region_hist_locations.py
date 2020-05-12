@@ -25,6 +25,7 @@ from ow_calibration.change_dates.change_dates import change_dates
 from ow_calibration.get_region.data_functions.get_data import get_data
 from ow_calibration.get_region.data_functions.wrap_longitude import wrap_longitude
 
+
 # pylint: disable=bare-except
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     """
@@ -66,9 +67,8 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
 
     if grid_lat.__len__() == 0:
 
-        grid_lat = 999
-        grid_long = 999
-        grid_dates = 'NaN'
+        raise ValueError("get_region_hist_locations found no data for your specification. "
+                         "Are your wmo_boxes files set up correctly?")
 
     else:
 
