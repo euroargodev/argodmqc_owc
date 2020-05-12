@@ -70,10 +70,10 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
         raise ValueError("get_region_hist_locations found no data for your specification. "
                          "Are your wmo_boxes files set up correctly?")
 
-    else:
 
-        grid_long = wrap_longitude(grid_long)
-        # decimalise dates
-        grid_dates = change_dates(grid_dates)
+
+    grid_long = wrap_longitude(grid_long)
+    # decimalise dates
+    grid_dates = change_dates(grid_dates)
 
     return grid_lat, grid_long, grid_dates
