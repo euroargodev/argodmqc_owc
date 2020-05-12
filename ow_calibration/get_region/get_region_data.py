@@ -214,7 +214,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
             nans += 1
 
     if nans > 0:
-        print("Warning: found ", nans, " all NaNs in your dataset. These",
-                                       " water columns have been removed")
+        print("Warning: found ", nans,
+              " all NaNs in your dataset. These water columns have been removed")
 
     return grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates
