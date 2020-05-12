@@ -84,12 +84,12 @@ class MyTestCase(unittest.TestCase):
         print("Testing that get_region_hist_locations returns expected values for no data")
 
         wmo_boxes_no_data = np.array([[3505, 0, 0, 0]])
-        lat_no_data, long_no_data, age_no_data = get_region_hist_locations(wmo_boxes_no_data,
-                                                                           'none',
-                                                                           self.config)
 
-        self.assertEqual(lat_no_data, long_no_data, "latitude and longitude should be equal (999)")
-        self.assertEqual(age_no_data, 'NaN', "age should be NaN")
+        with self.assertRaises(ValueError) as no_data:
+            get_region_hist_locations(wmo_boxes_no_data, 'none', self.config)
+
+        self.assertTrue('get_region_hist_locations found no data for your specification. '
+                        'Are your wmo_boxes files set up correctly?' in str(no_data.exception))
 
     def test_can_choose_data(self):
         """
