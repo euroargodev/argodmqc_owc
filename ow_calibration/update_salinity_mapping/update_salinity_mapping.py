@@ -290,7 +290,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                                                                         float_name,
                                                                         config)
 
-            # if we have data in the surrouding area, find depths at these points
+            # if we have data in the surrounding area, find depths at these points
             if grid_lat.__len__() > 0:
                 # tbase.int file requires longitudes from 0 to +/-180
                 grid_long_tbase = copy.deepcopy(grid_long)
