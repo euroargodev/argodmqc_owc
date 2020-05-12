@@ -269,7 +269,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 and np.argwhere(np.isnan(float_pres) == 0).any():
 
             # tbase.int file requires longitudes from 0 to +/-180
-            float_long_tbase = float_long
+            float_long_tbase = copy.deepcopy(float_long)
             if float_long_tbase > 180:
                 float_long_tbase -= 360
 
