@@ -1,10 +1,9 @@
 ---
 name: Merge request / NOC old workflow
-about: ''
+about: 'Merging requests'
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 Jira Issue
