@@ -3,6 +3,12 @@ channels:
   - conda-forge
 dependencies:
   - python=3.6
+  - xarray
+  - dask
+  - distributed
+  - dask-kubernetes
+  - gcsfs
+  - zarr
   - matplotlib
   - numcodecs
   - python-blosc
@@ -19,12 +25,14 @@ dependencies:
   - nodejs
   - scikit-image
   - scikit-learn
-  - geopandas
   - pip
   - pip:
     - graphviz
     - jupyter-server-proxy
+    - netCDF4
+    - erddapy
+    - gitpython
     - cmocean
     - descartes
+    - argopy
     - git+http://github.com/euroargodev/argodmqc_owc.git@master
-    - netCDF4
