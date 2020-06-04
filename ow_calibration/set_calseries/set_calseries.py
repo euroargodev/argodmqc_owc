@@ -15,6 +15,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import scipy.io as scipy
+import numpy as np
 
 
 def set_calseries(float_dir, float_name, system_config):
@@ -44,10 +45,33 @@ def set_calseries(float_dir, float_name, system_config):
 
     # if we already have a calseries file, use those values. Else, use new ones
     try:
-        scipy.loadmat(calseries_filename)
-        print("Using parametrs found in ", calseries_filename,
+        calseries_data = scipy.loadmat(calseries_filename)
+        breaks = calseries_data['breaks']
+        max_breaks = calseries_data['max_breaks']
+        calseries = calseries_data['calseries']
+        calib_profile_no = calseries_data['calib_profile_no']
+        use_theta_lt = calseries_data['use_theta_lt']
+        use_theta_gt = calseries_data['use_theta_gt']
+        use_pres_lt = calseries_data['use_pres_lt']
+        use_pres_gt = calseries_data['use_pres_gt']
+        use_percent_gt = calseries_data['use_percent_gt']
+        print("Using parameters found in ", calseries_filename,
               "\nTo use new parameters, delete this file")
 
     except FileNotFoundError:
+
+        #Config calseries parameters
+
+        breaks = []
+        max_breaks = 4 # 0 for linear trend, -1 for offset
+        calseries = np.ones((1, no_profiles))
+        calib_profile_no = profile_no
+        use_theta_lt = []
+        use_theta_gt = []
+        use_pres_lt = []
+        use_pres_gt = []
+        use_percent_gt = 0.5
+
+
 
 
