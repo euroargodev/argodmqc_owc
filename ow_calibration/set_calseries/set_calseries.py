@@ -32,8 +32,8 @@ def set_calseries(float_dir, float_name, system_config):
                                  float_dir + float_name +
                                  system_config['FLOAT_SOURCE_POSTFIX'])
 
-    profile_no = float_source['PROFILE_NO']
-    no_profiles = profile_no.shape[1]
+    profile_no = float_source['PROFILE_NO'].flatten()
+    no_profiles = profile_no.__len__()
 
     # Check if we already have a calseries file
 
@@ -94,4 +94,27 @@ def set_calseries(float_dir, float_name, system_config):
         use_pres_gt = []
 
     # Check that there are no missing profiles between source and calseries files
+
+    missing_profiles_index = []
+
+    for i in range(no_profiles):
+        profiles = np.argwhere(calib_profile_no == profile_no[i])
+        if profiles.__len__() == 0:
+            missing_profiles_index.append(i)
+
+    # Add the missing profiles to the data set
+
+    no_calib_profiles = calib_profile_no.__len__()
+
+    for i in range(missing_profiles_index.__len__()):
+        missing = missing_profiles_index[i]
+        calib_profile_no.append(profile_no[missing])
+        # set flag as the same as previous entry
+        calseries = np.append(calseries, calseries(max(missing - 1, 1)))
+
+    # sort the calseries file by profile number
+
+    a = np.argsort(calib_profile_no)
+
+    calib_profile_no = calib_profile_no[a]
 
