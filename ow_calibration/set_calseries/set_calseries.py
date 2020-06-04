@@ -14,6 +14,8 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import scipy.io as scipy
+
 
 def set_calseries(float_dir, float_name, system_config):
     """
@@ -23,3 +25,19 @@ def set_calseries(float_dir, float_name, system_config):
     :param system_config:
     :return: Nothing, but save parameters
     """
+
+    # load float source data
+    float_source = scipy.loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] +
+                                 float_dir + float_name +
+                                 system_config['FLOAT_SOURCE_POSTFIX'])
+
+    profile_no = float_source['PROFILE_NO']
+    no_profiles = profile_no.shape[1]
+
+    # Check if we already have a calseries file
+
+    calseries_filename = (system_config['FLOAT_CALIB_DIRECTORY'] +
+                          float_dir +
+                          system_config['FLOAT_CALSERIES_PREFIX'] +
+                          float_name +
+                          system_config['FLOAT_CALIB_POSTFIX'])
