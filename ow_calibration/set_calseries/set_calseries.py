@@ -41,3 +41,13 @@ def set_calseries(float_dir, float_name, system_config):
                           system_config['FLOAT_CALSERIES_PREFIX'] +
                           float_name +
                           system_config['FLOAT_CALIB_POSTFIX'])
+
+    # if we already have a calseries file, use those values. Else, use new ones
+    try:
+        scipy.loadmat(calseries_filename)
+        print("Using parametrs found in ", calseries_filename,
+              "\nTo use new parameters, delete this file")
+
+    except FileNotFoundError:
+
+
