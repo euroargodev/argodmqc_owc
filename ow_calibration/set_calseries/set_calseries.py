@@ -54,13 +54,20 @@ def set_calseries(float_dir, float_name, system_config):
         use_theta_gt = calseries_data['use_theta_gt']
         use_pres_lt = calseries_data['use_pres_lt']
         use_pres_gt = calseries_data['use_pres_gt']
-        use_percent_gt = calseries_data['use_percent_gt']
+
+        # use percent may not exist, as it was added later
+        try:
+            use_percent_gt = calseries_data['use_percent_gt']
+
+        except NameError:
+            use_percent_gt = 0.5
+
         print("Using parameters found in ", calseries_filename,
               "\nTo use new parameters, delete this file")
 
     except FileNotFoundError:
 
-        #Config calseries parameters
+        # Config calseries parameters
 
         breaks = []
         max_breaks = 4 # 0 for linear trend, -1 for offset
@@ -71,7 +78,6 @@ def set_calseries(float_dir, float_name, system_config):
         use_pres_lt = []
         use_pres_gt = []
         use_percent_gt = 0.5
-
 
 
 
