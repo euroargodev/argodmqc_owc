@@ -70,7 +70,7 @@ def set_calseries(float_dir, float_name, system_config):
         # Config calseries parameters
 
         breaks = []
-        max_breaks = 4 # 0 for linear trend, -1 for offset
+        max_breaks = 4  # 0 for linear trend, -1 for offset
         calseries = np.ones((1, no_profiles))
         calib_profile_no = profile_no
         use_theta_lt = []
@@ -79,5 +79,19 @@ def set_calseries(float_dir, float_name, system_config):
         use_pres_gt = []
         use_percent_gt = 0.5
 
+    # ensure values are in a realistic range
 
+    if use_theta_lt == 99999:
+        use_theta_lt = []
+
+    if use_theta_gt == 99999:
+        use_theta_gt = []
+
+    if use_pres_lt == 99999:
+        use_pres_lt = []
+
+    if use_pres_gt == 99999:
+        use_pres_gt = []
+
+    # Check that there are no missing profiles between source and calseries files
 
