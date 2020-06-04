@@ -71,7 +71,7 @@ def set_calseries(float_dir, float_name, system_config):
 
         breaks = []
         max_breaks = 4  # 0 for linear trend, -1 for offset
-        calseries = np.ones((1, no_profiles))
+        calseries = np.ones((1, no_profiles)).flatten()
         calib_profile_no = profile_no
         use_theta_lt = []
         use_theta_gt = []
@@ -114,7 +114,23 @@ def set_calseries(float_dir, float_name, system_config):
 
     # sort the calseries file by profile number
 
-    a = np.argsort(calib_profile_no)
+    sorted_profile_no = np.argsort(calib_profile_no)
+    calib_profile_no = calib_profile_no[sorted_profile_no]
+    calseries = calseries[sorted_profile_no]
 
-    calib_profile_no = calib_profile_no[a]
+    # Check that we have good salinity, temperature, and pressure data
 
+    sal = float_source['SAL']
+    temp = float_source['TEMP']
+    pres = float_source['PRES']
+
+    for i in range(no_profiles):
+        sal_nan = np.argwhere(~np.isnan(sal[:, i]))
+        temp_nan = np.argwhere(~np.isnan(temp[:, i]))
+        pres_nan = np.argwhere(~np.isnan(pres[:, i]))
+
+        # if no good data for this profile, remove it from calseries
+        if sal_nan.__len__() == 0 or \
+                temp_nan.__len__() == 0 or\
+                pres_nan.__len__() == 0:
+            calseries[i] = 0
