@@ -20,9 +20,9 @@ import numpy as np
 def sorter(msites, sites):
     """
     Flag points as negative or positve
-    :param msites: Break points boundaries
+    :param msites: boundaries
     :param sites: points
-    :return: Array containing values defining points as positive or negative
+    :return: Array containing values defining points as inside or outside boundaries
     """
 
     # put arrays together
@@ -30,6 +30,7 @@ def sorter(msites, sites):
 
     index = np.argsort(all_sites)
 
-    pointer = np.argwhere(index > msites.__len__() - 1).flatten() - np.arange(1, sites.__len__() + 1)
+    pointer = np.argwhere(index > msites.__len__() - 1).flatten() - \
+              np.arange(1, sites.__len__() + 1)
 
     return pointer
