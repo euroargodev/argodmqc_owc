@@ -14,6 +14,8 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import numpy as np
+
 def sorter(msites, sites):
     """
     Flag points as negative or positve
@@ -21,3 +23,5 @@ def sorter(msites, sites):
     :param sites: points
     :return: Array containing values defining points as positive or negative
     """
+
+    all_sites = np.concatenate(msites.flatten(), sites.flatten())
