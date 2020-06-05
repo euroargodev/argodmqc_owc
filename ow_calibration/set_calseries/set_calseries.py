@@ -131,6 +131,16 @@ def set_calseries(float_dir, float_name, system_config):
 
         # if no good data for this profile, remove it from calseries
         if sal_nan.__len__() == 0 or \
-                temp_nan.__len__() == 0 or\
+                temp_nan.__len__() == 0 or \
                 pres_nan.__len__() == 0:
             calseries[i] = 0
+
+    scipy.savemat(calseries_filename, {'breaks': breaks,
+                                       'max_breaks': max_breaks,
+                                       'calseries': calseries,
+                                       'calib_profile_no': calib_profile_no,
+                                       'use_theta_lt': use_theta_lt,
+                                       'use_theta_gt': use_theta_gt,
+                                       'use_pres_lt': use_pres_lt,
+                                       'use_pres_gt': use_pres_gt,
+                                       'use_percent_gt': use_percent_gt})
