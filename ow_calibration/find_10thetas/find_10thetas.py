@@ -1,3 +1,4 @@
+from scipy.interpolate import interpolate
 import numpy as np
 
 
@@ -111,7 +112,25 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
         min_pres = np.nanmin(PRES)
         pres_levels = np.arange(min_pres, max_pres, increment)
 
-        print(pres_levels.__len__())
+        # check we can get 10 theta levels. If not, alter pressure increment
+        if pres_levels.__len__() < no_levels:
+            increment = np.floor((max_pres-min_pres)/no_levels)
+            pres_levels = np.arange(min_pres, max_pres, increment)
+
+    # interpolate levels onto pressure increments
+
+    interp_t = np.empty((pres_levels.__len__(), no_levels)) * np.nan
+
+    for level in range(no_levels):
+        good = np.argwhere(~np.isnan(PRES[:, level]) & ~np.isnan(PTMP[:, level]))
+        for pres in range(pres_levels.__len__()):
+            if np.max(PRES[good, level]) > pres_levels[pres] > np.min(PRES[good, level]):
+                interp = interpolate.interp1d(PRES[good, level].flatten(),
+                                              PTMP[good, level].flatten())
+
+                interp_t[pres, level] = interp(pres_levels[pres])
+
+    print(interp_t)
 
 
 
