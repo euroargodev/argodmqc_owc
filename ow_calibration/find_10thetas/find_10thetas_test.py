@@ -6,7 +6,7 @@ import unittest
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         float_source = "3901960"
-        mapped_values_path = "data/float_mapped/map_" + float_source + ".mat"
+        mapped_values_path = "data/test_data/float_mapped_test/map_" + float_source + ".mat"
         source_values_path = "data/float_source/" + float_source + ".mat"
 
         mapped_values = scipy.loadmat(mapped_values_path)

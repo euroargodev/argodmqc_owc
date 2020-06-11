@@ -119,18 +119,27 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
 
     # interpolate levels onto pressure increments
 
-    interp_t = np.empty((pres_levels.__len__(), no_levels)) * np.nan
+    interp_t = np.empty((pres_levels.__len__(), profile_depth)) * np.nan
 
-    for level in range(no_levels):
-        good = np.argwhere(~np.isnan(PRES[:, level]) & ~np.isnan(PTMP[:, level]))
+    for depth in range(profile_depth):
+        good = np.argwhere(~np.isnan(PRES[:, depth]) & ~np.isnan(PTMP[:, depth]))
+
         for pres in range(pres_levels.__len__()):
-            if np.max(PRES[good, level]) > pres_levels[pres] > np.min(PRES[good, level]):
-                interp = interpolate.interp1d(PRES[good, level].flatten(),
-                                              PTMP[good, level].flatten())
 
-                interp_t[pres, level] = interp(pres_levels[pres])
+            if np.max(PRES[good, depth]) > pres_levels[pres] > np.min(PRES[good, depth]):
+                interp = interpolate.interp1d(PRES[good, depth].flatten(),
+                                              PTMP[good, depth].flatten())
+                interp_t[pres, depth] = interp(pres_levels[pres])
+
+    # find mean of the interpolated pressure at each level
+
+    theta_levels = np.empty((pres_levels.__len__(), 1)) * np.nan
+    theta_level_indices = np.empty((pres_levels.__len__(), no_levels)) * np.nan
+
+    for pres in range(pres_levels.__len__()):
+        good_interp_t = np.argwhere(~np.isnan(interp_t[pres, :]))
+
+        if good_interp_t.__len__() > 0:
+            theta_levels[pres] = np.nanmean(interp_t[pres, good_interp_t])
 
     print(interp_t)
-
-
-
