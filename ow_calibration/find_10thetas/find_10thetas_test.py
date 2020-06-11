@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         la_ptmp = mapped_values['la_ptmp']
 
         find_10thetas(SAL, PTMP, PRES, la_ptmp,
-                      [], [], [], [], 0.5)
+                      0, 0, 0, 0, 0.5)
 
 
 

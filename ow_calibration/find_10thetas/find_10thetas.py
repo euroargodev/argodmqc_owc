@@ -1,8 +1,8 @@
 import numpy as np
 
 def find_10thetas(SAL, PTMP, PRES, la_ptmp,
-                  use_theta_lt, use_theta_gt,
-                  use_pres_lt, use_pres_gt, use_percent_gt):
+                  use_theta_lt = 0, use_theta_gt = 0,
+                  use_pres_lt = 0, use_pres_gt = 0, use_percent_gt = 0.5):
     """
     Find on which theta levels salinity variance is lowest
     :param SAL: float salinity
