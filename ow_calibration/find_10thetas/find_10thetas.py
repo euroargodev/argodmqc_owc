@@ -102,6 +102,16 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
     min_theta = np.ceil(np.nanmin(PTMP)*10)/10
     max_theta = np.floor(np.nanmax(PTMP)*10)/10
 
-    print(max_theta)
+    # only find levels if we have a valid theta range
+    if min_theta < max_theta:
 
-    print(min_theta)
+        # get pressure levels
+        increment = 50
+        max_pres = np.nanmax(PRES)
+        min_pres = np.nanmin(PRES)
+        pres_levels = np.arange(min_pres, max_pres, increment)
+
+        print(pres_levels.__len__())
+
+
+
