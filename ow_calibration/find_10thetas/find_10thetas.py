@@ -1,8 +1,9 @@
 import numpy as np
 
+
 def find_10thetas(SAL, PTMP, PRES, la_ptmp,
-                  use_theta_lt = 0, use_theta_gt = 0,
-                  use_pres_lt = 0, use_pres_gt = 0, use_percent_gt = 0.5):
+                  use_theta_lt=0, use_theta_gt=0,
+                  use_pres_lt=0, use_pres_gt=0, use_percent_gt=0.5):
     """
     Find on which theta levels salinity variance is lowest
     :param SAL: float salinity
@@ -39,5 +40,68 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
         SAL[i[0], i[1]] = np.nan
         PTMP[i[0], i[1]] = np.nan
 
+    # only use theta and pressure from specified range
 
+    if use_theta_lt != 0 and use_theta_gt == 0:
+        theta_range = np.argwhere(PTMP > use_theta_lt)
+        for i in theta_range:
+            PRES[i[0], i[1]] = np.nan
+            SAL[i[0], i[1]] = np.nan
+            PTMP[i[0], i[1]] = np.nan
 
+    if use_theta_lt == 0 and use_theta_gt != 0:
+        theta_range = np.argwhere(PTMP < use_theta_gt)
+        for i in theta_range:
+            PRES[i[0], i[1]] = np.nan
+            SAL[i[0], i[1]] = np.nan
+            PTMP[i[0], i[1]] = np.nan
+
+    if use_theta_lt != 0 and use_theta_gt != 0:
+
+        if use_theta_lt < use_theta_gt:
+            # exclude middle band
+            theta_range = np.argwhere(use_theta_lt < PTMP < use_theta_gt)
+
+        else:
+            theta_range = np.argwhere(PTMP < use_theta_gt or PTMP > use_theta_lt)
+
+        for i in theta_range:
+            PRES[i[0], i[1]] = np.nan
+            SAL[i[0], i[1]] = np.nan
+            PTMP[i[0], i[1]] = np.nan
+
+    if use_pres_lt != 0 and use_pres_gt == 0:
+        pres_range = np.argwhere(PRES > use_pres_lt)
+        for i in pres_range:
+            PRES[i[0], i[1]] = np.nan
+            SAL[i[0], i[1]] = np.nan
+            PTMP[i[0], i[1]] = np.nan
+
+    if use_pres_lt == 0 and use_pres_gt != 0:
+        pres_range = np.argwhere(PTMP < use_pres_gt)
+        for i in pres_range:
+            PRES[i[0], i[1]] = np.nan
+            SAL[i[0], i[1]] = np.nan
+            PTMP[i[0], i[1]] = np.nan
+
+    if use_pres_lt != 0 and use_pres_gt != 0:
+
+        if use_pres_lt < use_pres_gt:
+            # exclude middle band
+            pres_range = np.argwhere(use_pres_lt < PTMP < use_pres_gt)
+
+        else:
+            pres_range = np.argwhere(PTMP < use_pres_gt or PTMP > use_pres_lt)
+
+        for i in pres_range:
+            PRES[i[0], i[1]] = np.nan
+            SAL[i[0], i[1]] = np.nan
+            PTMP[i[0], i[1]] = np.nan
+
+    # find minimum and maximum theta
+    min_theta = np.ceil(np.nanmin(PTMP)*10)/10
+    max_theta = np.floor(np.nanmax(PTMP)*10)/10
+
+    print(max_theta)
+
+    print(min_theta)
