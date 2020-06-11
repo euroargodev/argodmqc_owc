@@ -31,4 +31,13 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
     var_sal_theta = []
     theta_levels = []
 
+    # exclude unmapped, mixed layer
+    unmapped = np.argwhere(np.isnan(la_ptmp))
+
+    for i in unmapped:
+        PRES[i[0], i[1]] = np.nan
+        SAL[i[0], i[1]] = np.nan
+        PTMP[i[0], i[1]] = np.nan
+
+
 
