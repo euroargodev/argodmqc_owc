@@ -16,3 +16,5 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
     :param use_percent_gt: use percentage greater than
     :return: Theta levels where salinity varies the least
     """
+
+print("hello world")
