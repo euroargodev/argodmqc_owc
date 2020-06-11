@@ -19,7 +19,7 @@ import numpy as np
 
 def sorter(msites, sites):
     """
-    Flag points as negative or positve
+    Flag points as inside our outside boundaries msites[0] to msites[1]
     :param msites: boundaries
     :param sites: points
     :return: Array containing values defining points as inside or outside boundaries
