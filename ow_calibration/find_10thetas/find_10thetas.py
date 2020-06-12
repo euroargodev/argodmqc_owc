@@ -148,6 +148,8 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
     # thus giving an artificially high salinity variance. This is okay because temperature
     # inversions usually have naturally high variance.
 
+    # find indices that minimise theta on each level
+
     for depth in range(profile_depth):
 
         for level in range(theta_levels.__len__()):
@@ -161,6 +163,21 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
 
             else:
                 theta_level_indices[level, depth] = np.min(np.argwhere(theta_diff ==
-                                                                   np.nanmin(theta_diff)))
+                                                                       np.nanmin(theta_diff)))
 
-    
+    # find salinity variance on these theta levels
+
+    for level in range(theta_levels.__len__()):
+        for depth in range(profile_depth):
+            theta_index = theta_level_indices[level, depth]
+
+            # only continue if we have a good index
+            if ~np.isnan(theta_index):
+                theta_index = int(theta_index)
+                interval = np.arange(np.max([theta_index - 1, 0]),
+                                     np.min([theta_index + 1, profile_no]) + 1,
+                                     dtype=int)
+
+                ptmp_diff = [PTMP[theta_index, depth] - ptmp for ptmp in PTMP[interval, depth]]
+
+                
