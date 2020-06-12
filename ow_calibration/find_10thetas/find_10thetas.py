@@ -178,6 +178,15 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
                                      np.min([theta_index + 1, profile_no]) + 1,
                                      dtype=int)
 
-                ptmp_diff = [PTMP[theta_index, depth] - ptmp for ptmp in PTMP[interval, depth]]
+                ptmp_diff = PTMP[theta_index, depth] - PTMP[interval, depth]
 
-                
+                if PTMP[theta_index, depth] > theta_levels[level]:
+                    pos_diff = np.argwhere(ptmp_diff > 0)
+
+                    if pos_diff.__len__() > 0:
+                        min_diff = np.argwhere(ptmp_diff == np.nanmin(ptmp_diff[pos_diff]))
+                        k_interval = interval[min_diff]
+
+                        print(min_diff)
+                        print(k_interval)
+                        input("**")
