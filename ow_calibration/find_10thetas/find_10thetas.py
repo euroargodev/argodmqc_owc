@@ -100,8 +100,8 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
             PTMP[i[0], i[1]] = np.nan
 
     # find minimum and maximum theta
-    min_theta = np.ceil(np.nanmin(PTMP)*10)/10
-    max_theta = np.floor(np.nanmax(PTMP)*10)/10
+    min_theta = np.ceil(np.nanmin(PTMP) * 10) / 10
+    max_theta = np.floor(np.nanmax(PTMP) * 10) / 10
 
     # only find levels if we have a valid theta range
     if min_theta < max_theta:
@@ -114,7 +114,7 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
 
         # check we can get 10 theta levels. If not, alter pressure increment
         if pres_levels.__len__() < no_levels:
-            increment = np.floor((max_pres-min_pres)/no_levels)
+            increment = np.floor((max_pres - min_pres) / no_levels)
             pres_levels = np.arange(min_pres, max_pres, increment)
 
     # interpolate levels onto pressure increments
@@ -134,7 +134,7 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
     # find mean of the interpolated pressure at each level
 
     theta_levels = np.empty((pres_levels.__len__(), 1)) * np.nan
-    theta_level_indices = np.empty((pres_levels.__len__(), no_levels)) * np.nan
+    theta_level_indices = np.empty((pres_levels.__len__(), profile_depth)) * np.nan
 
     for pres in range(pres_levels.__len__()):
         good_interp_t = np.argwhere(~np.isnan(interp_t[pres, :]))
@@ -142,4 +142,25 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
         if good_interp_t.__len__() > 0:
             theta_levels[pres] = np.nanmean(interp_t[pres, good_interp_t])
 
-    print(interp_t)
+    # find profile levels closest to theta levels
+    # Areas with temperature inversions (eg Southern Ocean, Gulf of Alaska) PTMP is not unique
+    # so this will pick out indices from different depths for the same temperature,
+    # thus giving an artificially high salinity variance. This is okay because temperature
+    # inversions usually have naturally high variance.
+
+    for depth in range(profile_depth):
+
+        for level in range(theta_levels.__len__()):
+            theta_diff = np.array([np.nan])
+
+            if np.nanmax(PTMP[:, depth]) > theta_levels[level] > np.nanmin(PTMP[:, depth]):
+                theta_diff = np.abs(PTMP[:, depth] - theta_levels[level])
+
+            if np.all(np.isnan(theta_diff)):
+                theta_level_indices[level, depth] = np.nan
+
+            else:
+                theta_level_indices[level, depth] = np.min(np.argwhere(theta_diff ==
+                                                                   np.nanmin(theta_diff)))
+
+    
