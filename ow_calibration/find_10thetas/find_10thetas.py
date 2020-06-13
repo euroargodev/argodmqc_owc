@@ -62,15 +62,19 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
 
         if use_theta_lt < use_theta_gt:
             # exclude middle band
-            theta_range = np.argwhere(use_theta_lt < PTMP < use_theta_gt)
+            theta_range = np.argwhere(np.logical_and(use_theta_lt < PTMP, PTMP < use_theta_gt))
 
         else:
-            theta_range = np.argwhere(PTMP < use_theta_gt or PTMP > use_theta_lt)
-
+            theta_range = np.argwhere(np.logical_or(PTMP < use_theta_gt, PTMP > use_theta_lt))
+        print(theta_range)
         for i in theta_range:
+
             PRES[i[0], i[1]] = np.nan
             SAL[i[0], i[1]] = np.nan
             PTMP[i[0], i[1]] = np.nan
+
+        print(PRES)
+        input("**")
 
     if use_pres_lt != 0 and use_pres_gt == 0:
         pres_range = np.argwhere(PRES > use_pres_lt)
@@ -235,8 +239,6 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
         if num_good.__len__() > 0:
             var_sal_tlevels[i] = np.nanvar(sal_temp[i, good], ddof=1)
 
-    print(var_sal_tlevels.shape)
-
     for j in range(theta_levels.__len__()):
         if np.nanmax(num_good) != 0:
             percent_s_profs[j] = num_good[j] / np.nanmax(num_good)
@@ -248,7 +250,7 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
     # select the best 10 theta levels
 
     for i in range(no_levels):
-        min_theta_index = np.argwhere(var_sal_theta == np.nanmin(var_sal_theta))[0, 0]
+        min_theta_index = np.argwhere(var_sal_tlevels == np.nanmin(var_sal_tlevels))[0, 0]
         index[i, :] = theta_level_indices[min_theta_index, :]
         t_levels[i] = theta_levels[min_theta_index]
         p_levels[i] = pres_levels[min_theta_index]
