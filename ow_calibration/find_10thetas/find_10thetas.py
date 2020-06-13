@@ -1,4 +1,5 @@
 from scipy.interpolate import interpolate
+import copy
 import numpy as np
 
 
@@ -232,5 +233,26 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
         num_good[i] = good.__len__()
 
         if num_good.__len__() > 0:
-            var_sal_tlevels[i] = np.var(sal_temp[i, good], ddof=1)
+            var_sal_tlevels[i] = np.nanvar(sal_temp[i, good], ddof=1)
+
+    print(var_sal_tlevels.shape)
+
+    for j in range(theta_levels.__len__()):
+        if np.nanmax(num_good) != 0:
+            percent_s_profs[j] = num_good[j] / np.nanmax(num_good)
+
+    bad = np.argwhere(percent_s_profs < use_percent_gt)
+    var_sal_tlevels[bad] = np.nan
+    var_sal_theta = copy.deepcopy(var_sal_tlevels)
+
+    # select the best 10 theta levels
+
+    for i in range(no_levels):
+        min_theta_index = np.argwhere(var_sal_theta == np.nanmin(var_sal_theta))[0, 0]
+        index[i, :] = theta_level_indices[min_theta_index, :]
+        t_levels[i] = theta_levels[min_theta_index]
+        p_levels[i] = pres_levels[min_theta_index]
+        var_sal_tlevels[min_theta_index] = np.nan
+
+    return t_levels, p_levels, index, var_sal_theta, theta_levels
 
