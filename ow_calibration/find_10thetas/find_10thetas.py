@@ -167,6 +167,8 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
 
     # find salinity variance on these theta levels
 
+    sal_temp = np.empty((theta_levels.__len__(), profile_depth)) * np.nan
+
     for level in range(theta_levels.__len__()):
         for depth in range(profile_depth):
             theta_index = theta_level_indices[level, depth]
@@ -185,8 +187,38 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
 
                     if pos_diff.__len__() > 0:
                         min_diff = np.argwhere(ptmp_diff == np.nanmin(ptmp_diff[pos_diff]))
-                        k_interval = interval[min_diff]
+                        k_index = interval[min_diff]
 
-                        print(min_diff)
-                        print(k_interval)
-                        input("**")
+                    else:
+                        k_index = theta_index
+
+                if PTMP[theta_index, depth] < theta_levels[level]:
+                    neg_diff = np.argwhere(ptmp_diff < 0)
+
+                    if neg_diff.__len__() > 0:
+                        min_diff = np.argwhere(-ptmp_diff == np.nanmin(-ptmp_diff[neg_diff]))
+                        k_index = interval[min_diff]
+
+                    else:
+                        k_index = theta_index
+
+                # else we only have one profile
+                if PTMP[theta_index, depth] == theta_levels[level]:
+                    k_index = theta_index
+
+                # interpolate theta level, if possible
+                if (k_index != theta_index and ~np.isnan(SAL[theta_index, depth]) and
+                        ~np.isnan(SAL[k_index, depth]) and ~np.isnan(PTMP[theta_index, depth]) and
+                        ~np.isnan(PTMP[k_index, depth])):
+                    interp_ptmp_sal = interpolate.interp1d([PTMP[theta_index, depth],
+                                                            PTMP[k_index, depth]],
+                                                           [SAL[theta_index, depth],
+                                                            SAL[k_index, depth]])
+
+                    sal_temp[level, depth] = interp_ptmp_sal(theta_levels[level])
+
+                # else we use the closest points
+                else:
+                    sal_temp[level, depth] = SAL[theta_index, depth]
+
+    print(sal_temp.shape)
