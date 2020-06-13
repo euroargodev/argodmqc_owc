@@ -221,4 +221,16 @@ def find_10thetas(SAL, PTMP, PRES, la_ptmp,
                 else:
                     sal_temp[level, depth] = SAL[theta_index, depth]
 
-    print(sal_temp.shape)
+    num_good = np.empty((theta_levels.__len__(), 1)) * np.nan
+    percent_s_profs = np.empty((theta_levels.__len__(), 1)) * np.nan
+    var_sal_tlevels = np.empty((theta_levels.__len__(), 1)) * np.nan
+
+    # only use salinities on theta levels that have valid values
+
+    for i in range(theta_levels.__len__()):
+        good = np.argwhere(~np.isnan(sal_temp[i, :]))
+        num_good[i] = good.__len__()
+
+        if num_good.__len__() > 0:
+            var_sal_tlevels[i] = np.var(sal_temp[i, good], ddof=1)
+
