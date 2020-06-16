@@ -209,7 +209,11 @@ def fit_cond(x, y, n_err, lvcov, param, br):
     # use correlation matrix to compute degrees of freedom
 
     ndf = np.sum(np.ones((npts, 1)) / (np.dot(lvcov, np.ones((npts,1)))))
-    
+
+    # calculate the residual sum of squares for the initial series
+
+    rss_0 = np.sum((yf **2) / err_var)
+    print(rss_0)
 
 
 
