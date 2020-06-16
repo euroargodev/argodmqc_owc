@@ -239,7 +239,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
             if param == 'initial_breaks':
                 # initial guess for breakpoints
-                brk_init = value[:]
+                brk_init = value[0]
 
                 # rescale
                 brk_init = (brk_init - x_0) / x_scale
@@ -247,23 +247,85 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
             elif param == 'max_no_breaks':
                 if value.__len__() > 0:
-                    max_brk_in = value[:]
+                    max_brk_in = value[0]
                     nbr1 = -1
 
             elif param == 'number_breaks':
-                pbrk = value[:]
+                pbrk = value[0]
                 nbr1 = pbrk
                 max_brk_in = pbrk
 
             elif param == nloops:
-                nloops = value[:]
+                nloops = value[0]
 
             elif param == 'breaks':
                 if value.__len__() > 0:
-                    breaks = value[:]
+                    breaks = value[0]
                     breaks = (breaks - x_0) / x_scale
                     nbr = breaks.__len__()
                     setbreaks = 1
 
             else:
                 raise ValueError("Paramater " + param + " not found in parameter list")
+
+    # intialise variable for search over number of break points
+    b_pts = np.ones((max_brk_in, max_brk_in + 1)) * np.nan
+    b_A = np.ones((max_brk_in + 2, max_brk_in + 1)) * np.nan
+    rss = np.ones((1, max_brk_in + 2)) * np.nan
+    AIC = np.ones((1, max_brk_in + 2)) * np.nan
+
+    # check to see if we have set break points
+    if setbreaks:
+
+        # brk point fit stuff
+        print("DO SET BREAK POINT STUFF")
+
+    else:
+        # no break points set
+        if isinstance(max_brk_in, list):
+            max_brk_in = max_brk_dflt
+
+        max_brk = max_brk_in
+        pbrk = np.arange(nbr1, max_brk + 1)
+
+    if ndf < 2 * (max_brk + 2) + 1:
+        if ndf > 2 * (nbr1 + 2) + 1:
+            pbrk = np.arange(nbr1, np.floor((ndf - 1) / 2 - 2) + 1)
+            print("WARNING: only have " + str(ndf) + " degrees of freedom")
+            print("Maximum breakpoints to be tried: " + str(np.max(pbrk)))
+
+        else:
+            if setbreaks == 1:
+                pbrk = nbr
+                max_brk = nbr
+                nbr1 = nbr
+                print("WARNING: Only have " + str(ndf) + " degrees of freedom")
+                print("Estimate fit with fixed breakpoints")
+
+            else:
+                pbrk = -1
+                print("WARNING: Only have " + str(ndf) + " degrees of freedom")
+                print("Estimate offset only")
+
+    nbr = pbrk
+
+    if nbr == -1:
+        # offset only
+        # since this is an error weighted average, yx won't necessarily be 0
+        ones_column = np.ones((npts, 1))
+        b_A[0, 0] = np.dot(np.dot(np.dot(np.linalg.inv(np.dot(np.dot(ones_column.T, w_i),
+                                                              ones_column)),
+                                         ones_column.T),
+                                  w_i),
+                           yf)
+
+        residual = yf - (ones_column * b_A[0, 0]).flatten()
+        rss[0,0] = np.sum(residual ** 2 / err_var)
+        AIC[0, 0] = ndf * np.log(rss[0, 0] / npts) + ndf * (ndf + 1) / (ndf - 3)
+        print(AIC)
+
+    elif nbr == 1:
+        # linear fit, no break points
+        # NEED BREAK POINT FUNCTION HERE
+        print("break function needed")
+
