@@ -26,7 +26,7 @@ class SorterTestCase(unittest.TestCase):
         Set up repeated test values
         :return: Nothing
         """
-        self.sites = A = np.array([-1, 0])
+        self.sites = np.array([-1, 0])
         self.msites = np.arange(-1, 1.01, 0.01)
 
     def test_returns_array(self):
