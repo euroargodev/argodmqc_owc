@@ -72,7 +72,7 @@ a warning : to track change see change config 129 """
 import numpy as np
 
 
-def fit_cond(x, y, n_err, lvcov, param, br):
+def fit_cond(x, y, n_err, lvcov, *args):
     """
     Get optimal fit
     :param x: observations
@@ -160,7 +160,7 @@ def fit_cond(x, y, n_err, lvcov, param, br):
         return (xfit, condslope, condslope_err, time_deriv, time_deriv_err, sta_mean,
                 sta_rms, NDF, fit_coef, fit_breaks)
 
-    #condition the series so that the fit is well behaved
+    # condition the series so that the fit is well behaved
     # sort by the independent variable
 
     x = np.sort(x)
@@ -170,10 +170,10 @@ def fit_cond(x, y, n_err, lvcov, param, br):
 
     # scale x from -1 to 1
 
-    x_0 = (x[npts - 1] + x[0])/2
+    x_0 = (x[npts - 1] + x[0]) / 2
 
     if x[0] != x[npts - 1]:
-        x_scale = (x[npts - 1] - x[0])/2
+        x_scale = (x[npts - 1] - x[0]) / 2
 
     else:
         x_scale = 1
@@ -187,10 +187,10 @@ def fit_cond(x, y, n_err, lvcov, param, br):
         y_scale = 1
 
     # calculate x and y used for fitting routine
-    xf = (x - x_0)/x_scale
-    yf = (y - y_0)/y_scale
-    n_err = n_err/y_scale
-    xfit = (xfit - x_0)/x_scale
+    xf = (x - x_0) / x_scale
+    yf = (y - y_0) / y_scale
+    n_err = n_err / y_scale
+    xfit = (xfit - x_0) / x_scale
 
     # get profile times that will be used as independent variables to get
     # error statstics. xp could be different to xfit if there is a profile
@@ -208,15 +208,62 @@ def fit_cond(x, y, n_err, lvcov, param, br):
 
     # use correlation matrix to compute degrees of freedom
 
-    ndf = np.sum(np.ones((npts, 1)) / (np.dot(lvcov, np.ones((npts,1)))))
+    ndf = np.sum(np.ones((npts, 1)) / (np.dot(lvcov, np.ones((npts, 1)))))
 
     # calculate the residual sum of squares for the initial series
 
-    rss_0 = np.sum((yf **2) / err_var)
-    print(rss_0)
+    rss_0 = np.sum((yf ** 2) / err_var)
 
+    if x_unique.__len__() > 3:
+        # find 2nd and 2nd to last profile and use them as limits for the break points
+        xblim = [x_unique[1], x_unique[n_prof - 2]]
 
+    else:
+        # too few profiles
+        xblim = [1, 1]
 
+    no_args = args.__len__()
 
+    if np.remainder(no_args, 2) != 0:
+        raise ValueError("FIT_COND ERROR - inputs are incorrect")
 
+    if no_args > 0:
+        for n in range(int(no_args / 2)):
+            parm = args[2 * (n - 1)]
+            value = args[(n * 2) + 1]
 
+            if type(parm) != str:
+                raise ValueError("FIT_COND ERROR - inputs are incorrect")
+
+            param = str.lower(parm)
+
+            if param == 'initial_breaks':
+                # initial guess for breakpoints
+                brk_init = value[:]
+
+                # rescale
+                brk_init = (brk_init - x_0) / x_scale
+                brk_init = (brk_init - xblim[0]) / np.diff(xblim)
+
+            elif param == 'max_no_breaks':
+                if value.__len__() > 0:
+                    max_brk_in = value[:]
+                    nbr1 = -1
+
+            elif param == 'number_breaks':
+                pbrk = value[:]
+                nbr1 = pbrk
+                max_brk_in = pbrk
+
+            elif param == nloops:
+                nloops = value[:]
+
+            elif param == 'breaks':
+                if value.__len__() > 0:
+                    breaks = value[:]
+                    breaks = (breaks - x_0) / x_scale
+                    nbr = breaks.__len__()
+                    setbreaks = 1
+
+            else:
+                raise ValueError("Paramater " + param + " not found in parameter list")
