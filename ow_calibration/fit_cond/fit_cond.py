@@ -69,7 +69,7 @@ Chemistry and Physics of Lipids, 76, 1-6.
 Cecile Cabanes, 2017: force the fit to an offset only if NDF <13. and display
 a warning : to track change see change config 129 """
 
-global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+import numpy as np
 
 
 def fit_cond(x, y, n_err, lvcov, param, br):
@@ -94,3 +94,96 @@ def fit_cond(x, y, n_err, lvcov, param, br):
                               the off-diagonal coariance (lvcov) is taken into
                               account
     """
+
+    # define global variables needed for ine fitting
+    global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
+    # Set up some default values
+    max_brk_dflt = 4
+    max_brk_in = []
+    max_break = []
+    nbr1 = -1
+    brk_init = []  # guesses for break point
+    setbreaks = 0
+
+    nloops = 200  # number of loops to fit profile error
+
+    # parameters for optimisation
+    max_fun_evals = 1000
+    tol_fun = 1 * 10 ** (-6)
+
+    # form x and y variables for the fit
+    xfit = np.unique(x)
+    nfit = xfit.__len__()
+
+    # exclude bad points before the fit. Need to reformat matrices so that they match matlab
+    x = x.T.flatten()
+    y = y.T.flatten()
+    n_err = n_err.T.flatten()
+
+    good = np.argwhere(np.isfinite(y) & np.isfinite(x))
+
+    x = x[good].flatten()
+    y = y[good].flatten()
+    n_err = n_err[good].flatten()
+
+    temp_lvcov = np.empty((good.__len__(), good.__len__()))
+
+    itx = 0
+    ity = 0
+    for i in good:
+        for j in good:
+            temp_lvcov[ity, itx] = lvcov[i, j]
+            itx += 1
+        itx = 0
+        ity += 1
+
+    npts = x.__len__()
+
+    # check that we actually have some good data
+
+    if npts == 0:
+        print("Failed to find any good data")
+
+        condslope = np.nan
+        condslope_err = np.nan
+        time_deriv = np.nan
+        time_deriv_err = np.nan
+        sta_mean = np.nan
+        sta_rms = np.nan
+        NDF = []
+        fit_coef = []
+        fit_breaks = []
+
+        return (xfit, condslope, condslope_err, time_deriv, time_deriv_err, sta_mean,
+                sta_rms, NDF, fit_coef, fit_breaks)
+
+    #condition the series so that the fit is well behaved
+    # sort by the independent variable
+
+    x = np.sort(x)
+    sorted_index = np.argsort(x, kind='stable')
+    y = y[sorted_index]
+    n_err = n_err[sorted_index]
+
+    # scale x from -1 to 1
+
+    x_0 = (x[npts - 1] + x[0])/2
+
+    if x[0] != x[npts - 1]:
+        x_scale = (x[npts - 1] + x[0])/2
+
+    else:
+        x_scale = 1
+
+    # remove the mean of y and scale by the standard deviation
+
+    y_0 = np.mean(y)
+    y_scale = np.std(y)
+
+    if y_scale == 0:
+        y_scale = 1
+
+    
+
+
