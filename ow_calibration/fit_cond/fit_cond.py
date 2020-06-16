@@ -138,6 +138,8 @@ def fit_cond(x, y, n_err, lvcov, param, br):
         itx = 0
         ity += 1
 
+    lvcov = temp_lvcov
+
     npts = x.__len__()
 
     # check that we actually have some good data
@@ -171,7 +173,7 @@ def fit_cond(x, y, n_err, lvcov, param, br):
     x_0 = (x[npts - 1] + x[0])/2
 
     if x[0] != x[npts - 1]:
-        x_scale = (x[npts - 1] + x[0])/2
+        x_scale = (x[npts - 1] - x[0])/2
 
     else:
         x_scale = 1
@@ -184,6 +186,33 @@ def fit_cond(x, y, n_err, lvcov, param, br):
     if y_scale == 0:
         y_scale = 1
 
+    # calculate x and y used for fitting routine
+    xf = (x - x_0)/x_scale
+    yf = (y - y_0)/y_scale
+    n_err = n_err/y_scale
+    xfit = (xfit - x_0)/x_scale
+
+    # get profile times that will be used as independent variables to get
+    # error statstics. xp could be different to xfit if there is a profile
+    # with no good data
+
+    x_unique, index_unique = np.unique(xf, return_index=True)
+    n_prof = x_unique.__len__()
+
+    # convert errors from rms to variance
+    err_var = (n_err) ** 2
+
+    # weights for weighted least squares fit
+
+    w_i = np.diag(np.mean(err_var) / err_var)
+
+    # use correlation matrix to compute degrees of freedom
+
+    ndf = np.sum(np.ones((npts, 1)) / (np.dot(lvcov, np.ones((npts,1)))))
     
+
+
+
+
 
 
