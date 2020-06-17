@@ -29,6 +29,10 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+from ow_calibration.sorter.sorter import sorter
+import numpy as np
+
+
 def brk_pt_fit(x, y, w_i, b=[]):
     """
     Get least-squares estimates for piecewise linear fit with breakpoints at prescribed points
@@ -38,3 +42,14 @@ def brk_pt_fit(x, y, w_i, b=[]):
     :param b: vector of break points
     :return: Matrix relating observations to the fit parameters of the linear fit
     """
+
+    b_length = b.__len__()
+    x_length = x.__len__()
+    y_length = y.__len__()
+
+    # shake we have the same number of dependent and independent variables
+    if x_length != y_length:
+        residual = 999
+        a = np.zeros((b_length + 2, 1))
+        print("ERROR: input vectors for brk_pt_fit did not match")
+        return a, residual

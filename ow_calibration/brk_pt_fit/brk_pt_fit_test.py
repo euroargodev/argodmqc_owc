@@ -17,29 +17,30 @@ class MyTestCase(unittest.TestCase):
     """
     Test case for 'brk_pt_fit' function
     """
-    def test_something(self):
-        x = np.arange(-1, 1 + 0.1, 0.1)
-        x = np.flip(np.delete(x, 10))
-        y = np.array([1.94417105917954,
-                      2.21737581122686,
-                      -0.119039551119482,
-                      2.24012756841706,
-                      1.39707773867623,
-                      -0.207378785001771,
-                      0.335494656601145,
-                      1.14064455761495,
-                      2.37252050630289,
-                      2.39466560559783,
-                      -0.0271607549673552,
-                      2.41177834528185,
-                      2.37150084472884,
-                      0.956126946168524,
-                      1.90084140666640,
-                      -0.0743409841183540,
-                      0.765283847878825,
-                      2.24720657556720,
-                      1.87662198867866,
-                      2.37847727917871])
+
+    def Setup(self):
+        self.x = np.arange(-1, 1 + 0.1, 0.1)
+        self.x = np.flip(np.delete(self.x, 10))
+        self.y = np.array([1.94417105917954,
+                           2.21737581122686,
+                           -0.119039551119482,
+                           2.24012756841706,
+                           1.39707773867623,
+                           -0.207378785001771,
+                           0.335494656601145,
+                           1.14064455761495,
+                           2.37252050630289,
+                           2.39466560559783,
+                           -0.0271607549673552,
+                           2.41177834528185,
+                           2.37150084472884,
+                           0.956126946168524,
+                           1.90084140666640,
+                           -0.0743409841183540,
+                           0.765283847878825,
+                           2.24720657556720,
+                           1.87662198867866,
+                           2.37847727917871])
 
         weights = np.array([1.48361104873488,
                             0.553567517861284,
@@ -62,13 +63,28 @@ class MyTestCase(unittest.TestCase):
                             1.92533307325753,
                             0.551669120754363])
 
-        w_i = np.zeros((20, 20))
-        no_weights = w_i.shape[0]
+        self.w_i = np.zeros((20, 20))
+        no_weights = self.w_i.shape[0]
 
         for i in range(no_weights):
-            w_i[i, i,] = weights[i]
+            self.w_i[i, i] = weights[i]
 
-        brk_pt_fit(x, y, w_i)
+    def test_bad_inputs_gives_outputs(self):
+        """
+        Check that, if observations are the wrong shape, we get a bad output
+        :return: Nothing
+        """
+        print("Testing brk_pt_fit returns values for bad arrays")
+
+        b = [1, 2, 3]
+
+        a, residual = brk_pt_fit([1, 2, 3], [1, 2], [1, 2, 3], b)
+
+        self.assertEqual(residual, 999, "residual should be 999 if bad inputs occur")
+        self.assertEqual(a.shape, (5, 1), "matrix shape should be (b + 2, 1)")
+
+        for i in a:
+            self.assertEqual(i, 0, "A should be all zeroes")
 
 
 if __name__ == '__main__':
