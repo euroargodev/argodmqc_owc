@@ -51,7 +51,7 @@ def brk_pt_fit(x, y, w_i, b=[]):
     if x_length != y_length:
         residual = 999
         a = np.zeros((b_length + 2, 1))
-        print("ERROR: input vectors for brk_pt_fit did not match")
+        print("ERROR in brk_pt_fit: input vectors for brk_pt_fit did not match")
         return a, residual
 
     # check inputs are flat
@@ -82,3 +82,10 @@ def brk_pt_fit(x, y, w_i, b=[]):
 
     else:
         b = np.dot(e.T, e)
+
+    if np.det(b) == 0:
+        fit = 999,
+        a = np.zeros((b_length + 2, 1))
+        residual = y
+        print("ERROR in brk_pt_fit: DET(A) == 0")
+
