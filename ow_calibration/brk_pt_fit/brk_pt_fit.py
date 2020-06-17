@@ -29,63 +29,77 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-from ow_calibration.sorter.sorter import sorter
 import numpy as np
+from ow_calibration.sorter.sorter import sorter
 
 
-def brk_pt_fit(x, y, w_i, b=[]):
+def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
     """
     Get least-squares estimates for piecewise linear fit with breakpoints at prescribed points
-    :param x: indendent variables
-    :param y: dependent variables
+    :param x_obvs: indendent variables
+    :param y_obvs: dependent variables
     :param w_i: inverse of weights for fit
-    :param b: vector of break points
+    :param breaks: vector of break points
     :return: Matrix relating observations to the fit parameters of the linear fit
     """
 
-    b_length = b.__len__()
-    x_length = x.__len__()
-    y_length = y.__len__()
+    if breaks is None:
+        breaks = []
+
+    b_length = breaks.__len__()
+    x_length = x_obvs.__len__()
+    y_length = y_obvs.__len__()
 
     # shake we have the same number of dependent and independent variables
     if x_length != y_length:
-        residual = 999
-        a = np.zeros((b_length + 2, 1))
+        residual = y_obvs
+        fit_param = np.zeros((b_length + 2, 1))
         print("ERROR in brk_pt_fit: input vectors for brk_pt_fit did not match")
-        return a, residual
+        return fit_param, residual
 
     # check inputs are flat
-    x = x.flatten()
-    y = y.flatten()
+    x_obvs = x_obvs.flatten()
+    y_obvs = y_obvs.flatten()
 
     # make the first point the first break point
-    btem = np.concatenate(([x[0]], b))
+    btem = np.concatenate(([x_obvs[0]], breaks))
 
     # form matrix
     # include intercept as well as the trends between each point
 
-    e = np.zeros((x_length, b_length + 2))
-    e[:, 0] = np.ones(x_length)
-    ixb = sorter(btem, x)
+    trends = np.zeros((x_length, b_length + 2))
+    trends[:, 0] = np.ones(x_length)
+    ixb = sorter(btem, x_obvs)
 
     for j in range(b_length + 1):
-        ib = np.argwhere(ixb == j)  # point to x values greater than break point
-        e[ib, j+1] = x[ib] - btem[j]
-        ii = np.argwhere(ixb > j)  # point to values less than the
+        ixb_j = np.argwhere(ixb == j)  # point to x values greater than break point
+        trends[ixb_j, j + 1] = x_obvs[ixb_j] - btem[j]
+        ixb_g_j = np.argwhere(ixb > j)  # point to values less than the
 
-        if ii.__len__() > 0:
-            e[ii, j+1] = btem[j+1] - btem[j]
+        if ixb_g_j.__len__() > 0:
+            trends[ixb_g_j, j+1] = btem[j+1] - btem[j]
 
     # Get least squares estimate. Use weights, if we have them
     if w_i.__len__() > 0:
-        b = np.dot(np.dot(e.T, w_i), e)
+        ls_est = np.dot(np.dot(trends.T, w_i), trends)
 
     else:
-        b = np.dot(e.T, e)
+        ls_est = np.dot(trends.T, trends)
 
-    if np.det(b) == 0:
-        fit = 999,
-        a = np.zeros((b_length + 2, 1))
-        residual = y
+    if np.linalg.det(ls_est) == 0:
+        fit_param = np.zeros((b_length + 2, 1))
+        residual = y_obvs
         print("ERROR in brk_pt_fit: DET(A) == 0")
+        return fit_param, residual
 
+    # calculate fit parameters
+    if w_i.__len__() > 0:
+        fit_param = np.linalg.solve(ls_est, np.dot(np.dot(trends.T, w_i), y_obvs))
+
+    else:
+        fit_param = np.linalg.solve(ls_est, np.dot(trends.T, y_obvs))
+
+    # calculate fit estimate
+    residual = y_obvs - np.dot(trends, fit_param)
+
+    return fit_param, residual
