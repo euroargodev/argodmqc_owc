@@ -177,7 +177,7 @@ class MyTestCase(unittest.TestCase):
         """
         print("Testing brk_pt_fit returns if det(A) == 0")
 
-        y_obvs = np.array([0 ,0 ,0])
+        y_obvs = np.array([0, 0, 0])
 
         fit_param, residual = brk_pt_fit(np.array([0, 0, 0]), y_obvs, [])
 
