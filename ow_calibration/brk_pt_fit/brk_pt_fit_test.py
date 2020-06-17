@@ -18,7 +18,7 @@ class MyTestCase(unittest.TestCase):
     Test case for 'brk_pt_fit' function
     """
 
-    def Setup(self):
+    def setUp(self):
         self.x = np.arange(-1, 1 + 0.1, 0.1)
         self.x = np.flip(np.delete(self.x, 10))
         self.y = np.array([1.94417105917954,
@@ -81,11 +81,17 @@ class MyTestCase(unittest.TestCase):
         a, residual = brk_pt_fit([1, 2, 3], [1, 2], [1, 2, 3], b)
 
         self.assertEqual(residual, 999, "residual should be 999 if bad inputs occur")
-        self.assertEqual(a.shape, (5, 1), "matrix shape should be (b + 2, 1)")
+        self.assertEqual(a.shape, (b.__len__() + 2, 1), "matrix shape should be (b + 2, 1)")
 
         for i in a:
             self.assertEqual(i, 0, "A should be all zeroes")
 
+    def test_stuff(self):
+        """
+
+        :return:
+        """
+        brk_pt_fit(self.x, self.y, self.w_i)
 
 if __name__ == '__main__':
     unittest.main()

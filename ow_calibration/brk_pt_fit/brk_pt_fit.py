@@ -53,3 +53,18 @@ def brk_pt_fit(x, y, w_i, b=[]):
         a = np.zeros((b_length + 2, 1))
         print("ERROR: input vectors for brk_pt_fit did not match")
         return a, residual
+
+    # check inputs are flat
+    x = x.flatten()
+    y = y.flatten()
+
+    # make the first point the first break point
+    btem = np.concatenate(([x[0]], b))
+
+    # form matrix
+    # include intercept as well as the trends between each point
+
+    e = np.zeros((x_length, b_length + 2))
+    e[:, 0] = np.ones(x_length)
+    ixb = sorter(btem, x)
+    print(ixb)

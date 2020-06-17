@@ -28,9 +28,9 @@ def sorter(msites, sites):
     # put arrays together
     all_sites = np.concatenate((msites.flatten(), sites.flatten()))
 
-    index = np.argsort(all_sites)
+    index = np.argsort(all_sites, kind='stable')
 
-    pointer = np.argwhere(index > msites.__len__() - 1).flatten() - \
-              np.arange(1, sites.__len__() + 1)
+    pointer = (np.argwhere(index > msites.__len__() - 1).flatten() - \
+               np.arange(1, sites.__len__() + 1))
 
     return pointer
