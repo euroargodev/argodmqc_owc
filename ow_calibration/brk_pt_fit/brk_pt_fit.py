@@ -67,4 +67,18 @@ def brk_pt_fit(x, y, w_i, b=[]):
     e = np.zeros((x_length, b_length + 2))
     e[:, 0] = np.ones(x_length)
     ixb = sorter(btem, x)
-    print(ixb)
+
+    for j in range(b_length + 1):
+        ib = np.argwhere(ixb == j)  # point to x values greater than break point
+        e[ib, j+1] = x[ib] - btem[j]
+        ii = np.argwhere(ixb > j)  # point to values less than the
+
+        if ii.__len__() > 0:
+            e[ii, j+1] = btem[j+1] - btem[j]
+
+    # Get least squares estimate. Use weights, if we have them
+    if w_i.__len__() > 0:
+        b = np.dot(np.dot(e.T, w_i), e)
+
+    else:
+        b = np.dot(e.T, e)
