@@ -32,7 +32,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import numpy as np
 from ow_calibration.sorter.sorter import sorter
 
-
+# pylint: disable=too-many-locals
 def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
     """
     Get least-squares estimates for piecewise linear fit with breakpoints at prescribed points

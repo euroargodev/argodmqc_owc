@@ -8,8 +8,8 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import numpy as np
 import unittest
+import numpy as np
 from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
 
 
@@ -82,9 +82,11 @@ class MyTestCase(unittest.TestCase):
         fit_param, residual = brk_pt_fit([1, 2, 3], y_obvs, [1, 2, 3], breaks)
 
         for i in range(y_obvs.__len__()):
-            self.assertEqual(residual[i], y_obvs[i], "residuals should equal independent observations " +
-                             "for bad inputs")
-        self.assertEqual(fit_param.shape, (breaks.__len__() + 2, 1), "matrix shape should be (b + 2, 1)")
+            self.assertEqual(residual[i], y_obvs[i],
+                             "residuals should equal independent observations for bad inputs")
+
+        self.assertEqual(fit_param.shape, (breaks.__len__() + 2, 1),
+                         "matrix shape should be (b + 2, 1)")
 
         for i in fit_param:
             self.assertEqual(i, 0, "A should be all zeroes")
