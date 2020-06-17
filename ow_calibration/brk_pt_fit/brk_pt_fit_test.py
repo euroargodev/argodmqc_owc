@@ -130,6 +130,63 @@ class MyTestCase(unittest.TestCase):
             self.assertAlmostEqual(residual[i], residual_ans[i], 12,
                                    "matlab parameters should match python ones")
 
+    def test_runs_with_weights(self):
+        """
+        Check we get the right answer when running with weights
+        :return: nothing
+        """
+        print("Testing brk_pt_ft runs using weighted values")
+
+        fit_param_ans = np.array([1.20259478507721,
+                                  -0.587941247050749])
+        residual_ans = np.array([0.741576274102326,
+                                 1.01478102614965,
+                                 -1.32163433619669,
+                                 1.03753278333985,
+                                 0.194482953599018,
+                                 -1.40997357007898,
+                                 -0.867100128476065,
+                                 -0.0619502274622590,
+                                 1.16992572122568,
+                                 1.19207082052062,
+                                 -1.22975554004457,
+                                 1.20918356020464,
+                                 1.16890605965163,
+                                 -0.246467838908687,
+                                 0.698246621589190,
+                                 -1.27693576919556,
+                                 -0.437310937198385,
+                                 1.04461179048999,
+                                 0.674027203601453,
+                                 0])
+
+        fit_param, residual = brk_pt_fit(self.x_obvs, self.y_obvs, self.w_i)
+
+        for i in range(fit_param.__len__()):
+            self.assertAlmostEqual(fit_param[i], fit_param_ans[i], 12,
+                                   "matlab parameters should match python ones")
+
+        for i in range(residual.__len__()):
+            self.assertAlmostEqual(residual[i], residual_ans[i], 12,
+                                   "matlab parameters should match python ones")
+
+    def test_det_zero(self):
+        """
+        Check that we still get an answer if determinant is o
+        :return: nothing
+        """
+        print("Testing brk_pt_fit returns if det(A) == 0")
+
+        y_obvs = np.array([0 ,0 ,0])
+
+        fit_param, residual = brk_pt_fit(np.array([0, 0, 0]), y_obvs, [])
+
+        for i in range(fit_param.__len__()):
+            self.assertEqual(fit_param[i], 0, "should be all zeroes when det(a) == 0")
+
+        for i in range(residual.__len__()):
+            self.assertEqual(residual[i], y_obvs[i], "should be all zeroes when det(a) == 0")
+
 
 if __name__ == '__main__':
     unittest.main()

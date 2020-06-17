@@ -32,6 +32,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import numpy as np
 from ow_calibration.sorter.sorter import sorter
 
+
 # pylint: disable=too-many-locals
 def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
     """
@@ -77,7 +78,7 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
         ixb_g_j = np.argwhere(ixb > j)  # point to values less than the
 
         if ixb_g_j.__len__() > 0:
-            trends[ixb_g_j, j+1] = btem[j+1] - btem[j]
+            trends[ixb_g_j, j + 1] = btem[j + 1] - btem[j]
 
     # Get least squares estimate. Use weights, if we have them
     if w_i.__len__() > 0:
