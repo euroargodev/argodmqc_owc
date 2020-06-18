@@ -20,7 +20,7 @@ from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 
 
 # pylint: disable=fixme
-# pylint: disable=too-many-instance-atrributes
+# pylint: disable=too-many-instance-attributes
 class Find10ThetasTestCase(unittest.TestCase):
     """
     Test cases for find_10thetas function
@@ -193,6 +193,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                 if not np.isnan(theta_levels[i, j]):
                     self.assertAlmostEqual(theta_levels[i, j], self.thetalevels[i, j], 10,
                                            "salinity variance is incorrect")
+
+        self.assertGreater(index.__len__(), 0, "Should have some indices")
 
         # TODO: add further tests for bounded values
 
