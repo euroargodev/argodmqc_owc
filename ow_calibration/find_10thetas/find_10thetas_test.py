@@ -13,12 +13,14 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-from ow_calibration.find_10thetas.find_10thetas import find_10thetas
+import unittest
 import numpy as np
 import scipy.io as scipy
-import unittest
+from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 
 
+# pylint: disable=fixme
+# pylint: disable=too-many-instance-atrributes
 class Find10ThetasTestCase(unittest.TestCase):
     """
     Test cases for find_10thetas function

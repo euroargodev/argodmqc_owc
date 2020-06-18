@@ -12,11 +12,14 @@ These 10 theta levels are the ones with the minimum S variance on theta.
 These 10 theta levels are distinct (ie. they don't repeat each other).
 """
 
-from scipy.interpolate import interpolate
 import copy
+from scipy.interpolate import interpolate
 import numpy as np
 
-
+# pylint:disable=too-many-arguments
+# pylint:disable=too-many-locals
+# pylint:disable=too-many-branches
+# pylint:disable=too-mannnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnny-statements
 def find_10thetas(sal, ptmp, pres, la_ptmp,
                   use_theta_lt=0, use_theta_gt=0,
                   use_pres_lt=0, use_pres_gt=0, use_percent_gt=0.5):
