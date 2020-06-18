@@ -20,12 +20,19 @@ import numpy as np
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def set_calseries(float_dir, float_name, system_config):
+def set_calseries(float_dir, float_name, system_config,
+                  use_theta_lt=[], use_theta_gt = [],
+                  use_pres_lt = [],use_pres_gt = []
+):
     """
     Set up the parameters for line fitting
-    :param float_dir:
-    :param float_name:
-    :param system_config:
+    :param use_pres_gt: pressure greater than
+    :param use_theta_gt: ptmp greater than
+    :param use_theta_lt: ptmp less than
+    :param use_pres_lt: pressure less than
+    :param float_dir: location of float
+    :param float_name: float source name
+    :param system_config: configuration settings
     :return: Nothing, but save parameters
     """
 
@@ -75,24 +82,20 @@ def set_calseries(float_dir, float_name, system_config):
         max_breaks = 4  # 0 for linear trend, -1 for offset
         calseries = np.ones((1, no_profiles)).flatten()
         calib_profile_no = profile_no
-        use_theta_lt = []
-        use_theta_gt = []
-        use_pres_lt = []
-        use_pres_gt = []
         use_percent_gt = 0.5
 
     # ensure values are in a realistic range
 
-    if use_theta_lt == 99999:
+    if not isinstance(use_theta_lt, list):
         use_theta_lt = []
 
-    if use_theta_gt == 99999:
+    if not isinstance(use_theta_gt, list):
         use_theta_gt = []
 
-    if use_pres_lt == 99999:
+    if not isinstance(use_pres_lt, list):
         use_pres_lt = []
 
-    if use_pres_gt == 99999:
+    if not isinstance(use_pres_gt, list):
         use_pres_gt = []
 
     # Check that there are no missing profiles between source and calseries files

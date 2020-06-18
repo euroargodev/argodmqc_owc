@@ -69,6 +69,20 @@ class SetCalSeriesTestCase(unittest.TestCase):
         # should use old file
         set_calseries(self.float_dir, self.float_source, self.system_config)
 
+    def test_bad_boundaries(self):
+        """
+        Check that, even if we pass  in bad boundaries, we still get values
+        :return: nothing
+        """
+        print("Testing that set_calseries sets parameters even if boundaries are bad")
+
+        if os.path.exists(self.python_output_path):
+            os.remove(self.python_output_path)
+
+        set_calseries(self.float_dir, self.float_source, self.system_config,
+                      99, 99, 99, 99)
+
+        self.assertTrue(os.path.exists(self.python_output_path))
 
 if __name__ == '__main__':
     unittest.main()
