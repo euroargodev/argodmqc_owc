@@ -33,9 +33,9 @@ class Find10ThetasTestCase(unittest.TestCase):
         mapped_values = scipy.loadmat(mapped_values_path)
         source_values = scipy.loadmat(source_values_path)
 
-        self.SAL = source_values['SAL']
-        self.PTMP = source_values['PTMP']
-        self.PRES = source_values['PRES']
+        self.sal = source_values['SAL']
+        self.ptmp = source_values['PTMP']
+        self.pres = source_values['PRES']
 
         self.la_ptmp = mapped_values['la_ptmp']
 
@@ -145,14 +145,22 @@ class Find10ThetasTestCase(unittest.TestCase):
         :return: Nothing
         """
         print("Testing that we only get 10 theta levels")
-        A, B, C, D, E, = find_10thetas(self.SAL, self.PTMP, self.PRES, self.la_ptmp,
-                                       0, 0, 0, 0, 0.5)
+        t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
+                                                                               self.ptmp,
+                                                                               self.pres,
+                                                                               self.la_ptmp,
+                                                                               0, 0, 0, 0, 0.5)
 
-        self.assertEqual(A.shape, self.tlevels.shape, "Got incorrect number of theta levels")
-        self.assertEqual(B.shape, self.plevels.shape, "Got incorrect number of pressure levels")
-        self.assertEqual(C.shape, (10, self.SAL.shape[1]), "have incorrect number of indices")
-        self.assertEqual(D.shape, self.var_s_thetalevels.shape, "Got incorrect number of theta levels")
-        self.assertEqual(E.shape, self.thetalevels.shape, "Got incorrect number of theta levels")
+        self.assertEqual(t_levels.shape, self.tlevels.shape,
+                         "Got incorrect number of theta levels")
+        self.assertEqual(p_levels.shape, self.plevels.shape,
+                         "Got incorrect number of pressure levels")
+        self.assertEqual(index.shape, (10, self.sal.shape[1]),
+                         "have incorrect number of indices")
+        self.assertEqual(var_sal_theta.shape, self.var_s_thetalevels.shape,
+                         "Got incorrect number of theta levels")
+        self.assertEqual(theta_levels.shape, self.thetalevels.shape,
+                         "Got incorrect number of theta levels")
 
     def test_theta_levels_values(self):
         """
@@ -160,28 +168,31 @@ class Find10ThetasTestCase(unittest.TestCase):
         :return: Nothing
         """
         print("Testing that we only get 10 theta levels")
-        A, B, C, D, E, = find_10thetas(self.SAL, self.PTMP, self.PRES, self.la_ptmp,
-                                       0, 0, 0, 0, 0.5)
+        t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
+                                                                               self.ptmp,
+                                                                               self.pres,
+                                                                               self.la_ptmp,
+                                                                               0, 0, 0, 0, 0.5)
 
-        for i in range(A.__len__()):
-            self.assertAlmostEqual(A[i, 0], self.tlevels[i, 0], 10,
+        for i in range(t_levels.__len__()):
+            self.assertAlmostEqual(t_levels[i, 0], self.tlevels[i, 0], 10,
                                    "Got incorrect theta level")
-            self.assertAlmostEqual(B[i, 0], self.plevels[i, 0], 10,
+            self.assertAlmostEqual(p_levels[i, 0], self.plevels[i, 0], 10,
                                    "Got incorrect pressure level")
 
         for i in range(self.var_s_thetalevels.shape[0]):
             for j in range(self.var_s_thetalevels.shape[1]):
-                if not np.isnan(D[i, j]):
-                    self.assertAlmostEqual(D[i, j], self.var_s_thetalevels[i, j], 10,
+                if not np.isnan(var_sal_theta[i, j]):
+                    self.assertAlmostEqual(var_sal_theta[i, j], self.var_s_thetalevels[i, j], 10,
                                            "salinity variance is incorrect")
 
         for i in range(self.thetalevels.shape[0]):
             for j in range(self.thetalevels.shape[1]):
-                if not np.isnan(E[i, j]):
-                    self.assertAlmostEqual(E[i, j], self.thetalevels[i, j], 10,
+                if not np.isnan(theta_levels[i, j]):
+                    self.assertAlmostEqual(theta_levels[i, j], self.thetalevels[i, j], 10,
                                            "salinity variance is incorrect")
 
-        #TODO: add further tests for bounded values
+        # TODO: add further tests for bounded values
 
 
 if __name__ == '__main__':
