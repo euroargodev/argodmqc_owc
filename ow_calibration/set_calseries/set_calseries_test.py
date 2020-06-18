@@ -66,6 +66,9 @@ class SetCalSeriesTestCase(unittest.TestCase):
         except KeyError:
             self.fail("Update salinity mapping encountered an unexpected error")
 
+        # should use old file
+        set_calseries(self.float_dir, self.float_source, self.system_config)
+
 
 if __name__ == '__main__':
     unittest.main()

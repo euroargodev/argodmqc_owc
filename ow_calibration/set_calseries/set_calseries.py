@@ -50,8 +50,8 @@ def set_calseries(float_dir, float_name, system_config):
         calseries_data = scipy.loadmat(calseries_filename)
         breaks = calseries_data['breaks']
         max_breaks = calseries_data['max_breaks']
-        calseries = calseries_data['calseries']
-        calib_profile_no = calseries_data['calib_profile_no']
+        calseries = calseries_data['calseries'].flatten()
+        calib_profile_no = calseries_data['calib_profile_no'].flatten()
         use_theta_lt = calseries_data['use_theta_lt']
         use_theta_gt = calseries_data['use_theta_gt']
         use_pres_lt = calseries_data['use_pres_lt']
