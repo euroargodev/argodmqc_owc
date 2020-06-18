@@ -228,6 +228,17 @@ class Find10ThetasTestCase(unittest.TestCase):
 
         self.assertEqual(index.__len__(), 10, "should get 10 levels for bounded data")
 
+        for i in t_levels:
+            self.assertFalse(-0.1 < i < 0.1, "No theta levels should be in this range")
+
+        for i in p_levels:
+            self.assertFalse(1000 < i < 1100, "No pressure levels should be in this range")
+
+        self.assertEqual(var_sal_theta.shape, self.var_s_thetalevels.shape,
+                         "Got incorrect number of theta levels")
+        self.assertEqual(theta_levels.shape, self.thetalevels.shape,
+                         "Got incorrect number of theta levels")
+
     def test_theta_levels_bounds(self):
         """
                 Check that we get 10 levels
@@ -244,6 +255,15 @@ class Find10ThetasTestCase(unittest.TestCase):
 
         for i in p_levels:
             self.assertGreater(i, 500, "pressure levels should exceed lower bound")
+        for i in t_levels:
+            self.assertGreater(i, 0.1, "pressure levels should not exceed upper bound")
+
+        self.assertEqual(index.__len__(), 10, "should get 10 levels")
+
+        self.assertTrue(var_sal_theta.__len__() > 0,
+                        "should have variance of salinity on each level")
+        self.assertTrue(theta_levels.__len__() > 0,
+                        "should have theta levels")
 
         t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
                                                                                self.ptmp,
@@ -255,6 +275,16 @@ class Find10ThetasTestCase(unittest.TestCase):
 
         for i in p_levels:
             self.assertLess(i, 1500, "pressure levels should not exceed upper bound")
+
+        for i in t_levels:
+            self.assertLess(i, 2, "pressure levels should not exceed upper bound")
+
+        self.assertEqual(index.__len__(), 10, "should get 10 levels")
+
+        self.assertTrue(var_sal_theta.__len__() > 0,
+                        "should have variance of salinity on each level")
+        self.assertTrue(theta_levels.__len__() > 0,
+                        "should have theta levels")
 
 
 if __name__ == '__main__':
