@@ -13,7 +13,7 @@ import numpy as np
 from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
 
 
-class MyTestCase(unittest.TestCase):
+class BrkPtFitTestCase(unittest.TestCase):
     """
     Test case for 'brk_pt_fit' function
     """
