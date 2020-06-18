@@ -19,7 +19,10 @@ import scipy.io as scipy
 from ow_calibration.set_calseries.set_calseries import set_calseries
 
 
-class MyTestCase(unittest.TestCase):
+class SetCalSeriesTestCase(unittest.TestCase):
+    """
+    Test cases forset_calseries function
+    """
     def setUp(self):
         """
         Only run if we are missing our test file
@@ -60,7 +63,7 @@ class MyTestCase(unittest.TestCase):
             self.assertTrue(os.path.exists(self.python_output_path),
                             "calseries file was not saved")
 
-        except:
+        except KeyError:
             self.fail("Update salinity mapping encountered an unexpected error")
 
 

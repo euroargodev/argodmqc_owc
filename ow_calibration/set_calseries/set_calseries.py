@@ -18,6 +18,8 @@ import scipy.io as scipy
 import numpy as np
 
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 def set_calseries(float_dir, float_name, system_config):
     """
     Set up the parameters for line fitting
