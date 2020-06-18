@@ -105,9 +105,6 @@ def set_calseries(float_dir, float_name, system_config):
             missing_profiles_index.append(i)
 
     # Add the missing profiles to the data set
-
-    no_calib_profiles = calib_profile_no.__len__()
-
     for i in range(missing_profiles_index.__len__()):
         missing = missing_profiles_index[i]
         calib_profile_no.append(profile_no[missing])
