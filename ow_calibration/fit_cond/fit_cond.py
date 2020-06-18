@@ -70,6 +70,44 @@ Cecile Cabanes, 2017: force the fit to an offset only if NDF <13. and display
 a warning : to track change see change config 129 """
 
 import numpy as np
+from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
+
+
+def nlbpfun(ubrk_i):
+    """
+    find residual
+    :param ubrk_i: input
+    :return: residual
+    """
+
+    global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
+    if nbr1 > 1:
+        ubrk = ubrk_g[0:nbr1 - 1]
+        for i in range(nbr1, ubrk_g.__len__()):
+            ubrk.append(ubrk_i)
+
+    else:
+        ubrk = ubrk_i
+
+    m_b = ubrk.__len__()
+    fnumer = np.zeros(ubrk.shape)
+    fnumer[0] = np.exp(ubrk[0])
+
+    for i in range(1, m_b):
+        fnumer[i] = fnumer[i - 1] + np.exp(ubrk(i))
+
+    fdenom = 1 + fnumer[m_b - 1]
+
+    ftem = (xblim[1] - xblim[0]) / fdenom
+
+    breaks = xblim[0] + ftem * fnumer
+
+    if np.argwhere(np.diff(breaks) == 0).__len__() > 0:
+        difference = np.argwhere(np.diff(breaks) == 0)
+        breaks[difference + 1] = breaks[difference + 1] + 0.00001
+
+    A, residual = brk_pt_fit(xf, yf, w_i, breaks)
 
 
 def fit_cond(x, y, n_err, lvcov, *args):
@@ -272,7 +310,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     b_pts = np.ones((max_brk_in, max_brk_in + 1)) * np.nan
     b_A = np.ones((max_brk_in + 2, max_brk_in + 1)) * np.nan
     rss = np.ones((1, max_brk_in + 2)) * np.nan
-    AIC = np.ones((1, max_brk_in + 2)) * np.nan
+    aic = np.ones((1, max_brk_in + 2)) * np.nan
 
     # check to see if we have set break points
     if setbreaks:
@@ -307,8 +345,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 print("WARNING: Only have " + str(ndf) + " degrees of freedom")
                 print("Estimate offset only")
 
-    nbr = pbrk
-
+    nbr = 1
     if nbr == -1:
         # offset only
         # since this is an error weighted average, yx won't necessarily be 0
@@ -320,12 +357,32 @@ def fit_cond(x, y, n_err, lvcov, *args):
                            yf)
 
         residual = yf - (ones_column * b_A[0, 0]).flatten()
-        rss[0,0] = np.sum(residual ** 2 / err_var)
-        AIC[0, 0] = ndf * np.log(rss[0, 0] / npts) + ndf * (ndf + 1) / (ndf - 3)
-        print(AIC)
+        rss[0, 0] = np.sum(residual ** 2 / err_var)
+        aic[0, 0] = ndf * np.log(rss[0, 0] / npts) + ndf * (ndf + 1) / (ndf - 3)
 
-    elif nbr == 1:
+    elif nbr == 0:
         # linear fit, no break points
-        # NEED BREAK POINT FUNCTION HERE
-        print("break function needed")
+        fit_param, residual = brk_pt_fit(xf, yf, w_i)
+        b_A[0:2, 1] = fit_param[0:2]
+        rss[0, 1] = np.sum(residual ** 2 / err_var)
+        aic[0, 1] = ndf * np.log(rss[0, 1] / npts) + ndf * (ndf + 2) / (ndf - 4)
 
+    else:
+        nbr2 = brk_init.__len__()
+
+        # Check if there are enough initial guesses
+        if nbr2 >= nbr:
+            if brk_init.shape[0] > brk_init.shape[1]:
+                brk_init = brk_init.T
+
+            b_guess = brk_init[0:nbr]
+
+        # first guess for breaks as evenly distributed between 2nd and 2nd to last point
+        else:
+            b_guess = -1 + 2 * np.arange(1, nbr + 1) / (nbr + 1)
+
+        b_g = np.concatenate(([-1], b_guess))
+        ubrk_g = []
+
+        for n in range(nbr):
+            print("hello")
