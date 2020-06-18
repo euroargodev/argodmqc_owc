@@ -210,7 +210,18 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                1750, 500,
                                                                                0.5)
 
+        for i in t_levels:
+            self.assertTrue(-10 < i < 10, "No theta levels should be in this range")
+
+        for i in p_levels:
+            self.assertTrue(500 < i < 1750, "No pressure levels should be in this range")
+
         self.assertEqual(index.__len__(), 10, "should get 10 levels for bounded data")
+
+        self.assertGreater(var_sal_theta.__len__(), 0,
+                           "should get 10 levels for bounded data")
+        self.assertGreater(theta_levels.__len__(), 0,
+                           "should get 10 levels for bounded data")
 
     def test_theta_levels_no_mid(self):
         """
