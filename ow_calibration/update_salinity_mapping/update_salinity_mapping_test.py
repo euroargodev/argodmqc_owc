@@ -15,6 +15,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import os
+import io
+import sys
 import numpy as np
 import scipy.io as scipy
 from ow_calibration.load_configuration.load_configuration import load_configuration
@@ -61,6 +63,16 @@ class MyTestCase(unittest.TestCase):
 
         except:
             self.fail("Update salinity mapping encountered an unexpected error")
+
+        # Should use precalculated data
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        update_salinity_mapping("/", self.float_source, load_configuration())
+        sys.stdout = sys.__stdout__
+
+        self.assertTrue("Using precaulcated data" in captured_output.getvalue(),
+                        "Should use precalculated data")
+
 
     def test_ptmp_output(self):
         """
