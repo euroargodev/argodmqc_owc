@@ -82,16 +82,13 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
             theta_range = np.argwhere(np.logical_and(use_theta_lt < ptmp, ptmp < use_theta_gt))
 
         else:
-            theta_range = np.argwhere(np.logical_or(ptmp < use_theta_gt, ptmp > use_theta_lt))
-        print(theta_range)
+            theta_range = np.argwhere(np.logical_xor(ptmp < use_theta_gt, ptmp > use_theta_lt))
+
         for i in theta_range:
 
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
-
-        print(pres)
-        input("**")
 
     if use_pres_lt != 0 and use_pres_gt == 0:
         pres_range = np.argwhere(pres > use_pres_lt)
@@ -101,20 +98,18 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
             ptmp[i[0], i[1]] = np.nan
 
     if use_pres_lt == 0 and use_pres_gt != 0:
-        pres_range = np.argwhere(ptmp < use_pres_gt)
+        pres_range = np.argwhere(pres < use_pres_gt)
         for i in pres_range:
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
 
     if use_pres_lt != 0 and use_pres_gt != 0:
-
         if use_pres_lt < use_pres_gt:
-            # exclude middle band
-            pres_range = np.argwhere(use_pres_lt < ptmp < use_pres_gt)
+            pres_range = np.argwhere(np.logical_and(use_pres_lt < pres, pres < use_pres_gt))
 
         else:
-            pres_range = np.argwhere(ptmp < use_pres_gt or ptmp > use_pres_lt)
+            pres_range = np.argwhere(np.logical_xor(pres < use_pres_gt, pres > use_pres_lt))
 
         for i in pres_range:
             pres[i[0], i[1]] = np.nan
@@ -144,10 +139,10 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
     interp_t = np.empty((pres_levels.__len__(), profile_depth)) * np.nan
 
     for depth in range(profile_depth):
-        good = np.argwhere(~np.isnan(pres[:, depth]) & ~np.isnan(ptmp[:, depth]))
+        good = np.argwhere(np.logical_and(~np.isnan(pres[:, depth]),
+                                          ~np.isnan(ptmp[:, depth])))
 
         for pres_i in range(pres_levels.__len__()):
-
             if np.max(pres[good, depth]) > pres_levels[pres_i] > np.min(pres[good, depth]):
                 interp = interpolate.interp1d(pres[good, depth].flatten(),
                                               ptmp[good, depth].flatten())

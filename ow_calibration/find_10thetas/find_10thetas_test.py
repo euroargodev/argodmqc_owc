@@ -196,7 +196,65 @@ class Find10ThetasTestCase(unittest.TestCase):
 
         self.assertGreater(index.__len__(), 0, "Should have some indices")
 
-        # TODO: add further tests for bounded values
+    def test_theta_levels_mid(self):
+        """
+                Check that we get 10 levels
+                :return: Nothing
+                """
+        print("Testing that we can include the middle band of data")
+        t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
+                                                                               self.ptmp,
+                                                                               self.pres,
+                                                                               self.la_ptmp,
+                                                                               10, -10,
+                                                                               1750, 500,
+                                                                               0.5)
+
+        self.assertEqual(index.__len__(), 10, "should get 10 levels for bounded data")
+
+    def test_theta_levels_no_mid(self):
+        """
+        Check that we get 10 levels
+        :return: Nothing
+        """
+        print("Testing that we can exclude the middle band of data")
+        t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
+                                                                               self.ptmp,
+                                                                               self.pres,
+                                                                               self.la_ptmp,
+                                                                               -0.1, 0.1,
+                                                                               1000, 1100,
+                                                                               0.5)
+
+        self.assertEqual(index.__len__(), 10, "should get 10 levels for bounded data")
+
+    def test_theta_levels_bounds(self):
+        """
+                Check that we get 10 levels
+                :return: Nothing
+                """
+        print("Testing that we can exclude data above/below points")
+        t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
+                                                                               self.ptmp,
+                                                                               self.pres,
+                                                                               self.la_ptmp,
+                                                                               0, 0.1,
+                                                                               0, 500,
+                                                                               0.5)
+
+        for i in p_levels:
+            self.assertGreater(i, 500, "pressure levels should exceed lower bound")
+
+        t_levels, p_levels, index, var_sal_theta, theta_levels = find_10thetas(self.sal,
+                                                                               self.ptmp,
+                                                                               self.pres,
+                                                                               self.la_ptmp,
+                                                                               2, 0,
+                                                                               1500, 0,
+                                                                               0.5)
+
+        for i in p_levels:
+            self.assertLess(i, 1500, "pressure levels should not exceed upper bound")
 
 
 if __name__ == '__main__':
