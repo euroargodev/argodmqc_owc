@@ -19,9 +19,9 @@ import scipy.io as scipy
 import unittest
 
 
-class MyTestCase(unittest.TestCase):
+class Find10ThetasTestCase(unittest.TestCase):
     """
-    Test cases for update_salinity_mapping function
+    Test cases for find_10thetas function
     """
 
     def setUp(self):
