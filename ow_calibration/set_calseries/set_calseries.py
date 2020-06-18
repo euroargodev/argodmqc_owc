@@ -20,10 +20,11 @@ import numpy as np
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-arguments
 def set_calseries(float_dir, float_name, system_config,
-                  use_theta_lt=[], use_theta_gt = [],
-                  use_pres_lt = [],use_pres_gt = []
-):
+                  use_theta_lt=None, use_theta_gt=None,
+                  use_pres_lt=None, use_pres_gt=None
+                  ):
     """
     Set up the parameters for line fitting
     :param use_pres_gt: pressure greater than
@@ -37,6 +38,8 @@ def set_calseries(float_dir, float_name, system_config,
     """
 
     # load float source data
+    if use_pres_lt is None:
+        use_pres_lt = []
     float_source = scipy.loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] +
                                  float_dir + float_name +
                                  system_config['FLOAT_SOURCE_POSTFIX'])

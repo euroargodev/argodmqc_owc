@@ -23,6 +23,7 @@ class SetCalSeriesTestCase(unittest.TestCase):
     """
     Test cases forset_calseries function
     """
+
     def setUp(self):
         """
         Only run if we are missing our test file
@@ -83,6 +84,7 @@ class SetCalSeriesTestCase(unittest.TestCase):
                       99, 99, 99, 99)
 
         self.assertTrue(os.path.exists(self.python_output_path))
+
 
 if __name__ == '__main__':
     unittest.main()
