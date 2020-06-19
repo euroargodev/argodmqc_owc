@@ -73,6 +73,7 @@ import numpy as np
 import scipy.optimize as scipy
 from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
 
+
 def nlbpfun(ubrk_i):
     """
     find residual
@@ -324,13 +325,13 @@ def fit_cond(x, y, n_err, lvcov, *args):
         # we have fixed break points
         elif max_brk_in > nbr:
             nbr1 = nbr + 1
-            fit_param, residual = brk_pt_fit(xf, yf, w_i, breaks)
+            A, residual = brk_pt_fit(xf, yf, w_i, breaks)
             b_pts[0:nbr, nbr + 1] = breaks.T
-            b_A[0:nbr + 2, nbr + 2] = fit_param[0:nbr + 2]
+            b_A[0:nbr + 2, nbr + 2] = A[0:nbr + 2]
             rss[0, nbr + 2] = np.sum(residual ** 2 / err_var)
             no_param = 2 * (nbr + 1)
             aic[0, nbr + 2] = ndf * np.log(rss[0, nbr + 2] / npts) + \
-                              ndf * (ndf + fit_param) / (ndf - fit_param - 2)
+                              ndf * (ndf + A) / (ndf - A - 2)
 
         # we have the same number of specified breaks
         else:
@@ -383,8 +384,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     elif nbr == 0:
         # linear fit, no break points
-        fit_param, residual = brk_pt_fit(xf, yf, w_i)
-        b_A[0:2, 1] = fit_param[0:2]
+        A, residual = brk_pt_fit(xf, yf, w_i)
+        b_A[0:2, 1] = A[0:2]
         rss[0, 1] = np.sum(residual ** 2 / err_var)
         aic[0, 1] = ndf * np.log(rss[0, 1] / npts) + ndf * (ndf + 2) / (ndf - 4)
 
@@ -406,19 +407,71 @@ def fit_cond(x, y, n_err, lvcov, *args):
         ubrk_g = []
 
         for n in range(nbr):
-            ubrk_g.append(np.log((b_g[n+1] - b_g[n]) / (1 - b_g[nbr])))
+            ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
         if setbreaks:
             # break points are already set
             if nbr1 == max_brk:
-                fit_param, residual = brk_pt_fit(xf, yf, w_i, breaks)
+                A, residual = brk_pt_fit(xf, yf, w_i, breaks)
 
             # fit over limited number of breaks
             else:
-                optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr], method='lm')
+                optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr],
+                                            method='lm', ftol=tol)
+                ubrk = optim['x'][0]
+                residual = optim['fun']
 
-    optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr], method='lm', ftol=tol)
-    ubrk = optim['x'][0]
-    residual = optim['fun']
+                ubrk = np.concatenate((ubrk_g[0:nbr1 - 1], ubrk))
+        # get non-linear least squares for break points
+        else:
+            optim = scipy.least_squares(nlbpfun, ubrk_g,
+                                        method='lm', ftol=tol)
+            ubrk = optim['x'][0]
+            residual = optim['fun']
 
+        b_pts[0:nbr, nbr] = breaks.T
+        b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
+        rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
+        p = 2 * (nbr + 1)
+        aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
 
+    if setbreaks and nbr1 == max_brk:
+        best = pbrk + 2
+
+    # decide which fit to use (offset, linear, piecewise)
+    else:
+        if nbr1 > 1:
+            pbrk = np.arange((nbr1 - 1), max_brk)
+
+        good = pbrk + 1
+        aic_b = np.min(aic[0, good])
+        best = np.argmin(aic[0, good])
+
+        if isinstance(good, np.ndarray):
+            best = good[best] + 1
+        else:
+            best = good + 1
+
+    # best fit includes break points
+    if best > 2:
+        no_breaks = (best - 1) * 2
+
+    else:
+        no_breaks = best
+
+    if setbreaks & nbr1 == max_brk:
+        comment = "Fit evaluated "
+
+    else:
+        comment = "Best model found with "
+
+    if best > 2:
+        comment = comment + str(best - 2) + " break points"
+
+    elif best == 2:
+        comment = comment + "linear fit"
+
+    else:
+        comment = comment + "offset value only"
+
+    print(comment)
