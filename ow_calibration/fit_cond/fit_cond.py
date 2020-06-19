@@ -139,6 +139,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
 
     # Set up some default values
+    tol = 1e-06
     max_brk_dflt = 4
     max_brk_in = []
     max_break = []
@@ -324,8 +325,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
         elif max_brk_in > nbr:
             nbr1 = nbr + 1
             fit_param, residual = brk_pt_fit(xf, yf, w_i, breaks)
-            b_pts[0:nbr, nbr + 1] =breaks.T
-            b_A[0:nbr + 2, nbr + 2] = fit_param[0: nbr + 2]
+            b_pts[0:nbr, nbr + 1] = breaks.T
+            b_A[0:nbr + 2, nbr + 2] = fit_param[0:nbr + 2]
             rss[0, nbr + 2] = np.sum(residual ** 2 / err_var)
             no_param = 2 * (nbr + 1)
             aic[0, nbr + 2] = ndf * np.log(rss[0, nbr + 2] / npts) + \
@@ -345,8 +346,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
         max_brk = max_brk_in
         pbrk = np.arange(nbr1, max_brk + 1)
-
-    print(pbrk)
 
     if ndf < 2 * (max_brk + 2) + 1:
         if ndf > 2 * (nbr1 + 2) + 1:
@@ -408,5 +407,18 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
         for n in range(nbr):
             ubrk_g.append(np.log((b_g[n+1] - b_g[n]) / (1 - b_g[nbr])))
+
+        if setbreaks:
+            # break points are already set
+            if nbr1 == max_brk:
+                fit_param, residual = brk_pt_fit(xf, yf, w_i, breaks)
+
+            # fit over limited number of breaks
+            else:
+                optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr], method='lm')
+
+    optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr], method='lm', ftol=tol)
+    ubrk = optim['x'][0]
+    residual = optim['fun']
 
 
