@@ -70,8 +70,8 @@ Cecile Cabanes, 2017: force the fit to an offset only if NDF <13. and display
 a warning : to track change see change config 129 """
 
 import numpy as np
+import scipy.optimize as scipy
 from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
-
 
 def nlbpfun(ubrk_i):
     """
@@ -108,6 +108,8 @@ def nlbpfun(ubrk_i):
         breaks[difference + 1] = breaks[difference + 1] + 0.00001
 
     A, residual = brk_pt_fit(xf, yf, w_i, breaks)
+
+    return residual
 
 
 def fit_cond(x, y, n_err, lvcov, *args):
@@ -314,9 +316,27 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     # check to see if we have set break points
     if setbreaks:
+        if max_brk_in == 0:
+            max_brk_in = nbr
+            nbr1 = nbr
 
-        # brk point fit stuff
-        print("DO SET BREAK POINT STUFF")
+        # we have fixed break points
+        elif max_brk_in > nbr:
+            nbr1 = nbr + 1
+            fit_param, residual = brk_pt_fit(xf, yf, w_i, breaks)
+            b_pts[0:nbr, nbr + 1] =breaks.T
+            b_A[0:nbr + 2, nbr + 2] = fit_param[0: nbr + 2]
+            rss[0, nbr + 2] = np.sum(residual ** 2 / err_var)
+            no_param = 2 * (nbr + 1)
+            aic[0, nbr + 2] = ndf * np.log(rss[0, nbr + 2] / npts) + \
+                              ndf * (ndf + fit_param) / (ndf - fit_param - 2)
+
+        # we have the same number of specified breaks
+        else:
+            nbr1 = nbr
+
+        max_brk = max_brk_in
+        pbrk = np.arange(nbr1, max_brk + 1)
 
     else:
         # no break points set
@@ -325,6 +345,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
         max_brk = max_brk_in
         pbrk = np.arange(nbr1, max_brk + 1)
+
+    print(pbrk)
 
     if ndf < 2 * (max_brk + 2) + 1:
         if ndf > 2 * (nbr1 + 2) + 1:
@@ -385,4 +407,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
         ubrk_g = []
 
         for n in range(nbr):
-            print("hello")
+            ubrk_g.append(np.log((b_g[n+1] - b_g[n]) / (1 - b_g[nbr])))
+
+
