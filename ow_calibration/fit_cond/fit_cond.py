@@ -72,6 +72,7 @@ a warning : to track change see change config 129 """
 import numpy as np
 import scipy.optimize as scipy
 from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
+from ow_calibration.sorter.sorter import sorter
 
 
 def nlbpfun(ubrk_i):
@@ -475,3 +476,27 @@ def fit_cond(x, y, n_err, lvcov, *args):
         comment = comment + "offset value only"
 
     print(comment)
+
+    best = 2
+    if best > 2:
+        breaks = b_pts[np.arange(0, best - 2), best - 2].T
+
+    else:
+        breaks = []
+
+    A = b_A[0:best, best]
+    btem = np.concatenate(([xf[0]], breaks))
+    E = np.zeros((npts, best))
+    E[:, 0] = np.ones(npts).T
+    ixb = sorter(btem, xf)
+
+    if best > 1:
+        for j in range(best - 1):
+            ib = np.argwhere(ixb == j)
+            E[ib, j + 1] = xf[ib] - btem[j]
+            ii = np.argwhere(ixb > j)
+
+            if ii.__len__() > 0:
+                E[ii, j + 1] = btem[j + 1] - btem[j]
+
+            print(ii)
