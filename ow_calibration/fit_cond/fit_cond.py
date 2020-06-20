@@ -477,7 +477,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     print(comment)
 
-    best = 2
     if best > 2:
         breaks = b_pts[np.arange(0, best - 2), best - 2].T
 
@@ -499,4 +498,4 @@ def fit_cond(x, y, n_err, lvcov, *args):
             if ii.__len__() > 0:
                 E[ii, j + 1] = btem[j + 1] - btem[j]
 
-            print(ii)
+
