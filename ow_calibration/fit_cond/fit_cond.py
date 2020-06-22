@@ -282,7 +282,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
             if param == 'initial_breaks':
                 # initial guess for breakpoints
-                brk_init = value[0]
+                brk_init = value
 
                 # rescale
                 brk_init = (brk_init - x_0) / x_scale
@@ -498,4 +498,23 @@ def fit_cond(x, y, n_err, lvcov, *args):
             if ii.__len__() > 0:
                 E[ii, j + 1] = btem[j + 1] - btem[j]
 
+    # get uncertainnties in fit parameters
+    B_i = (np.dot(np.dot(E.T, w_i), E)) ** -1
+    P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
+                                           w_i), np.diag(err_var)),
+                             w_i),
+                      E),
+               B_i)
+    P_1 = np.diag(P)
+    P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
+                                           w_i),
+                                    np.diag(err_var)),
+                                    lvcov),
+                             w_i),
+                      E),
+               B_i)
+    P_2 = np.diag(P)
 
+    # reduce matrix to have only one value per profile
+    btem = np.concatenate[xfit[0], breaks]
+    print(btem)

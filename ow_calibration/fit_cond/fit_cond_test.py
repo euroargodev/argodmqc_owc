@@ -11,5 +11,6 @@ class MyTestCase(unittest.TestCase):
         fit_cond(fit_input['x'], fit_input['y'], fit_input['n_err'],
                  fit_input['lvcov'], 'max_no_breaks', np.array([4]))
 
+
 if __name__ == '__main__':
     unittest.main()
