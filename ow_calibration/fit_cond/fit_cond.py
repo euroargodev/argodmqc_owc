@@ -69,6 +69,7 @@ Chemistry and Physics of Lipids, 76, 1-6.
 Cecile Cabanes, 2017: force the fit to an offset only if NDF <13. and display
 a warning : to track change see change config 129 """
 
+import copy
 import numpy as np
 import scipy.optimize as scipy
 from ow_calibration.brk_pt_fit.brk_pt_fit import brk_pt_fit
@@ -507,8 +508,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
                B_i)
     P_1 = np.diag(P)
     P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
-                                           w_i),
-                                    np.diag(err_var)),
+                                                  w_i),
+                                           np.diag(err_var)),
                                     lvcov),
                              w_i),
                       E),
@@ -516,5 +517,60 @@ def fit_cond(x, y, n_err, lvcov, *args):
     P_2 = np.diag(P)
 
     # reduce matrix to have only one value per profile
-    btem = np.concatenate[xfit[0], breaks]
-    print(btem)
+    btem = np.concatenate(([xfit[0]], breaks))
+    E = np.zeros((xfit.__len__(), best))
+    E[:, 0] = np.ones((xfit.__len__(), 1)).T
+    ixb = sorter(btem, xfit)
+
+    if best >= 2:
+        for j in range(best - 1):
+            # point to x values greater than break j
+            ib = np.argwhere(ixb == j)
+            E[ib, j + 1] = xfit[ib] - btem[j]
+            # point to x values less than the one just below x
+            ii = np.argwhere(ixb > j)
+
+            if ii.__len__() > 0:
+                E[ii, j + 1] = btem[j + 1] - btem[j]
+
+    # fit the values
+    yfit = np.dot(E, A)
+
+    # factor to increase monte carlo error estimate, taking into account
+    # that we have correlated noise
+    P_3 = np.dot(E, P_2) / np.dot(E, P_1)
+
+    real_A = copy.deepcopy(A)
+    real_E = copy.deepcopy(E)
+    real_breaks = copy.deepcopy(breaks)
+    real_xf = copy.deepcopy(xf)
+    real_yf = copy.deepcopy(yf)
+    ubrk_g = None
+    best = 3
+    if best == 1:
+        err = np.ones((nfit, 1)) * P_2[0]
+
+    else:
+        err = 0
+
+        for i in range(nloops):
+
+            yf = real_yf + n_err * np.random.randn(yf.size)
+            print(n_err)
+            input("*")
+
+            if best == 2:
+                # E for linear case is already calculated
+                A, residual = brk_pt_fit(xf, yf, w_i)
+
+            elif setbreaks:
+                # E stays fixed if breaks are specified
+                A, residual = brk_pt_fit(xf, yf, w_i, breaks)
+
+            else:
+                # give an initial guess as the fitted break points to speed up calculation
+                nbr = real_breaks.__len__()
+                b_g = np.concatenate(([-1], real_breaks))
+
+
+
