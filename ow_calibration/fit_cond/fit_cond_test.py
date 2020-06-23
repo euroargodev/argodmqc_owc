@@ -74,11 +74,17 @@ class FitCondTestCase(unittest.TestCase):
 
         self.assertEqual(python_test[7], self.ndf, "degrees of freedom is incorrect")
 
-    def test_something(self):
+    def test_fixed_breaks(self):
+        """
+        Check that we can run this function with set break points
+        :return: nothing
+        """
+        print("Testing that fit_cond returns values when using fixed breaks")
 
         python_test = fit_cond(self.in_x, self.in_y, self.in_err,
                                self.in_cov, 'breaks', np.array([0.3, 0.7]), 'max_no_breaks', 4)
-        #print(python_test)
+
+        self.assertEqual(python_test.__len__(), 10, "should return 10 outputs")
 
 
 if __name__ == '__main__':

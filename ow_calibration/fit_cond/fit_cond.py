@@ -558,9 +558,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
             elif setbreaks:
                 # E stays fixed if breaks are specified
                 A, residual = brk_pt_fit(xf, yf, w_i, breaks)
-                print(A)
-                print(residual)
-                input("**")
 
             else:
                 # give an initial guess as the fitted break points to speed up calculation
