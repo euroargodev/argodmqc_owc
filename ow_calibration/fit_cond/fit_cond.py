@@ -622,5 +622,60 @@ def fit_cond(x, y, n_err, lvcov, *args):
             w_values = w[np.arange(ip_1[index][0, 0] + 1, ip_1[index + 1][0, 0] + 1)]
             yf_values = yf[np.arange(ip_1[index][0, 0] + 1, ip_1[index + 1][0, 0] + 1)]
 
-            sta_mean[0,n] = np.sum(w_values * yf_values) / np.sum(w_values)
-            
+            sta_mean[0, n] = np.sum(w_values * yf_values) / np.sum(w_values)
+
+            sta_rms[0, n] = np.sum(w_values * (sta_mean[0, n] - yf_values) ** 2) / np.sum(w_values)
+            sta_rms[0, n] = np.sqrt(sta_rms[0, n])
+
+    # convert back to original units
+
+    x_unique = x_unique * x_scale + x_0
+    xfit = xfit * x_scale + x_0
+
+    # pass the coeffecients and break points back
+    break_pts = []
+    if breaks.__len__() > 0:
+        break_pts = breaks * x_scale + x_0
+
+    A[0] = A[0] * y_scale * y_0
+    P[0] = P[0] * y_scale
+
+    if A.__len__() > 1:
+        A[1:best] = A[1:best] * y_scale / x_scale
+        P[1:best] = P[1:best] * y_scale / x_scale
+
+    yfit = yfit * y_scale + y_0
+    err = np.sqrt(err) * y_scale
+    yerr = err
+    n_err = n_err * y_scale
+    sta_mean = sta_mean * y_scale + y_0
+    sta_rms = sta_rms * y_scale
+
+    # get time derivatives and time derivatives errors
+    ixb = sorter(np.concatenate(([np.min(xfit)], break_pts)), xfit)
+
+    if best == 1:
+        time_deriv = np.zeros((nfit, 1))
+        time_deriv_err = np.ones((nfit, 1)) * np.nan
+
+    elif best == 2:
+        time_deriv = A[1] * np.ones((nfit, 1))
+        time_deriv_err = P_2[1] * np.ones((nfit, 1))
+
+    else:
+        time_deriv = np.ones((best, 1)) * np.nan
+        time_deriv_err = np.ones((best, 1)) * np.nan
+        for j in range(best - 1):
+            ib = np.argwhere(ixb == j)
+            time_deriv[ib] = A[j + 1]
+            time_deriv_err[ib] = P_2[j + 1]
+
+    condslope = yfit.T
+    condslope_err = yerr
+
+    # return fit parameters
+    fit_coef = A
+    fit_breaks = break_pts
+
+    return (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
+            sta_mean, sta_rms, ndf, fit_coef, fit_breaks)
