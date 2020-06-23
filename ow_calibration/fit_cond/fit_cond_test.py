@@ -11,11 +11,10 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 """
 
-
-from ow_calibration.fit_cond.fit_cond import fit_cond, nlbpfun
+import unittest
 import numpy as np
 import scipy.io as scipy
-import unittest
+from ow_calibration.fit_cond.fit_cond import fit_cond
 
 
 class FitCondTestCase(unittest.TestCase):
