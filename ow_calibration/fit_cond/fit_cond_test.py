@@ -72,7 +72,13 @@ class FitCondTestCase(unittest.TestCase):
                     self.assertAlmostEqual(python_test[6][i, j], self.sta_rms[i, j], 12,
                                            "rms is incorrect")
 
-        self.assertEqual(python_test[7], self.ndf, "degrees of freeodm is incorrect")
+        self.assertEqual(python_test[7], self.ndf, "degrees of freedom is incorrect")
+
+    def test_something(self):
+
+        python_test = fit_cond(self.in_x, self.in_y, self.in_err,
+                               self.in_cov, 'breaks', np.array([0.3, 0.7]), 'max_no_breaks', 4)
+        #print(python_test)
 
 
 if __name__ == '__main__':
