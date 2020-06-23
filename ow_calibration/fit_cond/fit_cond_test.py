@@ -17,6 +17,7 @@ import scipy.io as scipy
 from ow_calibration.fit_cond.fit_cond import fit_cond
 
 
+# pylint: disable=too-many-instance-attributes
 class FitCondTestCase(unittest.TestCase):
     """
     Test cases for 'fit_cond' function

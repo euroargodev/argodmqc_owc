@@ -78,8 +78,9 @@ from ow_calibration.sorter.sorter import sorter
 
 # pylint: disable=too-many-locals
 # pylint: disable=invalid-name
-# pylint: disable=gloabl-variable-undefined
+# pylint: disable=global-variable-undefined
 # pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def nlbpfun(ubrk_i):
     """
     find residual
@@ -276,7 +277,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             parm = args[2 * (n - 1)]
             value = args[(n * 2) + 1]
 
-            if type(parm) != str:
+            if not isinstance(parm, str):
                 raise ValueError("FIT_COND ERROR - inputs are incorrect")
 
             param = str.lower(parm)
@@ -343,7 +344,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     else:
         # no break points set
-        if type(max_brk_in) is list:
+        if isinstance(max_brk_in, list):
             max_brk_in = max_brk_dflt
 
         max_brk = max_brk_in
