@@ -298,7 +298,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 nbr1 = pbrk
                 max_brk_in = pbrk
 
-            elif param == nloops:
+            elif param == 'nloops':
                 nloops = value
 
             elif param == 'breaks':
