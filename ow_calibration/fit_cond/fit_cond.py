@@ -545,8 +545,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
     real_breaks = copy.deepcopy(breaks)
     real_xf = copy.deepcopy(xf)
     real_yf = copy.deepcopy(yf)
-    ubrk_g = None
-    best = 3
+    ubrk_g = []
+
     if best == 1:
         err = np.ones((nfit, 1)) * P_2[0]
 
@@ -556,8 +556,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
         for i in range(nloops):
 
             yf = real_yf + n_err * np.random.randn(yf.size)
-            print(n_err)
-            input("*")
 
             if best == 2:
                 # E for linear case is already calculated
@@ -572,5 +570,57 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 nbr = real_breaks.__len__()
                 b_g = np.concatenate(([-1], real_breaks))
 
+                for n in range(nbr):
+                    ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
+                optim = scipy.least_squares(nlbpfun, ubrk_g,
+                                            method='lm', ftol=tol)
 
+                ubrk = optim['x'][0]
+                residual = optim['fun']
+
+                btem = np.concatenate([xfit[0]], breaks)
+                E = np.zeros((xfit.__len__(), best))
+                E[:, 0] = np.ones((xfit.__len__(), 1)).T
+                ixb = sorter(btem, xfit)
+
+                for j in range(best - 1):
+                    # pointer to x values greater than break point j
+                    ib = np.argwhere(ixb == j)
+                    E[ib, j + 1] = xfit[ib] - btem[j]
+                    # pointer to break points less than the one just below x
+                    ii = np.argwhere(ixb > j)
+
+                    if ii.__len__() > 0:
+                        E[ii, j + 1] = btem[j + 1] - btem[j]
+
+            err = err + (yfit - np.dot(E, A) ** 2)
+
+        err = err / nloops
+
+        # rescale error to reflect the decrease to the off diagonal covariances
+
+        err = err * P_3
+
+    A = copy.deepcopy(real_A)
+    E = copy.deepcopy(real_E)
+    breaks = copy.deepcopy(real_breaks)
+    xf = copy.deepcopy(real_xf)
+    yf = copy.deepcopy(real_yf)
+
+    # get residual statistics for each profile
+
+    w = np.diag(w_i)
+    sta_mean = np.ones((1, nfit)) * np.nan
+    sta_rms = np.ones((1, nfit)) * np.nan
+    ip_1 = np.concatenate(([-1], index_unique.flatten()))
+
+    for n in range(nfit):
+        index = np.argwhere(x_unique == xfit[n])
+
+        if index.__len__() > 0:
+            w_values = w[np.arange(ip_1[index][0, 0] + 1, ip_1[index + 1][0, 0] + 1)]
+            yf_values = yf[np.arange(ip_1[index][0, 0] + 1, ip_1[index + 1][0, 0] + 1)]
+
+            sta_mean[0,n] = np.sum(w_values * yf_values) / np.sum(w_values)
+            
