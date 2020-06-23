@@ -274,7 +274,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     if no_args > 0:
         for n in range(int(no_args / 2)):
-            parm = args[2 * (n - 1)]
+            parm = args[2 *n]
             value = args[(n * 2) + 1]
 
             if not isinstance(parm, str):
@@ -369,7 +369,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 print("WARNING: Only have " + str(ndf) + " degrees of freedom")
                 print("Estimate offset only")
 
-    nbr = 1
+    nbr = pbrk
     if nbr == -1:
         # offset only
         # since this is an error weighted average, yx won't necessarily be 0
@@ -432,6 +432,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             ubrk = optim['x'][0]
             residual = optim['fun']
 
+
         b_pts[0:nbr, nbr] = breaks.T
         b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
         rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
@@ -450,7 +451,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
         best = np.argmin(aic[0, good])
 
         if isinstance(good, np.ndarray):
-            input("***")
             best = good[best] + 1
         else:
             best = good + 1
@@ -657,8 +657,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
         time_deriv_err = P_2[1] * np.ones((nfit, 1))
 
     else:
-        time_deriv = np.ones((best, 1)) * np.nan
-        time_deriv_err = np.ones((best, 1)) * np.nan
+        time_deriv = np.ones((nfit, 1)) * np.nan
+        time_deriv_err = np.ones((nfit, 1)) * np.nan
         for j in range(best - 1):
             ib = np.argwhere(ixb == j)
             time_deriv[ib] = A[j + 1]

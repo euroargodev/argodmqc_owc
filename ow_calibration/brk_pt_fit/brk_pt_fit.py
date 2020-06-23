@@ -30,6 +30,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import numpy as np
+import scipy.linalg
 from ow_calibration.sorter.sorter import sorter
 
 
@@ -95,10 +96,11 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
 
     # calculate fit parameters
     if w_i.__len__() > 0:
-        fit_param = np.linalg.solve(ls_est, np.dot(np.dot(trends.T, w_i), y_obvs))
+        fit_param = np.dot(np.dot(scipy.linalg.solve(ls_est, trends.T), w_i), y_obvs)
 
     else:
-        fit_param = np.linalg.solve(ls_est, np.dot(trends.T, y_obvs))
+        fit_param = scipy.linalg.solve(ls_est, np.dot(trends.T, y_obvs))
+
 
     # calculate fit estimate
     residual = y_obvs - np.dot(trends, fit_param)
