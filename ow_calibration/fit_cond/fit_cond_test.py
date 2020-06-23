@@ -2,7 +2,7 @@
 -----fit condition Test File-----
 
 Written by: Edward Small
-When: 31/10/2019
+When: 14/06/2020
 
 Contains unit tests to check the functionality of the `fit_cond` function
 
