@@ -1,10 +1,27 @@
+"""
+-----fit condition Test File-----
+
+Written by: Edward Small
+When: 31/10/2019
+
+Contains unit tests to check the functionality of the `fit_cond` function
+
+To run this test specifically, look at the documentation at:
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+
+"""
+
+
 from ow_calibration.fit_cond.fit_cond import fit_cond, nlbpfun
 import numpy as np
 import scipy.io as scipy
 import unittest
 
 
-class MyTestCase(unittest.TestCase):
+class FitCondTestCase(unittest.TestCase):
+    """
+    Test cases for 'fit_cond' function
+    """
     def setUp(self):
         fit_input = scipy.loadmat("data/test_data/fit_cond/fit_cond_input.mat")
         fit_out = scipy.loadmat("data/test_data/fit_cond/fit_cond_output.mat")
