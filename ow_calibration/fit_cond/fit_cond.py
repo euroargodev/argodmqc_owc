@@ -290,21 +290,20 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 brk_init = (brk_init - xblim[0]) / np.diff(xblim)
 
             elif param == 'max_no_breaks':
-                if value.__len__() > 0:
-                    max_brk_in = value[0]
-                    nbr1 = -1
+                max_brk_in = value
+                nbr1 = -1
 
             elif param == 'number_breaks':
-                pbrk = value[0]
+                pbrk = value
                 nbr1 = pbrk
                 max_brk_in = pbrk
 
             elif param == nloops:
-                nloops = value[0]
+                nloops = value
 
             elif param == 'breaks':
                 if value.__len__() > 0:
-                    breaks = value[0]
+                    breaks = value
                     breaks = (breaks - x_0) / x_scale
                     nbr = breaks.__len__()
                     setbreaks = 1
@@ -426,6 +425,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 ubrk = np.concatenate((ubrk_g[0:nbr1 - 1], ubrk))
         # get non-linear least squares for break points
         else:
+            ubrk_g = np.array(ubrk_g)
             optim = scipy.least_squares(nlbpfun, ubrk_g,
                                         method='lm', ftol=tol)
             ubrk = optim['x'][0]
@@ -450,6 +450,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
         best = np.argmin(aic[0, good])
 
         if isinstance(good, np.ndarray):
+            input("***")
             best = good[best] + 1
         else:
             best = good + 1
@@ -671,7 +672,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             time_deriv_err[ib] = P_2[j + 1]
 
     condslope = yfit.T
-    condslope_err = yerr
+    condslope_err = yerr.T
 
     # return fit parameters
     fit_coef = A
