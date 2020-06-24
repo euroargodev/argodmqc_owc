@@ -16,6 +16,7 @@ import copy
 import numpy as np
 import scipy.io as scipy
 import scipy.interpolate as interpolate
+from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 
 
@@ -164,7 +165,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             else:
                 print(str(nb), "fixed breaks prescribed")
 
-    #set_calseries returned a bad status variable, write out file with NaNs
+    # set_calseries returned a bad status variable, write out file with NaNs
     if sstatus == 0:
         float_calib_filename = (system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
                                 system_config['FLOAT_CALIB_PREFIX'] + float_name +
@@ -172,17 +173,45 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
         scipy.savemat(float_calib_filename,
                       {'cal_SAL': cal_sal,
-                      'cal_SAL_err': cal_sal_err,
-                      'pcond_factor': pcond_factor,
-                      'pcond_factor_err': pcond_factor_err,
-                      'cal_COND': cal_cond,
-                      'cal_COND_err': cal_cond_err,
-                      'time_deriv': time_deriv,
-                      'time_deriv_err': time_deriv_err,
-                      'sta_mean': sta_mean,
-                      'sta_rms': sta_rms,
-                      'sta_SAL': sta_sal,
-                      'sta_SAL_err': sta_sal_err,
-                      'PROFILE_NO': profile_no,
-                      'fcoef': fceof,
-                      'fbreaks': fbreaks})
+                       'cal_SAL_err': cal_sal_err,
+                       'pcond_factor': pcond_factor,
+                       'pcond_factor_err': pcond_factor_err,
+                       'cal_COND': cal_cond,
+                       'cal_COND_err': cal_cond_err,
+                       'time_deriv': time_deriv,
+                       'time_deriv_err': time_deriv_err,
+                       'sta_mean': sta_mean,
+                       'sta_rms': sta_rms,
+                       'sta_SAL': sta_sal,
+                       'sta_SAL_err': sta_sal_err,
+                       'PROFILE_NO': profile_no,
+                       'fcoef': fceof,
+                       'fbreaks': fbreaks})
+
+    # loop through sequences of calseries
+    for i in range(n_seq):
+        calindex = np.argwhere(calseries == unique_cal[i])[:, 1]
+        k = calindex.__len__()
+
+        # chose 10 float theta levels to use for the piecewise linear fit
+        unique_coord_float = coord_float[calindex,:]
+        unique_sal = sal[:, calindex]
+        unique_ptmp = ptmp[:, calindex]
+        unique_pres = pres[:, calindex]
+        unique_mapped_ptmp = mapped_ptmp[:, calindex]
+        unique_mapped_sal = mapped_sal[:, calindex]
+        unique_mapsalerrors = mapsalerror[:, calindex]
+
+        ten_sal = np.ones((10, k)) * np.nan
+        ten_ptmp = np.ones((10, k)) * np.nan
+        ten_pres = np.ones((10, k)) * np.nan
+        ten_mapped_sal = np.ones((10, k)) * np.nan
+        ten_mapsalerrors = np.ones((10, k)) * np.nan
+
+        theta, p, index, var_s_th, th = find_10thetas(unique_sal,
+                                                      unique_ptmp,
+                                                      unique_pres,
+                                                      unique_mapped_ptmp,
+                                                      use_theta_lt, use_theta_gt,
+                                                      use_pres_lt, use_pres_gt,
+                                                      use_percent_gt)

@@ -21,10 +21,7 @@ import numpy as np
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-arguments
-def set_calseries(float_dir, float_name, system_config,
-                  use_theta_lt=None, use_theta_gt=None,
-                  use_pres_lt=None, use_pres_gt=None
-                  ):
+def set_calseries(float_dir, float_name, system_config):
     """
     Set up the parameters for line fitting
     :param use_pres_gt: pressure greater than
@@ -38,8 +35,6 @@ def set_calseries(float_dir, float_name, system_config,
     """
 
     # load float source data
-    if use_pres_lt is None:
-        use_pres_lt = []
     float_source = scipy.loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] +
                                  float_dir + float_name +
                                  system_config['FLOAT_SOURCE_POSTFIX'])
@@ -88,20 +83,24 @@ def set_calseries(float_dir, float_name, system_config,
         # calseries = np.concatenate((np.ones((1, 33)), 2 * np.ones(1,no_profiles - 33)))
         calib_profile_no = profile_no
         use_percent_gt = 0.5
+        use_theta_lt = 0
+        use_theta_gt = 0
+        use_pres_lt = 0
+        use_pres_gt = 0
 
     # ensure values are in a realistic range
 
-    if not isinstance(use_theta_lt, list):
-        use_theta_lt = []
+    if use_theta_lt > 9999:
+        use_theta_lt = 0
 
-    if not isinstance(use_theta_gt, list):
-        use_theta_gt = []
+    if use_theta_gt > 9999:
+        use_theta_gt = 0
 
-    if not isinstance(use_pres_lt, list):
-        use_pres_lt = []
+    if use_pres_lt > 9999:
+        use_pres_lt = 0
 
-    if not isinstance(use_pres_gt, list):
-        use_pres_gt = []
+    if use_pres_gt > 9999:
+        use_pres_gt = 0
 
     # Check that there are no missing profiles between source and calseries files
 
