@@ -1,11 +1,47 @@
+"""
+-----calculate piecewise fit Test File-----
+
+Written by: Edward Small
+When: 14/06/2020
+
+Contains unit tests to check the functionality of the `fit_cond` function
+
+To run this test specifically, look at the documentation at:
+https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
+
+"""
+
 import unittest
+import numpy as np
+import scipy.io as scipy
 from ow_calibration.calc_piecewisefit.calc_piecewisefit import calc_piecewisefit
 from ow_calibration.load_configuration.load_configuration import load_configuration
 
 class MyTestCase(unittest.TestCase):
-    def test_something(self):
+    def testSomething(self):
+        """
+        Change variables in this test to use different mapped outputs
+        :return: nothing
+        """
         self.float_source = "3901960"
         calc_piecewisefit("/", self.float_source, load_configuration())
+
+        test = scipy.loadmat("data/float_calib/cal_" + self.float_source + ".mat")
+        matlab = scipy.loadmat("data/test_data/float_calib_test/cal_" +
+                               self.float_source + ".mat")
+
+        python_sal = test['cal_SAL']
+        matlab_sal = matlab['cal_SAL']
+
+        self.assertEqual(python_sal.shape, matlab_sal.shape)
+
+        for i in range(python_sal.shape[0]):
+            for j in range(python_sal.shape[1]):
+                if ~np.isnan(python_sal[i, j]):
+                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i,j],
+                                           3)
+
+
 
 
 if __name__ == '__main__':
