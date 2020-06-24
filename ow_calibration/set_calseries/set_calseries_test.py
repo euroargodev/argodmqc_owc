@@ -80,8 +80,7 @@ class SetCalSeriesTestCase(unittest.TestCase):
         if os.path.exists(self.python_output_path):
             os.remove(self.python_output_path)
 
-        set_calseries(self.float_dir, self.float_source, self.system_config,
-                      99, 99, 99, 99)
+        set_calseries(self.float_dir, self.float_source, self.system_config)
 
         self.assertTrue(os.path.exists(self.python_output_path))
 

@@ -57,7 +57,7 @@ def load_configuration():
         #    Calibration Output Path
         #
 
-        'FLOAT_CALIB_DIRECTORY': "/home/awong/argo/OW/data/float_calib/",
+        'FLOAT_CALIB_DIRECTORY': "data/float_calib",
         'FLOAT_CALIB_PREFIX': "cal_",
         'FLOAT_CALSERIES_PREFIX': "calseries_",
         'FLOAT_CALIB_POSTFIX': ".mat",

@@ -2,3 +2,4 @@ pylint
 matplotlib
 numpy
 scipy
+gsw

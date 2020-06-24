@@ -478,7 +478,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     else:
         breaks = []
 
-    A = b_A[0:best, best]
+    A = b_A[0:best, best - 1]
     btem = np.concatenate(([xf[0]], breaks))
     E = np.zeros((npts, best))
     E[:, 0] = np.ones(npts).T
