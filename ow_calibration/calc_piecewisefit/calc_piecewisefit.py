@@ -214,10 +214,18 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         ten_mapped_sal = np.ones((10, k)) * np.nan
         ten_mapsalerrors = np.ones((10, k)) * np.nan
 
+        # make deep copies for calibration layter
+        unique_sal_1 = copy.deepcopy(unique_sal)
+        unique_ptmp_1 = copy.deepcopy(unique_ptmp)
+        unique_pres_1 = copy.deepcopy(unique_pres)
+        unique_mapped_ptmp_1 = copy.deepcopy(unique_ptmp)
+        unique_mapped_sal_1 = copy.deepcopy(unique_mapped_sal)
+        unique_mapsalerrors_1 = copy.deepcopy(unique_mapsalerrors)
+
         theta, p, index, var_s_th, th = find_10thetas(copy.deepcopy(unique_sal),
                                                       copy.deepcopy(unique_ptmp),
                                                       copy.deepcopy(unique_pres),
-                                                      copy.deepcopy(unique_mapped_ptmp),
+                                                      copy.deepcopy(unique_ptmp),
                                                       use_theta_lt[0, 0], use_theta_gt[0, 0],
                                                       use_pres_lt[0, 0], use_pres_gt[0, 0],
                                                       use_percent_gt[0, 0])
@@ -313,6 +321,52 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             # apply calibrations to float data
 
             if pcond_factor[0][calindex].__len__() > 0:
-                unique_cond = gsw.conversions.C_from_SP(unique_sal, unique_ptmp, 0)
+                unique_cond = gsw.conversions.C_from_SP(unique_sal_1, unique_ptmp_1, 0)
                 cal_cond[:, calindex] = np.dot(np.ones((m, 1)), pcond_factor[:, calindex]) * unique_cond
-                
+                cal_sal[:, calindex] = gsw.conversions.SP_from_C(cal_cond[:, calindex],
+                                                                unique_ptmp_1,
+                                                                0)
+                cal_cond_err[:, calindex] = np.dot(np.ones((m, 1)),
+                                                   pcond_factor_err[:, calindex]) * unique_cond
+                cal_sal1 = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
+                                                      cal_cond_err[:, calindex]),
+                                                     unique_ptmp, 0)
+
+                cal_sal_err[:, calindex] = np.abs(cal_sal[:, calindex] - cal_sal1[:, calindex])
+
+                # estimate the error in salinity for station by fit
+
+                sta_cond = np.dot(np.ones((m ,1)), sta_mean[:, calindex]) * unique_cond
+                sta_sal[:, calindex] = gsw.conversions.SP_from_C(sta_cond, unique_ptmp, 0)
+                sta_cond_err = np.dot(np.ones((m ,1)), sta_rms[:, calindex]) * unique_cond
+                sta_sal1 = gsw.conversions.SP_from_C(sta_cond + sta_cond_err, unique_ptmp, 0)
+                sta_sal_err[:, calindex] = np.abs(sta_sal[:, calindex] - sta_sal1)
+
+
+                for n in range(fit_coef.__len__()):
+                    fceof.append(fit_coef[0])
+
+                if fit_breaks.__len__() > 0:
+                    fbreaks.append(fit_breaks)
+
+    # save calibration data
+
+    float_calib_name = (system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
+                        system_config['FLOAT_CALIB_PREFIX'] + float_name +
+                        system_config['FLOAT_CALIB_POSTFIX'])
+
+    scipy.savemat(float_calib_name, {'cal_SAL': cal_sal,
+                                     'cal_SAL_err': cal_sal_err,
+                                     'pcond_factor': pcond_factor,
+                                     'pcond_factor_err': pcond_factor_err,
+                                     'cal_COND': cal_cond,
+                                     'cal_COND_err': cal_cond_err,
+                                     'time_deriv': time_deriv,
+                                     'time_deriv_err': time_deriv_err,
+                                     'sta_mean': sta_mean,
+                                     'sta_rms': sta_rms,
+                                     'sta_SAL': sta_sal,
+                                     'sta_SAL_err': sta_sal_err,
+                                     'PROFILE_NO': profile_no,
+                                     'fcoef': fceof,
+                                     'fbreaks': fbreaks})
