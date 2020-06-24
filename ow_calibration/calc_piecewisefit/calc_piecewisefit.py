@@ -77,7 +77,21 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             z_grid.append(grid_interp(long_1[0][i], lat[0][i]))
 
         z_grid = -np.array(z_grid)
-
         coord_float = np.column_stack((long.T, lat.T, z_grid))
 
-        print(coord_float)
+        # load the calibration settings
+
+        float_calseries = scipy.loadmat(system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
+                                        system_config['FLOAT_CALSERIES_PREFIX'] + float_name +
+                                        system_config['FLOAT_MAPPED_POSTFIX'])
+
+        calseries = float_calseries['calseries']
+        max_breaks = float_calseries['max_breaks']
+        breaks = float_calseries['breaks']
+        use_theta_gt = float_calseries['use_theta_gt']
+        use_theta_lt = float_calseries['use_theta_lt']
+        use_pres_gt = float_calseries['use_pres_gt']
+        use_pres_lt = float_calseries['use_pres_lt']
+        use_percent_gt = float_calseries['use_percent_gt']
+
+        m, n = pres.shape
