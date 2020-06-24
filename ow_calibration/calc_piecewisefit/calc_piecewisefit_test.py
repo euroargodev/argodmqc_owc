@@ -23,7 +23,7 @@ class MyTestCase(unittest.TestCase):
     Test cases for 'calc_piecewisefit' function
     """
 
-    def custom_test(self):
+    def test_custom(self):
         """
         Change variables in this test to use different mapped outputs
         :return: nothing
@@ -46,6 +46,15 @@ class MyTestCase(unittest.TestCase):
                     self.assertAlmostEqual(python_sal[i, j], matlab_sal[i, j],
                                            3)
 
+        python_sal_err = test['cal_SAL_err']
+        matlab_sal_err = matlab['cal_SAL_err']
+
+        for i in range(python_sal_err.shape[0]):
+            for j in range(python_sal_err.shape[1]):
+                if ~np.isnan(python_sal_err[i, j]):
+                    self.assertAlmostEqual(python_sal_err[i, j], matlab_sal_err[i, j],
+                                           3)
+                    
 
 if __name__ == '__main__':
     unittest.main()
