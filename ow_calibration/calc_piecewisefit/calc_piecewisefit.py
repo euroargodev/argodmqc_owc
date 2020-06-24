@@ -95,3 +95,18 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         use_percent_gt = float_calseries['use_percent_gt']
 
         m, n = pres.shape
+
+        cal_sal = np.ones((m, n)) * np.nan
+        cal_sal_err = np.ones((m, n)) * np.nan
+        cal_cond = np.ones((m, n)) * np.nan
+        cal_cond_err = np.ones((m, n)) * np.nan
+        pcond_factor = np.ones((1, n)) * np.nan
+        pcond_factor_err = np.ones((1, n)) * np.nan
+        time_deriv = np.ones((1, n)) * np.nan
+        time_deriv_err = np.ones((1, n)) * np.nan
+        sta_mean = np.ones((1, n)) * np.nan
+        sta_rms = np.ones((1, n)) * np.nan
+        sta_sal = np.ones((m, n)) * np.nan
+        sta_sal_err = np.ones((m, n)) * np.nan
+        fceof = []
+        fbreaks = []
