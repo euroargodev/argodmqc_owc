@@ -59,7 +59,9 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+from ow_calibration.calc_piecewisefit.calc_piecewisefit import calc_piecewisefit
 from ow_calibration.load_configuration.load_configuration import load_configuration
+from ow_calibration.set_calseries.set_calseries import set_calseries
 from ow_calibration.update_salinity_mapping.update_salinity_mapping import update_salinity_mapping
 # from ow_calibration.plot_diagnostics.plot_diagnostics import plot_diagnostics
 
@@ -71,6 +73,12 @@ USER_CONFIG = load_configuration()
 
 # get historical salinity data for comparison
 update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
+
+# get the calibration setting parameters
+set_calseries("/", FLOAT_NAME, USER_CONFIG)
+
+# calibrate the salinities
+calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
 
 # create the diagnostic plots
 # plot_diagnostics("/", FLOAT_NAME, USER_CONFIG)
