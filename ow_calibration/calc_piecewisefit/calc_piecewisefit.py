@@ -13,9 +13,11 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import copy
+import gsw
 import numpy as np
 import scipy.io as scipy
 import scipy.interpolate as interpolate
+from ow_calibration.build_cov.build_cov import build_cov
 from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 
@@ -196,7 +198,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         k = calindex.__len__()
 
         # chose 10 float theta levels to use for the piecewise linear fit
-        unique_coord_float = coord_float[calindex,:]
+        unique_coord_float = coord_float[calindex, :]
         unique_sal = sal[:, calindex]
         unique_ptmp = ptmp[:, calindex]
         unique_pres = pres[:, calindex]
@@ -230,4 +232,33 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                     ten_pres[0:jj.__len__(), ipr] = unique_pres[index[jj, ipr], ipr].flatten()
                     ten_mapped_sal[0:jj.__len__(), ipr] = unique_mapped_sal[index[jj, ipr], ipr].flatten()
                     ten_mapsalerrors[0:jj.__len__(), ipr] = unique_mapsalerrors[index[jj, ipr], ipr].flatten()
+
+            # calculate potential conductivites and errors for mapped values and float values
+            # calculate pcond error by perturbing salinity
+            # (avoids problems caused by non-linearity)
+
+            # constant for conductivity at sal=35, temp=15 and pres=0
+            sw_c3515 = 42.914
+
+            icond = gsw.conversions.C_from_SP(ten_sal,
+                                              ten_ptmp,
+                                              0)
+            mapped_cond = gsw.conversions.C_from_SP(ten_mapped_sal,
+                                                    ten_ptmp,
+                                                    0)
+
+            mapped_cond1 = gsw.conversions.C_from_SP(ten_mapped_sal + ten_mapsalerrors/100,
+                                                     ten_ptmp, 0)
+
+            mapconderrors = 100 * np.abs(mapped_cond - mapped_cond1)
+
+            # independent variable for pieve wise fit (profile number)
+            x = x_in[:, calindex]
+            y = mapped_cond / icond
+            err = mapconderrors / icond
+
+            # calculate off-diagonal terms for error estimate
+
+            covariance = build_cov(ten_ptmp, unique_coord_float, system_config)
+
 
