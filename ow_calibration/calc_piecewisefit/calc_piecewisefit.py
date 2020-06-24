@@ -110,3 +110,11 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         sta_sal_err = np.ones((m, n)) * np.nan
         fceof = []
         fbreaks = []
+
+        sstatus = 1
+        unique_cal = np.unique(calseries)
+        # bad profiles are flagged as zero
+        bad = np.argwhere(unique_cal == 0)
+
+        if bad.__len__() > 0:
+            unique_cal[bad] = np.delete(unique_cal, bad)
