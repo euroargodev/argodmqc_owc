@@ -23,6 +23,8 @@ from ow_calibration.fit_cond.fit_cond import fit_cond
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 
 
+# pylint: disable-invalid-name
+# pylint: disable=too-many-locals
 def calc_piecewisefit(float_dir, float_name, system_config):
     """
     calibrate salinities
@@ -40,7 +42,6 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
     lat = float_source_data['LAT']
     long = float_source_data['LONG']
-    dates = float_source_data['DATES']
     sal = float_source_data['SAL']
     ptmp = float_source_data['PTMP']
     pres = float_source_data['PRES']
