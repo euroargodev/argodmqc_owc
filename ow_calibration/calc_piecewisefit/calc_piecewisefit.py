@@ -188,6 +188,8 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                        'fcoef': fceof,
                        'fbreaks': fbreaks})
 
+        return
+
     # loop through sequences of calseries
     for i in range(n_seq):
         calindex = np.argwhere(calseries == unique_cal[i])[:, 1]
@@ -216,4 +218,16 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                                       use_pres_lt[0, 0], use_pres_gt[0, 0],
                                                       use_percent_gt[0, 0])
 
-        
+        index = np.array(index, dtype=int)
+        pp = np.argwhere(np.isnan(index) == 0)
+        # only proceed if we have valied theta levels
+        if pp.__len__() > 0:
+            for ipr in range(k):
+                jj = np.argwhere(index[:, ipr] >= 0)
+                if jj.__len__() > 0:
+                    ten_sal[0:jj.__len__(), ipr] = unique_sal[index[jj, ipr], ipr].flatten()
+                    ten_ptmp[0:jj.__len__(), ipr] = unique_ptmp[index[jj, ipr], ipr].flatten()
+                    ten_pres[0:jj.__len__(), ipr] = unique_pres[index[jj, ipr], ipr].flatten()
+                    ten_mapped_sal[0:jj.__len__(), ipr] = unique_mapped_sal[index[jj, ipr], ipr].flatten()
+                    ten_mapsalerrors[0:jj.__len__(), ipr] = unique_mapsalerrors[index[jj, ipr], ipr].flatten()
+
