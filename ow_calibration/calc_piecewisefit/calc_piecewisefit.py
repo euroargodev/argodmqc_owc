@@ -19,6 +19,7 @@ import scipy.io as scipy
 import scipy.interpolate as interpolate
 from ow_calibration.build_cov.build_cov import build_cov
 from ow_calibration.find_10thetas.find_10thetas import find_10thetas
+from ow_calibration.fit_cond.fit_cond import fit_cond
 from ow_calibration.tbase_decoder.tbase_decoder import get_topo_grid
 
 
@@ -193,6 +194,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         return
 
     # loop through sequences of calseries
+
     for i in range(n_seq):
         calindex = np.argwhere(calseries == unique_cal[i])[:, 1]
         k = calindex.__len__()
@@ -260,5 +262,23 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             # calculate off-diagonal terms for error estimate
 
             covariance = build_cov(ten_ptmp, unique_coord_float, system_config)
+
+            # if no break points are set
+            if breaks.__len__() == 0:
+                (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
+                 sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                                        covariance,
+                                                                        'max_no_breaks',
+                                                                        max_breaks[i][0])
+                pcond_factor[0][calindex] = condslope
+                pcond_factor_err[0][calindex] = condslope_err
+                time_deriv[calindex] = time_deriv
+                time_deriv_err[calindex] = time_deriv_err
+                sta_mean[0][calindex], = sta_mean
+                sta_rms[0][calindex] = sta_rms
+                print(condslope)
+
+
+
 
 
