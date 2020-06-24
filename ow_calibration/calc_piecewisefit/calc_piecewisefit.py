@@ -79,42 +79,110 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         z_grid = -np.array(z_grid)
         coord_float = np.column_stack((long.T, lat.T, z_grid))
 
-        # load the calibration settings
+    # load the calibration settings
 
-        float_calseries = scipy.loadmat(system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
-                                        system_config['FLOAT_CALSERIES_PREFIX'] + float_name +
-                                        system_config['FLOAT_MAPPED_POSTFIX'])
+    float_calseries = scipy.loadmat(system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
+                                    system_config['FLOAT_CALSERIES_PREFIX'] + float_name +
+                                    system_config['FLOAT_MAPPED_POSTFIX'])
 
-        calseries = float_calseries['calseries']
-        max_breaks = float_calseries['max_breaks']
-        breaks = float_calseries['breaks']
-        use_theta_gt = float_calseries['use_theta_gt']
-        use_theta_lt = float_calseries['use_theta_lt']
-        use_pres_gt = float_calseries['use_pres_gt']
-        use_pres_lt = float_calseries['use_pres_lt']
-        use_percent_gt = float_calseries['use_percent_gt']
+    calseries = float_calseries['calseries']
+    max_breaks = float_calseries['max_breaks']
+    breaks = float_calseries['breaks']
+    use_theta_gt = float_calseries['use_theta_gt']
+    use_theta_lt = float_calseries['use_theta_lt']
+    use_pres_gt = float_calseries['use_pres_gt']
+    use_pres_lt = float_calseries['use_pres_lt']
+    use_percent_gt = float_calseries['use_percent_gt']
 
-        m, n = pres.shape
+    m, n = pres.shape
 
-        cal_sal = np.ones((m, n)) * np.nan
-        cal_sal_err = np.ones((m, n)) * np.nan
-        cal_cond = np.ones((m, n)) * np.nan
-        cal_cond_err = np.ones((m, n)) * np.nan
-        pcond_factor = np.ones((1, n)) * np.nan
-        pcond_factor_err = np.ones((1, n)) * np.nan
-        time_deriv = np.ones((1, n)) * np.nan
-        time_deriv_err = np.ones((1, n)) * np.nan
-        sta_mean = np.ones((1, n)) * np.nan
-        sta_rms = np.ones((1, n)) * np.nan
-        sta_sal = np.ones((m, n)) * np.nan
-        sta_sal_err = np.ones((m, n)) * np.nan
-        fceof = []
-        fbreaks = []
+    cal_sal = np.ones((m, n)) * np.nan
+    cal_sal_err = np.ones((m, n)) * np.nan
+    cal_cond = np.ones((m, n)) * np.nan
+    cal_cond_err = np.ones((m, n)) * np.nan
+    pcond_factor = np.ones((1, n)) * np.nan
+    pcond_factor_err = np.ones((1, n)) * np.nan
+    time_deriv = np.ones((1, n)) * np.nan
+    time_deriv_err = np.ones((1, n)) * np.nan
+    sta_mean = np.ones((1, n)) * np.nan
+    sta_rms = np.ones((1, n)) * np.nan
+    sta_sal = np.ones((m, n)) * np.nan
+    sta_sal_err = np.ones((m, n)) * np.nan
+    fceof = []
+    fbreaks = []
 
-        sstatus = 1
-        unique_cal = np.unique(calseries)
-        # bad profiles are flagged as zero
-        bad = np.argwhere(unique_cal == 0)
+    sstatus = 1
+    unique_cal = np.unique(calseries)
+    # bad profiles are flagged as zero
+    bad = np.argwhere(unique_cal == 0)
 
-        if bad.__len__() > 0:
-            unique_cal[bad] = np.delete(unique_cal, bad)
+    if bad.__len__() > 0:
+        unique_cal[bad] = np.delete(unique_cal, bad)
+
+    n_seq = unique_cal.__len__()
+    if n_seq == 1 and max_breaks.__len__() > 1:
+        print("Error in specificying number of possible break points")
+        print(str(max_breaks), " specified, should be ",
+              str([max_breaks.__len__(), n_seq]))
+
+    # we have multiple cal series, make sure that break information is provideed for all segments
+    elif n_seq > 1:
+        # only one max break specified, specify this break for all segements
+        if max_breaks.__len__() == 1:
+            max_breaks = np.ones((n_seq, 1)) * max_breaks
+
+        # error in specification of max breaks
+        elif max_breaks.__len__() != n_seq:
+            print("Error in specifying the number of possible break points")
+            print(str(max_breaks), " specified, should be 1 or ",
+                  str([max_breaks.__len__(), n_seq]))
+            sstatus = 0
+
+    if breaks.__len__() > 0:
+        ns, nb = breaks.shape
+
+        # error in specifying breaks
+        if ns != n_seq:
+            print("Error in specifying break points")
+            print("For multiple cal series, need to specify breaks for each series")
+            print("Have ", str(n_seq), " or ", str(ns), " sets of breaks")
+
+            sstatus = 0
+
+        for n in range(n_seq):
+            nb = np.argwhere(np.isfinite(breaks[n, :])).__len__()
+
+            if nb > max_breaks[n]:
+                print("Error, for cal series ", str(unique_cal[n]), "max number of breaks ",
+                      str(max_breaks[n]), " less than ", str(nb), "prescribed breaks")
+                sstatus = 0
+
+            elif nb < max_breaks[n]:
+                print("Specified ", str(nb), " breaks. Will search up to ",
+                      str(max_breaks[n]), " breaks")
+
+            else:
+                print(str(nb), "fixed breaks prescribed")
+
+    #set_calseries returned a bad status variable, write out file with NaNs
+    if sstatus == 0:
+        float_calib_filename = (system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
+                                system_config['FLOAT_CALIB_PREFIX'] + float_name +
+                                system_config['FLOAT_CALIB_POSTFIX'])
+
+        scipy.savemat(float_calib_filename,
+                      {'cal_SAL': cal_sal,
+                      'cal_SAL_err': cal_sal_err,
+                      'pcond_factor': pcond_factor,
+                      'pcond_factor_err': pcond_factor_err,
+                      'cal_COND': cal_cond,
+                      'cal_COND_err': cal_cond_err,
+                      'time_deriv': time_deriv,
+                      'time_deriv_err': time_deriv_err,
+                      'sta_mean': sta_mean,
+                      'sta_rms': sta_rms,
+                      'sta_SAL': sta_sal,
+                      'sta_SAL_err': sta_sal_err,
+                      'PROFILE_NO': profile_no,
+                      'fcoef': fceof,
+                      'fbreaks': fbreaks})
