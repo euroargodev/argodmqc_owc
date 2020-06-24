@@ -130,6 +130,7 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
         pres_levels = np.arange(min_pres, max_pres, increment)
 
         # check we can get 10 theta levels. If not, alter pressure increment
+        print(pres_levels)
         if pres_levels.__len__() < no_levels:
             increment = np.floor((max_pres - min_pres) / no_levels)
             pres_levels = np.arange(min_pres, max_pres, increment)

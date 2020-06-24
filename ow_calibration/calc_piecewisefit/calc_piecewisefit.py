@@ -39,7 +39,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     dates = float_source_data['DATES']
     sal = float_source_data['SAL']
     ptmp = float_source_data['PTMP']
-    pres = float_source_data['PTMP']
+    pres = float_source_data['PRES']
     profile_no = float_source_data['PROFILE_NO']
     x_in = np.tile(profile_no, (10, 1))
 
@@ -212,6 +212,8 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                                       unique_ptmp,
                                                       unique_pres,
                                                       unique_mapped_ptmp,
-                                                      use_theta_lt, use_theta_gt,
-                                                      use_pres_lt, use_pres_gt,
-                                                      use_percent_gt)
+                                                      use_theta_lt[0, 0], use_theta_gt[0, 0],
+                                                      use_pres_lt[0, 0], use_pres_gt[0, 0],
+                                                      use_percent_gt[0, 0])
+
+        
