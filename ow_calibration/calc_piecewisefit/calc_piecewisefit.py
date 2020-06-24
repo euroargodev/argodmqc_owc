@@ -214,10 +214,10 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         ten_mapped_sal = np.ones((10, k)) * np.nan
         ten_mapsalerrors = np.ones((10, k)) * np.nan
 
-        theta, p, index, var_s_th, th = find_10thetas(unique_sal,
-                                                      unique_ptmp,
-                                                      unique_pres,
-                                                      unique_mapped_ptmp,
+        theta, p, index, var_s_th, th = find_10thetas(copy.deepcopy(unique_sal),
+                                                      copy.deepcopy(unique_ptmp),
+                                                      copy.deepcopy(unique_pres),
+                                                      copy.deepcopy(unique_mapped_ptmp),
                                                       use_theta_lt[0, 0], use_theta_gt[0, 0],
                                                       use_pres_lt[0, 0], use_pres_gt[0, 0],
                                                       use_percent_gt[0, 0])
@@ -229,12 +229,12 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             for ipr in range(k):
                 jj = np.argwhere(index[:, ipr] >= 0)
                 if jj.__len__() > 0:
+
                     ten_sal[0:jj.__len__(), ipr] = unique_sal[index[jj, ipr], ipr].flatten()
                     ten_ptmp[0:jj.__len__(), ipr] = unique_ptmp[index[jj, ipr], ipr].flatten()
                     ten_pres[0:jj.__len__(), ipr] = unique_pres[index[jj, ipr], ipr].flatten()
                     ten_mapped_sal[0:jj.__len__(), ipr] = unique_mapped_sal[index[jj, ipr], ipr].flatten()
                     ten_mapsalerrors[0:jj.__len__(), ipr] = unique_mapsalerrors[index[jj, ipr], ipr].flatten()
-
             # calculate potential conductivites and errors for mapped values and float values
             # calculate pcond error by perturbing salinity
             # (avoids problems caused by non-linearity)
@@ -249,7 +249,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                                     ten_ptmp,
                                                     0)
 
-            mapped_cond1 = gsw.conversions.C_from_SP(ten_mapped_sal + ten_mapsalerrors/100,
+            mapped_cond1 = gsw.conversions.C_from_SP(ten_mapped_sal + ten_mapsalerrors / 100,
                                                      ten_ptmp, 0)
 
             mapconderrors = 100 * np.abs(mapped_cond - mapped_cond1)
@@ -267,18 +267,52 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             if breaks.__len__() == 0:
                 (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
                  sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                        covariance,
-                                                                        'max_no_breaks',
-                                                                        max_breaks[i][0])
+                                                                          covariance,
+                                                                          'max_no_breaks',
+                                                                          max_breaks[i][0])
                 pcond_factor[0][calindex] = condslope
                 pcond_factor_err[0][calindex] = condslope_err
                 time_deriv[calindex] = time_deriv
                 time_deriv_err[calindex] = time_deriv_err
                 sta_mean[0][calindex], = sta_mean
                 sta_rms[0][calindex] = sta_rms
-                print(condslope)
+
+            else:
+                breaks_in = breaks[i, :]
+                breaks_in = breaks_in[np.argwhere(np.isfinite(breaks_in))]
+
+                if max_breaks[i]:
+                    (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
+                     sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                                              covariance,
+                                                                              'breaks',
+                                                                              breaks_in,
+                                                                              'max_no_breaks',
+                                                                              max_breaks[i][0])
+                    pcond_factor[0][calindex] = condslope
+                    pcond_factor_err[0][calindex] = condslope_err
+                    time_deriv[calindex] = time_deriv
+                    time_deriv_err[calindex] = time_deriv_err
+                    sta_mean[0][calindex], = sta_mean
+                    sta_rms[0][calindex] = sta_rms
+
+                else:
+                    (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
+                     sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                                              covariance,
+                                                                              'breaks',
+                                                                              breaks_in)
+                    pcond_factor[0][calindex] = condslope
+                    pcond_factor_err[0][calindex] = condslope_err
+                    time_deriv[calindex] = time_deriv
+                    time_deriv_err[calindex] = time_deriv_err
+                    sta_mean[0][calindex], = sta_mean
+                    sta_rms[0][calindex] = sta_rms
 
 
+            # apply calibrations to float data
 
-
-
+            if pcond_factor[0][calindex].__len__() > 0:
+                unique_cond = gsw.conversions.C_from_SP(unique_sal, unique_ptmp, 0)
+                cal_cond[:, calindex] = np.dot(np.ones((m, 1)), pcond_factor[:, calindex]) * unique_cond
+                
