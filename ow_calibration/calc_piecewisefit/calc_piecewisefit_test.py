@@ -17,18 +17,23 @@ import scipy.io as scipy
 from ow_calibration.calc_piecewisefit.calc_piecewisefit import calc_piecewisefit
 from ow_calibration.load_configuration.load_configuration import load_configuration
 
+
 class MyTestCase(unittest.TestCase):
-    def testSomething(self):
+    """
+    Test cases for 'calc_piecewisefit' function
+    """
+
+    def custom_test(self):
         """
         Change variables in this test to use different mapped outputs
         :return: nothing
         """
-        self.float_source = "3901960"
-        calc_piecewisefit("/", self.float_source, load_configuration())
+        float_source = "3901960"
+        calc_piecewisefit("/", float_source, load_configuration())
 
-        test = scipy.loadmat("data/float_calib/cal_" + self.float_source + ".mat")
+        test = scipy.loadmat("data/float_calib/cal_" + float_source + ".mat")
         matlab = scipy.loadmat("data/test_data/float_calib_test/cal_" +
-                               self.float_source + ".mat")
+                               float_source + ".mat")
 
         python_sal = test['cal_SAL']
         matlab_sal = matlab['cal_SAL']
@@ -38,10 +43,8 @@ class MyTestCase(unittest.TestCase):
         for i in range(python_sal.shape[0]):
             for j in range(python_sal.shape[1]):
                 if ~np.isnan(python_sal[i, j]):
-                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i,j],
+                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i, j],
                                            3)
-
-
 
 
 if __name__ == '__main__':

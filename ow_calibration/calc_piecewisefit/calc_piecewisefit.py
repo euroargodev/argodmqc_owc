@@ -35,7 +35,8 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     # load in the source data
 
     float_source_data = scipy.loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] +
-                                      float_dir + float_name + system_config['FLOAT_SOURCE_POSTFIX'])
+                                      float_dir + float_name +
+                                      system_config['FLOAT_SOURCE_POSTFIX'])
 
     lat = float_source_data['LAT']
     long = float_source_data['LONG']
@@ -237,12 +238,13 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             for ipr in range(k):
                 jj = np.argwhere(index[:, ipr] >= 0)
                 if jj.__len__() > 0:
-
                     ten_sal[0:jj.__len__(), ipr] = unique_sal[index[jj, ipr], ipr].flatten()
                     ten_ptmp[0:jj.__len__(), ipr] = unique_ptmp[index[jj, ipr], ipr].flatten()
                     ten_pres[0:jj.__len__(), ipr] = unique_pres[index[jj, ipr], ipr].flatten()
-                    ten_mapped_sal[0:jj.__len__(), ipr] = unique_mapped_sal[index[jj, ipr], ipr].flatten()
-                    ten_mapsalerrors[0:jj.__len__(), ipr] = unique_mapsalerrors[index[jj, ipr], ipr].flatten()
+                    ten_mapped_sal[0:jj.__len__(), ipr] = unique_mapped_sal[index[jj, ipr],
+                                                                            ipr].flatten()
+                    ten_mapsalerrors[0:jj.__len__(), ipr] = unique_mapsalerrors[index[jj, ipr],
+                                                                                ipr].flatten()
             # calculate potential conductivites and errors for mapped values and float values
             # calculate pcond error by perturbing salinity
             # (avoids problems caused by non-linearity)
@@ -317,15 +319,15 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                     sta_mean[0][calindex], = sta_mean
                     sta_rms[0][calindex] = sta_rms
 
-
             # apply calibrations to float data
 
             if pcond_factor[0][calindex].__len__() > 0:
                 unique_cond = gsw.conversions.C_from_SP(unique_sal_1, unique_ptmp_1, 0)
-                cal_cond[:, calindex] = np.dot(np.ones((m, 1)), pcond_factor[:, calindex]) * unique_cond
+                cal_cond[:, calindex] = np.dot(np.ones((m, 1)),
+                                               pcond_factor[:, calindex]) * unique_cond
                 cal_sal[:, calindex] = gsw.conversions.SP_from_C(cal_cond[:, calindex],
-                                                                unique_ptmp_1,
-                                                                0)
+                                                                 unique_ptmp_1,
+                                                                 0)
                 cal_cond_err[:, calindex] = np.dot(np.ones((m, 1)),
                                                    pcond_factor_err[:, calindex]) * unique_cond
                 cal_sal1 = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
@@ -336,12 +338,11 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
                 # estimate the error in salinity for station by fit
 
-                sta_cond = np.dot(np.ones((m ,1)), sta_mean[:, calindex]) * unique_cond
+                sta_cond = np.dot(np.ones((m, 1)), sta_mean[:, calindex]) * unique_cond
                 sta_sal[:, calindex] = gsw.conversions.SP_from_C(sta_cond, unique_ptmp, 0)
-                sta_cond_err = np.dot(np.ones((m ,1)), sta_rms[:, calindex]) * unique_cond
+                sta_cond_err = np.dot(np.ones((m, 1)), sta_rms[:, calindex]) * unique_cond
                 sta_sal1 = gsw.conversions.SP_from_C(sta_cond + sta_cond_err, unique_ptmp, 0)
                 sta_sal_err[:, calindex] = np.abs(sta_sal[:, calindex] - sta_sal1)
-
 
                 for n in range(fit_coef.__len__()):
                     fceof.append(fit_coef[0])
