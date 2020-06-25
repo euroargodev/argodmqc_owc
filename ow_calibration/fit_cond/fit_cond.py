@@ -103,7 +103,7 @@ def nlbpfun(ubrk_i):
     fnumer[0] = np.exp(ubrk[0])
 
     for i in range(1, m_b):
-        fnumer[i] = fnumer[i - 1] + np.exp(ubrk(i))
+        fnumer[i] = fnumer[i - 1] + np.exp(ubrk[i])
 
     fdenom = 1 + fnumer[m_b - 1]
 
@@ -274,7 +274,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     if no_args > 0:
         for n in range(int(no_args / 2)):
-            parm = args[2 *n]
+            parm = args[2 * n]
             value = args[(n * 2) + 1]
 
             if not isinstance(parm, str):
@@ -313,6 +313,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 raise ValueError("Paramater " + param + " not found in parameter list")
 
     # intialise variable for search over number of break points
+    max_brk_in = int(max_brk_in)
     b_pts = np.ones((max_brk_in, max_brk_in + 1)) * np.nan
     b_A = np.ones((max_brk_in + 2, max_brk_in + 1)) * np.nan
     rss = np.ones((1, max_brk_in + 2)) * np.nan
@@ -358,86 +359,86 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
         else:
             if setbreaks == 1:
-                pbrk = nbr
+                pbrk = np.array([nbr])
                 max_brk = nbr
                 nbr1 = nbr
                 print("WARNING: Only have " + str(ndf) + " degrees of freedom")
                 print("Estimate fit with fixed breakpoints")
 
             else:
-                pbrk = -1
+                pbrk = np.array([-1])
                 print("WARNING: Only have " + str(ndf) + " degrees of freedom")
                 print("Estimate offset only")
 
-    nbr = pbrk
-    if nbr == -1:
-        # offset only
-        # since this is an error weighted average, yx won't necessarily be 0
-        ones_column = np.ones((npts, 1))
-        b_A[0, 0] = np.dot(np.dot(np.dot(np.linalg.inv(np.dot(np.dot(ones_column.T, w_i),
-                                                              ones_column)),
-                                         ones_column.T),
-                                  w_i),
-                           yf)
+    for nbr in pbrk:
+        if nbr == -1:
+            # offset only
+            # since this is an error weighted average, yx won't necessarily be 0
+            ones_column = np.ones((npts, 1))
+            b_A[0, 0] = np.dot(np.dot(np.dot(np.linalg.inv(np.dot(np.dot(ones_column.T, w_i),
+                                                                  ones_column)),
+                                             ones_column.T),
+                                      w_i),
+                               yf)
 
-        residual = yf - (ones_column * b_A[0, 0]).flatten()
-        rss[0, 0] = np.sum(residual ** 2 / err_var)
-        aic[0, 0] = ndf * np.log(rss[0, 0] / npts) + ndf * (ndf + 1) / (ndf - 3)
+            residual = yf - (ones_column * b_A[0, 0]).flatten()
+            rss[0, 0] = np.sum(residual ** 2 / err_var)
+            aic[0, 0] = ndf * np.log(rss[0, 0] / npts) + ndf * (ndf + 1) / (ndf - 3)
 
-    elif nbr == 0:
-        # linear fit, no break points
-        A, residual = brk_pt_fit(xf, yf, w_i)
-        b_A[0:2, 1] = A[0:2]
-        rss[0, 1] = np.sum(residual ** 2 / err_var)
-        aic[0, 1] = ndf * np.log(rss[0, 1] / npts) + ndf * (ndf + 2) / (ndf - 4)
+        elif nbr == 0:
+            # linear fit, no break points
+            A, residual = brk_pt_fit(xf, yf, w_i)
+            b_A[0:2, 1] = A[0:2]
+            rss[0, 1] = np.sum(residual ** 2 / err_var)
+            aic[0, 1] = ndf * np.log(rss[0, 1] / npts) + ndf * (ndf + 2) / (ndf - 4)
 
-    else:
-        nbr2 = brk_init.__len__()
-
-        # Check if there are enough initial guesses
-        if nbr2 >= nbr:
-            if brk_init.shape[0] > brk_init.shape[1]:
-                brk_init = brk_init.T
-
-            b_guess = brk_init[0:nbr]
-
-        # first guess for breaks as evenly distributed between 2nd and 2nd to last point
         else:
-            b_guess = -1 + 2 * np.arange(1, nbr + 1) / (nbr + 1)
+            nbr2 = brk_init.__len__()
 
-        b_g = np.concatenate(([-1], b_guess))
-        ubrk_g = []
+            # Check if there are enough initial guesses
+            if nbr2 >= nbr:
+                if brk_init.shape[0] > brk_init.shape[1]:
+                    brk_init = brk_init.T
 
-        for n in range(nbr):
-            ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
+                b_guess = brk_init[0:nbr]
 
-        if setbreaks:
-            # break points are already set
-            if nbr1 == max_brk:
-                A, residual = brk_pt_fit(xf, yf, w_i, breaks)
-
-            # fit over limited number of breaks
+            # first guess for breaks as evenly distributed between 2nd and 2nd to last point
             else:
-                optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr],
+                b_guess = -1 + 2 * np.arange(1, nbr + 1) / (nbr + 1)
+
+            b_g = np.concatenate(([-1], b_guess))
+            ubrk_g = []
+
+            nbr = int(nbr)
+            for n in range(nbr):
+                ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
+
+            if setbreaks:
+                # break points are already set
+                if nbr1 == max_brk:
+                    A, residual = brk_pt_fit(xf, yf, w_i, breaks)
+
+                # fit over limited number of breaks
+                else:
+                    optim = scipy.least_squares(nlbpfun, ubrk_g[nbr1:nbr],
+                                                method='lm', ftol=tol, max_nfev=max_fun_evals)
+                    ubrk = optim['x'][0]
+                    residual = optim['fun']
+
+                    ubrk = np.concatenate((ubrk_g[0:nbr1 - 1], ubrk))
+            # get non-linear least squares for break points
+            else:
+                ubrk_g = np.array(ubrk_g)
+                optim = scipy.least_squares(nlbpfun, ubrk_g,
                                             method='lm', ftol=tol, max_nfev=max_fun_evals)
                 ubrk = optim['x'][0]
                 residual = optim['fun']
 
-                ubrk = np.concatenate((ubrk_g[0:nbr1 - 1], ubrk))
-        # get non-linear least squares for break points
-        else:
-            ubrk_g = np.array(ubrk_g)
-            optim = scipy.least_squares(nlbpfun, ubrk_g,
-                                        method='lm', ftol=tol, max_nfev=max_fun_evals)
-            ubrk = optim['x'][0]
-            residual = optim['fun']
-
-
-        b_pts[0:nbr, nbr] = breaks.T
-        b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
-        rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
-        p = 2 * (nbr + 1)
-        aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
+            b_pts[0:nbr, nbr] = breaks.T
+            b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
+            rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
+            p = 2 * (nbr + 1)
+            aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
 
     if setbreaks and nbr1 == max_brk:
         best = pbrk + 2
@@ -447,7 +448,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
         if nbr1 > 1:
             pbrk = np.arange((nbr1 - 1), max_brk)
 
-        good = pbrk + 1
+        good = np.array(pbrk + 1, dtype=int)
         best = np.argmin(aic[0, good])
 
         if isinstance(good, np.ndarray):
@@ -478,6 +479,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     else:
         breaks = []
 
+    best = int(best)
     A = b_A[0:best, best - 1]
     btem = np.concatenate(([xf[0]], breaks))
     E = np.zeros((npts, best))
