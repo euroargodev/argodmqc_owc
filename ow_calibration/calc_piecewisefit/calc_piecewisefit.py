@@ -230,7 +230,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         theta, p, index, var_s_th, th = find_10thetas(copy.deepcopy(unique_sal),
                                                       copy.deepcopy(unique_ptmp),
                                                       copy.deepcopy(unique_pres),
-                                                      copy.deepcopy(unique_ptmp),
+                                                      copy.deepcopy(unique_mapped_ptmp),
                                                       use_theta_lt[0, 0], use_theta_gt[0, 0],
                                                       use_pres_lt[0, 0], use_pres_gt[0, 0],
                                                       use_percent_gt[0, 0])

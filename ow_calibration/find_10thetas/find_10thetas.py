@@ -194,7 +194,7 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
             if ~np.isnan(theta_index):
                 theta_index = int(theta_index)
                 interval = np.arange(np.max([theta_index - 1, 0]),
-                                     np.min([theta_index + 1, profile_no]) + 1,
+                                     np.min([theta_index + 1, profile_no - 1]) + 1,
                                      dtype=int)
 
                 ptmp_diff = ptmp[theta_index, depth] - ptmp[interval, depth]
