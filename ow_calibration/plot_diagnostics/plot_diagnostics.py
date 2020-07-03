@@ -18,7 +18,6 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import scipy.io as scipy
 import matplotlib.pyplot as plt
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
-from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
 
 
 def plot_diagnostics(float_dir, float_name, config):
@@ -40,7 +39,6 @@ def plot_diagnostics(float_dir, float_name, config):
     mapped_data = scipy.loadmat(mapped_data)
     float_source_data = scipy.loadmat(float_source_data)
 
-
     mapped_loc = mapped_data['selected_hist']
 
     float_lat = float_source_data['LAT'].flatten()
@@ -49,4 +47,4 @@ def plot_diagnostics(float_dir, float_name, config):
 
     # create trajectory plot ------------------------------
 
-    trajectory_plot(float_name, mapped_loc, float_long, float_lat, bathy=True)
+    trajectory_plot(float_name, mapped_loc, float_long, float_lat)

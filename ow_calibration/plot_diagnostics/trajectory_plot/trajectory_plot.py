@@ -20,7 +20,6 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import matplotlib.pyplot as plt
 import numpy as np
 import cartopy.crs as ccrs
-import cartopy.feature as feature
 import harmonica as hm
 
 

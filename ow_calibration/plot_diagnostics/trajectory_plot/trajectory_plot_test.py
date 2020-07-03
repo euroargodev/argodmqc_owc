@@ -10,11 +10,11 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-
 import unittest
+import matplotlib.pyplot as plt
 import scipy.io as scipy
+from unittest.mock import patch
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
-from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
 
 
 # pylint: disable=bare-except
@@ -23,7 +23,8 @@ class MyTestCase(unittest.TestCase):
     Test cases for trajectory_plot function
     """
 
-    def test_plot_runs(self):
+    @patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
+    def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
         :return: nothing
@@ -31,17 +32,22 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that trajectory plot throws no errors")
 
+        float_name = "TESTING NAME"
+
         grid_data = scipy.loadmat("data/float_mapped/map_3901960.mat")
         float_data = scipy.loadmat("data/float_source/3901960.mat")
 
-        grid, floats = create_dataframe(grid_data, float_data)
+        mapped_loc = grid_data['selected_hist']
 
+        float_lat = float_data['LAT'].flatten()
+        float_long = float_data['LONG'].flatten()
 
-        try:
-            trajectory_plot(1, 1, floats, grid, "3901960")
+        # Check various types run
 
-        except:
-            self.fail("Trajectory plotting routine failed unexpectedly")
+        assert trajectory_plot(float_name, mapped_loc, float_long, float_lat) is None
+        assert trajectory_plot(float_name, mapped_loc, float_long, float_lat, bathy=True) is None
+        assert trajectory_plot(float_name, mapped_loc, float_long, float_lat,
+                               bathy=True, style='shade') is None
 
 
 if __name__ == '__main__':
