@@ -30,17 +30,23 @@ def plot_diagnostics(float_dir, float_name, config):
     :return: nothing, but will save the plots as PDFs
     """
 
-    grid_data_loc = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
+    # Get float data, mapped data, and calibrated data --------
+
+    mapped_data = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
                     float_name + config['FLOAT_MAPPED_POSTFIX']
-    float_data_loc = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
+    float_source_data = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
                      float_name + config['FLOAT_SOURCE_POSTFIX']
 
-    grid_data = scipy.loadmat(grid_data_loc)
-    float_data = scipy.loadmat(float_data_loc)
+    mapped_data = scipy.loadmat(mapped_data)
+    float_source_data = scipy.loadmat(float_source_data)
+
+
+    mapped_loc = mapped_data['selected_hist']
+
+    float_lat = float_source_data['LAT'].flatten()
+    float_long = float_source_data['LONG'].flatten()
+    float_no = float_source_data['PROFILE_NO'].flatten()
 
     # create trajectory plot ------------------------------
-    grid, floats = create_dataframe(grid_data, float_data)
 
-    trajectory_plot(0, 0, floats, grid, float_name)
-
-    plt.show()
+    trajectory_plot(float_lat, float_long, mapped_loc)
