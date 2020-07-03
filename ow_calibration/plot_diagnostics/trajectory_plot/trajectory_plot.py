@@ -17,96 +17,103 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-
 import matplotlib.pyplot as plt
 import numpy as np
-import geopandas as gdp # pylint: disable=import-error
+import cartopy.crs as ccrs
+import harmonica as hm
 
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def trajectory_plot(bath, reef, floats, climatology, float_name):
+# pyline: disable=too-many-arguments
+def trajectory_plot(float_name, mapped_data, float_long, float_lat,
+                    depths=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                    bathy=False, cmap='gray', style='block'):
+    """
+    Reveal trajectory diagnostic plot
+    :param float_name: name of the float
+    :param style: shading style for color map
+    :param levels: levels to plot bathymetry data
+    :param cmap: shading for bathymetry ('block' or 'shade')
+    :param bathy: Boolean to plot bathymetry
+    :param mapped_data: historical climatology data (mapped)
+    :param float_lat: float latitude
+    :param float_long: float longitude
+    :return: Nothing
     """
 
-    :param bath: should we plot bathymetry (1 == yes)
-    :param reef: should we plot reefs (1 == yes)
-    :param floats: float location data frame
-    :param climatology: climatology location dataframe
-    :param float_name: name of float
-    :return: nothing
-    """
+    # set up plot and axis
+    projection = ccrs.PlateCarree()
+    traj_plot = plt.axes(projection=projection)
+    topo = hm.datasets.fetch_topography_earth()
+    map_long = mapped_data[:, 0]
+    map_lat = mapped_data[:, 1]
 
-    # load in the coastline data
-    coastline = "data/constants/coastline/ne_10m_coastline.shp"
-    map_coast = gdp.read_file(coastline)
-    traj_map = map_coast.plot(color='black', label='coastline')
+    # plot land
+    plt.contourf(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                 levels=[50, 10000], colors='bisque', antialiased=False, linestyles='solid')
 
-    # if wanted, load in bathymetric data and plot it
-    if bath == 1:
-        bathymetry0 = "data/constants/bathymetry/ne_10m_bathymetry_L_0.shp"
-        bathymetry200 = "data/constants/bathymetry/ne_10m_bathymetry_K_200.shp"
-        bathymetry1000 = "data/constants/bathymetry/ne_10m_bathymetry_J_1000.shp"
-        bathymetry2000 = "data/constants/bathymetry/ne_10m_bathymetry_I_2000.shp"
-        bathymetry3000 = "data/constants/bathymetry/ne_10m_bathymetry_H_3000.shp"
-        bathymetry4000 = "data/constants/bathymetry/ne_10m_bathymetry_G_4000.shp"
-        bathymetry5000 = "data/constants/bathymetry/ne_10m_bathymetry_F_5000.shp"
-        bathymetry6000 = "data/constants/bathymetry/ne_10m_bathymetry_E_6000.shp"
-        bathymetry7000 = "data/constants/bathymetry/ne_10m_bathymetry_D_7000.shp"
-        bathymetry8000 = "data/constants/bathymetry/ne_10m_bathymetry_C_8000.shp"
-        bathymetry9000 = "data/constants/bathymetry/ne_10m_bathymetry_B_9000.shp"
-        bathymetry10000 = "data/constants/bathymetry/ne_10m_bathymetry_A_10000.shp"
-        map_bath0 = gdp.read_file(bathymetry0)
-        map_bath200 = gdp.read_file(bathymetry200)
-        map_bath1000 = gdp.read_file(bathymetry1000)
-        map_bath2000 = gdp.read_file(bathymetry2000)
-        map_bath3000 = gdp.read_file(bathymetry3000)
-        map_bath4000 = gdp.read_file(bathymetry4000)
-        map_bath5000 = gdp.read_file(bathymetry5000)
-        map_bath6000 = gdp.read_file(bathymetry6000)
-        map_bath7000 = gdp.read_file(bathymetry7000)
-        map_bath8000 = gdp.read_file(bathymetry8000)
-        map_bath9000 = gdp.read_file(bathymetry9000)
-        map_bath10000 = gdp.read_file(bathymetry10000)
-        traj_map = map_bath0.plot(ax=traj_map, color='#BEBEBE', label='>200m', linewidth=2)
-        traj_map = map_bath200.plot(ax=traj_map, color='#B8B8B8', linewidth=2)
-        traj_map = map_bath1000.plot(ax=traj_map, color='#B0B0B0', label='1000m', linewidth=2)
-        traj_map = map_bath2000.plot(ax=traj_map, color='#A9A9A9')
-        traj_map = map_bath3000.plot(ax=traj_map, color='#A8A8A8')
-        traj_map = map_bath4000.plot(ax=traj_map, color='#A0A0A0')
-        traj_map = map_bath5000.plot(ax=traj_map, color='#989898')
-        traj_map = map_bath6000.plot(ax=traj_map, color='#909090', label='6000m')
-        traj_map = map_bath7000.plot(ax=traj_map, color='#888888')
-        traj_map = map_bath8000.plot(ax=traj_map, color='#808080')
-        traj_map = map_bath9000.plot(ax=traj_map, color='#787878')
-        traj_map = map_bath10000.plot(ax=traj_map, color='#707070')
+    # plot climatology
+    traj_plot.plot(map_long, map_lat,
+                   color='#FF6347', marker='s',
+                   linestyle='None', markersize=2,
+                   transform=projection, label="Climatology"
+                   )
 
-    # if we want reef data, load it in and plot it
-    if reef == 1:
-        reef = "data/constants/reefs/ne_10m_reefs.shp"
-        map_reef = gdp.read_file(reef)
-        traj_map = map_reef.plot(ax=traj_map, color='green', label='reef')
+    # plot float data
+    traj_plot.plot(float_long, float_lat,
+                   color='red', marker='x',
+                   linestyle='-', markersize=4,
+                   transform=projection, label="Float Profiles"
+                   )
 
-    # set up the latitude and longitude data
-    geo_floats = gdp.GeoDataFrame(floats,
-                                  geometry=gdp.points_from_xy(floats.Longitude,
-                                                              floats.Latitude))
-    geo_climatology = gdp.GeoDataFrame(climatology,
-                                       geometry=gdp.points_from_xy(climatology.Longitude,
-                                                                   climatology.Latitude))
+    # plot bathymetry
+    if bathy:
+        con = plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                          levels=depths, colors='black',
+                          linestyles='solid', linewidths=0.3)
+        plt.clabel(con, inline=1, fontsize=7)
 
-    traj_map = geo_floats.plot(ax=traj_map, color='red', marker="+", label='profile')
-    geo_climatology.plot(ax=traj_map, color='#00008B', marker="s",
-                         markersize=12, label='climatology')
-    plt.plot(floats['Longitude'], floats['Latitude'], color='red', linestyle='-')
-    plt.title(("Locations of float " + float_name + " with historical data"))
-    plt.xlabel("Longitude")
+        # shade, if wanted
+        if style == "shade":
+            pc = topo.topography.plot.pcolormesh(
+                ax=traj_plot, transform=ccrs.PlateCarree(), add_colorbar=False, cmap=cmap,
+                levels=depths, antialiased=True
+            )
+            plt.colorbar(
+                pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
+            )
+
+        elif style == "block":
+            pc = plt.contourf(topo.coords['longitude'], topo.coords['latitude'],
+                              topo.variables['topography'],
+                              levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                              cmap=cmap, linestyles='solid', antialiased=True)
+            plt.colorbar(
+                pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
+            )
+
+    # annotate float data (every 5, plus first and last float))
+    color = plt.get_cmap('jet')
+
+    for i in range(float_lat.__len__()):
+        if i == 0 or i % 5 == 0 or i == float_lat.__len__() - 1:
+            plt.annotate(i + 1, (float_long[i], float_lat[i]),
+                         color=color((i + 1) / float_lat.__len__()))
+
+    # Set location focus and gridlines
+    traj_plot.gridlines(crs=projection, draw_labels=True)
+    traj_plot.set_extent([np.min(map_long) - 10, np.max(map_long) + 10, np.min(map_lat) - 10, np.max(map_lat) + 10],
+                         crs=projection)
+
+    # add legend
+    plt.legend()
+
+    # titles and axis
+
     plt.ylabel("Latitude")
-    plt.axis([-180, 180, -90, 90])
-    plt.xlim(np.min(climatology['Longitude']) - 10, np.max(climatology['Longitude']) + 10)
-    plt.ylim(np.min(climatology['Latitude']) - 10, np.max(climatology['Latitude']) + 10)
+    plt.xlabel("Longitude")
+    plt.title(float_name + " profile locations with historical data", pad=25)
 
-    for i, txt in enumerate(floats['number']):
-        plt.annotate(txt, (floats['Longitude'][i], floats['Latitude'][i]))
-
-    plt.legend(loc='center left', bbox_to_anchor=(0.85, 0.85))
-    plt.draw()
+    # display the plot
+    plt.show()

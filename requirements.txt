@@ -1,3 +1,5 @@
+cartopy
+harmonica
 pylint
 matplotlib
 numpy
