@@ -53,6 +53,13 @@ def trajectory_plot(mapped_data, float_long, float_lat):
             transform=projection, label="Climatology"
             )
 
+    # plot float data
+    ax.plot(float_long, float_lat,
+            color='red', marker='x',
+            linestyle='-', markersize=4,
+            transform=projection, label="Float Profiles"
+            )
+
     con = plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
                       levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200], colors='black',
                       linestyles='solid', linewidths=0.3)
