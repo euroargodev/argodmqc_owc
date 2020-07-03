@@ -26,9 +26,14 @@ import harmonica as hm
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def trajectory_plot(mapped_data, float_long, float_lat):
+def trajectory_plot(mapped_data, float_long, float_lat,
+                    levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                    bathy=False, cmap=None):
     """
     Reveal trajectory diagnostic plot
+    :param levels: levels to plot bathymetry data
+    :param cmap: shading for bathymetry ('block' or 'shade')
+    :param bathy: Boolean to plot bathymetry
     :param mapped_data: historical climatology data (mapped)
     :param float_lat: float latitude
     :param float_long: float longitude
@@ -43,8 +48,7 @@ def trajectory_plot(mapped_data, float_long, float_lat):
 
     # plot land
     plt.contourf(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
-                 levels=[50, 10000], colors='bisque', antialiased=False,
-                 linestyles='solid', linewidths=0.3)
+                 levels=[50, 10000], colors='bisque', antialiased=False, linestyles='solid')
 
     # plot climatology
     ax.plot(mapped_data[:, 0], mapped_data[:, 1],
@@ -60,8 +64,30 @@ def trajectory_plot(mapped_data, float_long, float_lat):
             transform=projection, label="Float Profiles"
             )
 
-    con = plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
-                      levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200], colors='black',
-                      linestyles='solid', linewidths=0.3)
+    # plot bathymetry
+    if bathy:
+        levels = levels
+        con = plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                          levels=levels, colors='black',
+                          linestyles='solid', linewidths=0.3)
+        plt.clabel(con, inline=1, fontsize=7)
+
+        # shade, if wanted
+        if cmap == "shade":
+            pc = topo.topography.plot.pcolormesh(
+                ax=ax, transform=ccrs.PlateCarree(), add_colorbar=False, cmap='winter',
+                levels=levels, antialiased=True
+            )
+            plt.colorbar(
+                pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
+            )
+
+        elif cmap == "block":
+            pc = plt.contourf(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                              levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                              cmap='winter', linestyles='solid', linewidths=0.3, antialiased=True)
+            plt.colorbar(
+                pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
+            )
 
     plt.show()
