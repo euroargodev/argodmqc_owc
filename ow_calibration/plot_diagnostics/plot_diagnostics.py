@@ -43,7 +43,6 @@ def plot_diagnostics(float_dir, float_name, config):
 
     float_lat = float_source_data['LAT'].flatten()
     float_long = float_source_data['LONG'].flatten()
-    float_no = float_source_data['PROFILE_NO'].flatten()
 
     # create trajectory plot ------------------------------
 

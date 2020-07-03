@@ -11,13 +11,13 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-import matplotlib.pyplot as plt
 import scipy.io as scipy
 from unittest.mock import patch
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
 
 
 # pylint: disable=bare-except
+# pyline: disable=unused-argument
 class MyTestCase(unittest.TestCase):
     """
     Test cases for trajectory_plot function
@@ -44,10 +44,13 @@ class MyTestCase(unittest.TestCase):
 
         # Check various types run
 
-        assert trajectory_plot(float_name, mapped_loc, float_long, float_lat) is None
-        assert trajectory_plot(float_name, mapped_loc, float_long, float_lat, bathy=True) is None
-        assert trajectory_plot(float_name, mapped_loc, float_long, float_lat,
-                               bathy=True, style='shade') is None
+        self.assertEqual(trajectory_plot(float_name, mapped_loc, float_long, float_lat),
+                         None)
+        self.assertEqual(trajectory_plot(float_name, mapped_loc, float_long, float_lat, bathy=True),
+                         None)
+        self.assertEqual(trajectory_plot(float_name, mapped_loc, float_long, float_lat,
+                                         bathy=True, style='shade'),
+                         None)
 
 
 if __name__ == '__main__':

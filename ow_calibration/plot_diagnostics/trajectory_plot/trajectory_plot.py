@@ -25,8 +25,9 @@ import harmonica as hm
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
+# pyline: disable=too-many-arguments
 def trajectory_plot(float_name, mapped_data, float_long, float_lat,
-                    levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                    depths=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
                     bathy=False, cmap='gray', style='block'):
     """
     Reveal trajectory diagnostic plot
@@ -42,9 +43,8 @@ def trajectory_plot(float_name, mapped_data, float_long, float_lat,
     """
 
     # set up plot and axis
-    fig, ax = plt.subplots()
     projection = ccrs.PlateCarree()
-    ax = plt.axes(projection=projection)
+    traj_plot = plt.axes(projection=projection)
     topo = hm.datasets.fetch_topography_earth()
     map_long = mapped_data[:, 0]
     map_lat = mapped_data[:, 1]
@@ -54,32 +54,31 @@ def trajectory_plot(float_name, mapped_data, float_long, float_lat,
                  levels=[50, 10000], colors='bisque', antialiased=False, linestyles='solid')
 
     # plot climatology
-    ax.plot(map_long, map_lat,
-            color='#FF6347', marker='s',
-            linestyle='None', markersize=2,
-            transform=projection, label="Climatology"
-            )
+    traj_plot.plot(map_long, map_lat,
+                   color='#FF6347', marker='s',
+                   linestyle='None', markersize=2,
+                   transform=projection, label="Climatology"
+                   )
 
     # plot float data
-    ax.plot(float_long, float_lat,
-            color='red', marker='x',
-            linestyle='-', markersize=4,
-            transform=projection, label="Float Profiles"
-            )
+    traj_plot.plot(float_long, float_lat,
+                   color='red', marker='x',
+                   linestyle='-', markersize=4,
+                   transform=projection, label="Float Profiles"
+                   )
 
     # plot bathymetry
     if bathy:
-        levels = levels
         con = plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
-                          levels=levels, colors='black',
+                          levels=depths, colors='black',
                           linestyles='solid', linewidths=0.3)
         plt.clabel(con, inline=1, fontsize=7)
 
         # shade, if wanted
         if style == "shade":
             pc = topo.topography.plot.pcolormesh(
-                ax=ax, transform=ccrs.PlateCarree(), add_colorbar=False, cmap=cmap,
-                levels=levels, antialiased=True
+                ax=traj_plot, transform=ccrs.PlateCarree(), add_colorbar=False, cmap=cmap,
+                levels=depths, antialiased=True
             )
             plt.colorbar(
                 pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
@@ -97,15 +96,15 @@ def trajectory_plot(float_name, mapped_data, float_long, float_lat,
     # annotate float data (every 5, plus first and last float))
     color = plt.get_cmap('jet')
 
-    for i, point in enumerate(float_lat):
+    for i in range(float_lat.__len__()):
         if i == 0 or i % 5 == 0 or i == float_lat.__len__() - 1:
             plt.annotate(i + 1, (float_long[i], float_lat[i]),
                          color=color((i + 1) / float_lat.__len__()))
 
     # Set location focus and gridlines
-    ax.gridlines(crs=projection, draw_labels=True)
-    ax.set_extent([np.min(map_long) - 10, np.max(map_long) + 10, np.min(map_lat) - 10, np.max(map_lat) + 10],
-                  crs=projection)
+    traj_plot.gridlines(crs=projection, draw_labels=True)
+    traj_plot.set_extent([np.min(map_long) - 10, np.max(map_long) + 10, np.min(map_lat) - 10, np.max(map_lat) + 10],
+                         crs=projection)
 
     # add legend
     plt.legend()
