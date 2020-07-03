@@ -17,10 +17,10 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-
 import matplotlib.pyplot as plt
 import numpy as np
 import cartopy.crs as ccrs
+import cartopy.feature as feature
 import harmonica as hm
 
 
@@ -38,6 +38,16 @@ def trajectory_plot(mapped_data, float_lat, float_long):
     fig, ax = plt.subplots()
     projection = ccrs.PlateCarree()
     ax = plt.axes(projection=projection)
+    topo = hm.datasets.fetch_topography_earth()
+
+    # plot land
+
+    plt.contourf(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                 levels=[50, 10000], colors='bisque', antialiased=False,
+                 linestyles='solid', linewidths=0.3)
+
+    con = plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                      levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200], colors='black',
+                      linestyles='solid', linewidths=0.3)
 
     plt.show()
-
