@@ -26,11 +26,13 @@ import harmonica as hm
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
-def trajectory_plot(mapped_data, float_long, float_lat,
+def trajectory_plot(float_name, mapped_data, float_long, float_lat,
                     levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
                     bathy=False, cmap='gray', style='block'):
     """
     Reveal trajectory diagnostic plot
+    :param float_name: name of the float
+    :param style: shading style for color map
     :param levels: levels to plot bathymetry data
     :param cmap: shading for bathymetry ('block' or 'shade')
     :param bathy: Boolean to plot bathymetry
@@ -106,4 +108,14 @@ def trajectory_plot(mapped_data, float_long, float_lat,
     ax.set_extent([np.min(map_long) - 10, np.max(map_long) + 10, np.min(map_lat) - 10, np.max(map_lat) + 10],
                   crs=projection)
 
+    # add legend
+    plt.legend()
+
+    # titles and axis
+
+    plt.ylabel("Latitude")
+    plt.xlabel("Longitude")
+    plt.title(float_name + " profile locations with historical data", pad=25)
+
+    # display the plot
     plt.show()
