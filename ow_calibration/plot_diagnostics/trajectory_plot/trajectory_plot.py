@@ -83,11 +83,20 @@ def trajectory_plot(mapped_data, float_long, float_lat,
             )
 
         elif cmap == "block":
-            pc = plt.contourf(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+            pc = plt.contourf(topo.coords['longitude'], topo.coords['latitude'],
+                              topo.variables['topography'],
                               levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
                               cmap='winter', linestyles='solid', linewidths=0.3, antialiased=True)
             plt.colorbar(
                 pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
             )
+
+    # annotate float data
+    color = plt.get_cmap('jet')
+
+    for i, point in enumerate(float_lat):
+        if i == 0 or i % 5 == 0 or i == float_lat.__len__() - 1:
+            plt.annotate(i + 1, (float_long[i], float_lat[i]),
+                         color=color((i + 1) / float_lat.__len__()))
 
     plt.show()
