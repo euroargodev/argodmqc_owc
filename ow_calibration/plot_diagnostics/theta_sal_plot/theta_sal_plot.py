@@ -19,7 +19,8 @@ import numpy as np
 
 
 # pylint: disable=too-many-arguments
-# pylint: disable=too-0many-locals
+# pylint: disable=too-many-locals
+# pylint: disable=no-member
 def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='uncalibrated'):
     """
     Create the salinity theta curve
@@ -51,10 +52,10 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
         good = np.argwhere(~np.isnan(index[:, i]))
         good_index = np.array(index[good, i], dtype=int)
 
-        for n in good_index:
-            plt.errorbar(map_sal[n, i],
-                         map_theta[n, i],
-                         xerr=map_errors[n, i],
+        for j in good_index:
+            plt.errorbar(map_sal[j, i],
+                         map_theta[j, i],
+                         xerr=map_errors[j, i],
                          marker='o', color=colors[i], fillstyle='none')
 
     # neaten up plot
