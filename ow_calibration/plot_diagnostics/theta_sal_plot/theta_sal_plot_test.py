@@ -21,8 +21,9 @@ class MyTestCase(unittest.TestCase):
     Test cases for theta_sal_plot function
     """
 
-    @patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
-    def test_plot_runs(self, mockshow):
+    #@patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
+    # def test_plot_runs(self, mockshow):
+    def test_plot_runs(self):
         """
         Check we get no errors during the plotting routine
         :return: nothing
@@ -33,8 +34,8 @@ class MyTestCase(unittest.TestCase):
         grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
         float_data = scipy.loadmat("data/float_source/3901960.mat")
 
-        sal = float_data['SAL']
-        theta = float_data['PTMP']
+        sal = float_data['SAL'].transpose()
+        theta = float_data['PTMP'].transpose()
         grid_sal = grid_data['la_mapped_sal']
         grid_ptmp = grid_data['la_ptmp']
         grid_errors = grid_data['la_mapsalerrors']
