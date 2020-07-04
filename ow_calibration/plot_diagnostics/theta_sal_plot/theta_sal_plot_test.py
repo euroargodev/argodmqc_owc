@@ -10,15 +10,15 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import copy
 import unittest
+from unittest.mock import patch
 import scipy.io as scipy
 import numpy as np
-from unittest.mock import patch
 from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.plot_diagnostics.theta_sal_plot.theta_sal_plot import theta_sal_plot
 
 
 # pylint: disable=bare-except
-# pyline: disable=unused-argument
+# pylint: disable=unused-argument
 class MyTestCase(unittest.TestCase):
     """
     Test cases for theta_sal_plot function

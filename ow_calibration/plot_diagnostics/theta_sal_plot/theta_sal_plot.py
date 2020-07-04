@@ -18,6 +18,8 @@ import matplotlib.pylab as pl
 import numpy as np
 
 
+# pylint: disable=too-many-arguments
+# pylint: disable=too-0many-locals
 def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='uncalibrated'):
     """
     Create the salinity theta curve
@@ -32,7 +34,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
     """
 
     # set up plot
-    fig, ax = plt.subplots()
+    plt.subplots()
     color_n = sal.__len__()
     colors = pl.cm.jet(np.linspace(0, 1, color_n))
 
@@ -42,19 +44,18 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
     for i in range(sal.__len__()):
         # plot salinities
         if i in n_legend:
-            ax = plt.plot(sal[i], theta[i], color=colors[i], label=i)
+            plt.plot(sal[i], theta[i], color=colors[i], label=i)
         else:
-            ax = plt.plot(sal[i], theta[i], color=colors[i])
+            plt.plot(sal[i], theta[i], color=colors[i])
 
         good = np.argwhere(~np.isnan(index[:, i]))
         good_index = np.array(index[good, i], dtype=int)
 
         for n in good_index:
-            ax = plt.errorbar(
-                map_sal[n, i],
-                map_theta[n, i],
-                xerr=map_errors[n, i],
-                marker='o', color=colors[i], fillstyle='none')
+            plt.errorbar(map_sal[n, i],
+                         map_theta[n, i],
+                         xerr=map_errors[n, i],
+                         marker='o', color=colors[i], fillstyle='none')
 
     # neaten up plot
     plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5))
