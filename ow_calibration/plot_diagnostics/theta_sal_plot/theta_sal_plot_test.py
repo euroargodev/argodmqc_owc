@@ -30,19 +30,18 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that theta salinity plot throws no errors")
 
-        float_name = "TESTING NAME"
-
-        grid_data = scipy.loadmat("data/float_mapped/map_3901960.mat")
+        grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
         float_data = scipy.loadmat("data/float_source/3901960.mat")
 
-        mapped_loc = grid_data['selected_hist']
-
-        float_lat = float_data['LAT'].flatten()
-        float_long = float_data['LONG'].flatten()
+        sal = float_data['SAL']
+        theta = float_data['PTMP']
+        grid_sal = grid_data['la_mapped_sal']
+        grid_ptmp = grid_data['la_ptmp']
+        grid_errors = grid_data['la_mapsalerrors']
 
         # Check various types run
 
-        theta_sal_plot()
+        theta_sal_plot(sal, theta, grid_sal, grid_ptmp, grid_errors)
 
 
 if __name__ == '__main__':

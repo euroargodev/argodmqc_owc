@@ -12,7 +12,17 @@ https://github.com/ArgoDMQC/matlab_owc
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+import matplotlib.pyplot as plt
+
+def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors):
+    """
+    Create the salinity theta curve
+    :param sal: float salinity
+    :param theta: float potential temperature
+    :param map_sal: mapped salinity
+    :param map_theta: mapped potential temperature
+    :param map_errors: mapped salinity errors
+    :return: Nothing
+    """
 
 
-def theta_sal_plot():
-    print("working")
