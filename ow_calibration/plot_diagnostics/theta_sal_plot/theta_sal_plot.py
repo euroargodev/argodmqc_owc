@@ -29,14 +29,23 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, title='uncalibrat
     :return: Nothing
     """
 
+    # set up plot
     fig, ax = plt.subplots()
     color_n = sal.__len__()
     colors = pl.cm.jet(np.linspace(0, 1, color_n))
 
+    # can only fit 30 profiles on legend
+    n_legend = np.arange(0, 30, np.ceil(color_n/30))
+    print(n_legend)
+
     for i in range(sal.__len__()):
         # plot salinities
-        ax = plt.plot(sal[i], theta[i], color=colors[i])
+        if i in n_legend:
+            ax = plt.plot(sal[i], theta[i], color=colors[i], label=i)
+        else:
+            ax = plt.plot(sal[i], theta[i], color=colors[i])
 
+    leg = plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5))
     plt.title(title + " float data with mapped salinity and objective errors")
     plt.xlabel("Salinity (PSS-78)")
     plt.ylabel(r"$\theta$ $^\circ$C")
