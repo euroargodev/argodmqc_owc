@@ -19,5 +19,15 @@ import numpy as np
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
-def cal_sal_curve_plot():
-    print("called")
+def cal_sal_curve_plot(sal, cal_sal, sta_sal, pcond_factor, pcond_factor_err, float_name):
+    """
+    Create the calibrated salinity curve plot
+    :param sal: float salinity
+    :param cal_sal: calibrated salinity
+    :param sta_sal: mean difference between salinity and calculated salinity
+    :param pcond_factor: slope
+    :param pcond_factor_err: slope error
+    :param float_name: name of the float
+    :return: Nothing
+    """
+

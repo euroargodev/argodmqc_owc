@@ -1,8 +1,11 @@
 """
 -----Theta Salinity Curve Test File-----
+
 Written by: Edward Small
 When: 11/05/2019
-Contains unit tests to check the functionality of the `trajectory_plot` function
+
+Contains unit tests to check the functionality of the `cal_sal_curve_plot` function
+
 To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
@@ -20,7 +23,7 @@ from ow_calibration.plot_diagnostics.cal_sal_curve_plot.cal_sal_curve_plot impor
 # pylint: disable=unused-argument
 class MyTestCase(unittest.TestCase):
     """
-    Test cases for theta_sal_plot function
+    Test cases for cal_sal_curve_plot function
     """
 
     #@patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
@@ -33,33 +36,21 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that calibrated salinity curve plot throws no errors")
 
-        cal_sal_curve_plot()
+        # get the data we need
 
-        """grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
+        cal_data = scipy.loadmat("data/test_data/float_calib_test/cal_3901960.mat")
         float_data = scipy.loadmat("data/float_source/3901960.mat")
 
         sal = np.array(float_data['SAL'])
-        theta = np.array(float_data['PTMP'])
-        pres = float_data['PRES']
-        grid_sal = grid_data['la_mapped_sal']
-        grid_ptmp = grid_data['la_ptmp']
-        grid_errors = grid_data['la_mapsalerrors']
+        cal_sal = np.array(cal_data['cal_SAL'])
+        sta_sal = np.array(cal_data['sta_SAL'])
+        pcond_factor = np.array(cal_data['pcond_factor'])
+        pcond_factor_err = np.array(cal_data['pcond_factor_err'])
+        float_name = "3901960"
 
-        thetas = find_10thetas(copy.deepcopy(sal),
-                               copy.deepcopy(theta),
-                               copy.deepcopy(pres),
-                               copy.deepcopy(grid_ptmp),
-                               0, 0,
-                               0, 0,
-                               0.5)
+        cal_sal_curve_plot(sal, cal_sal, sta_sal,
+                           pcond_factor, pcond_factor_err, float_name)
 
-        index = thetas[2]
 
-        # Check various types run
-
-        self.assertEqual(theta_sal_plot(sal.transpose(), theta.transpose(),
-                                        grid_sal, grid_ptmp, grid_errors, index), None)
-
-"""
 if __name__ == '__main__':
     unittest.main()
