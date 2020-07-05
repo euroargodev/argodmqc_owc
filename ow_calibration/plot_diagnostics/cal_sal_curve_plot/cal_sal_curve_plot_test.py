@@ -41,17 +41,19 @@ class MyTestCase(unittest.TestCase):
         cal_data = scipy.loadmat("data/test_data/float_calib_test/cal_3901960.mat")
         float_data = scipy.loadmat("data/float_source/3901960.mat")
 
-        sal = np.array(float_data['SAL'])
-        cal_sal = np.array(cal_data['cal_SAL'])
-        cal_sal_err = np.array(cal_data['cal_SAL_err'])
-        sta_sal = np.array(cal_data['sta_SAL'])
-        sta_sal_err = np.array(cal_data['sta_SAL_err'])
+        sal = float_data['SAL']
+        cal_sal = cal_data['cal_SAL']
+        cal_sal_err = cal_data['cal_SAL_err']
+        sta_sal = cal_data['sta_SAL']
+        sta_sal_err = cal_data['sta_SAL_err']
+        sta_mean = cal_data['sta_mean']
         pcond_factor = np.array(cal_data['pcond_factor'])
         pcond_factor_err = np.array(cal_data['pcond_factor_err'])
         float_name = "3901960"
+        profile_no = float_data['PROFILE_NO']
 
-        cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err,
-                           pcond_factor, pcond_factor_err, float_name)
+        cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean,
+                           pcond_factor, pcond_factor_err, profile_no, float_name)
 
 
 if __name__ == '__main__':
