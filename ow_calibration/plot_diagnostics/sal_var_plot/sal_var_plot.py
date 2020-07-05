@@ -166,18 +166,18 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 
             if ~np.isnan(theta_index):
                 theta_index = int(theta_index)
-                interval = np.arange(np.max([theta_index - 1, 0]),
-                                     np.min([theta_index + 1, pres.shape[0] - 1]) + 1,
-                                     dtype=int)
+                inter = np.arange(np.max([theta_index - 1, 0]),
+                                  np.min([theta_index + 1, pres.shape[0] - 1]) + 1,
+                                  dtype=int)
 
-                ptmp_diff = ptmp[theta_index, j] - ptmp[interval, j]
+                ptmp_diff = ptmp[theta_index, j] - ptmp[inter, j]
 
                 if ptmp[theta_index, j] > thetas[0][i]:
                     pos_diff = np.argwhere(ptmp_diff > 0)
 
                     if pos_diff.__len__() > 0:
                         min_diff = np.argwhere(ptmp_diff == np.nanmin(ptmp_diff[pos_diff]))
-                        k_index = interval[min_diff]
+                        k_index = inter[min_diff]
 
                     else:
                         k_index = theta_index
@@ -187,7 +187,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 
                     if neg_diff.__len__() > 0:
                         min_diff = np.argwhere(-ptmp_diff == np.nanmin(-ptmp_diff[neg_diff]))
-                        k_index = interval[min_diff]
+                        k_index = inter[min_diff]
 
                     else:
                         k_index = theta_index
@@ -259,9 +259,9 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                  linewidth=4, zorder=0)
         plt.plot(profile_no, s_cal[i, :], color=(0, 1, 0),
                  label='calibrated float w/ 1xerr')
-        plt.errorbar(profile_no, s_map[i, :],  yerr=s_map_err[i, :], color='r', capsize=2)
-        plt.fill_between(profile_no, s_cal[i, :]-s_cal_err[i, :],
-                         s_cal[i, :]+s_cal_err[i, :], color=(0, 1, 0))
+        plt.errorbar(profile_no, s_map[i, :], yerr=s_map_err[i, :], color='r', capsize=2)
+        plt.fill_between(profile_no, s_cal[i, :] - s_cal_err[i, :],
+                         s_cal[i, :] + s_cal_err[i, :], color=(0, 1, 0))
         plt.plot(profile_no, s_map[i, :], color='r',
                  label='mapped salinity')
 
