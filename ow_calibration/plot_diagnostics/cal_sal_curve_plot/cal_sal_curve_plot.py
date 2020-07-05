@@ -58,6 +58,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         # potential conductivity plot
         plt.figure(1)
         plt.subplot(211)
+
         plt.plot(profile_no[0], pcond_factor[0], color=(0, 1, 0), linestyle='-', linewidth=1)
         good = np.argwhere(np.isfinite(sta_mean))
         plt.plot(profile_no[0, good[:, 1]], sta_mean[0, good[:, 1]],
@@ -65,7 +66,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
                  label='1-1 profile fit')
 
         plt.errorbar(profile_no[0], pcond_factor[0], yerr=2*pcond_factor_err[0],
-                     color='b', linestyle='', capsize=2, label='2 x cal error')
+                     color=(0, 0, 1), linestyle='', capsize=2, label='2 x cal error')
         plt.errorbar(profile_no[0], pcond_factor[0], yerr=pcond_factor_err[0],
                      color=(0, 1, 0), linestyle='', capsize=2, label='1 x cal error')
 
@@ -78,5 +79,22 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         # vertically averaged salinity plot
         plt.subplot(212)
         plt.figure(1)
+        print(avg_sta_offset_err)
+        plt.plot(profile_no[0], avg_sal_offset, color=(0, 1, 0), linestyle='-', linewidth=1)
+        good = np.argwhere(np.isfinite(avg_sta_offset))
+        plt.plot(profile_no[0, good[:, 0]], avg_sta_offset[good[:, 0]],
+                 color=(1, 0, 0), linestyle='-', linewidth=1, label='1-1 profile fit')
+        plt.errorbar(profile_no[0], avg_sal_offset, yerr=2 * avg_sal_offset_err,
+                     color=(0, 0, 1), linestyle='', capsize=2, label='2 x cal error')
+        plt.errorbar(profile_no[0], avg_sal_offset, yerr=avg_sal_offset_err,
+                     color=(0, 1, 0), linestyle='', capsize=2, label='1 x cal error')
+
+        plt.legend()
+        plt.ylabel(r'$\Delta$ S')
+        plt.xlabel("Profile number")
+        plt.title(float_name +
+                  r" vertically averaged salinity (PSS-78) additive " +
+                  r"correction $\Delta$ S with errors")
+
 
         plt.show()
