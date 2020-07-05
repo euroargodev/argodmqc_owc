@@ -1,7 +1,9 @@
 """
 -----Theta Salinity Plot-----
+
 Written by: Edward Small
 When: 10/05/2020
+
 Function for plotting salinity curve aainst potential temperature of all the
 data used in the analysis
 For information on how to use this file, check the README at either:
@@ -36,6 +38,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     :return: Nothing
     """
 
+    # Find levels on which we should plot
     use_theta_lt = boundaries[0]
     use_theta_gt = boundaries[1]
     use_pres_lt = boundaries[2]
@@ -49,4 +52,73 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                            use_theta_lt, use_theta_gt,
                            use_pres_lt, use_pres_gt,
                            use_percent_gt)
-    print("called")
+
+    if use_theta_lt != 0 and use_theta_gt == 0:
+        good = np.argwhere(ptmp > use_theta_lt)
+        pres[good] = np.nan
+        sal[good] = np.nan
+        ptmp[good] = np.nan
+        map_sal[good] = np.nan
+        map_sal_errors[good] = np.nan
+        cal_sal[good] = np.nan
+        cal_sal_errors[good] = np.nan
+
+    if use_theta_lt == 0 and use_theta_gt != 0:
+        good = np.argwhere(ptmp < use_theta_gt)
+        pres[good] = np.nan
+        sal[good] = np.nan
+        ptmp[good] = np.nan
+        map_sal[good] = np.nan
+        map_sal_errors[good] = np.nan
+        cal_sal[good] = np.nan
+        cal_sal_errors[good] = np.nan
+
+    if use_theta_lt != 0 and use_theta_gt != 0:
+        if use_theta_gt > use_theta_lt:
+            good = np.argwhere(use_theta_gt > ptmp > use_theta_lt)
+
+        else:
+            good = np.argwhere(ptmp < use_theta_gt or ptmp > use_theta_lt)
+
+        pres[good] = np.nan
+        sal[good] = np.nan
+        ptmp[good] = np.nan
+        map_sal[good] = np.nan
+        map_sal_errors[good] = np.nan
+        cal_sal[good] = np.nan
+        cal_sal_errors[good] = np.nan
+
+    if use_pres_lt != 0 and use_pres_gt == 0:
+        good = np.argwhere(pres > use_pres_lt)
+        pres[good] = np.nan
+        sal[good] = np.nan
+        ptmp[good] = np.nan
+        map_sal[good] = np.nan
+        map_sal_errors[good] = np.nan
+        cal_sal[good] = np.nan
+        cal_sal_errors[good] = np.nan
+
+    if use_pres_lt == 0 and use_pres_gt != 0:
+        good = np.argwhere(pres < use_pres_gt)
+        pres[good] = np.nan
+        sal[good] = np.nan
+        ptmp[good] = np.nan
+        map_sal[good] = np.nan
+        map_sal_errors[good] = np.nan
+        cal_sal[good] = np.nan
+        cal_sal_errors[good] = np.nan
+
+    if use_pres_lt != 0 and use_pres_gt != 0:
+        if use_pres_gt > use_pres_lt:
+            good = np.argwhere(use_pres_gt > pres > use_pres_lt)
+
+        else:
+            good = np.argwhere(pres < use_pres_gt or pres > use_pres_lt)
+
+        pres[good] = np.nan
+        sal[good] = np.nan
+        ptmp[good] = np.nan
+        map_sal[good] = np.nan
+        map_sal_errors[good] = np.nan
+        cal_sal[good] = np.nan
+        cal_sal_errors[good] = np.nan

@@ -51,8 +51,6 @@ class MyTestCase(unittest.TestCase):
 
         boundaries = [0, 0, 0, 0, 0.5]
 
-
-
         # Check various types run
 
         sal_var_plot(2, sal, pres, theta, grid_sal, grid_errors,
