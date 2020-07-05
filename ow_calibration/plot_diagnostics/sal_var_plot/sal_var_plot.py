@@ -63,6 +63,16 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                            use_pres_lt, use_pres_gt,
                            use_percent_gt)
 
+    bad = np.argwhere(np.isnan(map_ptmp))
+    for i in bad:
+        pres[i[0], i[1]] = np.nan
+        sal[i[0], i[1]] = np.nan
+        ptmp[i[0], i[1]] = np.nan
+        map_sal[i[0], i[1]] = np.nan
+        map_sal_errors[i[0], i[1]] = np.nan
+        cal_sal[i[0], i[1]] = np.nan
+        cal_sal_errors[i[0], i[1]] = np.nan
+
     if use_theta_lt != 0 and use_theta_gt == 0:
         good = np.argwhere(ptmp > use_theta_lt)
         pres[good] = np.nan
@@ -132,3 +142,18 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         map_sal_errors[good] = np.nan
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
+
+    for i in range(no_profiles):
+        for j in range(levels):
+
+            if np.nanmax(ptmp[:, i]) > thetas[0][j] > np.nanmin(ptmp[:, i]):
+                diff_theta = np.abs(ptmp[:, i] - thetas[0][j])
+
+                if np.argwhere(~np.isnan(diff_theta)).__len__() == 0:
+                    thetalevel_index[j, i] = np.nan
+
+                else:
+                    thetalevel_index[j, i] = np.nanmin(np.argwhere(diff_theta ==
+                                                                   np.nanmin(diff_theta)))
+
+    
