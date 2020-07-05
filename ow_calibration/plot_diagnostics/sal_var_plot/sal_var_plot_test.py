@@ -20,6 +20,7 @@ from ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot import sal_var_pl
 
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
+# pylint: disable=too-many-locals
 class MyTestCase(unittest.TestCase):
     """
     Test cases for sal_var_plot function
@@ -50,26 +51,27 @@ class MyTestCase(unittest.TestCase):
         no_boundaries = [0, 0, 0, 0, 0.5]
         low_bound = [250, 0, 250, 0, 0.5]
         up_bound = [0, 1, 0, 1, 0.5]
-        band_1 = [250, 1, 250, 1, 0.5]
-        band_2 = [1, 2000, 0.2, 10, 0.5]
 
         profile_no = float_data['PROFILE_NO']
 
         # Check various types run
 
-        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
-                                      copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
-                                      copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                       no_boundaries,
                                       profile_no, "3902960"), None)
-        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
-                                      copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
-                                      copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                       low_bound,
                                       profile_no, "3902960"), None)
-        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
-                                      copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
-                                      copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                       up_bound,
                                       profile_no, "3902960"), None)
 

@@ -22,6 +22,8 @@ from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-branches
 def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                  map_ptmp, cal_sal, cal_sal_errors, boundaries, profile_no, float_name):
     """
