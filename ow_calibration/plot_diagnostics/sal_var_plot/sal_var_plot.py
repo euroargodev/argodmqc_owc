@@ -38,6 +38,16 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     :return: Nothing
     """
 
+    # set up matrices
+
+    no_profiles = pres.shape[1]
+    s_int = np.nan * np.ones((levels, no_profiles))
+    s_map = np.nan * np.ones((levels, no_profiles))
+    s_map_err = np.nan * np.ones((levels, no_profiles))
+    s_cal = np.nan * np.ones((levels, no_profiles))
+    s_cal_err = np.nan * np.ones((levels, no_profiles))
+    thetalevel_index = np.nan * np.ones((levels, no_profiles))
+
     # Find levels on which we should plot
     use_theta_lt = boundaries[0]
     use_theta_gt = boundaries[1]
