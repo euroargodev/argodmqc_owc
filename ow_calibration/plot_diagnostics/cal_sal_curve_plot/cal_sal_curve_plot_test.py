@@ -43,12 +43,14 @@ class MyTestCase(unittest.TestCase):
 
         sal = np.array(float_data['SAL'])
         cal_sal = np.array(cal_data['cal_SAL'])
+        cal_sal_err = np.array(cal_data['cal_SAL_err'])
         sta_sal = np.array(cal_data['sta_SAL'])
+        sta_sal_err = np.array(cal_data['sta_SAL_err'])
         pcond_factor = np.array(cal_data['pcond_factor'])
         pcond_factor_err = np.array(cal_data['pcond_factor_err'])
         float_name = "3901960"
 
-        cal_sal_curve_plot(sal, cal_sal, sta_sal,
+        cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err,
                            pcond_factor, pcond_factor_err, float_name)
 
 
