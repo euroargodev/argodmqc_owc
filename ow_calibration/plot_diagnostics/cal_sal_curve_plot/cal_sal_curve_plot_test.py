@@ -10,12 +10,10 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-import copy
 import unittest
 from unittest.mock import patch
 import scipy.io as scipy
 import numpy as np
-from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.plot_diagnostics.cal_sal_curve_plot.cal_sal_curve_plot import cal_sal_curve_plot
 
 
@@ -26,9 +24,8 @@ class MyTestCase(unittest.TestCase):
     Test cases for cal_sal_curve_plot function
     """
 
-    #@patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
-    #def test_plot_runs(self, mockshow):
-    def test_plot_runs(self):
+    @patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
+    def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
         :return: nothing
@@ -52,8 +49,10 @@ class MyTestCase(unittest.TestCase):
         float_name = "3901960"
         profile_no = float_data['PROFILE_NO']
 
-        cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean,
-                           pcond_factor, pcond_factor_err, profile_no, float_name)
+        self.assertEqual(cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal,
+                                            sta_sal_err, sta_mean, pcond_factor,
+                                            pcond_factor_err, profile_no, float_name),
+                         None)
 
 
 if __name__ == '__main__':

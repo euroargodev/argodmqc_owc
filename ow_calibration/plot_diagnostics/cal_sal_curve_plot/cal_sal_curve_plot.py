@@ -65,7 +65,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
                  color=(1, 0, 0), linestyle='-', linewidth=1,
                  label='1-1 profile fit')
 
-        plt.errorbar(profile_no[0], pcond_factor[0], yerr=2*pcond_factor_err[0],
+        plt.errorbar(profile_no[0], pcond_factor[0], yerr=2 * pcond_factor_err[0],
                      color=(0, 0, 1), linestyle='', capsize=2, label='2 x cal error')
         plt.errorbar(profile_no[0], pcond_factor[0], yerr=pcond_factor_err[0],
                      color=(0, 1, 0), linestyle='', capsize=2, label='1 x cal error')
@@ -75,11 +75,10 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.title(float_name +
                   " potential conductivity (mmho/cm) multiplicative correction r with errors")
 
-
         # vertically averaged salinity plot
         plt.subplot(212)
         plt.figure(1)
-        print(avg_sta_offset_err)
+
         plt.plot(profile_no[0], avg_sal_offset, color=(0, 1, 0), linestyle='-', linewidth=1)
         good = np.argwhere(np.isfinite(avg_sta_offset))
         plt.plot(profile_no[0, good[:, 0]], avg_sta_offset[good[:, 0]],
@@ -95,6 +94,5 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.title(float_name +
                   r" vertically averaged salinity (PSS-78) additive " +
                   r"correction $\Delta$ S with errors")
-
 
         plt.show()
