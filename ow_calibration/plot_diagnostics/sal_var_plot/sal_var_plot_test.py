@@ -58,17 +58,21 @@ class MyTestCase(unittest.TestCase):
         # Check various types run
 
         self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
-                     copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
-                     copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors), no_boundaries,
-                     profile_no, "3902960"), None)
+                                      copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
+                                      copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                      no_boundaries,
+                                      profile_no, "3902960"), None)
         self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
-                     copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
-                     copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors), low_bound,
-                     profile_no, "3902960"), None)
+                                      copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
+                                      copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                      low_bound,
+                                      profile_no, "3902960"), None)
         self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
-                     copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
-                     copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors), up_bound,
-                     profile_no, "3902960"), None)
+                                      copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
+                                      copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                      up_bound,
+                                      profile_no, "3902960"), None)
+
 
 if __name__ == '__main__':
     unittest.main()
