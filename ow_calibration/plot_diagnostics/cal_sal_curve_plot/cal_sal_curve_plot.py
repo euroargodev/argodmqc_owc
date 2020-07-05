@@ -12,7 +12,6 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import matplotlib.pyplot as plt
-import matplotlib.pylab as pl
 import numpy as np
 
 
