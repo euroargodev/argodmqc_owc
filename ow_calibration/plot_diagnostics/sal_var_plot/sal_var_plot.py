@@ -15,6 +15,7 @@ import copy
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 import numpy as np
+from scipy.interpolate import interpolate
 from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 
 
@@ -22,9 +23,11 @@ from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
 def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
-                 map_ptmp, cal_sal, cal_sal_errors, boundaries):
+                 map_ptmp, cal_sal, cal_sal_errors, boundaries, profile_no, float_name):
     """
     Create the salinity variance plot for each level
+    :param float_name: name of the float
+    :param profile_no: profile numbers
     :param map_ptmp: mapped potential temperature
     :param levels: number of levels to plot
     :param sal: float salinity
@@ -39,7 +42,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     """
 
     # set up matrices
-
+    profile_no = profile_no.flatten()
     no_profiles = pres.shape[1]
     s_int = np.nan * np.ones((levels, no_profiles))
     s_map = np.nan * np.ones((levels, no_profiles))
@@ -156,4 +159,118 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                     thetalevel_index[j, i] = np.nanmin(np.argwhere(diff_theta ==
                                                                    np.nanmin(diff_theta)))
 
-    
+    # Build s matrix for plotting
+    for i in range(levels):
+        for j in range(no_profiles):
+            theta_index = thetalevel_index[i, j]
+
+            if ~np.isnan(theta_index):
+                theta_index = int(theta_index)
+                interval = np.arange(np.max([theta_index - 1, 0]),
+                                     np.min([theta_index + 1, pres.shape[0] - 1]) + 1,
+                                     dtype=int)
+
+                ptmp_diff = ptmp[theta_index, j] - ptmp[interval, j]
+
+                if ptmp[theta_index, j] > thetas[0][i]:
+                    pos_diff = np.argwhere(ptmp_diff > 0)
+
+                    if pos_diff.__len__() > 0:
+                        min_diff = np.argwhere(ptmp_diff == np.nanmin(ptmp_diff[pos_diff]))
+                        k_index = interval[min_diff]
+
+                    else:
+                        k_index = theta_index
+
+                if ptmp[theta_index, j] < thetas[0][i]:
+                    neg_diff = np.argwhere(ptmp_diff < 0)
+
+                    if neg_diff.__len__() > 0:
+                        min_diff = np.argwhere(-ptmp_diff == np.nanmin(-ptmp_diff[neg_diff]))
+                        k_index = interval[min_diff]
+
+                    else:
+                        k_index = theta_index
+
+                else:
+                    k_index = theta_index
+
+                if ((k_index != theta_index and ~np.isnan(sal[theta_index, j])) and
+                        ~np.isnan(sal[k_index, j]) and ~np.isnan(ptmp[theta_index, j]) and
+                        ~np.isnan(ptmp[k_index, j])):
+
+                    interp_ptmp_sal = interpolate.interp1d([ptmp[theta_index, j],
+                                                            ptmp[k_index, j]],
+                                                           [sal[theta_index, j],
+                                                            sal[k_index, j]])
+
+                    s_int[i, j] = interp_ptmp_sal(thetas[0][i][0])
+
+                else:
+                    s_int[i, j] = sal[theta_index, j]
+
+                if ((k_index != theta_index and ~np.isnan(map_sal[theta_index, j])) and
+                        ~np.isnan(map_sal[k_index, j]) and ~np.isnan(ptmp[theta_index, j]) and
+                        ~np.isnan(ptmp[k_index, j])):
+
+                    interp_map_sal = interpolate.interp1d([ptmp[theta_index, j],
+                                                           ptmp[k_index, j]],
+                                                          [map_sal[theta_index, j],
+                                                           map_sal[k_index, j]])
+                    s_map[i, j] = interp_map_sal(thetas[0][i][0])
+
+                    interp_map_sal_err = interpolate.interp1d([ptmp[theta_index, j],
+                                                               ptmp[k_index, j]],
+                                                              [map_sal_errors[theta_index, j],
+                                                               map_sal_errors[k_index, j]])
+
+                    s_map_err[i, j] = interp_map_sal_err(thetas[0][i][0])
+
+                else:
+                    s_map[i, j] = map_sal[theta_index, j]
+                    s_map_err[i, j] = map_sal_errors[theta_index, j]
+
+                if ((k_index != theta_index and ~np.isnan(cal_sal[theta_index, j])) and
+                        ~np.isnan(cal_sal[k_index, j]) and ~np.isnan(ptmp[theta_index, j]) and
+                        ~np.isnan(ptmp[k_index, j])):
+
+                    interp_cal_sal = interpolate.interp1d([ptmp[theta_index, j],
+                                                           ptmp[k_index, j]],
+                                                          [cal_sal[theta_index, j],
+                                                           cal_sal[k_index, j]])
+                    interp_cal_sal_err = interpolate.interp1d([ptmp[theta_index, j],
+                                                               ptmp[k_index, j]],
+                                                              [cal_sal_errors[theta_index, j],
+                                                               cal_sal_errors[k_index, j]])
+
+                    s_cal[i, j] = interp_cal_sal(thetas[0][i][0])
+                    s_cal_err[i, j] = interp_cal_sal_err(thetas[0][i][0])
+
+                else:
+                    s_cal[i, j] = cal_sal[theta_index, j]
+                    s_cal_err[i, j] = cal_sal_errors[theta_index, j]
+
+    # plot data (one plot for each theta level, as selected by user)
+    for i in range(levels):
+        plt.figure(1)
+        plt.plot(profile_no, s_int[i, :], marker='o', color='b',
+                 label='uncalibrated float')
+        plt.plot(profile_no, s_map[i, :], color='r',
+                 linewidth=4, zorder=0)
+        plt.plot(profile_no, s_cal[i, :], color=(0, 1, 0),
+                 label='calibrated float w/ 1xerr')
+        plt.errorbar(profile_no, s_map[i, :],  yerr=s_map_err[i, :], color='r', capsize=2)
+        plt.fill_between(profile_no, s_cal[i, :]-s_cal_err[i, :],
+                         s_cal[i, :]+s_cal_err[i, :], color=(0, 1, 0))
+        plt.plot(profile_no, s_map[i, :], color='r',
+                 label='mapped salinity')
+
+        plt.xlabel("Profile number")
+        plt.ylabel("PSS-78")
+
+        pl.title(float_name +
+                 r" salinities with error on $\theta$=" +
+                 str(np.round(thetas[0][i][0], 5)) + r"$\circ$C")
+
+        plt.legend()
+        plt.show()

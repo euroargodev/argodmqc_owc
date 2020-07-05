@@ -15,7 +15,6 @@ import unittest
 from unittest.mock import patch
 import scipy.io as scipy
 import numpy as np
-from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot import sal_var_plot
 
 
@@ -26,9 +25,8 @@ class MyTestCase(unittest.TestCase):
     Test cases for sal_var_plot function
     """
 
-    #@patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
-    #def test_plot_runs(self, mockshow):
-    def test_plot_runs(self):
+    @patch("ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot.plt.show")
+    def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
         :return: nothing
@@ -49,13 +47,28 @@ class MyTestCase(unittest.TestCase):
         cal_sal = cal_data['cal_SAL']
         cal_sal_errors = cal_data['cal_SAL_err']
 
-        boundaries = [0, 0, 0, 0, 0.5]
+        no_boundaries = [0, 0, 0, 0, 0.5]
+        low_bound = [250, 0, 250, 0, 0.5]
+        up_bound = [0, 1, 0, 1, 0.5]
+        band_1 = [250, 1, 250, 1, 0.5]
+        band_2 = [1, 2000, 0.2, 10, 0.5]
+
+        profile_no = float_data['PROFILE_NO']
 
         # Check various types run
 
-        sal_var_plot(2, sal, pres, theta, grid_sal, grid_errors,
-        grid_ptmp, cal_sal, cal_sal_errors, boundaries)
-
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
+                     copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
+                     copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors), no_boundaries,
+                     profile_no, "3902960"), None)
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
+                     copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
+                     copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors), low_bound,
+                     profile_no, "3902960"), None)
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres), copy.deepcopy(theta),
+                     copy.deepcopy(grid_sal), copy.deepcopy(grid_errors),
+                     copy.deepcopy(grid_ptmp), copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors), up_bound,
+                     profile_no, "3902960"), None)
 
 if __name__ == '__main__':
     unittest.main()
