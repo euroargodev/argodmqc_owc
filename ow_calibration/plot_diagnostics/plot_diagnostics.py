@@ -97,3 +97,9 @@ def plot_diagnostics(float_dir, float_name, config):
                        copy.deepcopy(cal_sal_err), sta_sal,
                        sta_sal_err, sta_mean, pcond_factor,
                        pcond_factor_err, profile_no, float_name)
+
+    # plot the calibrated theta-S curve from float ----------
+
+    theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
+                   copy.deepcopy(ptmp).transpose(),
+                   map_sal, map_ptmp, map_errors, index)
