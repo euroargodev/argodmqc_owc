@@ -41,7 +41,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, profiles, 
     colors = pl.cm.jet(np.linspace(0, 1, color_n))
 
     # can only fit 30 profiles on legend
-    n_legend = np.arange(0, 30, np.ceil(color_n / 30))
+    n_legend = np.arange(0, profiles[profiles.__len__() - 1], np.ceil(color_n / 30))
 
     for i in range(sal.__len__()):
         # plot salinities
@@ -57,7 +57,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, profiles, 
             plt.errorbar(map_sal[j, i],
                          map_theta[j, i],
                          xerr=map_errors[j, i],
-                         marker='o', color=colors[i], fillstyle='none')
+                         marker='o', color=colors[i], fillstyle='none', zorder=10)
 
     # neaten up plot
     plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5), title="prof_no")
