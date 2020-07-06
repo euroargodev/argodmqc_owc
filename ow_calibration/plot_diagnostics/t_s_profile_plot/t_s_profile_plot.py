@@ -38,7 +38,7 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.title(" OW chosen levels - " + float_name)
 
     for i in tlevels:
-        plt.axhline(y=i, color=(0, 1, 0), linestyle='-')
+        plt.axhline(y=i, color=(0, 1, 0), linestyle='-', linewidth=0.5)
 
     #plot s_variance on t
     plt.subplot(221)
@@ -49,7 +49,26 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.title("Salinity Variance on Theta")
 
     for i in tlevels:
-        plt.axhline(y=i, color=(0, 1, 0), linestyle='-')
+        plt.axhline(y=i, color=(0, 1, 0), linestyle='-', linewidth=0.5)
 
+    # plot p-t profile
+    plt.subplot(223)
+    plt.plot(ptmp, -1 * pres, color='b', linewidth=0.5)
+    plt.xlabel(r"$^{\circ}$C")
+    plt.ylabel("Pressure (dbar)")
+    plt.title("OW chosen levels - " + float_name)
 
+    for i in plevels:
+        plt.axhline(y=-i, color=(0, 1, 0), linestyle='-', linewidth=0.5)
+
+    # plot p-s profile
+    plt.subplot(224)
+    plt.plot(sal, -1 * pres, color='b', linewidth=0.5)
+    plt.xlabel("PSS-78")
+    plt.title("OW chosen levels - " + float_name)
+
+    for i in plevels:
+        plt.axhline(y=-i, color=(0, 1, 0), linestyle='-', linewidth=0.5)
+
+    plt.tight_layout(pad=1)
     plt.show()
