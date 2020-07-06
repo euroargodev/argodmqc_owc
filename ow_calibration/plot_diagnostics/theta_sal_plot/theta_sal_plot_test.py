@@ -12,7 +12,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import copy
 import unittest
 from unittest.mock import patch
-import scipy.io as scipy
+import scipy.io as sci
 import numpy as np
 from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.plot_diagnostics.theta_sal_plot.theta_sal_plot import theta_sal_plot
@@ -34,8 +34,8 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that theta salinity plot throws no errors")
 
-        grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
-        float_data = scipy.loadmat("data/float_source/3901960.mat")
+        grid_data = sci.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
+        float_data = sci.loadmat("data/float_source/3901960.mat")
 
         sal = np.array(float_data['SAL'])
         theta = np.array(float_data['PTMP'])
