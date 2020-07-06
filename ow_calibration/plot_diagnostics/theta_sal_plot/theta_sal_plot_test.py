@@ -9,7 +9,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 # pylint: disable=duplicate-code
-import copy, unittest
+import copy
+import unittest
 from unittest.mock import patch
 import scipy.io as sci
 import numpy as np
