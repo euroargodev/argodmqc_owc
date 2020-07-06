@@ -23,11 +23,14 @@ from ow_calibration.plot_diagnostics.theta_sal_plot.theta_sal_plot import theta_
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
 from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
 from ow_calibration.plot_diagnostics.cal_sal_curve_plot.cal_sal_curve_plot import cal_sal_curve_plot
+from ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot import sal_var_plot
+from ow_calibration.plot_diagnostics.t_s_profile_plot.t_s_profile_plot import t_s_profile_plot
 
 
-def plot_diagnostics(float_dir, float_name, config):
+def plot_diagnostics(float_dir, float_name, config, levels=2):
     """
     run the plotting procedures
+    :param levels: number of theta level plots wanted (max 10)
     :param float_dir: location of float source
     :param float_name: name of the float source
     :param config: user configuration dictionary
@@ -103,3 +106,25 @@ def plot_diagnostics(float_dir, float_name, config):
     theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
                    map_sal, map_ptmp, map_errors, index)
+
+    # plot the salinity time series on theta levels ----------
+
+    boundaries = [use_theta_lt, use_theta_gt,
+                  use_pres_lt, use_pres_gt,
+                  use_percent_gt]
+
+    sal_var_plot(levels, copy.deepcopy(sal), copy.deepcopy(pres),
+                 copy.deepcopy(ptmp), copy.deepcopy(map_sal),
+                 copy.deepcopy(map_errors), copy.deepcopy(map_ptmp),
+                 copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_err),
+                 boundaries, profile_no, float_name)
+
+    # plot the analysis plots ----------------------------------
+
+    sal_var = thetas[3]
+    theta_levels = thetas[4]
+    tlevels = thetas[0]
+    plevels = thetas[1]
+
+    t_s_profile_plot(sal, ptmp, pres, sal_var,
+                     theta_levels, tlevels, plevels, float_name)
