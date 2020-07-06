@@ -4,8 +4,9 @@
 ![build](https://github.com/euroargodev/argodmqc_owc/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/euroargodev/argodmqc_owc/branch/master/graph/badge.svg)](https://codecov.io/gh/euroargodev/argodmqc_owc)
 [![Requirements Status](https://requires.io/github/euroargodev/argodmqc_owc/requirements.svg?branch=master)](https://requires.io/github/euroargodev/argodmqc_owc/requirements/?branch=master)
-
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+
+[![Gitter](https://badges.gitter.im/Argo-floats/owc-python.svg)](https://gitter.im/Argo-floats/owc-python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This software is a python implementation of the "OWC" salinity calibration method used in Argo floats Delayed Mode Quality Control.
 
