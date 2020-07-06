@@ -25,8 +25,9 @@ class MyTestCase(unittest.TestCase):
     Test cases for theta_sal_plot function
     """
 
-    @patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
-    def test_plot_runs(self, mockshow):
+    #@patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
+    #def test_plot_runs(self, mockshow):
+    def test_plot_runs(self):
         """
         Check we get no errors during the plotting routine
         :return: nothing
@@ -43,6 +44,7 @@ class MyTestCase(unittest.TestCase):
         map_sal = grid_data['la_mapped_sal']
         map_ptmp = grid_data['la_ptmp']
         map_errors = grid_data['la_mapsalerrors']
+        profiles = float_data['PROFILE_NO'][0]
 
         thetas = find_10thetas(copy.deepcopy(sal),
                                copy.deepcopy(theta),
@@ -57,7 +59,7 @@ class MyTestCase(unittest.TestCase):
         # Check various types run
 
         self.assertEqual(theta_sal_plot(sal.transpose(), theta.transpose(),
-                                        map_sal, map_ptmp, map_errors, index), None)
+                                        map_sal, map_ptmp, map_errors, index, profiles), None)
 
 
 if __name__ == '__main__':

@@ -21,9 +21,10 @@ import numpy as np
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
-def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='uncalibrated'):
+def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, profiles, title='uncalibrated'):
     """
     Create the salinity theta curve
+    :param profiles: profile numbers array
     :param index: index of theta levels with least variance
     :param title: Addition to the title
     :param sal: float salinity
@@ -45,7 +46,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
     for i in range(sal.__len__()):
         # plot salinities
         if i in n_legend:
-            plt.plot(sal[i], theta[i], color=colors[i], label=i)
+            plt.plot(sal[i], theta[i], color=colors[i], label=profiles[i])
         else:
             plt.plot(sal[i], theta[i], color=colors[i])
 
