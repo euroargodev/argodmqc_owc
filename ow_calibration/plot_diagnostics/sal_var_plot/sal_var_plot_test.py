@@ -14,7 +14,6 @@ import copy
 import unittest
 from unittest.mock import patch
 import scipy.io as scipy
-import numpy as np
 from ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot import sal_var_plot
 
 
