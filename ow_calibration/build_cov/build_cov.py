@@ -108,7 +108,7 @@ def build_cov(ptmp, coord_float, config):
                                        config['MAPSCALE_LONGITUDE_SMALL'],
                                        config['MAPSCALE_LATITUDE_SMALL'],
                                        config['MAPSCALE_PHI_SMALL'],
-                                       config['MAPSCALE_USE_PV'])
+                                       config['MAP_USE_PV'])
 
     h_cov = h_cov[:, 0:ptmp_columns]
 
