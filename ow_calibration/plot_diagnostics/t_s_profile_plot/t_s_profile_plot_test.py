@@ -16,6 +16,7 @@ from unittest.mock import patch
 import scipy.io as scipy
 import numpy as np
 from ow_calibration.plot_diagnostics.t_s_profile_plot.t_s_profile_plot import t_s_profile_plot
+from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 
 
 # pylint: disable=bare-except
@@ -26,15 +27,36 @@ class MyTestCase(unittest.TestCase):
     Test cases for t_s_plot function
     """
 
-    #@patch("ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot.plt.show")
-    #def test_plot_runs(self, mockshow):
+    # @patch("ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot.plt.show")
+    # def test_plot_runs(self, mockshow):
     def test_plot_runs(self):
         """
         Check we get no errors during the plotting routine
         :return: nothing
         """
+        print("Check t_s_profile_plot runs")
+        float_data = scipy.loadmat("data/float_source/3901960.mat")
+        grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
 
-        t_s_profile_plot()
+        sal = np.array(float_data['SAL'])
+        ptmp = np.array(float_data['PTMP'])
+        pres = float_data['PRES']
+        grid_ptmp = grid_data['la_ptmp']
+
+        thetas = find_10thetas(copy.deepcopy(sal),
+                               copy.deepcopy(ptmp),
+                               copy.deepcopy(pres),
+                               copy.deepcopy(grid_ptmp),
+                               0, 0,
+                               0, 0,
+                               0.5)
+
+        sal_var = thetas[3]
+        theta_levels = thetas[4]
+        tlevels = thetas[0]
+        plevels = thetas[1]
+
+        t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, "3901960")
 
 
 if __name__ == '__main__':
