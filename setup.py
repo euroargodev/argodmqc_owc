@@ -9,16 +9,17 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setuptools.setup(
-    name='argodmqc_owc',
-    version='0.1',
-    author="argodmqc_owc Developers",
+    name='py_owc',
+    version='0.1.1',
+    author="py_owc Developers",
     author_email="?",
-    description="A python library to calibrate Argo floats salinity measurements with PWC method",
+    description="A python library to calibrate Argo floats salinity measurements with OWC method",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/euroargodev/argodmqc_owc",
     packages=setuptools.find_packages(),
-    package_dir={'argodmqc_owc': 'owc_calibration'},
+    package_dir={'py_owc': 'ow_calibration'},
+    package_data={'py_owc': ['data']},
     include_package_data=True,
     install_requires=requirements,
     classifiers=[

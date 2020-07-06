@@ -1,4 +1,4 @@
-name: pangeo
+name: euroargodev
 channels:
   - conda-forge
 dependencies:
@@ -33,7 +33,6 @@ dependencies:
     - erddapy
     - gitpython
     - cmocean
-    - descartes
-    - argopy
     - geopandas
-    - git+http://github.com/euroargodev/argodmqc_owc.git@master
+    - git+http://github.com/euroargodev/argopy.git@master
+    - git+http://github.com/euroargodev/argodmqc_owc.git@binder
