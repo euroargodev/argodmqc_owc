@@ -22,6 +22,7 @@ from ow_calibration.find_10thetas.find_10thetas import find_10thetas
 from ow_calibration.plot_diagnostics.theta_sal_plot.theta_sal_plot import theta_sal_plot
 from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
 from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
+from ow_calibration.plot_diagnostics.cal_sal_curve_plot.cal_sal_curve_plot import cal_sal_curve_plot
 
 
 def plot_diagnostics(float_dir, float_name, config):
@@ -80,3 +81,19 @@ def plot_diagnostics(float_dir, float_name, config):
     theta_sal_plot(copy.deepcopy(sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
                    map_sal, map_ptmp, map_errors, index)
+
+    # plot the calibration curve --------------------------
+
+    cal_sal = cal_data['cal_SAL']
+    cal_sal_err = cal_data['cal_SAL_err']
+    sta_sal = cal_data['sta_SAL']
+    sta_sal_err = cal_data['sta_SAL_err']
+    sta_mean = cal_data['sta_mean']
+    pcond_factor = cal_data['pcond_factor']
+    pcond_factor_err = cal_data['pcond_factor_err']
+    profile_no = float_data['PROFILE_NO']
+
+    cal_sal_curve_plot(copy.deepcopy(sal), copy.deepcopy(cal_sal),
+                       copy.deepcopy(cal_sal_err), sta_sal,
+                       sta_sal_err, sta_mean, pcond_factor,
+                       pcond_factor_err, profile_no, float_name)
