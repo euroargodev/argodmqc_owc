@@ -74,7 +74,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
                            copy.deepcopy(map_ptmp), use_theta_lt, use_theta_gt,
-                           use_pres_lt, use_pres_gt,use_percent_gt)
+                           use_pres_lt, use_pres_gt, use_percent_gt)
 
     index = thetas[2]
 
