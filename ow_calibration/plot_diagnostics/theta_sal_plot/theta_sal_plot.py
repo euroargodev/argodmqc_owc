@@ -60,7 +60,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, profiles, 
                          marker='o', color=colors[i], fillstyle='none')
 
     # neaten up plot
-    plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5))
+    plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5), title="prof_no")
     plt.title(title + " float data with mapped salinity and objective errors")
     plt.xlabel("Salinity (PSS-78)")
     plt.ylabel(r"$\theta$ $^\circ$C")
