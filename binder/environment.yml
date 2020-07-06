@@ -35,4 +35,5 @@ dependencies:
     - cmocean
     - descartes
     - argopy
+    - geopandas
     - git+http://github.com/euroargodev/argodmqc_owc.git@master

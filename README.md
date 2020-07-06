@@ -7,7 +7,6 @@
 
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-
 This software is a python implementation of the "OWC" salinity calibration method used in Argo floats Delayed Mode Quality Control.
 
 This software is in very active development and its usage may change any time. Please [post an issue to get involved if you're interested](https://github.com/euroargodev/argodmqc_owc/issues/new/choose).
