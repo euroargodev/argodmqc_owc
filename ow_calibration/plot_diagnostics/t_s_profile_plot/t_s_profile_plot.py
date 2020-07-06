@@ -14,6 +14,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import matplotlib.pyplot as plt
 
 
+# pylint: disable=too-many-arguments
 def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name):
     """
     plots profile plots
