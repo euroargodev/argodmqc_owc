@@ -1,4 +1,4 @@
-# py_owc: OWC salinity calibration in Python
+# pyowc: OWC salinity calibration in Python
 
 ![build](https://github.com/euroargodev/argodmqc_owc/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/euroargodev/argodmqc_owc/branch/master/graph/badge.svg)](https://codecov.io/gh/euroargodev/argodmqc_owc)
@@ -14,7 +14,7 @@ This software is in very active development and its usage may change any time. P
 # Installation
 
 ```bash
-pip install py_owc
+pip install pyowc
 ```
 
 # Software usage

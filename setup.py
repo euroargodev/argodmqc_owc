@@ -9,17 +9,17 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setuptools.setup(
-    name='py_owc',
-    version='0.1.1',
-    author="py_owc Developers",
+    name='pyowc',
+    version='0.1.0',
+    author="pyowc Developers",
     author_email="edsmall@bodc.ac.uk",
     description="OWC salinity calibration in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/euroargodev/argodmqc_owc",
     packages=setuptools.find_packages(),
-    package_dir={'py_owc': 'ow_calibration'},
-    package_data={'py_owc': ['data']},
+    package_dir={'pyowc': 'ow_calibration'},
+    package_data={'pyowc': ['data']},
     include_package_data=True,
     install_requires=requirements,
     classifiers=[
