@@ -27,6 +27,7 @@ from ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot import sal_var_pl
 from ow_calibration.plot_diagnostics.t_s_profile_plot.t_s_profile_plot import t_s_profile_plot
 
 
+# pylint: disable=too-many-locals
 def plot_diagnostics(float_dir, float_name, config, levels=2):
     """
     run the plotting procedures
@@ -71,13 +72,9 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     use_pres_gt = cal_series['use_pres_gt'][0][0]
     use_percent_gt = cal_series['use_percent_gt'][0][0]
 
-    thetas = find_10thetas(copy.deepcopy(sal),
-                           copy.deepcopy(ptmp),
-                           copy.deepcopy(pres),
-                           copy.deepcopy(map_ptmp),
-                           use_theta_lt, use_theta_gt,
-                           use_pres_lt, use_pres_gt,
-                           use_percent_gt)
+    thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
+                           copy.deepcopy(map_ptmp), use_theta_lt, use_theta_gt,
+                           use_pres_lt, use_pres_gt,use_percent_gt)
 
     index = thetas[2]
 
@@ -88,9 +85,9 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     # plot the calibration curve --------------------------
 
     cal_sal = cal_data['cal_SAL']
-    cal_sal_err = cal_data['cal_SAL_err']
     sta_sal = cal_data['sta_SAL']
     sta_sal_err = cal_data['sta_SAL_err']
+    cal_sal_err = cal_data['cal_SAL_err']
     sta_mean = cal_data['sta_mean']
     pcond_factor = cal_data['pcond_factor']
     pcond_factor_err = cal_data['pcond_factor_err']
@@ -105,7 +102,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
-                   map_sal, map_ptmp, map_errors, index)
+                   map_sal, map_ptmp, map_errors, index, "calibrated")
 
     # plot the salinity time series on theta levels ----------
 
