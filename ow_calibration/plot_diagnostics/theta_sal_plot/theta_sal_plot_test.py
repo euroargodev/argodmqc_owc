@@ -8,6 +8,7 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
+# pylint: disable=duplicate-code
 import copy
 import unittest
 from unittest.mock import patch
