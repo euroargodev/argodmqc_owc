@@ -67,11 +67,17 @@ from ow_calibration.plot_diagnostics.plot_diagnostics import plot_diagnostics
 plot_diagnostics("/", FLOAT_NAME, USER_CONFIG)
 ```
 
-# Software development plan
+# Software development roadmap
 
 [...]
 
 # Software history
+
+- Phase 3
+
+- Phase 2
+
+- Phase 1
 
 - Migration of the code from from BODC/NOC git to euroargodev/argodmqc_owc. See https://github.com/euroargodev/User-Acceptance-Test-Python-version-of-the-OWC-tool/issues/10 for more details on the migration. Contribution from [G. Maze](https://github.com/gmaze)
 
