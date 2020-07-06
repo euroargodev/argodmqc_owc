@@ -27,9 +27,8 @@ class MyTestCase(unittest.TestCase):
     Test cases for t_s_plot function
     """
 
-    # @patch("ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot.plt.show")
-    # def test_plot_runs(self, mockshow):
-    def test_plot_runs(self):
+    @patch("ow_calibration.plot_diagnostics.t_s_profile_plot.t_s_profile_plot.plt.show")
+    def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
         :return: nothing
@@ -56,7 +55,8 @@ class MyTestCase(unittest.TestCase):
         tlevels = thetas[0]
         plevels = thetas[1]
 
-        t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, "3901960")
+        self.assertEqual(t_s_profile_plot(sal, ptmp, pres, sal_var,
+                                          theta_levels, tlevels, plevels, "3901960"), None)
 
 
 if __name__ == '__main__':
