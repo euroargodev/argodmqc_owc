@@ -39,8 +39,8 @@ class MyTestCase(unittest.TestCase):
         float_data = scipy.loadmat("data/float_source/3901960.mat")
         cal_data = scipy.loadmat("data/test_data/float_calib_test/cal_3901960.mat")
 
-        sal = np.array(float_data['SAL'])
-        theta = np.array(float_data['PTMP'])
+        sal = float_data['SAL']
+        theta = float_data['PTMP']
         pres = float_data['PRES']
         grid_sal = grid_data['la_mapped_sal']
         grid_ptmp = grid_data['la_ptmp']

@@ -39,14 +39,14 @@ class MyTestCase(unittest.TestCase):
         sal = np.array(float_data['SAL'])
         theta = np.array(float_data['PTMP'])
         pres = float_data['PRES']
-        grid_sal = grid_data['la_mapped_sal']
-        grid_ptmp = grid_data['la_ptmp']
-        grid_errors = grid_data['la_mapsalerrors']
+        map_sal = grid_data['la_mapped_sal']
+        map_ptmp = grid_data['la_ptmp']
+        map_errors = grid_data['la_mapsalerrors']
 
         thetas = find_10thetas(copy.deepcopy(sal),
                                copy.deepcopy(theta),
                                copy.deepcopy(pres),
-                               copy.deepcopy(grid_ptmp),
+                               copy.deepcopy(map_ptmp),
                                0, 0,
                                0, 0,
                                0.5)
@@ -56,7 +56,7 @@ class MyTestCase(unittest.TestCase):
         # Check various types run
 
         self.assertEqual(theta_sal_plot(sal.transpose(), theta.transpose(),
-                                        grid_sal, grid_ptmp, grid_errors, index), None)
+                                        map_sal, map_ptmp, map_errors, index), None)
 
 
 if __name__ == '__main__':
