@@ -1,0 +1,6 @@
+[run]
+omit =
+    *_test.py
+    *__init__*
+[report]
+exclude_lines = def __repr__

@@ -1,0 +1,12 @@
+include *.txt
+include README.md
+include LICENSE
+
+graft ow_calibration
+
+prune binder
+prune docs
+prune *.egg-info
+
+exclude *.yml
+exclude .coveragerc
