@@ -22,6 +22,6 @@ pyowc/plot
     plots.py: cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, theta_sal_plot, trajectory_plot
     utils.py: create_dataframe
 
-pyowc/tests  # Contain all the tests !
+pyowc/tests  # Contains all the tests !
 
 

@@ -13,8 +13,8 @@ from scipy.interpolate import interpolate
 import math
 import numpy as np
 
-from . import utils
-from . import stats
+from pyowc.core import utils
+from pyowc.core import stats
 
 
 #pylint: disable=too-many-arguments
@@ -65,11 +65,11 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
-def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value,
-        lat, long, date, z_value,
-        latitude_large, latitude_small, longitude_large, longitude_small,
-        phi_large, phi_small, age_large, age_small, map_pv_use, max_casts):
-    """ Finds ln_max_casts number of unique historical data points that are most strongly correlated with the float profile being processed
+def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date, z_value,
+                  latitude_large, latitude_small, longitude_large, longitude_small,
+                  phi_large, phi_small, age_large, age_small, map_pv_use, max_casts):
+    """ Finds ln_max_casts number of unique historical data points that are most strongly correlated with the
+    float profile being processed
 
 
         Find ln_max_casts unique historical points that are most strongly correlated with the float profile
@@ -87,7 +87,7 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value,
         - Edward Small
 
         Parameters
-        ----------    
+        ----------
         grid_lat: array of latitudes of historical data
         grid_long: array of longitudes of historical data
         grid_dates: array of ages of the historical data
@@ -106,7 +106,7 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value,
         age_small: age of data in small ellipse
         map_pv_use: flag for whether to use potential vorticity (see load_configuration.py)
         max_casts: maximum number of data points wanted
-    
+
         Returns
         -------
         indices of historical data to use
@@ -285,7 +285,7 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value,
 
 def nearest_neighbour(x_axis, y_axis, table, x_input, y_input):
     """  Find the nearest neighbour
-    
+
         Parameters
         ----------
         x_axis: x-axis values

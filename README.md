@@ -25,23 +25,17 @@ Otherwise, in a python script, you can calibrate salinity data this way:
 
 ```python
 import pyowc as owc
+
 FLOAT_NAME = "3901960"
 USER_CONFIG = owc.configuration.load() # fetch the configuration and parameters set by the user
+
 owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 ```
 
 ### Parameters for your analysis
 
-Most parameters for the analysis are set in the load configuration file.
-Go to the load configuration file to set the paths of your wmo_boxes, and your historical data (climatology). You also may need to change the path to your float profile.
-
-Outputs will be saved, by default, to the data folder in this project, but feel free to change this. If you keep the same output folder selected, the data will be saved over if you run the analysis again.
-
-The update salinity mapping is simplified for testing purposes. The SAF code is removed, as well as potential vorticity code. So set these parameters to 0 until this code is pulled into the repo.
-
-To run this code, set up your parameters in load_config, enter a float name, and enter a list of "/".
-
-Eventually this will all be put into a `for` loop so multiple floats can be processed all at once
+Parameters for the analysis are set in a configuration file. 
+The configuration file has the same format as the Matlab software.
 
 ### Plots
 
@@ -50,6 +44,8 @@ owc.plot.dashboard("/", FLOAT_NAME, USER_CONFIG)
 ```
 
 # Software history
+
+- Phase 4: Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this ! 
 
 - Phase 3
 

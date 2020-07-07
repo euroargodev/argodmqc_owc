@@ -15,8 +15,8 @@ import scipy.interpolate as interpolate
 import scipy
 import gsw
 
-from . import utils
-from . import finders
+from pyowc.core import utils
+from pyowc.core import finders
 from pyowc.data.fetchers import get_topo_grid
 from pyowc.calibration import fit_cond
 
