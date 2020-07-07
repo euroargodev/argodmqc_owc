@@ -10,10 +10,11 @@ import scipy.optimize as scipy
 import scipy.interpolate as interpolate
 
 from pyowc import core
-from pyowc import data
 from pyowc.core.finders import find_besthist, find_25boxes
 from pyowc.data.wrangling import interp_climatology, map_data_grid
 from pyowc.data.fetchers import get_topo_grid, get_region_data, get_region_hist_locations
+
+#pylint: disable=too-many-lines
 
 #pylint: disable=too-many-locals
 #pylint: disable=too-many-branches
@@ -266,10 +267,10 @@ def update_salinity_mapping(float_dir, float_name, config):
 
             # find the depth of the ocean at the float location
             float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1,
-                                                                       float_long_tbase + 1,
-                                                                       float_lat - 1,
-                                                                       float_lat + 1,
-                                                                       config)
+                                                         float_long_tbase + 1,
+                                                         float_lat - 1,
+                                                         float_lat + 1,
+                                                         config)
             float_interp = interpolate.interp2d(float_x[0, :],
                                                 float_y[:, 0],
                                                 float_elev,
@@ -288,8 +289,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 grid_long_tbase[g_180] -= 360
 
                 # find depth of the ocean at historical locations
-                grid_elev, grid_x, grid_y = get_topo_grid(
-                                                          np.amin(grid_long_tbase) - 1,
+                grid_elev, grid_x, grid_y = get_topo_grid(np.amin(grid_long_tbase) - 1,
                                                           np.amax(grid_long_tbase) + 1,
                                                           np.amin(grid_lat) - 1,
                                                           np.amax(grid_lat) + 1,
@@ -533,24 +533,24 @@ def update_salinity_mapping(float_dir, float_name, config):
 
     # save the data
     savemat(save_location, {'la_ptmp': la_ptmp,
-                                  'la_mapped_sal': la_mapped_sal,
-                                  'la_mapsalerrors': la_mapsalerrors,
-                                  'scale_long_large': scale_long_large,
-                                  'scale_lat_large': scale_lat_large,
-                                  'scale_long_small': scale_long_small,
-                                  'scale_lat_small': scale_lat_small,
-                                  'scale_phi_large': scale_phi_large,
-                                  'scale_phi_small': scale_phi_small,
-                                  'scale_age_large': scale_age_large,
-                                  'scale_age_small': scale_age_small,
-                                  'use_pv': use_pv,
-                                  'use_saf': use_saf,
-                                  'p_delta': p_delta,
-                                  'p_exclude': p_exclude,
-                                  'la_noise_sal': la_noise_sal,
-                                  'la_signal_sal': la_signal_sal,
-                                  'la_profile_no': la_profile_no,
-                                  'selected_hist': selected_hist})
+                            'la_mapped_sal': la_mapped_sal,
+                            'la_mapsalerrors': la_mapsalerrors,
+                            'scale_long_large': scale_long_large,
+                            'scale_lat_large': scale_lat_large,
+                            'scale_long_small': scale_long_small,
+                            'scale_lat_small': scale_lat_small,
+                            'scale_phi_large': scale_phi_large,
+                            'scale_phi_small': scale_phi_small,
+                            'scale_age_large': scale_age_large,
+                            'scale_age_small': scale_age_small,
+                            'use_pv': use_pv,
+                            'use_saf': use_saf,
+                            'p_delta': p_delta,
+                            'p_exclude': p_exclude,
+                            'la_noise_sal': la_noise_sal,
+                            'la_signal_sal': la_signal_sal,
+                            'la_profile_no': la_profile_no,
+                            'selected_hist': selected_hist})
 
 
 #pylint: disable=too-many-locals
@@ -575,9 +575,8 @@ def set_calseries(float_dir, float_name, system_config):
     """
 
     # load float source data
-    float_source = loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] +
-                                 float_dir + float_name +
-                                 system_config['FLOAT_SOURCE_POSTFIX'])
+    float_source = loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] + float_dir +
+                           float_name + system_config['FLOAT_SOURCE_POSTFIX'])
 
     profile_no = float_source['PROFILE_NO'].flatten()
     no_profiles = profile_no.__len__()
@@ -682,14 +681,14 @@ def set_calseries(float_dir, float_name, system_config):
             calseries[i] = 0
 
     savemat(calseries_filename, {'breaks': breaks,
-                                       'max_breaks': max_breaks,
-                                       'calseries': calseries,
-                                       'calib_profile_no': calib_profile_no,
-                                       'use_theta_lt': use_theta_lt,
-                                       'use_theta_gt': use_theta_gt,
-                                       'use_pres_lt': use_pres_lt,
-                                       'use_pres_gt': use_pres_gt,
-                                       'use_percent_gt': use_percent_gt})
+                                 'max_breaks': max_breaks,
+                                 'calseries': calseries,
+                                 'calib_profile_no': calib_profile_no,
+                                 'use_theta_lt': use_theta_lt,
+                                 'use_theta_gt': use_theta_gt,
+                                 'use_pres_lt': use_pres_lt,
+                                 'use_pres_gt': use_pres_gt,
+                                 'use_percent_gt': use_percent_gt})
 
 
 

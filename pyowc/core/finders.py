@@ -13,8 +13,8 @@ import math
 import numpy as np
 from scipy.interpolate import interpolate
 
-from pyowc.core import utils
-from pyowc.core import stats
+from pyowc.core.utils import potential_vorticity
+from pyowc.core.stats import spatial_correlation
 
 
 #pylint: disable=too-many-arguments
@@ -122,13 +122,13 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
     grid_dates = grid_dates.flatten()
 
     # set up potential vorticity
-    potential_vorticity_vec = np.vectorize(utils.potential_vorticity)
+    potential_vorticity_vec = np.vectorize(potential_vorticity)
     pv_float = 0
     pv_hist = 0
 
     # if we are using potential vorticity, calculate it
     if map_pv_use == 1:
-        pv_float = utils.potential_vorticity(lat, z_value)
+        pv_float = potential_vorticity(lat, z_value)
         pv_hist = potential_vorticity_vec(grid_lat, grid_z_value)
 
     # calculate ellipse
@@ -189,7 +189,7 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
             pv_hist = potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
 
         # calculate the large spatial correlation for each point
-        spatial_correlation_vec = np.vectorize(stats.spatial_correlation)
+        spatial_correlation_vec = np.vectorize(spatial_correlation)
         correlation_large = spatial_correlation_vec(remain_hist_long, long, longitude_large,
                                                     remain_hist_lat, lat, latitude_large,
                                                     remain_hist_dates, date, age_large,

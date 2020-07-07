@@ -11,10 +11,9 @@ from scipy.io import loadmat
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pyowc import core
-from pyowc.plot import plots
+from pyowc.plot.plots import theta_sal_plot, cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, trajectory_plot
 from pyowc.plot.utils import create_dataframe
-
+from pyowc.core.finders import find_10thetas
 
 #pylint: disable=too-many-locals
 def plot_diagnostics(float_dir, float_name, config, levels=2):
@@ -49,7 +48,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     # create trajectory plot ------------------------------
     grid, floats = create_dataframe(grid_data, float_data)
 
-    plots.trajectory_plot(0, 0, floats, grid, float_name, config)
+    trajectory_plot(0, 0, floats, grid, float_name, config)
 
     plt.show()
 
@@ -66,13 +65,13 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     use_pres_gt = cal_series['use_pres_gt'][0][0]
     use_percent_gt = cal_series['use_percent_gt'][0][0]
 
-    thetas = core.finders.find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
+    thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
                            copy.deepcopy(map_ptmp), use_theta_lt, use_theta_gt,
                            use_pres_lt, use_pres_gt, use_percent_gt)
 
     index = thetas[2]
 
-    plots.theta_sal_plot(copy.deepcopy(sal).transpose(),
+    theta_sal_plot(copy.deepcopy(sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
                    map_sal, map_ptmp, map_errors, index)
 
@@ -87,14 +86,14 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     pcond_factor_err = cal_data['pcond_factor_err']
     profile_no = float_data['PROFILE_NO']
 
-    plots.cal_sal_curve_plot(copy.deepcopy(sal), copy.deepcopy(cal_sal),
+    cal_sal_curve_plot(copy.deepcopy(sal), copy.deepcopy(cal_sal),
                        copy.deepcopy(cal_sal_err), sta_sal,
                        sta_sal_err, sta_mean, pcond_factor,
                        pcond_factor_err, profile_no, float_name)
 
     # plot the calibrated theta-S curve from float ----------
 
-    plots.theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
+    theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
                    map_sal, map_ptmp, map_errors, index, "calibrated")
 
@@ -104,7 +103,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                   use_pres_lt, use_pres_gt,
                   use_percent_gt]
 
-    plots.sal_var_plot(levels, copy.deepcopy(sal), copy.deepcopy(pres),
+    sal_var_plot(levels, copy.deepcopy(sal), copy.deepcopy(pres),
                  copy.deepcopy(ptmp), copy.deepcopy(map_sal),
                  copy.deepcopy(map_errors), copy.deepcopy(map_ptmp),
                  copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_err),
@@ -117,5 +116,5 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     tlevels = thetas[0]
     plevels = thetas[1]
 
-    plots.t_s_profile_plot(sal, ptmp, pres, sal_var,
+    t_s_profile_plot(sal, ptmp, pres, sal_var,
                      theta_levels, tlevels, plevels, float_name)

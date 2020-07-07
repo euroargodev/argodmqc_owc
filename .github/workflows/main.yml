@@ -36,6 +36,7 @@ jobs:
     - name: Lint with pylint (tests used at NOC)
       run: |
         pip install pylint
+        echo pwd
         find . -iname "*.py" | xargs pylint
 
     - name: Lint with flake8 (new at Github)

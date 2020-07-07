@@ -7,20 +7,20 @@ import matplotlib.pylab as pl
 import geopandas as gdp #pylint: disable=import-error
 from scipy.interpolate import interpolate
 
-from pyowc import core
 from pyowc.core.finders import find_10thetas
 
 
 #pylint: disable=too-many-locals
 #pylint: disable=too-many-statements
+#pylint: disable=too-many-arguments
 def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     """ Plot locations of all the data used in the analysis
 
         function for plotting locations of all the data used in the analysis, including:
-        
+
         historical climatology
         profile locations and order
-        
+
         Can also plot reef data and bathymetry by passing in a 1 (True) into the function
 
         Parameters
