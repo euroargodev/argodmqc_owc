@@ -16,7 +16,7 @@ from scipy.io import loadmat
 from pyowc.plot import plots, utils
 
 
-# pylint: disable=bare-except
+#pylint: disable=bare-except
 class MyTestCase(unittest.TestCase):
     """
     Test cases for trajectory_plot function

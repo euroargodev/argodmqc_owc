@@ -4,13 +4,13 @@ import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
-import geopandas as gdp # pylint: disable=import-error
+import geopandas as gdp #pylint: disable=import-error
 from scipy.interpolate import interpolate
 from pyowc import core
 
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-statements
 def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     """ Plot locations of all the data used in the analysis
 
@@ -110,9 +110,9 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.draw()
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
-# pylint: disable=no-member
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=no-member
 def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='uncalibrated'):
     """ Create the salinity theta curve
 
@@ -163,7 +163,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
     plt.show()
 
 
-# pylint: disable=too-many-arguments
+#pylint: disable=too-many-arguments
 def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name):
     """ Plots profile plots
 
@@ -229,11 +229,11 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.show()
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
-# pylint: disable=no-member
-# pylint: disable=too-many-statements
-# pylint: disable=too-many-branches
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=no-member
+#pylint: disable=too-many-statements
+#pylint: disable=too-many-branches
 def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                  map_ptmp, cal_sal, cal_sal_errors, boundaries, profile_no, float_name):
     """ Create the salinity variance plot for each level
@@ -493,9 +493,9 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         plt.show()
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
-# pylint: disable=no-member
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=no-member
 def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean,
                        pcond_factor, pcond_factor_err, profile_no, float_name):
     """ Create the calibrated salinity curve plot

@@ -16,9 +16,9 @@ from unittest.mock import patch
 from scipy.io import loadmat
 from pyowc.plot import plots
 
-# pylint: disable=bare-except
-# pylint: disable=unused-argument
-# pylint: disable=too-many-locals
+#pylint: disable=bare-except
+#pylint: disable=unused-argument
+#pylint: disable=too-many-locals
 class MyTestCase(unittest.TestCase):
     """
     Test cases for sal_var_plot function

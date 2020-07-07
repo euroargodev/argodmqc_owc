@@ -14,7 +14,7 @@ import scipy.io as scipy
 from pyowc import core
 
 
-# pylint: disable=too-many-locals
+#pylint: disable=too-many-locals
 def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
     """  Find depth grid over given area using tbase.int file
 
@@ -147,7 +147,7 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     return data
 
 
-# pylint: disable=bare-except
+#pylint: disable=bare-except
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     """ Uses the WMO boxes and to return all of the historical data in the given area, excluding the float that is currently being analysed.
 
@@ -211,12 +211,12 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     return grid_lat, grid_long, grid_dates
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
-# pylint: disable=too-many-nested-blocks
-# pylint: disable=bare-except
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-branches
+#pylint: disable=too-many-statements
+#pylint: disable=too-many-nested-blocks
+#pylint: disable=bare-except
 def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres):
     """ Get the historical pressure, salinity, and temperature of selected casts
 

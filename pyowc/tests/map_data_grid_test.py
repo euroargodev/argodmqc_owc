@@ -14,7 +14,7 @@ import unittest
 import numpy as np
 from pyowc.data.wrangling import map_data_grid
 
-# pylint: disable=too-many-instance-attributes
+#pylint: disable=too-many-instance-attributes
 class MapDataGridTestCase(unittest.TestCase):
     """
     Test cases for map_data_grid function

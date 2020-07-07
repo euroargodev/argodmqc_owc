@@ -12,8 +12,8 @@ import numpy as np
 from pyowc import core
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
 def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
                   signal_variance, noise_variance, phi, map_pv_use):
     """ Maps historical float data onto a single float
@@ -82,10 +82,10 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
            data_weight_covar, data_weight_covar_error
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-branches
+#pylint: disable=too-many-statements
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
     """ Interpolate historical salinity and pressure data on the float theta
     

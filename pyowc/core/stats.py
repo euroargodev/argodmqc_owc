@@ -21,7 +21,7 @@ from pyowc.data.fetchers import get_topo_grid
 from pyowc.calibration import fit_cond
 
 
-# pylint: disable=too-many-arguments
+#pylint: disable=too-many-arguments
 def spatial_correlation(
         longitude_1, longitude_2, ellipse_longitude, latitude_1, latitude_2,
         ellipse_latitude, dates_1, dates_2, ellipse_age, phi, pv_1=0, pv_2=0
@@ -169,7 +169,7 @@ def noise_variance(sal, lat, long):
     return sal_noise_var
 
 
-# pylint: disable=too-many-arguments
+#pylint: disable=too-many-arguments
 def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
     """ Calculates how "close" two sets of points are to each other,
 
@@ -221,7 +221,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
             if age != 0:
                 age_covar = ((points1[i][2] - points2[j][2]) / age) ** 2
 
-            # pylint: disable=fixme
+            #pylint: disable=fixme
             # TODO: ARGODEV-163
             # use the potential vorticity function made in ARGODEV-150
             if map_pv_use == 1:
@@ -232,11 +232,11 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
     return points_covar
 
 
-# pylint: disable=invalid-name
-# pylint: disable=too-many-locals
-# pylint: disable=unused-variable
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
+#pylint: disable=invalid-name
+#pylint: disable=too-many-locals
+#pylint: disable=unused-variable
+#pylint: disable=too-many-branches
+#pylint: disable=too-many-statements
 def calc_piecewisefit(float_dir, float_name, system_config):
     """ Calibrate salinities
 
@@ -594,7 +594,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                      'fbreaks': fbreaks})
 
 
-# pylint: disable=too-many-locals
+#pylint: disable=too-many-locals
 def build_cov(ptmp, coord_float, config):
     """ Build the covariance matrix
 
@@ -715,7 +715,7 @@ def build_cov(ptmp, coord_float, config):
     return n_cov
 
 
-# pylint: disable=too-many-arguments
+#pylint: disable=too-many-arguments
 def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     """ Returns a matrix for the horizontal covariance
 
@@ -767,12 +767,11 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     return cov_term
 
 
-# pylint: disable=too-many-locals
+#pylint: disable=too-many-locals
 def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
-    """ Get least-squares estimates for piecewise linear fit with breakpoints at prescribed points
+    """ Get least-squares estimates for a piecewise linear fit with breakpoints at prescribed points
 
-        Routine to get least squares fit for p[iecewise linear fit with break points
-        at prescribed points
+        Routine to get least squares fit for piecewise linear fit with break points at prescribed points
 
         y = A(1) + A(2)*x+eps                     for x(1) <= x <= b(1)
         y = A(1) + A(2)*b(1) + A(3)*(x-b(1))+eps  for b(1) <= x <= b(2)
@@ -797,7 +796,7 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
 
         Returns
         -------
-        Matrix relating observations to the fit parameters of the linear fit
+        fit_param, residual: Matrix relating observations to the fit parameters of the linear fit
     """
 
     if breaks is None:

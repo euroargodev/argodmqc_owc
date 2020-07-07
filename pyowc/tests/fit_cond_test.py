@@ -17,7 +17,7 @@ import scipy.io as scipy
 from pyowc import calibration
 
 
-# pylint: disable=too-many-instance-attributes
+#pylint: disable=too-many-instance-attributes
 class FitCondTestCase(unittest.TestCase):
     """
     Test cases for 'fit_cond' function

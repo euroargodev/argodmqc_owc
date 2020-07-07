@@ -8,7 +8,7 @@ To run this test specifically, look at the documentation at:
 https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
-# pylint: disable=duplicate-code
+#pylint: disable=duplicate-code
 import copy
 import unittest
 from unittest.mock import patch
@@ -18,8 +18,8 @@ from pyowc.core.finders import find_10thetas
 from pyowc.plot import plots
 
 
-# pylint: disable=bare-except
-# pylint: disable=unused-argument
+#pylint: disable=bare-except
+#pylint: disable=unused-argument
 class MyTestCase(unittest.TestCase):
     """
     Test cases for theta_sal_plot function

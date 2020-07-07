@@ -23,7 +23,7 @@ from scipy.io import loadmat
 from pyowc.configuration import load as load_configuration
 from pyowc.calibration import update_salinity_mapping
 
-# pylint: disable=bare-except
+#pylint: disable=bare-except
 class MyTestCase(unittest.TestCase):
     """
     Test cases for update_salinity_mapping function

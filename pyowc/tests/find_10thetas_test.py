@@ -18,8 +18,8 @@ import numpy as np
 import scipy.io as scipy
 from pyowc import core
 
-# pylint: disable=fixme
-# pylint: disable=too-many-instance-attributes
+#pylint: disable=fixme
+#pylint: disable=too-many-instance-attributes
 class Find10ThetasTestCase(unittest.TestCase):
     """
     Test cases for find_10thetas function

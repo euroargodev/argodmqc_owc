@@ -16,8 +16,8 @@ from scipy.io import loadmat
 import numpy as np
 from pyowc.plot import plots
 
-# pylint: disable=bare-except
-# pylint: disable=unused-argument
+#pylint: disable=bare-except
+#pylint: disable=unused-argument
 class MyTestCase(unittest.TestCase):
     """
     Test cases for cal_sal_curve_plot function

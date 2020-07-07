@@ -14,12 +14,12 @@ from pyowc import data
 from pyowc.data.wrangling import interp_climatology
 
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
-# pylint: disable=too-many-nested-blocks
-# pylint: disable=invalid-name
-# pylint: disable=fixme
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-branches
+#pylint: disable=too-many-statements
+#pylint: disable=too-many-nested-blocks
+#pylint: disable=invalid-name
+#pylint: disable=fixme
 def update_salinity_mapping(float_dir, float_name, config):
     """ Calculates values needed for analysis. Saves them to memory to use later
 
@@ -553,9 +553,9 @@ def update_salinity_mapping(float_dir, float_name, config):
                                   'selected_hist': selected_hist})
 
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
-# pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-statements
+#pylint: disable=too-many-arguments
 def set_calseries(float_dir, float_name, system_config):
     """ Set the calseries parameters for analysis and line fitting
 
@@ -692,54 +692,6 @@ def set_calseries(float_dir, float_name, system_config):
                                        'use_percent_gt': use_percent_gt})
 
 
-# pylint: disable=too-many-locals
-# pylint: disable=invalid-name
-# pylint: disable=global-variable-undefined
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
-def nlbpfun(ubrk_i):
-    """ Find residual
-
-        Parameters
-        ----------
-        ubrk_i: input
-
-        Returns
-        -------
-        residual
-    """
-
-    global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
-
-    if nbr1 > 1:
-        ubrk = ubrk_g[0:nbr1 - 1]
-        for i in range(nbr1, ubrk_g.__len__()):
-            ubrk.append(ubrk_i)
-
-    else:
-        ubrk = ubrk_i
-
-    m_b = ubrk.__len__()
-    fnumer = np.zeros(ubrk.shape)
-    fnumer[0] = np.exp(ubrk[0])
-
-    for i in range(1, m_b):
-        fnumer[i] = fnumer[i - 1] + np.exp(ubrk[i])
-
-    fdenom = 1 + fnumer[m_b - 1]
-
-    ftem = (xblim[1] - xblim[0]) / fdenom
-
-    breaks = xblim[0] + ftem * fnumer
-
-    if np.argwhere(np.diff(breaks) == 0).__len__() > 0:
-        difference = np.argwhere(np.diff(breaks) == 0)
-        breaks[difference + 1] = breaks[difference + 1] + 0.00001
-
-    A, residual = core.stats.brk_pt_fit(xf, yf, w_i, breaks)
-
-    return residual
-
 
 def fit_cond(x, y, n_err, lvcov, *args):
     """ Get optimal fit
@@ -783,9 +735,51 @@ def fit_cond(x, y, n_err, lvcov, *args):
                           the off-diagonal coariance (lvcov) is taken into
                           account
     """
+    def nlbpfun(ubrk_i):
+        """ Find residual
+
+            Parameters
+            ----------
+            ubrk_i: input
+
+            Returns
+            -------
+            residual
+        """
+
+        # global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
+        if nbr1 > 1:
+            ubrk = ubrk_g[0:nbr1 - 1]
+            for i in range(nbr1, ubrk_g.__len__()):
+                ubrk.append(ubrk_i)
+
+        else:
+            ubrk = ubrk_i
+
+        m_b = ubrk.__len__()
+        fnumer = np.zeros(ubrk.shape)
+        fnumer[0] = np.exp(ubrk[0])
+
+        for i in range(1, m_b):
+            fnumer[i] = fnumer[i - 1] + np.exp(ubrk[i])
+
+        fdenom = 1 + fnumer[m_b - 1]
+
+        ftem = (xblim[1] - xblim[0]) / fdenom
+
+        breaks = xblim[0] + ftem * fnumer
+
+        if np.argwhere(np.diff(breaks) == 0).__len__() > 0:
+            difference = np.argwhere(np.diff(breaks) == 0)
+            breaks[difference + 1] = breaks[difference + 1] + 0.00001
+
+        residual = core.stats.brk_pt_fit(xf, yf, w_i, breaks)
+
+        return residual[1]
 
     # define global variables needed for line fitting
-    global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+    # global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
 
     # Set up some default values
     tol = 1e-06

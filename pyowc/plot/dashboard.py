@@ -12,12 +12,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from pyowc import core
+from pyowc.plot import plots
+from pyowc.plot.utils import create_dataframe
 
-from . import plots
-from .utils import create_dataframe
 
-
-# pylint: disable=too-many-locals
+#pylint: disable=too-many-locals
 def plot_diagnostics(float_dir, float_name, config, levels=2):
     """ Run the plotting procedures
 
