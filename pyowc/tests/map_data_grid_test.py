@@ -12,8 +12,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from .map_data_grid import map_data_grid
-
+from pyowc.data.wrangling import map_data_grid
 
 # pylint: disable=too-many-instance-attributes
 class MapDataGridTestCase(unittest.TestCase):

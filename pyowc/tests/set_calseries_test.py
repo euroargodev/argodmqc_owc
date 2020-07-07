@@ -15,9 +15,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import os
-import scipy.io as scipy
-from ow_calibration.set_calseries.set_calseries import set_calseries
-
+from scipy.io import loadmat
+from pyowc.calibration import set_calseries
 
 class SetCalSeriesTestCase(unittest.TestCase):
     """
@@ -32,22 +31,22 @@ class SetCalSeriesTestCase(unittest.TestCase):
 
         self.float_source = "3901960"
         self.float_dir = "/"
-        self.system_config = {'FLOAT_SOURCE_DIRECTORY': "data/float_source",
+        self.system_config = {'FLOAT_SOURCE_DIRECTORY': "../../data/float_source",
                               'FLOAT_SOURCE_POSTFIX': ".mat",
-                              'FLOAT_CALIB_DIRECTORY': "data/float_calib",
+                              'FLOAT_CALIB_DIRECTORY': "../../data/float_calib",
                               'FLOAT_CALSERIES_PREFIX': "calseries_",
                               'FLOAT_CALIB_POSTFIX': ".mat"}
-        self.python_output_path = "data/float_calib/calseries_" + \
+        self.python_output_path = "../../data/float_calib/calseries_" + \
                                   self.float_source + ".mat"
-        matlab_output_path = "data/test_data/float_calib_test/calseries_" + \
+        matlab_output_path = "../../data/test_data/float_calib_test/calseries_" + \
                              self.float_source + ".mat"
 
         if not os.path.exists(self.python_output_path):
             print("Getting calibrated data for testing...")
             set_calseries(self.float_dir, self.float_source, self.system_config)
 
-        self.matlab_output = scipy.loadmat(matlab_output_path)
-        self.python_output = scipy.loadmat(self.python_output_path)
+        self.matlab_output = loadmat(matlab_output_path)
+        self.python_output = loadmat(self.python_output_path)
 
     def test_set_calseries(self):
         """

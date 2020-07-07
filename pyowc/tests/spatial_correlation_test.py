@@ -13,7 +13,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from .spatial_correlation import spatial_correlation
+from pyowc.core.stats import spatial_correlation
 
 
 class MyTestCase(unittest.TestCase):

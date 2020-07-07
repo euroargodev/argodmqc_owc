@@ -11,8 +11,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-from .signal_variance import signal_variance
-
+from pyowc.core.stats import signal_variance
 
 class SignalVarianceTestCase(unittest.TestCase):
     """

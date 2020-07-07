@@ -13,8 +13,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from .potential_vorticity import potential_vorticity
-
+from pyowc.core.utils import potential_vorticity
 
 class PotentialVorticityTestCase(unittest.TestCase):
     """

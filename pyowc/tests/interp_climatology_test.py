@@ -12,9 +12,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-import scipy.io as scipy
-from ow_calibration.interp_climatology.interp_climatology import interp_climatology
-
+from scipy.io import loadmat
+from pyowc.data.wrangling import interp_climatology
 
 # pylint: disable=too-many-instance-attributes
 class InterpClimatologyTestCase(unittest.TestCase):
@@ -29,8 +28,8 @@ class InterpClimatologyTestCase(unittest.TestCase):
         :return: Nothing
         """
         # load in the data for testing
-        test = scipy.loadmat('data/test_data/interp_climatology/testfile.mat')
-        results = scipy.loadmat('data/test_data/interp_climatology/results.mat')
+        test = loadmat('../../data/test_data/interp_climatology/testfile.mat')
+        results = loadmat('../../data/test_data/interp_climatology/results.mat')
 
         # set the test variables from the loaded .mat file
         self.grid_sal = test['S']

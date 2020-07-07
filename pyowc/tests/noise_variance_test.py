@@ -12,8 +12,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from .noise_variance import noise_variance
-
+from pyowc.core.stats import noise_variance
 
 class NoiseVarianceTestCase(unittest.TestCase):
     """

@@ -35,4 +35,4 @@ dependencies:
     - cmocean
     - geopandas
     - git+http://github.com/euroargodev/argopy.git@master
-    - git+http://github.com/euroargodev/argodmqc_owc.git@binder
+    - git+http://github.com/euroargodev/argodmqc_owc.git@refactor-configuration

@@ -16,8 +16,8 @@ import unittest
 from unittest.mock import patch
 import scipy.io as scipy
 import numpy as np
-from ow_calibration.plot_diagnostics.t_s_profile_plot.t_s_profile_plot import t_s_profile_plot
-from ow_calibration.find_10thetas.find_10thetas import find_10thetas
+from pyowc.core.finders import find_10thetas
+from pyowc.plot import plots
 
 
 # pylint: disable=bare-except
@@ -28,15 +28,15 @@ class MyTestCase(unittest.TestCase):
     Test cases for t_s_plot function
     """
 
-    @patch("ow_calibration.plot_diagnostics.t_s_profile_plot.t_s_profile_plot.plt.show")
+    @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
         :return: nothing
         """
         print("Check t_s_profile_plot runs")
-        float_data = scipy.loadmat("data/float_source/3901960.mat")
-        grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
+        float_data = scipy.loadmat("../../data/float_source/3901960.mat")
+        grid_data = scipy.loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
 
         sal = np.array(float_data['SAL'])
         ptmp = np.array(float_data['PTMP'])
@@ -56,7 +56,7 @@ class MyTestCase(unittest.TestCase):
         tlevels = thetas[0]
         plevels = thetas[1]
 
-        self.assertEqual(t_s_profile_plot(sal, ptmp, pres, sal_var,
+        self.assertEqual(plots.t_s_profile_plot(sal, ptmp, pres, sal_var,
                                           theta_levels, tlevels, plevels, "3901960"), None)
 
 

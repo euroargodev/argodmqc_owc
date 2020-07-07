@@ -12,8 +12,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from ow_calibration.get_region.get_region_hist_locations import get_region_hist_locations
-
+from pyowc.data.fetchers import get_region_hist_locations
 
 class MyTestCase(unittest.TestCase):
     """
@@ -25,7 +24,7 @@ class MyTestCase(unittest.TestCase):
         Set up values that will be used for testing
         :return: Nothing
         """
-        self.config = {'HISTORICAL_DIRECTORY': "data/climatology",
+        self.config = {'HISTORICAL_DIRECTORY': "../../data/climatology",
                        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
                        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
                        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"}

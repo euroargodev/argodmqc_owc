@@ -204,9 +204,9 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
 
 
 
-    grid_long = core.wrap_longitude(grid_long)
+    grid_long = core.utils.wrap_longitude(grid_long)
     # decimalise dates
-    grid_dates = core.change_dates(grid_dates)
+    grid_dates = core.utils.change_dates(grid_dates)
 
     return grid_lat, grid_long, grid_dates
 
@@ -366,7 +366,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
 
     # convert longitude to 0 to 360 degrees
     try:
-        grid_long = core.wrap_longitude(grid_long)
+        grid_long = core.utils.wrap_longitude(grid_long)
 
         # make sure salinity, pressure, and potential temperature data have all the same NaNs
         sal_nans = np.argwhere(np.isnan(grid_sal))
@@ -384,7 +384,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
             grid_sal[nan[0], nan[1]] = np.nan
             grid_pres[nan[0], nan[1]] = np.nan
 
-        grid_dates = core.change_dates(grid_dates)
+        grid_dates = core.utils.change_dates(grid_dates)
 
         # transpose data
         grid_sal = grid_sal.T

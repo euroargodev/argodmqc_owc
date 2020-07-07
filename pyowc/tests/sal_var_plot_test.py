@@ -14,8 +14,7 @@ import copy
 import unittest
 from unittest.mock import patch
 import scipy.io as scipy
-from ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot import sal_var_plot
-
+from pyowc.plot import plots
 
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
@@ -25,7 +24,7 @@ class MyTestCase(unittest.TestCase):
     Test cases for sal_var_plot function
     """
 
-    @patch("ow_calibration.plot_diagnostics.sal_var_plot.sal_var_plot.plt.show")
+    @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
@@ -34,9 +33,9 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that salinity variance plot throws no errors")
 
-        grid_data = scipy.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
-        float_data = scipy.loadmat("data/float_source/3901960.mat")
-        cal_data = scipy.loadmat("data/test_data/float_calib_test/cal_3901960.mat")
+        grid_data = scipy.loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
+        float_data = scipy.loadmat("../../data/float_source/3901960.mat")
+        cal_data = scipy.loadmat("../../data/test_data/float_calib_test/cal_3901960.mat")
 
         sal = float_data['SAL']
         theta = float_data['PTMP']
@@ -55,19 +54,19 @@ class MyTestCase(unittest.TestCase):
 
         # Check various types run
 
-        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+        self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                       copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                       copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                       copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                       no_boundaries,
                                       profile_no, "3902960"), None)
-        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+        self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                       copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                       copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                       copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                       low_bound,
                                       profile_no, "3902960"), None)
-        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+        self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                       copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                       copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                       copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),

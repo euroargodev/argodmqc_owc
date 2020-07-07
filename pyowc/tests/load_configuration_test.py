@@ -11,8 +11,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-from .load_configuration import load_configuration
-
+from pyowc.configuration import load as load_configuration
 
 class LoadConfigurationTestCase(unittest.TestCase):
     """

@@ -14,9 +14,10 @@ import unittest
 from unittest.mock import patch
 import scipy.io as sci
 import numpy as np
-from ow_calibration.find_10thetas.find_10thetas import find_10thetas
-from ow_calibration.plot_diagnostics.theta_sal_plot.theta_sal_plot import theta_sal_plot
-
+# from ow_calibration.find_10thetas.find_10thetas import find_10thetas
+# from ow_calibration.plot_diagnostics.theta_sal_plot.theta_sal_plot import theta_sal_plot
+from pyowc.core.finders import find_10thetas
+from pyowc.plot import plots
 
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
@@ -25,7 +26,7 @@ class MyTestCase(unittest.TestCase):
     Test cases for theta_sal_plot function
     """
 
-    @patch("ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot.plt.show")
+    @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
         """
         Check we get no errors during the plotting routine
@@ -34,8 +35,8 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that theta salinity plot throws no errors")
 
-        grid_data = sci.loadmat("data/test_data/float_mapped_test/map_3901960.mat")
-        float_data = sci.loadmat("data/float_source/3901960.mat")
+        grid_data = sci.loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
+        float_data = sci.loadmat("../../data/float_source/3901960.mat")
 
         sal = np.array(float_data['SAL'])
         theta = np.array(float_data['PTMP'])
@@ -56,7 +57,7 @@ class MyTestCase(unittest.TestCase):
 
         # Check various types run
 
-        self.assertEqual(theta_sal_plot(sal.transpose(), theta.transpose(),
+        self.assertEqual(plots.theta_sal_plot(sal.transpose(), theta.transpose(),
                                         map_sal, map_ptmp, map_errors, index), None)
 
 

@@ -14,7 +14,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from ow_calibration.get_region.data_functions.get_data import get_data
+from pyowc import data
 
 
 class GetDataTestCase(unittest.TestCase):
@@ -29,7 +29,7 @@ class GetDataTestCase(unittest.TestCase):
         """
 
         self.float_name = "3901960"
-        self.config = {'HISTORICAL_DIRECTORY': "data/climatology",
+        self.config = {'HISTORICAL_DIRECTORY': "../../data/climatology",
                        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
                        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
                        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"}
@@ -43,8 +43,8 @@ class GetDataTestCase(unittest.TestCase):
 
         wmo_boxes = np.array([3505, 0, 0, 0])
 
-        data = get_data(wmo_boxes, 1, self.config, self.float_name)
-        self.assertTrue(data.__len__() == 0, "should return no data")
+        this_data = data.fetchers.get_data(wmo_boxes, 1, self.config, self.float_name)
+        self.assertTrue(this_data.__len__() == 0, "should return no data")
 
     def test_returns_correct_data(self):
         """
@@ -55,15 +55,15 @@ class GetDataTestCase(unittest.TestCase):
 
         wmo_boxes = np.array([3505, 1, 1, 1])
 
-        data_ctd = get_data(wmo_boxes, 1, self.config, self.float_name)
+        data_ctd = data.fetchers.get_data(wmo_boxes, 1, self.config, self.float_name)
         self.assertTrue(data_ctd['long'].shape[1] == 10,
                         "should return some data when fetching ctd")
 
-        data_bot = get_data(wmo_boxes, 2, self.config, self.float_name)
+        data_bot = data.fetchers.get_data(wmo_boxes, 2, self.config, self.float_name)
         self.assertTrue(data_bot['long'].shape[1] == 33,
                         "should return some data when fetching argo")
 
-        data_argo = get_data(wmo_boxes, 3, self.config, self.float_name)
+        data_argo = data.fetchers.get_data(wmo_boxes, 3, self.config, self.float_name)
         self.assertTrue(data_argo['long'][0].__len__() == 787,
                         "should return some data when fetching argo")
 
@@ -77,8 +77,8 @@ class GetDataTestCase(unittest.TestCase):
         wmo_boxes = np.array([3505, 0, 0, 1])
         float_removed = "1900479"
 
-        data_normal = get_data(wmo_boxes, 3, self.config, self.float_name)
-        data_removed = get_data(wmo_boxes, 3, self.config, float_removed)
+        data_normal = data.fetchers.get_data(wmo_boxes, 3, self.config, self.float_name)
+        data_removed = data.fetchers.get_data(wmo_boxes, 3, self.config, float_removed)
 
         # 7 pieces of historical data are from float 1900479 in the selected box, whereas
         # 0 pieces of historical data are from float 3901960 in the selected box, so there
@@ -95,13 +95,13 @@ class GetDataTestCase(unittest.TestCase):
         print("Testing that get_data returns data with the expected shape")
 
         wmo_boxes = np.array([3505, 1, 0, 0])
-        data = get_data(wmo_boxes, 1, self.config, self.float_name)
+        this_data = data.fetchers.get_data(wmo_boxes, 1, self.config, self.float_name)
 
-        self.assertTrue(data['sal'].shape == data['ptmp'].shape == data['temp'].shape,
+        self.assertTrue(this_data['sal'].shape == this_data['ptmp'].shape == this_data['temp'].shape,
                         "Ocean characteristic data should be the same shape")
-        self.assertTrue(data['long'].shape == data['lat'].shape == data['dates'].shape,
+        self.assertTrue(this_data['long'].shape == this_data['lat'].shape == this_data['dates'].shape,
                         "Spatial/temporal data should be the same shape")
-        self.assertTrue(data['sal'].shape[1] == data['long'].shape[1],
+        self.assertTrue(this_data['sal'].shape[1] == this_data['long'].shape[1],
                         "Should be a profile for every location")
 
 
