@@ -13,9 +13,17 @@ This software is in very active development and its usage may change any time. P
 
 # Installation
 
+Download the code from this repository, using a git software or the command line:
 ```bash
-pip install pyowc
+git clone -b binder git@github.com:euroargodev/argodmqc_owc.git
 ```
+
+Go to your local copy and then install dependencies by running the following command in terminal:
+
+```bash
+pip install -r requirements.txt
+```
+
 
 # Software usage
 
