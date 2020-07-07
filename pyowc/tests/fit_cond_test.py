@@ -13,8 +13,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-import scipy.io as scipy
-from pyowc import calibration
+from scipy.io import loadmat
+from pyowc.core.stats import fit_cond
 
 
 #pylint: disable=too-many-instance-attributes
@@ -23,8 +23,8 @@ class FitCondTestCase(unittest.TestCase):
     Test cases for 'fit_cond' function
     """
     def setUp(self):
-        fit_input = scipy.loadmat("../../data/test_data/fit_cond/fit_cond_input.mat")
-        fit_out = scipy.loadmat("../../data/test_data/fit_cond/fit_cond_output.mat")
+        fit_input = loadmat("../../data/test_data/fit_cond/fit_cond_input.mat")
+        fit_out = loadmat("../../data/test_data/fit_cond/fit_cond_output.mat")
 
         self.in_x = fit_input['x']
         self.in_y = fit_input['y']
@@ -49,7 +49,7 @@ class FitCondTestCase(unittest.TestCase):
         """
         print("Testing fit_cond for max_no_breaks")
 
-        python_test = calibration.fit_cond(self.in_x, self.in_y, self.in_err,
+        python_test = fit_cond(self.in_x, self.in_y, self.in_err,
                                self.in_cov, 'max_no_breaks', 4)
 
         for i in range(python_test[0].__len__()):
@@ -81,7 +81,7 @@ class FitCondTestCase(unittest.TestCase):
         """
         print("Testing that fit_cond returns values when using fixed breaks")
 
-        python_test = calibration.fit_cond(self.in_x, self.in_y, self.in_err,
+        python_test = fit_cond(self.in_x, self.in_y, self.in_err,
                                self.in_cov, 'breaks', np.array([0.3, 0.7]), 'max_no_breaks', 4)
 
         self.assertEqual(python_test.__len__(), 10, "should return 10 outputs")

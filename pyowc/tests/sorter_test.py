@@ -13,7 +13,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import unittest
 import math
 import numpy as np
-from pyowc.core.utils import sorter
+from pyowc.utilities import sorter
 
 class SorterTestCase(unittest.TestCase):
     """

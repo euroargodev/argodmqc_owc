@@ -7,7 +7,7 @@ import matplotlib.pylab as pl
 import geopandas as gdp #pylint: disable=import-error
 from scipy.interpolate import interpolate
 
-from pyowc.core.finders import find_10thetas
+from ..core.finders import find_10thetas
 
 
 #pylint: disable=too-many-locals

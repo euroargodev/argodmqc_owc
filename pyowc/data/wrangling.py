@@ -9,7 +9,7 @@
 """
 
 import numpy as np
-from pyowc import core
+from ..core.stats import covar_xyt_pv
 
 
 #pylint: disable=too-many-arguments
@@ -47,7 +47,7 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     """
 
     # create the data-data covariance matrix
-    data_pos_covar = core.stats.covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
+    data_pos_covar = covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
     data_data_covar = np.linalg.inv(signal_variance * data_pos_covar +
                                     noise_variance * np.identity(data_pos.__len__()))
 
@@ -69,8 +69,8 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
                                       ((1 - covar_sum) ** 2) / sum_data_data_covar)
 
     # now map to the data to the regular grid
-    grid_data_covar = (signal_variance * core.stats.covar_xyt_pv(data_pos, grid_pos, lat, long,
-                                                                 age, phi, map_pv_use)).transpose()
+    grid_data_covar = (signal_variance * covar_xyt_pv(data_pos, grid_pos, lat, long,
+                                                      age, phi, map_pv_use)).transpose()
     grid_weight_covar = np.dot(grid_data_covar, weight) + mean_field
     dot_covar_diag = np.diag(np.dot(
         np.dot(grid_data_covar, data_data_covar), np.transpose(grid_data_covar)))

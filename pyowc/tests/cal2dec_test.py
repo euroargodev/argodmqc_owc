@@ -11,7 +11,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 """
 
 import unittest
-from pyowc import core
+from pyowc import utilities as utils
 
 class Cal2decTestCase(unittest.TestCase):
     """
@@ -24,7 +24,7 @@ class Cal2decTestCase(unittest.TestCase):
         :return: Nothing
         """
         print("Testing return type is a float...")
-        date = core.utils.cal2dec(0, 1)
+        date = utils.cal2dec(0, 1)
         self.assertTrue(isinstance(date, float), "cal2dec should return a float")
 
     #PUT RETURN HERE
@@ -36,7 +36,7 @@ class Cal2decTestCase(unittest.TestCase):
         """
         print("Testing exception is thrown if month is out of scope...")
         with self.assertRaises(Exception) as month_out_of_scope:
-            core.utils.cal2dec(13, 1, 0, 0)
+            utils.cal2dec(13, 1, 0, 0)
 
         self.assertTrue('Month is out of scope' in str(month_out_of_scope.exception))
 
@@ -46,7 +46,7 @@ class Cal2decTestCase(unittest.TestCase):
         :return: Nothing
         """
         print("Testing that day 1 returns 0...")
-        self.assertEqual(core.utils.cal2dec(0, 1, 0, 0), 0, "Should return 0 on first day")
+        self.assertEqual(utils.cal2dec(0, 1, 0, 0), 0, "Should return 0 on first day")
 
     def test_returns_365_for_last_day(self):
         """
@@ -54,7 +54,7 @@ class Cal2decTestCase(unittest.TestCase):
         :return: Nothing
         """
         print("Testing that the 24th hour on the last day returns 365")
-        self.assertEqual(core.utils.cal2dec(11, 31, 24, 0), 365, "last value should be 365")
+        self.assertEqual(utils.cal2dec(11, 31, 24, 0), 365, "last value should be 365")
 
     def test_no_day_larger_than_366(self):
         """
@@ -63,7 +63,7 @@ class Cal2decTestCase(unittest.TestCase):
         """
         print("Testing that an error is thrown if a date exceeds 365")
         with self.assertRaises(Exception) as date_out_of_scope:
-            core.utils.cal2dec(11, 31, 300, 300)
+            utils.cal2dec(11, 31, 300, 300)
 
         self.assertTrue('Day is out of scope of the year' in str(date_out_of_scope.exception))
 

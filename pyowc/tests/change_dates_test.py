@@ -12,7 +12,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from pyowc import core
+from pyowc import utilities as utils
 
 class MyTestCase(unittest.TestCase):
     """
@@ -39,7 +39,7 @@ class MyTestCase(unittest.TestCase):
         """
         print("Testing that change_dates returns an array")
 
-        date = core.utils.change_dates([self.good_date1, self.good_date2, self.good_date3])
+        date = utils.change_dates([self.good_date1, self.good_date2, self.good_date3])
 
         self.assertTrue(isinstance(date, np.ndarray), "return type is not array")
 
@@ -52,7 +52,7 @@ class MyTestCase(unittest.TestCase):
 
         expected = [1974.087513318113, 1974.089648021309, 1974.232553272451]
 
-        date = core.utils.change_dates([self.good_date1, self.good_date2, self.good_date3])
+        date = utils.change_dates([self.good_date1, self.good_date2, self.good_date3])
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
@@ -66,7 +66,7 @@ class MyTestCase(unittest.TestCase):
 
         not_expected = [0, 0]
 
-        date = core.utils.change_dates([197402012237, 197402021719])
+        date = utils.change_dates([197402012237, 197402021719])
 
         for i in range(0, date.__len__()):
             self.assertNotEqual(round(date[i], 6), round(not_expected[i], 6))
@@ -81,7 +81,7 @@ class MyTestCase(unittest.TestCase):
 
         not_expected = [0, 0]
 
-        date = core.utils.change_dates([1974020122, 1974020217])
+        date = utils.change_dates([1974020122, 1974020217])
 
         for i in range(0, date.__len__()):
             self.assertNotEqual(round(date[i], 6), round(not_expected[i], 6))
@@ -96,7 +96,7 @@ class MyTestCase(unittest.TestCase):
 
         expected = [0, 0, 0]
 
-        date = core.utils.change_dates([self.bad_date3, -7, -10])
+        date = utils.change_dates([self.bad_date3, -7, -10])
 
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
@@ -110,7 +110,7 @@ class MyTestCase(unittest.TestCase):
 
         expected = [0, 0, 0]
 
-        date = core.utils.change_dates([444, 123456, 101])
+        date = utils.change_dates([444, 123456, 101])
 
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
@@ -124,7 +124,7 @@ class MyTestCase(unittest.TestCase):
 
         expected = [0, 0, 0]
 
-        date = core.utils.change_dates(["<very>", "{bad}", "(date) 'given'"])
+        date = utils.change_dates(["<very>", "{bad}", "(date) 'given'"])
 
         for i in range(0, date.__len__()):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))

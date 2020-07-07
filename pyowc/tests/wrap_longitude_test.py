@@ -14,7 +14,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 import unittest
 import numpy as np
-from pyowc.core.utils import wrap_longitude
+from pyowc.utilities import wrap_longitude
 
 class GetDataTestCase(unittest.TestCase):
     """
