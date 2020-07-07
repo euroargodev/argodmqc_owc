@@ -15,7 +15,7 @@ import numpy as np
 from scipy.io import loadmat
 from pyowc.data.wrangling import interp_climatology
 
-# pylint: disable=too-many-instance-attributes
+#pylint: disable=too-many-instance-attributes
 class InterpClimatologyTestCase(unittest.TestCase):
     """
     Test cases for interp_climatology function

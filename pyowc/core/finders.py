@@ -57,14 +57,14 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
     return ellipse
 
 
-# pylint: disable=fixme
+#pylint: disable=fixme
 # TODO: ARGODEV-155
 # Refactor this code to take objects and dictionaries instead of a ludicrous amount of arguments
 # In fact, this function still requires a serious refactor, because it is doing far too much
-# pylint: disable=too-many-arguments
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
+#pylint: disable=too-many-arguments
+#pylint: disable=too-many-locals
+#pylint: disable=too-many-branches
+#pylint: disable=too-many-statements
 def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date, z_value,
                   latitude_large, latitude_small, longitude_large, longitude_small,
                   phi_large, phi_small, age_large, age_small, map_pv_use, max_casts):
@@ -408,10 +408,10 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
     return pa_wmo_numbers
 
 
-# pylint:disable=too-many-arguments
-# pylint:disable=too-many-locals
-# pylint:disable=too-many-branches
-# pylint:disable=too-many-statements
+#pylint:disable=too-many-arguments
+#pylint:disable=too-many-locals
+#pylint:disable=too-many-branches
+#pylint:disable=too-many-statements
 def find_10thetas(sal, ptmp, pres, la_ptmp,
                   use_theta_lt=0, use_theta_gt=0,
                   use_pres_lt=0, use_pres_gt=0, use_percent_gt=0.5):

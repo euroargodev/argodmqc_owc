@@ -23,7 +23,7 @@ class FindBestHistTestCase(unittest.TestCase):
     Test cases for find_besthist function
     """
 
-    # pylint: disable=too-many-instance-attributes
+    #pylint: disable=too-many-instance-attributes
     def setUp(self):
         """
         Set up for the tests. Creates 1000 historical random data points that

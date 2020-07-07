@@ -32,7 +32,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertTrue(isinstance(sc_result, float), "spatial correlation is not a float")
 
-    # pylint: disable=too-many-locals
+    #pylint: disable=too-many-locals
     def test_spatial_correlation_returns_array(self):
         """
         Check that spatial_correlation returns an array if given an array
@@ -60,7 +60,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertTrue(isinstance(sc_result, np.ndarray), "spatial correlation is not array")
 
-    # pylint: disable=too-many-locals
+    #pylint: disable=too-many-locals
     def test_spatial_correlation_returns_expected_float(self):
         """
         Check that spatial_correlation returns the correct answer if given a float
@@ -97,7 +97,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(round(sc_pv_result, 4), 2.489)
 
-    # pylint: disable=too-many-locals
+    #pylint: disable=too-many-locals
     def test_spatial_correlation_returns_expected_array(self):
         """
                 Check that spatial_correlation returns an array if given an array
