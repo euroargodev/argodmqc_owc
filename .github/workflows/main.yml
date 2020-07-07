@@ -37,8 +37,8 @@ jobs:
       run: |
         pip install pylint
         echo `pwd`
-        ls -l
-        find . -iname "*.py" | xargs pylint
+        ls -al
+        pylint pyowc
 
     - name: Lint with flake8 (new at Github)
       run: |
