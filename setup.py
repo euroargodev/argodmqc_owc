@@ -18,7 +18,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/euroargodev/argodmqc_owc",
     packages=setuptools.find_packages(),
-    package_dir={'pyowc': 'ow_calibration'},
+    package_dir={'pyowc': 'pyowc'},
     package_data={'pyowc': ['data']},
     include_package_data=True,
     install_requires=requirements,

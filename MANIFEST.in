@@ -2,7 +2,7 @@ include *.txt
 include README.md
 include LICENSE
 
-graft ow_calibration
+graft pyowc
 
 prune binder
 prune docs
