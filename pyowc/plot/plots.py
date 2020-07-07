@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 import geopandas as gdp #pylint: disable=import-error
 from scipy.interpolate import interpolate
+
 from pyowc import core
+from pyowc.core.finders import find_10thetas
 
 
 #pylint: disable=too-many-locals
@@ -275,7 +277,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     use_pres_gt = boundaries[3]
     use_percent_gt = boundaries[4]
 
-    thetas = core.finders.find_10thetas(copy.deepcopy(sal),
+    thetas = find_10thetas(copy.deepcopy(sal),
                            copy.deepcopy(ptmp),
                            copy.deepcopy(pres),
                            copy.deepcopy(map_ptmp),

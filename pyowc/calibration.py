@@ -11,8 +11,9 @@ import scipy.interpolate as interpolate
 
 from pyowc import core
 from pyowc import data
-from pyowc.data.wrangling import interp_climatology
-
+from pyowc.core.finders import find_besthist, find_25boxes
+from pyowc.data.wrangling import interp_climatology, map_data_grid
+from pyowc.data.fetchers import get_topo_grid, get_region_data, get_region_hist_locations
 
 #pylint: disable=too-many-locals
 #pylint: disable=too-many-branches
@@ -264,7 +265,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 float_long_tbase -= 360
 
             # find the depth of the ocean at the float location
-            float_elev, float_x, float_y = data.fetchers.get_topo_grid(float_long_tbase - 1,
+            float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1,
                                                                        float_long_tbase + 1,
                                                                        float_lat - 1,
                                                                        float_lat + 1,
@@ -276,10 +277,8 @@ def update_salinity_mapping(float_dir, float_name, config):
             float_z = -float_interp(float_long, float_lat)[0]
 
             # gather data from area surrounding the float location
-            wmo_numbers = core.finders.find_25boxes(float_long, float_lat, wmo_boxes)
-            grid_lat, grid_long, grid_dates = data.fetchers.get_region_hist_locations(wmo_numbers,
-                                                                                      float_name,
-                                                                                      config)
+            wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
+            grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers, float_name, config)
 
             # if we have data in the surrounding area, find depths at these points
             if grid_lat.__len__() > 0:
@@ -289,7 +288,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 grid_long_tbase[g_180] -= 360
 
                 # find depth of the ocean at historical locations
-                grid_elev, grid_x, grid_y = data.fetchers.get_topo_grid(
+                grid_elev, grid_x, grid_y = get_topo_grid(
                                                           np.amin(grid_long_tbase) - 1,
                                                           np.amax(grid_long_tbase) + 1,
                                                           np.amin(grid_lat) - 1,
@@ -311,7 +310,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                     if 0 <= float_long <= 20:
                         float_long_0 += 360
 
-                index = core.finders.find_besthist(grid_lat, grid_long, grid_dates, grid_z,
+                index = find_besthist(grid_lat, grid_long, grid_dates, grid_z,
                                       float_lat, float_long_0, float_date, float_z,
                                       lat_large, lat_small, long_large, long_small,
                                       phi_large, phi_small, map_age_large, map_age_small,
@@ -320,7 +319,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 # Now that we have the indices of the best spatial and temporal data
                 # we can get the rest of the data from these casts
                 [best_hist_sal, best_hist_ptmp, best_hist_pres,
-                 best_hist_lat, best_hist_long, best_hist_dates] = data.fetchers.get_region_data(wmo_numbers,
+                 best_hist_lat, best_hist_long, best_hist_dates] = get_region_data(wmo_numbers,
                                                                                    float_name,
                                                                                    config,
                                                                                    index,
@@ -395,8 +394,8 @@ def update_salinity_mapping(float_dir, float_name, config):
                             # calculate signal and noise for complete data
 
                             noise_sal = core.stats.noise_variance(hist_sal.flatten(),
-                                                       hist_lat.flatten(),
-                                                       hist_long.flatten())
+                                                                  hist_lat.flatten(),
+                                                                  hist_long.flatten())
                             signal_sal = core.stats.signal_variance(hist_sal)
 
                             # map residuals
@@ -410,7 +409,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                             hist_data = np.column_stack((hist_lat, hist_long,
                                                          hist_dates, hist_z))
 
-                            mapped_values = data.wrangling.map_data_grid(hist_sal.flatten(),
+                            mapped_values = map_data_grid(hist_sal.flatten(),
                                                           float_data,
                                                           hist_data,
                                                           long_large, lat_large,
@@ -423,7 +422,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                             sal_residual = hist_sal.flatten() - mapped_values[2]
                             sal_signal_residual = core.stats.signal_variance(sal_residual)
 
-                            mapped_residuals = data.wrangling.map_data_grid(sal_residual,
+                            mapped_residuals = map_data_grid(sal_residual,
                                                              float_data,
                                                              hist_data,
                                                              long_small, lat_small,
