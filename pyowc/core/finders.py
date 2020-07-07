@@ -13,8 +13,8 @@ import math
 import numpy as np
 from scipy.interpolate import interpolate
 
-from pyowc.core.utils import potential_vorticity
-from pyowc.core.stats import spatial_correlation
+from .utils import potential_vorticity
+from .stats import spatial_correlation
 
 
 #pylint: disable=too-many-arguments
