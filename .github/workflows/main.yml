@@ -53,7 +53,8 @@ jobs:
         pip install pytest pytest-cov
         echo `pwd`
         ls -al
-        pytest --verbosity=3 --cov=./ --cov-config=.coveragerc --cov-report xml:cov.xml --cov-report term-missing
+        cd pyowc/tests
+        pytest --verbosity=3 --cov=./ --cov-config=../../.coveragerc --cov-report xml:../../cov.xml --cov-report term-missing
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
