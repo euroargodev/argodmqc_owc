@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 import geopandas as gdp # pylint: disable=import-error
-from pyowc import core
 from scipy.interpolate import interpolate
+from pyowc import core
 
 
 # pylint: disable=too-many-locals

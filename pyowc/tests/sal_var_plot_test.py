@@ -13,7 +13,7 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 import copy
 import unittest
 from unittest.mock import patch
-import scipy.io as scipy
+from scipy.io import loadmat
 from pyowc.plot import plots
 
 # pylint: disable=bare-except
@@ -33,9 +33,9 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that salinity variance plot throws no errors")
 
-        grid_data = scipy.loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
-        float_data = scipy.loadmat("../../data/float_source/3901960.mat")
-        cal_data = scipy.loadmat("../../data/test_data/float_calib_test/cal_3901960.mat")
+        grid_data = loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
+        float_data = loadmat("../../data/float_source/3901960.mat")
+        cal_data = loadmat("../../data/test_data/float_calib_test/cal_3901960.mat")
 
         sal = float_data['SAL']
         theta = float_data['PTMP']

@@ -200,7 +200,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     if grid_lat.__len__() == 0:
 
         raise ValueError("get_region_hist_locations found no data for your specification. "
-                         "Are your wmo_boxes files set up correctly?")
+                         "Are your wmo_boxes files set up correctly?\n%s" % str(config))
 
 
 

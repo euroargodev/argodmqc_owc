@@ -1,6 +1,7 @@
 """ Functions to calibrate data
 
 """
+import os
 import time
 import copy
 import numpy as np
@@ -8,8 +9,9 @@ from scipy.io import loadmat, savemat
 import scipy.optimize as scipy
 import scipy.interpolate as interpolate
 
-from . import core
-from . import data
+from pyowc import core
+from pyowc import data
+from pyowc.data.wrangling import interp_climatology
 
 
 # pylint: disable=too-many-locals
@@ -94,12 +96,14 @@ def update_salinity_mapping(float_dir, float_name, config):
     # Load precalculated mapped data -------------------------------------
 
     # Check to see if we have any precalculated mapped data
+    mapped_data_path = config['FLOAT_MAPPED_DIRECTORY'] + float_dir \
+                       + config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX']
+    mapped_data_path = os.path.abspath(mapped_data_path)
+
     try:
 
         # open up mapped data
-        float_mapped_data = loadmat(config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
-                                          config['FLOAT_MAPPED_PREFIX'] + float_name +
-                                          config['FLOAT_MAPPED_POSTFIX'])
+        float_mapped_data = loadmat(mapped_data_path)
 
         # Save the data to variables
         la_mapped_sal = float_mapped_data['la_mapped_sal']
@@ -152,8 +156,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                                 np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
                                 axis=0)
 
-        print("Using precaulcated data: ", config['FLOAT_MAPPED_DIRECTORY'] + float_dir +
-              config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX'])
+        print("Using precalculated data: ", mapped_data_path)
         print("__________________________________________________________")
 
     # If we don't have any precalculated mapped data
@@ -181,7 +184,7 @@ def update_salinity_mapping(float_dir, float_name, config):
         p_delta = []
         p_exclude = []
 
-        print("No precaulcated data")
+        print("No precalculated data at: %s" % mapped_data_path)
         print("__________________________________________________________\n")
 
     # Compare profile numbers in the float source against the mapped data matrix -
@@ -261,10 +264,11 @@ def update_salinity_mapping(float_dir, float_name, config):
                 float_long_tbase -= 360
 
             # find the depth of the ocean at the float location
-            float_elev, float_x, float_y = data.get_topo_grid(float_long_tbase - 1,
+            float_elev, float_x, float_y = data.fetchers.get_topo_grid(float_long_tbase - 1,
                                                          float_long_tbase + 1,
                                                          float_lat - 1,
-                                                         float_lat + 1)
+                                                         float_lat + 1,
+                                                         config)
             float_interp = interpolate.interp2d(float_x[0, :],
                                                 float_y[:, 0],
                                                 float_elev,
@@ -272,8 +276,8 @@ def update_salinity_mapping(float_dir, float_name, config):
             float_z = -float_interp(float_long, float_lat)[0]
 
             # gather data from area surrounding the float location
-            wmo_numbers = core.find_25boxes(float_long, float_lat, wmo_boxes)
-            grid_lat, grid_long, grid_dates = data.get_region_hist_locations(wmo_numbers,
+            wmo_numbers = core.finders.find_25boxes(float_long, float_lat, wmo_boxes)
+            grid_lat, grid_long, grid_dates = data.fetchers.get_region_hist_locations(wmo_numbers,
                                                                         float_name,
                                                                         config)
 
@@ -285,10 +289,11 @@ def update_salinity_mapping(float_dir, float_name, config):
                 grid_long_tbase[g_180] -= 360
 
                 # find depth of the ocean at historical locations
-                grid_elev, grid_x, grid_y = data.get_topo_grid(np.amin(grid_long_tbase) - 1,
+                grid_elev, grid_x, grid_y = data.fetchers.get_topo_grid(np.amin(grid_long_tbase) - 1,
                                                           np.amax(grid_long_tbase) + 1,
                                                           np.amin(grid_lat) - 1,
-                                                          np.amax(grid_lat) + 1)
+                                                          np.amax(grid_lat) + 1,
+                                                          config)
 
                 grid_interp = interpolate.interp2d(grid_x[0], grid_y[:, 0],
                                                    grid_elev, kind='linear')
@@ -305,7 +310,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                     if 0 <= float_long <= 20:
                         float_long_0 += 360
 
-                index = core.find_besthist(grid_lat, grid_long, grid_dates, grid_z,
+                index = core.finders.find_besthist(grid_lat, grid_long, grid_dates, grid_z,
                                       float_lat, float_long_0, float_date, float_z,
                                       lat_large, lat_small, long_large, long_small,
                                       phi_large, phi_small, map_age_large, map_age_small,
@@ -314,7 +319,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                 # Now that we have the indices of the best spatial and temporal data
                 # we can get the rest of the data from these casts
                 [best_hist_sal, best_hist_ptmp, best_hist_pres,
-                 best_hist_lat, best_hist_long, best_hist_dates] = data.get_region_data(wmo_numbers,
+                 best_hist_lat, best_hist_long, best_hist_dates] = data.fetchers.get_region_data(wmo_numbers,
                                                                                    float_name,
                                                                                    config,
                                                                                    index,
@@ -335,7 +340,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                         float_long += 360
 
                 # interpolate historical data onto float theta levels
-                hist_interp_sal, hist_interp_pres = data.interp_climatology(best_hist_sal,
+                hist_interp_sal, hist_interp_pres = interp_climatology(best_hist_sal,
                                                                        best_hist_ptmp,
                                                                        best_hist_pres,
                                                                        float_sal,
@@ -373,7 +378,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             # Need to check for statistical outliers
                             mean_sal = np.mean(hist_sal)
-                            signal_sal = core.signal_variance(hist_sal)
+                            signal_sal = core.stats.signal_variance(hist_sal)
                             outlier = np.argwhere(np.abs(hist_sal - mean_sal) /
                                                   np.sqrt(signal_sal) > 3)
 
@@ -388,10 +393,10 @@ def update_salinity_mapping(float_dir, float_name, config):
 
                             # calculate signal and noise for complete data
 
-                            noise_sal = core.noise_variance(hist_sal.flatten(),
+                            noise_sal = core.stats.noise_variance(hist_sal.flatten(),
                                                        hist_lat.flatten(),
                                                        hist_long.flatten())
-                            signal_sal = core.signal_variance(hist_sal)
+                            signal_sal = core.stats.signal_variance(hist_sal)
 
                             # map residuals
                             hist_data = np.array([hist_lat, hist_long,
@@ -404,7 +409,7 @@ def update_salinity_mapping(float_dir, float_name, config):
                             hist_data = np.column_stack((hist_lat, hist_long,
                                                          hist_dates, hist_z))
 
-                            mapped_values = data.map_data_grid(hist_sal.flatten(),
+                            mapped_values = data.wrangling.map_data_grid(hist_sal.flatten(),
                                                           float_data,
                                                           hist_data,
                                                           long_large, lat_large,
@@ -415,9 +420,9 @@ def update_salinity_mapping(float_dir, float_name, config):
                             # use short scales to map the residuals
 
                             sal_residual = hist_sal.flatten() - mapped_values[2]
-                            sal_signal_residual = core.signal_variance(sal_residual)
+                            sal_signal_residual = core.stats.signal_variance(sal_residual)
 
-                            mapped_residuals = data.map_data_grid(sal_residual,
+                            mapped_residuals = data.wrangling.map_data_grid(sal_residual,
                                                              float_data,
                                                              hist_data,
                                                              long_small, lat_small,

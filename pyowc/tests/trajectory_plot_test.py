@@ -12,9 +12,8 @@ https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
 
 
 import unittest
-import scipy.io as scipy
-from ow_calibration.plot_diagnostics.trajectory_plot.trajectory_plot import trajectory_plot
-from ow_calibration.plot_diagnostics.trajectory_plot.create_dataframe import create_dataframe
+from scipy.io import loadmat
+from pyowc.plot import plots, utils
 
 
 # pylint: disable=bare-except
@@ -31,14 +30,15 @@ class MyTestCase(unittest.TestCase):
 
         print("Test that trajectory plot throws no errors")
 
-        grid_data = scipy.loadmat("data/float_mapped/map_3901960.mat")
-        float_data = scipy.loadmat("data/float_source/3901960.mat")
+        config = {'CONFIG_DIRECTORY': "../../data/constants/"}
 
-        grid, floats = create_dataframe(grid_data, float_data)
+        grid_data = loadmat("../../data/float_mapped/map_3901960.mat")
+        float_data = loadmat("../../data/float_source/3901960.mat")
 
+        grid, floats = utils.create_dataframe(grid_data, float_data)
 
         try:
-            trajectory_plot(1, 1, floats, grid, "3901960")
+            plots.trajectory_plot(1, 1, floats, grid, "3901960", config)
 
         except:
             self.fail("Trajectory plotting routine failed unexpectedly")

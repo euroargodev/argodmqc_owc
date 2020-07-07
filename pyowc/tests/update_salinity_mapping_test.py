@@ -18,10 +18,10 @@ import os
 import io
 import sys
 import numpy as np
-import scipy.io as scipy
-from ow_calibration.load_configuration.load_configuration import load_configuration
-from ow_calibration.update_salinity_mapping.update_salinity_mapping import update_salinity_mapping
+from scipy.io import loadmat
 
+from pyowc.configuration import load as load_configuration
+from pyowc.calibration import update_salinity_mapping
 
 # pylint: disable=bare-except
 class MyTestCase(unittest.TestCase):
@@ -34,17 +34,21 @@ class MyTestCase(unittest.TestCase):
         Only run if we are missing our test file
         :return: Nothing
         """
-
         self.float_source = "3901960"
-        self.python_output_path = "data/float_mapped/map_" + self.float_source + ".mat"
-        matlab_output_path = "data/test_data/float_mapped_test/map_" + self.float_source + ".mat"
+        self.python_output_path = "../../data/float_mapped/map_" + self.float_source + ".mat"
+        matlab_output_path = "../../data/test_data/float_mapped_test/map_" + self.float_source + ".mat"
+        DEFAULT_CONFIG = load_configuration()
+        for path in ['CONFIG_DIRECTORY', 'FLOAT_CALIB_DIRECTORY', 'FLOAT_SOURCE_DIRECTORY',
+                     'FLOAT_MAPPED_DIRECTORY', 'HISTORICAL_DIRECTORY']:
+            DEFAULT_CONFIG[path] = DEFAULT_CONFIG[path].replace("data/", "../../data/")
+        self.config = DEFAULT_CONFIG
 
         if not os.path.exists(self.python_output_path):
             print("Getting mapped data for testing...")
-            update_salinity_mapping("/", self.float_source, load_configuration())
+            update_salinity_mapping("/", self.float_source, self.config)
 
-        self.matlab_output = scipy.loadmat(matlab_output_path)
-        self.python_output = scipy.loadmat(self.python_output_path)
+        self.matlab_output = loadmat(matlab_output_path)
+        self.python_output = loadmat(self.python_output_path)
         self.acceptable_diff = 3
 
     def test_salinity_mapping(self):
@@ -59,7 +63,7 @@ class MyTestCase(unittest.TestCase):
             os.remove(self.python_output_path)
 
         try:
-            update_salinity_mapping("/", self.float_source, load_configuration())
+            update_salinity_mapping("/", self.float_source, self.config)
 
         except:
             self.fail("Update salinity mapping encountered an unexpected error")
@@ -67,11 +71,11 @@ class MyTestCase(unittest.TestCase):
         # Should use precalculated data
         captured_output = io.StringIO()
         sys.stdout = captured_output
-        update_salinity_mapping("/", self.float_source, load_configuration())
+        update_salinity_mapping("/", self.float_source, self.config)
         sys.stdout = sys.__stdout__
 
-        self.assertTrue("Using precaulcated data" in captured_output.getvalue(),
-                        "Should use precalculated data")
+        self.assertTrue("Using precalculated data" in captured_output.getvalue(),
+                        "Should use precalculated data !")
 
 
     def test_ptmp_output(self):
