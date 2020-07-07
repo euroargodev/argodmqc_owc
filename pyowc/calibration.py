@@ -265,10 +265,10 @@ def update_salinity_mapping(float_dir, float_name, config):
 
             # find the depth of the ocean at the float location
             float_elev, float_x, float_y = data.fetchers.get_topo_grid(float_long_tbase - 1,
-                                                         float_long_tbase + 1,
-                                                         float_lat - 1,
-                                                         float_lat + 1,
-                                                         config)
+                                                                       float_long_tbase + 1,
+                                                                       float_lat - 1,
+                                                                       float_lat + 1,
+                                                                       config)
             float_interp = interpolate.interp2d(float_x[0, :],
                                                 float_y[:, 0],
                                                 float_elev,
@@ -278,8 +278,8 @@ def update_salinity_mapping(float_dir, float_name, config):
             # gather data from area surrounding the float location
             wmo_numbers = core.finders.find_25boxes(float_long, float_lat, wmo_boxes)
             grid_lat, grid_long, grid_dates = data.fetchers.get_region_hist_locations(wmo_numbers,
-                                                                        float_name,
-                                                                        config)
+                                                                                      float_name,
+                                                                                      config)
 
             # if we have data in the surrounding area, find depths at these points
             if grid_lat.__len__() > 0:
@@ -289,7 +289,8 @@ def update_salinity_mapping(float_dir, float_name, config):
                 grid_long_tbase[g_180] -= 360
 
                 # find depth of the ocean at historical locations
-                grid_elev, grid_x, grid_y = data.fetchers.get_topo_grid(np.amin(grid_long_tbase) - 1,
+                grid_elev, grid_x, grid_y = data.fetchers.get_topo_grid(
+                                                          np.amin(grid_long_tbase) - 1,
                                                           np.amax(grid_long_tbase) + 1,
                                                           np.amin(grid_lat) - 1,
                                                           np.amax(grid_lat) + 1,

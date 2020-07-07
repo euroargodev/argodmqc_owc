@@ -28,11 +28,11 @@ class MyTestCase(unittest.TestCase):
         :return: nothing
         """
         float_source = "3901960"
-        DEFAULT_CONFIG = pyowc.configuration.load()
+        config = pyowc.configuration.load()
         for path in ['CONFIG_DIRECTORY', 'FLOAT_CALIB_DIRECTORY', 'FLOAT_SOURCE_DIRECTORY', 'FLOAT_MAPPED_DIRECTORY']:
-            DEFAULT_CONFIG[path] = DEFAULT_CONFIG[path].replace("data/", "../../data/")
+            config[path] = config[path].replace("data/", "../../data/")
 
-        core.stats.calc_piecewisefit("/", float_source, DEFAULT_CONFIG)
+        core.stats.calc_piecewisefit("/", float_source, config)
 
         test = loadmat("../../data/float_calib/cal_" + float_source + ".mat")
         matlab = loadmat("../../data/test_data/float_calib_test/cal_" +

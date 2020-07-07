@@ -36,10 +36,12 @@ def sorter(msites, sites):
 def wrap_longitude(grid_long):
     """ Allows longitude (0-360) to wrap beyond the 360 mark, for mapping purposes.
 
-        Makes sure that, if the longitude is near the boundary (0 or 360) that we wrap the values beyond
+        Makes sure that, if the longitude is near the boundary (0 or 360) that we
+        wrap the values beyond
         360 so it appears nicely on a map
 
-        This is a refactor between get_region_data and get_region_hist_locations to avoid duplicate code
+        This is a refactor between get_region_data and get_region_hist_locations to
+        avoid duplicate code
 
         Parameters
         ----------
@@ -68,7 +70,8 @@ def potential_vorticity(lat, z_value):
 
         Calculates the potential vorticity for a given latitude and z
 
-        Used to belong in "find_besthist", but was refactored and removed to its own file for neatness.
+        Used to belong in "find_besthist", but was refactored and removed
+        to its own file for neatness.
 
         Parameters
         ----------

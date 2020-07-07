@@ -34,7 +34,7 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
         max_long: maximum longitudinal value for grid
         min_lat: minimum latidunal value for grid
         max_lat: maximum latidunal value for grid
-    
+
         Returns
         -------
         Matrices containing a uniform grid of latitudes and longitudes, along with the depth at these points
@@ -158,7 +158,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
         configuration can be changed in load_configuration.py
 
         N.B. Change to code on xx/xx/2015 - Only load longitude, latitude, and dates
-                
+
         Parameters
         ----------
         pa_wmo_numbers: 2D array containing the name of the WMO boxes that cover the area of interest, and flags for
@@ -232,7 +232,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
 
 
         Parameters
-        ----------    
+        ----------
         pa_wmo_numbers: 2D array containing the name of the WMO boxes that cover the area of interest, and flags for
             whether we want to use argo, bottle, and/or CTD data
         pa_float_name: string of the name of the float currently being processed

@@ -17,13 +17,13 @@ from pyowc import core
 def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
                   signal_variance, noise_variance, phi, map_pv_use):
     """ Maps historical float data onto a single float
-    
+
         An optimal mapping routine, taking data measured in arbitrary geographic locations and
         mapping these data onto a more regular grid. As should happen in every mapping problem
         the data are both mapped onto the prescribed grid, and the data locations (so that
         the mapped field can be checked with the original data to ensure that the statistics
         are valid and consistent).
-        
+
         Before objectively mapping the data, a mean, using the correlation scales to define the
         weights for the sum (see Bretherton, etal, 1975) is removed.  The error estimate includes
         the contributions from both the mapping and the mean estimation.
@@ -70,7 +70,7 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
 
     # now map to the data to the regular grid
     grid_data_covar = (signal_variance * core.stats.covar_xyt_pv(data_pos, grid_pos, lat, long,
-                                                      age, phi, map_pv_use)).transpose()
+                                                                 age, phi, map_pv_use)).transpose()
     grid_weight_covar = np.dot(grid_data_covar, weight) + mean_field
     dot_covar_diag = np.diag(np.dot(
         np.dot(grid_data_covar, data_data_covar), np.transpose(grid_data_covar)))
@@ -88,7 +88,7 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
 #pylint: disable=too-many-statements
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
     """ Interpolate historical salinity and pressure data on the float theta
-    
+
         Routine to interpolate climatological salinity and pressure data onto float's potential temperature.
 
         Parameters

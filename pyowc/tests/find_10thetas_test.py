@@ -201,7 +201,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                 :return: Nothing
                 """
         print("Testing that we can include the middle band of data")
-        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(self.sal,
+        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
+                                                                               self.sal,
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
@@ -228,7 +229,8 @@ class Find10ThetasTestCase(unittest.TestCase):
         :return: Nothing
         """
         print("Testing that we can exclude the middle band of data")
-        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(self.sal,
+        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
+                                                                               self.sal,
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
@@ -255,7 +257,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                 :return: Nothing
                 """
         print("Testing that we can exclude data above/below points")
-        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(self.sal,
+        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
+                                                                               self.sal,
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
@@ -275,7 +278,8 @@ class Find10ThetasTestCase(unittest.TestCase):
         self.assertTrue(theta_levels.__len__() > 0,
                         "should have theta levels")
 
-        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(self.sal,
+        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
+                                                                               self.sal,
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,

@@ -16,7 +16,7 @@ import scipy
 import gsw
 
 from pyowc.core import utils
-from pyowc.core import finders
+from pyowc.core.finders import find_10thetas
 from pyowc.data.fetchers import get_topo_grid
 from pyowc.calibration import fit_cond
 
@@ -255,10 +255,9 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     """
 
     # load in the source data
-
-    float_source_data = loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] +
-                                      float_dir + float_name +
-                                      system_config['FLOAT_SOURCE_POSTFIX'])
+    float_source_data_path = system_config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
+                             float_name + system_config['FLOAT_SOURCE_POSTFIX']
+    float_source_data = loadmat(float_source_data_path)
 
     lat = float_source_data['LAT']
     long = float_source_data['LONG']
@@ -269,9 +268,10 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     x_in = np.tile(profile_no, (10, 1))
 
     # load in the mapped data
-    float_mapped_data = loadmat(system_config['FLOAT_MAPPED_DIRECTORY'] +
-                                      float_dir + system_config['FLOAT_MAPPED_PREFIX'] +
-                                      float_name + system_config['FLOAT_MAPPED_POSTFIX'])
+    float_mapped_data_path = system_config['FLOAT_MAPPED_DIRECTORY'] + float_dir \
+                             + system_config['FLOAT_MAPPED_PREFIX'] + float_name \
+                             + system_config['FLOAT_MAPPED_POSTFIX']
+    float_mapped_data = loadmat(float_mapped_data_path)
 
     mapped_sal = float_mapped_data['la_mapped_sal']
     mapsalerror = float_mapped_data['la_mapsalerrors']
@@ -306,10 +306,10 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         coord_float = np.column_stack((long.T, lat.T, z_grid))
 
     # load the calibration settings
-
-    float_calseries = loadmat(system_config['FLOAT_CALIB_DIRECTORY'] + float_dir +
-                                    system_config['FLOAT_CALSERIES_PREFIX'] + float_name +
-                                    system_config['FLOAT_MAPPED_POSTFIX'])
+    float_calseries_path = system_config['FLOAT_CALIB_DIRECTORY'] + float_dir + \
+                           system_config['FLOAT_CALSERIES_PREFIX'] + float_name + \
+                           system_config['FLOAT_MAPPED_POSTFIX']
+    float_calseries = loadmat(float_calseries_path)
 
     calseries = float_calseries['calseries']
     max_breaks = float_calseries['max_breaks']
@@ -397,21 +397,21 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                 system_config['FLOAT_CALIB_POSTFIX'])
 
         savemat(float_calib_filename,
-                      {'cal_SAL': cal_sal,
-                       'cal_SAL_err': cal_sal_err,
-                       'pcond_factor': pcond_factor,
-                       'pcond_factor_err': pcond_factor_err,
-                       'cal_COND': cal_cond,
-                       'cal_COND_err': cal_cond_err,
-                       'time_deriv': time_deriv,
-                       'time_deriv_err': time_deriv_err,
-                       'sta_mean': sta_mean,
-                       'sta_rms': sta_rms,
-                       'sta_SAL': sta_sal,
-                       'sta_SAL_err': sta_sal_err,
-                       'PROFILE_NO': profile_no,
-                       'fcoef': fceof,
-                       'fbreaks': fbreaks})
+                {'cal_SAL': cal_sal,
+                 'cal_SAL_err': cal_sal_err,
+                 'pcond_factor': pcond_factor,
+                 'pcond_factor_err': pcond_factor_err,
+                 'cal_COND': cal_cond,
+                 'cal_COND_err': cal_cond_err,
+                 'time_deriv': time_deriv,
+                 'time_deriv_err': time_deriv_err,
+                 'sta_mean': sta_mean,
+                 'sta_rms': sta_rms,
+                 'sta_SAL': sta_sal,
+                 'sta_SAL_err': sta_sal_err,
+                 'PROFILE_NO': profile_no,
+                 'fcoef': fceof,
+                 'fbreaks': fbreaks})
 
         return
 
@@ -444,7 +444,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         unique_mapped_sal_1 = copy.deepcopy(unique_mapped_sal)
         unique_mapsalerrors_1 = copy.deepcopy(unique_mapsalerrors)
 
-        theta, p, index, var_s_th, th = finders.find_10thetas(copy.deepcopy(unique_sal),
+        theta, p, index, var_s_th, th = find_10thetas(copy.deepcopy(unique_sal),
                                                       copy.deepcopy(unique_ptmp),
                                                       copy.deepcopy(unique_pres),
                                                       copy.deepcopy(unique_mapped_ptmp),
@@ -578,20 +578,20 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                         system_config['FLOAT_CALIB_POSTFIX'])
 
     savemat(float_calib_name, {'cal_SAL': cal_sal,
-                                     'cal_SAL_err': cal_sal_err,
-                                     'pcond_factor': pcond_factor,
-                                     'pcond_factor_err': pcond_factor_err,
-                                     'cal_COND': cal_cond,
-                                     'cal_COND_err': cal_cond_err,
-                                     'time_deriv': time_deriv,
-                                     'time_deriv_err': time_deriv_err,
-                                     'sta_mean': sta_mean,
-                                     'sta_rms': sta_rms,
-                                     'sta_SAL': sta_sal,
-                                     'sta_SAL_err': sta_sal_err,
-                                     'PROFILE_NO': profile_no,
-                                     'fcoef': fceof,
-                                     'fbreaks': fbreaks})
+                               'cal_SAL_err': cal_sal_err,
+                               'pcond_factor': pcond_factor,
+                               'pcond_factor_err': pcond_factor_err,
+                               'cal_COND': cal_cond,
+                               'cal_COND_err': cal_cond_err,
+                               'time_deriv': time_deriv,
+                               'time_deriv_err': time_deriv_err,
+                               'sta_mean': sta_mean,
+                               'sta_rms': sta_rms,
+                               'sta_SAL': sta_sal,
+                               'sta_SAL_err': sta_sal_err,
+                               'PROFILE_NO': profile_no,
+                               'fcoef': fceof,
+                               'fbreaks': fbreaks})
 
 
 #pylint: disable=too-many-locals

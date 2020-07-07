@@ -9,9 +9,9 @@
 """
 
 import copy
-from scipy.interpolate import interpolate
 import math
 import numpy as np
+from scipy.interpolate import interpolate
 
 from pyowc.core import utils
 from pyowc.core import stats
@@ -68,22 +68,25 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
 def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date, z_value,
                   latitude_large, latitude_small, longitude_large, longitude_small,
                   phi_large, phi_small, age_large, age_small, map_pv_use, max_casts):
-    """ Finds ln_max_casts number of unique historical data points that are most strongly correlated with the
-    float profile being processed
+    """ Find correlated points in historical data
 
+        Finds ln_max_casts number of unique historical data points that are most
+        strongly correlated with the float profile being processed
 
-        Find ln_max_casts unique historical points that are most strongly correlated with the float profile
+        Find ln_max_casts unique historical points that are most strongly correlated
+        with the float profile
 
-        Rewritten in December 2006 to only use latitude, longitude, data, and water depth as arguments
-        and to return index of the station list
+        Rewritten in December 2006 to only use latitude, longitude, data, and water
+        depth as arguments and to return index of the station list
 
-        N.B. Change to code on the xx/06/2013: add age_large when computing correlation_large
+        N.B. Change to code on the xx/06/2013: add age_large when computing
+        correlation_large
         - C Cabanes
 
-        N.B Change during conversion to python on the 31/10/2019: Potential Vorticity, Correlation, and
-        ellipse are calculated multiple times, so I moved them into their own function.
-        These functions can be vectorised using the numpy library (numpy.vectorize(function))
-        to use the functions on arrays.
+        N.B Change during conversion to python on the 31/10/2019: Potential Vorticity,
+        Correlation, and ellipse are calculated multiple times, so I moved them into
+        their own function. These functions can be vectorised using the numpy library
+        (numpy.vectorize(function)) to use the functions on arrays.
         - Edward Small
 
         Parameters
@@ -315,11 +318,13 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
         Column 3 - Do we have bottle data (1 = yes, 0 = no)
         Column 4 - do we have Argo data (1 = yes, 0 = no)
 
-        N.B. Change to code on the xx/11/2014: extend la_x so interp2 does not think that longitudes in
-        the range [5W 5E] are out-of-bound with matlab version >=R2012b - C Cabanes
+        N.B. Change to code on the xx/11/2014: extend la_x so interp2 does not
+        think that longitudes in the range [5W 5E] are out-of-bound with matlab
+        version >=R2012b - C Cabanes
 
-        N.B. Change during conversion to python on the 01/10/2019. Struggled to find an interpolation
-        function that exactly mirrored Matlab's, so I wrote my own - Edward Small
+        N.B. Change during conversion to python on the 01/10/2019. Struggled to
+        find an interpolation function that exactly mirrored Matlab's, so
+        I wrote my own - Edward Small
 
         First, we need to create a look-up table in the form of
 

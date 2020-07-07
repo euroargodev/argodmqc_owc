@@ -49,8 +49,8 @@ class MyTestCase(unittest.TestCase):
         profile_no = float_data['PROFILE_NO']
 
         self.assertEqual(plots.cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal,
-                                            sta_sal_err, sta_mean, pcond_factor,
-                                            pcond_factor_err, profile_no, float_name),
+                                                  sta_sal_err, sta_mean, pcond_factor,
+                                                  pcond_factor_err, profile_no, float_name),
                          None)
 
 
