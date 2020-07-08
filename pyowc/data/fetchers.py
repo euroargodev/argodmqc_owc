@@ -8,6 +8,7 @@
 
 """
 
+import os
 import struct
 import numpy as np
 import scipy.io as scipy
@@ -68,7 +69,7 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
     topo = np.zeros((nlat, nlong))
 
     # Open the binary file
-    elev_file = open(config['CONFIG_DIRECTORY'] + "tbase.int", "rb")
+    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'],  "tbase.int"]), "rb")
 
     # decode the file, and get values
     for i in range(nlat):
@@ -110,14 +111,12 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     box_name = str(int(wmo_box[0]))
     # check if we should use this data. If so, get the data
     if wmo_box[data_type] == 1 and data_type == 1:
-        data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                             config['HISTORICAL_CTD_PREFIX'] +
-                             box_name + '.mat')
+        data = loadmat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
+                                         config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat']))
 
     if wmo_box[data_type] == 1 and data_type == 2:
-        data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                             config['HISTORICAL_BOTTLE_PREFIX'] +
-                             box_name + '.mat')
+        data = loadmat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
+                                         config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat']))
 
         # if data dimensions don't match, transpose to avoid indexing issues
         if (data['lat'].size == data['pres'].size and
@@ -128,9 +127,8 @@ def get_data(wmo_box, data_type, config, pa_float_name):
             data['temp'] = data['temp'].T
 
     if wmo_box[data_type] == 1 and data_type == 3:
-        data = scipy.loadmat(config['HISTORICAL_DIRECTORY'] +
-                             config['HISTORICAL_ARGO_PREFIX'] +
-                             box_name + '.mat')
+        data = loadmat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
+                                         config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat']))
 
         # remove the argo float being analysed from the data
         not_use = []

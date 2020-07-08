@@ -1,0 +1,304 @@
+import os
+import unittest
+import numpy as np
+from scipy.io import loadmat
+
+from pyowc import core
+from . import TESTS_CONFIG
+
+
+class BrkPtFit(unittest.TestCase):
+    """
+    Test case for 'brk_pt_fit' function
+    """
+
+    def setUp(self):
+        self.x_obvs = np.arange(-1, 1 + 0.1, 0.1)
+        self.x_obvs = np.flip(np.delete(self.x_obvs, 10))
+        self.y_obvs = np.array([1.94417105917954,
+                                2.21737581122686,
+                                -0.119039551119482,
+                                2.24012756841706,
+                                1.39707773867623,
+                                -0.207378785001771,
+                                0.335494656601145,
+                                1.14064455761495,
+                                2.37252050630289,
+                                2.39466560559783,
+                                -0.0271607549673552,
+                                2.41177834528185,
+                                2.37150084472884,
+                                0.956126946168524,
+                                1.90084140666640,
+                                -0.0743409841183540,
+                                0.765283847878825,
+                                2.24720657556720,
+                                1.87662198867866,
+                                2.37847727917871])
+
+        weights = np.array([1.48361104873488,
+                            0.553567517861284,
+                            1.77369395880317,
+                            1.90098987163633,
+                            1.51810273228666,
+                            1.63661019586750,
+                            1.61469870218737,
+                            1.08834052930125,
+                            1.48321683526633,
+                            0.756780031717343,
+                            1.55906913202941,
+                            0.547749269566131,
+                            0.915384477441335,
+                            0.569257085946731,
+                            0.645697671853771,
+                            1.73518674249094,
+                            1.54224293446373,
+                            0.975649220091291,
+                            1.92533307325753,
+                            0.551669120754363])
+
+        self.w_i = np.zeros((20, 20))
+        no_weights = self.w_i.shape[0]
+
+        for i in range(no_weights):
+            self.w_i[i, i] = weights[i]
+
+    def test_bad_inputs_gives_outputs(self):
+        """
+        Check that, if observations are the wrong shape, we get a bad output
+        :return: Nothing
+        """
+        print("Testing brk_pt_fit returns values for bad arrays")
+
+        breaks = [1, 2, 3]
+        y_obvs = [1, 2]
+
+        fit_param, residual = core.stats.brk_pt_fit([1, 2, 3], y_obvs, [1, 2, 3], breaks)
+
+        for i in range(y_obvs.__len__()):
+            self.assertEqual(residual[i], y_obvs[i],
+                             "residuals should equal independent observations for bad inputs")
+
+        self.assertEqual(fit_param.shape, (breaks.__len__() + 2, 1),
+                         "matrix shape should be (b + 2, 1)")
+
+        for i in fit_param:
+            self.assertEqual(i, 0, "A should be all zeroes")
+
+    def test_needs_no_weights(self):
+        """
+        Check that, even without weights, we get an estimate
+        :return: Nothing
+        """
+        print("testing brk_pt_fit runs without weights")
+        fit_param_ans = np.array([1.37597459912525,
+                                  -0.501251340026727])
+
+        residual_ans = np.array([0.568196460054282,
+                                 0.841401212101603,
+                                 -1.49501415024474,
+                                 0.864152969291804,
+                                 0.0211031395509740,
+                                 -1.58335338412703,
+                                 -1.04047994252411,
+                                 -0.235330041510303,
+                                 0.996545907177638,
+                                 1.01869100647258,
+                                 -1.40313535409261,
+                                 1.03580374615659,
+                                 0.995526245603582,
+                                 -0.419847652956731,
+                                 0.524866807541146,
+                                 -1.45031558324361,
+                                 -0.610690751246430,
+                                 0.871231976441947,
+                                 0.500647389553409,
+                                 -4.44089209850063e-16])
+        fit_param, residual = core.stats.brk_pt_fit(self.x_obvs, self.y_obvs, [])
+
+        for i in range(fit_param.__len__()):
+            self.assertAlmostEqual(fit_param[i], fit_param_ans[i], 12,
+                                   "matlab parameters should match python ones")
+
+        for i in range(residual.__len__()):
+            self.assertAlmostEqual(residual[i], residual_ans[i], 12,
+                                   "matlab parameters should match python ones")
+
+    def test_runs_with_weights(self):
+        """
+        Check we get the right answer when running with weights
+        :return: nothing
+        """
+        print("Testing brk_pt_ft runs using weighted values")
+
+        fit_param_ans = np.array([1.20259478507721,
+                                  -0.587941247050749])
+        residual_ans = np.array([0.741576274102326,
+                                 1.01478102614965,
+                                 -1.32163433619669,
+                                 1.03753278333985,
+                                 0.194482953599018,
+                                 -1.40997357007898,
+                                 -0.867100128476065,
+                                 -0.0619502274622590,
+                                 1.16992572122568,
+                                 1.19207082052062,
+                                 -1.22975554004457,
+                                 1.20918356020464,
+                                 1.16890605965163,
+                                 -0.246467838908687,
+                                 0.698246621589190,
+                                 -1.27693576919556,
+                                 -0.437310937198385,
+                                 1.04461179048999,
+                                 0.674027203601453,
+                                 0])
+
+        fit_param, residual = core.stats.brk_pt_fit(self.x_obvs, self.y_obvs, self.w_i)
+
+        for i in range(fit_param.__len__()):
+            self.assertAlmostEqual(fit_param[i], fit_param_ans[i], 12,
+                                   "matlab parameters should match python ones")
+
+        for i in range(residual.__len__()):
+            self.assertAlmostEqual(residual[i], residual_ans[i], 12,
+                                   "matlab parameters should match python ones")
+
+    def test_det_zero(self):
+        """
+        Check that we still get an answer if determinant is o
+        :return: nothing
+        """
+        print("Testing brk_pt_fit returns if det(A) == 0")
+
+        y_obvs = np.array([0, 0, 0])
+
+        fit_param, residual = core.stats.brk_pt_fit(np.array([0, 0, 0]), y_obvs, [])
+
+        for i in range(fit_param.__len__()):
+            self.assertEqual(fit_param[i], 0, "should be all zeroes when det(a) == 0")
+
+        for i in range(residual.__len__()):
+            self.assertEqual(residual[i], y_obvs[i], "should be all zeroes when det(a) == 0")
+
+
+class BuildCov(unittest.TestCase):
+    """
+    Test cases for build_cov function
+    """
+
+    def setUp(self):
+        """
+        Set up for test
+        :return: Nothing
+        """
+
+        self.config = {"MAPSCALE_LONGITUDE_SMALL": 4,
+                       "MAPSCALE_LATITUDE_SMALL": 2,
+                       "MAPSCALE_PHI_SMALL": 0.1,
+                       "MAP_USE_PV": 0}
+        self.ptmp = np.array([[0.7058, 0.7039, 0.8285],
+                              [0.6713, 0.6664, 0.7432],
+                              [0.8257, 0.8224, 0.7804],
+                              [0.7452, 0.7411, 1.1980],
+                              [0.7836, 0.7802, 1.1504],
+                              [1.2008, 1.2010, 1.2497],
+                              [1.1496, 1.1481, 1.3036],
+                              [1.2520, 1.2553, 1.0921],
+                              [1.3039, 1.3046, np.nan],
+                              [1.0947, 1.0962, np.nan]])
+        self.coord_float = np.array([[0.0572, -0.0592, 5.1083],
+                                     [0.0578, -0.0591, 5.0993],
+                                     [0.0586, -0.0585, 5.0861]]) * 1.0e+03
+
+    def test_returns_numpy_array(self):
+        """
+        Check that build_cov returns a numpy array
+        :return: Nothing
+        """
+
+        print("Testing that build_cov returns a numpy array")
+
+        test = core.stats.build_cov(self.ptmp, self.coord_float, self.config)
+
+        self.assertEqual(type(test), np.ndarray, "build_cov did not return a numpy array")
+
+    def test_returns_correct_size(self):
+        """
+        Check that build_cov returns a matrix that is the correct size
+        :return: Nothing
+        """
+
+        print("Testing that build_cov returns correct shape matrix")
+
+        test = core.stats.build_cov(self.ptmp, self.coord_float, self.config)
+
+        self.assertEqual(test.shape,
+                         (self.coord_float.shape[0] * self.ptmp.shape[0],
+                          self.coord_float.shape[0] * self.ptmp.shape[0]),
+                         "build_cov returned a matrix of incorrect size")
+
+    def test_returns_correct_elements(self):
+        """
+        Check that build_cov returns a matrix that is the correct size
+        :return: Nothing
+        """
+
+        print("Testing that build_cov returns correct shape matrix")
+
+        # expected = loadmat("../../data/test_data/build_cov/cov.mat")['test_cov_1']
+        expected_path = os.path.sep.join([TESTS_CONFIG['TEST_DATA'], "build_cov", "cov.mat"])
+        expected = loadmat(expected_path)['test_cov_1']
+
+        expected_size = expected.shape
+
+        test = core.stats.build_cov(self.ptmp, self.coord_float, self.config)
+
+        for i in range(0, expected_size[0]):
+            for j in range(0, expected_size[1]):
+                self.assertAlmostEqual(test[i, j], expected[i, j], 15,
+                                       "covariance matrix is incorrect")
+
+
+class CalcPiecewiseFit(unittest.TestCase):
+    """
+    Test cases for 'calc_piecewisefit' function
+    """
+
+    def test_custom(self):
+        """
+        Change variables in this test to use different mapped outputs
+        :return: nothing
+        """
+        core.stats.calc_piecewisefit("/", TESTS_CONFIG['TEST_FLOAT_SOURCE'], TESTS_CONFIG)
+
+        test_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_CALIB_DIRECTORY'],
+                                      TESTS_CONFIG['FLOAT_CALIB_PREFIX'] +
+                                      TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                      TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
+        test = loadmat(test_data_path)
+
+        matlab_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DATA'], 'float_calib_test',
+                                             TESTS_CONFIG['FLOAT_CALIB_PREFIX'] +
+                                             TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                             TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
+        matlab = loadmat(matlab_data_path)
+
+        python_sal = test['cal_SAL']
+        matlab_sal = matlab['cal_SAL']
+
+        self.assertEqual(python_sal.shape, matlab_sal.shape)
+
+        for i in range(python_sal.shape[0]):
+            for j in range(python_sal.shape[1]):
+                if ~np.isnan(python_sal[i, j]):
+                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i, j], 3)
+
+        python_sal_err = test['cal_SAL_err']
+        matlab_sal_err = matlab['cal_SAL_err']
+
+        for i in range(python_sal_err.shape[0]):
+            for j in range(python_sal_err.shape[1]):
+                if ~np.isnan(python_sal_err[i, j]):
+                    self.assertAlmostEqual(python_sal_err[i, j], matlab_sal_err[i, j], 3)
+
