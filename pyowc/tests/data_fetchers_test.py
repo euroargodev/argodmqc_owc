@@ -5,8 +5,8 @@ import unittest
 import numpy as np
 import warnings
 
-from pyowc import data
-from pyowc.data.fetchers import get_region_hist_locations
+# from pyowc import data
+from pyowc.data.fetchers import get_data, get_region_data, get_region_hist_locations
 from . import TESTS_CONFIG
 
 
@@ -32,7 +32,7 @@ class GetData(unittest.TestCase):
 
         wmo_boxes = np.array([self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 0, 0])
 
-        this_data = data.fetchers.get_data(wmo_boxes, 1, self.config, self.float_name)
+        this_data = get_data(wmo_boxes, 1, self.config, self.float_name)
         self.assertTrue(this_data.__len__() == 0, "should return no data")
 
     def test_returns_correct_data(self):
@@ -44,15 +44,15 @@ class GetData(unittest.TestCase):
 
         wmo_boxes = np.array([self.config['TEST_FLOAT_WMO_BOXES'][0], 1, 1, 1])
 
-        data_ctd = data.fetchers.get_data(wmo_boxes, 1, self.config, self.float_name)
+        data_ctd = get_data(wmo_boxes, 1, self.config, self.float_name)
         self.assertTrue(data_ctd['long'].shape[1] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][0],
                         "should return some data when fetching ctd")
 
-        data_bot = data.fetchers.get_data(wmo_boxes, 2, self.config, self.float_name)
+        data_bot = get_data(wmo_boxes, 2, self.config, self.float_name)
         self.assertTrue(data_bot['long'].shape[1] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][1],
                         "should return some data when fetching argo")
 
-        data_argo = data.fetchers.get_data(wmo_boxes, 3, self.config, self.float_name)
+        data_argo = get_data(wmo_boxes, 3, self.config, self.float_name)
         self.assertTrue(data_argo['long'][0].__len__() == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][2],
                         "should return some data when fetching argo")
 
@@ -66,8 +66,8 @@ class GetData(unittest.TestCase):
         wmo_boxes = np.array([self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 0, 1])
         float_removed = self.config['TEST_FLOAT_IN_HIST']
 
-        data_normal = data.fetchers.get_data(wmo_boxes, 3, self.config, self.float_name)
-        data_removed = data.fetchers.get_data(wmo_boxes, 3, self.config, float_removed)
+        data_normal = get_data(wmo_boxes, 3, self.config, self.float_name)
+        data_removed = get_data(wmo_boxes, 3, self.config, float_removed)
 
         self.assertTrue(data_normal['long'][0].__len__() - data_removed['long'][0].__len__() ==
                         self.config['TEST_FLOAT_N_TO_REMOVE'],
@@ -81,7 +81,7 @@ class GetData(unittest.TestCase):
         print("Testing that get_data returns data with the expected shape")
 
         wmo_boxes = np.array([self.config['TEST_FLOAT_WMO_BOXES'][0], 1, 0, 0])
-        this_data = data.fetchers.get_data(wmo_boxes, 1, self.config, self.float_name)
+        this_data = get_data(wmo_boxes, 1, self.config, self.float_name)
 
         self.assertTrue(this_data['sal'].shape == this_data['ptmp'].shape == this_data['temp'].shape,
                         "Ocean characteristic data should be the same shape")
@@ -111,7 +111,7 @@ class GetRegionData(unittest.TestCase):
         """
         print("Testing that get_region_data returns 6 arrays")
 
-        test = data.fetchers.get_region_data(self.wmo_boxes, self.float_name, self.config,
+        test = get_region_data(self.wmo_boxes, self.float_name, self.config,
                                self.index, self.pres)
 
         self.assertTrue(test.__len__() == 6, "Should return 6 arrays")
@@ -123,7 +123,7 @@ class GetRegionData(unittest.TestCase):
         """
         print("Testing that get_region_data return values are the correct shape")
 
-        test = data.fetchers.get_region_data(self.wmo_boxes, self.float_name, self.config,
+        test = get_region_data(self.wmo_boxes, self.float_name, self.config,
                                self.index, self.pres)
 
         self.assertTrue(test[0].shape == test[1].shape == test[2].shape,
@@ -143,11 +143,11 @@ class GetRegionData(unittest.TestCase):
         """
         print("Testing that get_region_data can return different data types")
 
-        test_ctd = data.fetchers.get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 1, 0, 0]]),
+        test_ctd = get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 1, 0, 0]]),
                                                  self.float_name, self.config, self.index, self.pres)
-        test_bot = data.fetchers.get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 1, 0]]),
+        test_bot = get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 1, 0]]),
                                                  self.float_name, self.config, self.index, self.pres)
-        test_argo = data.fetchers.get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 0, 1]]),
+        test_argo = get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 0, 1]]),
                                                   self.float_name, self.config, self.index, self.pres)
 
         self.assertTrue(test_ctd[0].shape[1] != test_argo[0].shape[1],
@@ -162,11 +162,11 @@ class GetRegionData(unittest.TestCase):
         """
         print("Testing that get_region returns correct amount of data")
 
-        test_many = data.fetchers.get_region_data(self.wmo_boxes, self.float_name, self.config, self.index, self.pres)
+        test_many = get_region_data(self.wmo_boxes, self.float_name, self.config, self.index, self.pres)
 
         self.assertTrue(test_many[0].shape[1] == self.index.__len__())
 
-        test_one = data.fetchers.get_region_data(self.wmo_boxes, self.float_name, self.config,
+        test_one = get_region_data(self.wmo_boxes, self.float_name, self.config,
                                    [50], self.pres)
 
         self.assertTrue(test_one[0].shape[1] == 1)
@@ -179,13 +179,13 @@ class GetRegionData(unittest.TestCase):
         print("Testing exception is raised if indices are bad")
 
         with self.assertRaises(Exception) as no_index:
-            data.fetchers.get_region_data(self.wmo_boxes, self.float_name, self.config,
+            get_region_data(self.wmo_boxes, self.float_name, self.config,
                             [], self.pres)
 
         self.assertTrue('NO DATA FOUND' in str(no_index.exception))
 
         with self.assertRaises(Exception) as big_index:
-            data.fetchers.get_region_data(self.wmo_boxes, self.float_name, self.config,
+            get_region_data(self.wmo_boxes, self.float_name, self.config,
                             [99999999999999999], self.pres)
 
         self.assertTrue('NO DATA FOUND' in str(big_index.exception))

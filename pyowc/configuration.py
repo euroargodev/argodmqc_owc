@@ -101,6 +101,7 @@ def load():
     return collections.OrderedDict(sorted(cfg.items()))
 
 def print_cfg(config):
+    """ Return a string of the configuration dictionnary """
     cfg_str = []
     for k in config:
         cfg_str.append("%30s: %s\n" % (k, str(config[k])))
