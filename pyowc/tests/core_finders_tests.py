@@ -17,8 +17,10 @@ class Find10Thetas(unittest.TestCase):
     def setUp(self):
         # set up data to run find_10thetas
         float_source = TESTS_CONFIG['TEST_FLOAT_SOURCE']
-        mapped_values_path = os.path.sep.join([TESTS_CONFIG['TEST_DATA'], "float_mapped_test", "map_" + float_source + ".mat"])
-        source_values_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'], float_source + TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
+        mapped_values_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'],
+                                               "float_mapped_test", "map_" + float_source + ".mat"])
+        source_values_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
+                                               float_source + TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
 
         mapped_values = loadmat(mapped_values_path)
         source_values = loadmat(source_values_path)
@@ -591,5 +593,8 @@ class FindEllipse(unittest.TestCase):
 
         for i in range(0, hist_long.__len__()):
             self.assertEqual(round(ellipse[i], 4), ellipse_expected[i],
-                             "incorrect result in array")
+                             "incorrect result in array"
 
+
+if __name__ == '__main__':
+    unittest.main()

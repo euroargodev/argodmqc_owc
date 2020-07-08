@@ -51,7 +51,7 @@ def load():
         #    Diagnostic Plots Output Path
         #
 
-        'FLOAT_PLOTS_DIRECTORY': "/home/awong/argo/OW/data/float_plots/",
+        'FLOAT_PLOTS_DIRECTORY': "data/float_plots/",
 
         # ===============================
         #

@@ -248,7 +248,7 @@ class BuildCov(unittest.TestCase):
         print("Testing that build_cov returns correct shape matrix")
 
         # expected = loadmat("../../data/test_data/build_cov/cov.mat")['test_cov_1']
-        expected_path = os.path.sep.join([TESTS_CONFIG['TEST_DATA'], "build_cov", "cov.mat"])
+        expected_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "build_cov", "cov.mat"])
         expected = loadmat(expected_path)['test_cov_1']
 
         expected_size = expected.shape
@@ -279,7 +279,7 @@ class CalcPiecewiseFit(unittest.TestCase):
                                       TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
         test = loadmat(test_data_path)
 
-        matlab_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DATA'], 'float_calib_test',
+        matlab_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], 'float_calib_test',
                                              TESTS_CONFIG['FLOAT_CALIB_PREFIX'] +
                                              TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
                                              TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
@@ -519,8 +519,10 @@ class FitCond(unittest.TestCase):
     Test cases for 'fit_cond' function
     """
     def setUp(self):
-        fit_input = loadmat("../../data/test_data/fit_cond/fit_cond_input.mat")
-        fit_out = loadmat("../../data/test_data/fit_cond/fit_cond_output.mat")
+        # fit_input = loadmat("../../data/test_data/fit_cond/fit_cond_input.mat")
+        # fit_out = loadmat("../../data/test_data/fit_cond/fit_cond_output.mat")
+        fit_input = loadmat(os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "fit_cond", "fit_cond_input.mat"]))
+        fit_out = loadmat(os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "fit_cond", "fit_cond_output.mat"]))
 
         self.in_x = fit_input['x']
         self.in_y = fit_input['y']
@@ -582,3 +584,6 @@ class FitCond(unittest.TestCase):
 
         self.assertEqual(python_test.__len__(), 10, "should return 10 outputs")
 
+
+if __name__ == '__main__':
+    unittest.main()
