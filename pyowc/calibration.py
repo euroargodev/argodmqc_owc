@@ -47,8 +47,8 @@ def update_salinity_mapping(float_dir, float_name, config):
     # Load float source data ---------------------------------------------
 
     # Get float file name
-    filename = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
-               float_name + config['FLOAT_SOURCE_POSTFIX']
+    filename = os.path.sep.join([config['FLOAT_SOURCE_DIRECTORY'], float_dir,
+                                 float_name + config['FLOAT_SOURCE_POSTFIX']])
 
     # Load the float data
     float_source_data = loadmat(filename)
@@ -59,7 +59,7 @@ def update_salinity_mapping(float_dir, float_name, config):
 
     # Load all the mapping parameters, including the WMO boxes -----------
 
-    wmo_boxes = loadmat(config['CONFIG_DIRECTORY'] + config['CONFIG_WMO_BOXES'])
+    wmo_boxes = loadmat(os.path.sep.join([config['CONFIG_DIRECTORY'], config['CONFIG_WMO_BOXES']]))
     max_casts = config['CONFIG_MAX_CASTS']
     map_use_pv = config['MAP_USE_PV']
     map_use_saf = config['MAP_USE_SAF']
@@ -97,8 +97,10 @@ def update_salinity_mapping(float_dir, float_name, config):
     # Load precalculated mapped data -------------------------------------
 
     # Check to see if we have any precalculated mapped data
-    mapped_data_path = config['FLOAT_MAPPED_DIRECTORY'] + float_dir \
-                       + config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX']
+    mapped_data_path = os.path.sep.join([config['FLOAT_MAPPED_DIRECTORY'], float_dir,
+                                         config['FLOAT_MAPPED_PREFIX'] +
+                                         float_name +
+                                         config['FLOAT_MAPPED_POSTFIX']])
     mapped_data_path = os.path.abspath(mapped_data_path)
 
     try:
@@ -527,8 +529,8 @@ def update_salinity_mapping(float_dir, float_name, config):
         selected_hist = selected_hist[index, :]
 
     # define the saving location
-    save_location = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
-                    float_name + config['FLOAT_MAPPED_POSTFIX']
+    save_location = os.path.sep.join([config['FLOAT_MAPPED_DIRECTORY'],
+                                      config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX']])
 
     # save the data
     savemat(save_location, {'la_ptmp': la_ptmp,
@@ -574,19 +576,18 @@ def set_calseries(float_dir, float_name, system_config):
     """
 
     # load float source data
-    float_source = loadmat(system_config['FLOAT_SOURCE_DIRECTORY'] + float_dir +
-                           float_name + system_config['FLOAT_SOURCE_POSTFIX'])
+    float_source = loadmat(os.path.sep.join([system_config['FLOAT_SOURCE_DIRECTORY'], float_dir,
+                                             float_name + system_config['FLOAT_SOURCE_POSTFIX']]))
 
     profile_no = float_source['PROFILE_NO'].flatten()
     no_profiles = profile_no.__len__()
 
     # Check if we already have a calseries file
 
-    calseries_filename = (system_config['FLOAT_CALIB_DIRECTORY'] +
-                          float_dir +
-                          system_config['FLOAT_CALSERIES_PREFIX'] +
-                          float_name +
-                          system_config['FLOAT_CALIB_POSTFIX'])
+    calseries_filename = (os.path.sep.join([system_config['FLOAT_CALIB_DIRECTORY'], float_dir,
+                                            system_config['FLOAT_CALSERIES_PREFIX'] +
+                                            float_name +
+                                            system_config['FLOAT_CALIB_POSTFIX']]))
 
     # if we already have a calseries file, use those values. Else, use new ones
     try:

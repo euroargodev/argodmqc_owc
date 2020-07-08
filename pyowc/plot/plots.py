@@ -1,5 +1,6 @@
 """ Functions to create specific plots
 """
+import os
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -37,24 +38,24 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     """
 
     # load in the coastline data
-    coastline = config['CONFIG_DIRECTORY'] + "coastline/ne_10m_coastline.shp"
+    coastline = os.path.sep.join([config['CONFIG_DIRECTORY'], "coastline", "ne_10m_coastline.shp"])
     map_coast = gdp.read_file(coastline)
     traj_map = map_coast.plot(color='black', label='coastline')
 
     # if wanted, load in bathymetric data and plot it
     if bath == 1:
-        bathymetry0 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_L_0.shp"
-        bathymetry200 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_K_200.shp"
-        bathymetry1000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_J_1000.shp"
-        bathymetry2000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_I_2000.shp"
-        bathymetry3000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_H_3000.shp"
-        bathymetry4000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_G_4000.shp"
-        bathymetry5000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_F_5000.shp"
-        bathymetry6000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_E_6000.shp"
-        bathymetry7000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_D_7000.shp"
-        bathymetry8000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_C_8000.shp"
-        bathymetry9000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_B_9000.shp"
-        bathymetry10000 = config['CONFIG_DIRECTORY'] + "bathymetry/ne_10m_bathymetry_A_10000.shp"
+        bathymetry0 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_L_0.shp"])
+        bathymetry200 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_K_200.shp"])
+        bathymetry1000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_J_1000.shp"])
+        bathymetry2000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_I_2000.shp"])
+        bathymetry3000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_H_3000.shp"])
+        bathymetry4000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_G_4000.shp"])
+        bathymetry5000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_F_5000.shp"])
+        bathymetry6000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_E_6000.shp"])
+        bathymetry7000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_D_7000.shp"])
+        bathymetry8000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_C_8000.shp"])
+        bathymetry9000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_B_9000.shp"])
+        bathymetry10000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_A_10000.shp"])
         map_bath0 = gdp.read_file(bathymetry0)
         map_bath200 = gdp.read_file(bathymetry200)
         map_bath1000 = gdp.read_file(bathymetry1000)
@@ -82,7 +83,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 
     # if we want reef data, load it in and plot it
     if reef == 1:
-        reef = config['CONFIG_DIRECTORY'] + "reefs/ne_10m_reefs.shp"
+        reef = os.path.sep.join([config['CONFIG_DIRECTORY'], "reefs", "ne_10m_reefs.shp"])
         map_reef = gdp.read_file(reef)
         traj_map = map_reef.plot(ax=traj_map, color='green', label='reef')
 
