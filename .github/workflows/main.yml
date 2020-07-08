@@ -36,8 +36,6 @@ jobs:
     - name: Lint with pylint (tests used at NOC)
       run: |
         pip install pylint
-        echo `pwd`
-        ls -al
         pylint pyowc
 
     - name: Lint with flake8 (new at Github)
@@ -53,8 +51,7 @@ jobs:
         pip install pytest pytest-cov
         echo `pwd`
         ls -al
-        cd pyowc/tests
-        pytest --verbosity=3 --cov=./ --cov-config=../../.coveragerc --cov-report xml:../../cov.xml --cov-report term-missing
+        pytest --verbosity=3 --cov=./ --cov-config=.coveragerc --cov-report xml:cov.xml --cov-report term-missing
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
