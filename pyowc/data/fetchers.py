@@ -11,7 +11,7 @@
 import os
 import struct
 import numpy as np
-import scipy.io as scipy
+from scipy.io import loadmat
 
 from ..utilities import wrap_longitude, change_dates
 
@@ -69,7 +69,7 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
     topo = np.zeros((nlat, nlong))
 
     # Open the binary file
-    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'],  "tbase.int"]), "rb")
+    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")
 
     # decode the file, and get values
     for i in range(nlat):
