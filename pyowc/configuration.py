@@ -1,5 +1,6 @@
 """ Configuration loader
 """
+import collections
 
 def load():
     """
@@ -8,7 +9,7 @@ def load():
     {PARAMETER_NAME: parameter_value}
     """
 
-    return {
+    cfg = {
 
         # ===============================
         #
@@ -97,3 +98,10 @@ def load():
         # only use historical data that are within +/- yyy dbar from float data
         'MAP_P_DELTA': 250
     }
+    return collections.OrderedDict(sorted(cfg.items()))
+
+def print_cfg(config):
+    cfg_str = []
+    for k in config:
+        cfg_str.append("%30s: %s\n" % (k, str(config[k])))
+    return "\n"+"".join(cfg_str)

@@ -8,13 +8,14 @@
 
 """
 
+import warnings
 import os
 import struct
 import numpy as np
 from scipy.io import loadmat
 
 from ..utilities import wrap_longitude, change_dates
-
+from ..configuration import print_cfg
 
 #pylint: disable=too-many-locals
 def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
@@ -88,17 +89,23 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
 
 
 def get_data(wmo_box, data_type, config, pa_float_name):
-    """ Gets all the data we highlight we want from regions specified by the WMO boxes
+    """ Gets all the data from regions specified by the WMO boxes
 
         Uses the WMO box numbers to fetch the relevant data for the region.
 
         This is a refactor between get_region_data and get_region_hist_locations to avoid
         duplicate code
 
+        Relies on configuration parameters:
+            - config['HISTORICAL_DIRECTORY']
+            - config['HISTORICAL_CTD_PREFIX']
+            - config['HISTORICAL_BOTTLE_PREFIX']
+            - config['HISTORICAL_ARGO_PREFIX']
+
         Parameters
         ----------
         wmo_box: 2D array containing the name of the WMO boxes that cover the area of interest, and flags for whether we want to use argo, bottle, and/or CTD data
-        data_type: Which type of data we are checking for
+        data_type: Which type of data we are checking: 1 (CTD), 2 (BOTTLE) or 3 (ARGO)
         config: Dictionary containing configuration settings. Used to find locations of folders and file containing data
         pa_float_name: String containing the name of the float being profiled
 
@@ -106,6 +113,8 @@ def get_data(wmo_box, data_type, config, pa_float_name):
         -------
         Array containing all (ctd/bottle/argo) data in a wmo box
     """
+    # warnings.warn(print_cfg(config))
+    # warnings.warn("pa_float_name: %s (%s)" % (str(pa_float_name), type(pa_float_name)))
 
     data = []
     box_name = str(int(wmo_box[0]))
@@ -178,7 +187,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
     # go through each of the WMO boxes
     for wmo_box in pa_wmo_numbers:
 
-        # go through each of the columns denoting whether we should use CTD, bottle, and/or argo
+        # go through each of the columns denoting whether we should use CTD (1), bottle (2), and/or argo (3)
         for data_type in range(1, 4):
 
             # get the data
@@ -191,7 +200,6 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
                     grid_long = np.concatenate([grid_long, data['long'][0]])
                     grid_dates = np.concatenate([grid_dates, data['dates'][0]])
                     data = []
-
 
             except:
                 pass
@@ -305,6 +313,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                             ptmp = data['ptmp'][not_nan, i]
 
                             # remove values where pressure exceeds the maximum we want
+                            # todo: Why is this not done during data fetching ????
                             too_deep = np.argwhere(pres > max_pres)
                             pres = np.delete(pres, too_deep[:, 0])
                             sal = np.delete(sal, too_deep[:, 0])

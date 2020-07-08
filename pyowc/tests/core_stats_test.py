@@ -1,10 +1,11 @@
+""" Tests for core.stats module functions """
 import os
 import unittest
 import numpy as np
 from scipy.io import loadmat
 
 from pyowc import core
-from pyowc.core.stats import fit_cond, noise_variance
+from pyowc.core.stats import fit_cond, noise_variance, signal_variance
 from . import TESTS_CONFIG
 
 
@@ -585,7 +586,7 @@ class FitCond(unittest.TestCase):
         self.assertEqual(python_test.__len__(), 10, "should return 10 outputs")
 
 
-class NoiseVarianceTestCase(unittest.TestCase):
+class NoiseVariance(unittest.TestCase):
     """
     Test cases for noise_variance function
     """
@@ -629,6 +630,74 @@ class NoiseVarianceTestCase(unittest.TestCase):
         noise_var = noise_variance(self.sal, self.lat, self.long)
 
         self.assertAlmostEqual(noise_var, expected, 16, "Did not receive expected answer")
+
+
+class SignalVariance(unittest.TestCase):
+    """
+    Test cases for signal_variance function
+    """
+
+    def test_returns_float(self):
+        """
+        Check that we return a float if given some data
+        :return: Nothing
+        """
+        print("Testing that signal_variance returns a float")
+
+        var = signal_variance([1, 2, 3, 4, 5])
+        self.assertTrue(isinstance(var, float), "signal variance is not a float")
+
+    def test_throws_exception(self):
+        """
+        Check that we thrown an exception if no valid salinities are given
+        :return: Nothing
+        """
+        print("Testing that signal_variance throws an exception for no valid salinities")
+
+        with self.assertRaises(Exception) as no_valid_sal:
+            signal_variance([0, 0, float('nan'), float('nan')])
+
+        self.assertTrue('Received no valid salinity values when calculating signal variance'
+                        in str(no_valid_sal.exception))
+
+    def test_nans_are_ignored(self):
+        """
+        Check that we ignore 0's and nan values
+        :return: Nothing
+        """
+        print("Testing that signal_variance ignores 0's/NaNs correctly")
+
+        expected = signal_variance([1, 2, 3, 4, 5])
+        zeroes = signal_variance([1, 0, 2, 0, 3, 0, 4, 0, 5, 0])
+        nans = signal_variance([1, 2, 3, 4, 5, float('nan'), float('nan')])
+
+        self.assertEqual(expected, zeroes, "signal variance is not ignoring 0's")
+        self.assertEqual(expected, nans, "sign_variance is not ignoring NaN's")
+
+    def test_negtive_inputs_against_positive(self):
+        """
+        Check that giving a set of negative inputs gives the same result as positive inputs
+        :return: Nothing
+        """
+        print("Testing that signal_variance returns the same result for input and -input")
+
+        positive = signal_variance([30, 20, 10, 40, 50])
+        negative = signal_variance([-30, -20, -10, -40, -50])
+
+        self.assertEqual(positive, negative,
+                         "signal_variance is not returning the same result for input and -input")
+
+    def test_returns_correct_result(self):
+        """
+        Check that we get the expected result from some inputs
+        :return: Nothing
+        """
+        print("Testing that signal_variance gives the expected results")
+
+        expected = 0.185000000000001
+        ans = signal_variance([-35, -35.5, -35.7, -36.2])
+
+        self.assertEqual(ans, expected, "signal_variance did not give the expected result")
 
 
 if __name__ == '__main__':
