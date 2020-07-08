@@ -75,7 +75,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         grid_theta = grid_theta[:max_level, :]
         grid_pres = grid_pres[:max_level, :]
     else:
-        raise ValueError("No good climatological data has been found")
+        print("No good climatological data has been found for this profile")
+        return interp_sal_final, interp_pres_final
 
     # find where data isn't missing in the float
     float_good_sal = np.isfinite(float_sal)

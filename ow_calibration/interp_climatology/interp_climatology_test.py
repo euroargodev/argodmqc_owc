@@ -45,19 +45,18 @@ class InterpClimatologyTestCase(unittest.TestCase):
 
     def test_throws_error(self):
         """
-        Test that an error is thrown if we have no good climatology data
+        Test that inter_climatology gives back nans for bad data
         :return: Nothing
         """
-        print("Testing that interp_climatology throws an error if all data is bad")
+        print("Testing that interp_climatology doesn't throws an error if all data is bad")
 
         bad_grid_sal = np.full((5, 5), np.inf)
 
-        with self.assertRaises(ValueError) as bad_climatology:
-            interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
-                               self.float_sal, self.float_theta, self.float_pres)
+        sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
+                                  self.float_sal, self.float_theta, self.float_pres)
 
-        self.assertTrue("No good climatological data has been found"
-                        in str(bad_climatology.exception))
+        self.assertTrue(np.all(np.isnan(sal)), True)
+        self.assertTrue(np.all(np.isnan(pres)), True)
 
     def test_returns_correct_shape(self):
         """
