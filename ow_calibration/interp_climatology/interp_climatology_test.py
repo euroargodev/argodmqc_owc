@@ -53,7 +53,7 @@ class InterpClimatologyTestCase(unittest.TestCase):
         bad_grid_sal = np.full((5, 5), np.inf)
 
         sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
-                                  self.float_sal, self.float_theta, self.float_pres)
+                                       self.float_sal, self.float_theta, self.float_pres)
 
         self.assertTrue(np.all(np.isnan(sal)), True)
         self.assertTrue(np.all(np.isnan(pres)), True)
