@@ -262,49 +262,6 @@ class BuildCov(unittest.TestCase):
                                        "covariance matrix is incorrect")
 
 
-class CalcPiecewiseFit(unittest.TestCase):
-    """
-    Test cases for 'calc_piecewisefit' function
-    """
-
-    def test_custom(self):
-        """
-        Change variables in this test to use different mapped outputs
-        :return: nothing
-        """
-        core.stats.calc_piecewisefit("/", TESTS_CONFIG['TEST_FLOAT_SOURCE'], TESTS_CONFIG)
-
-        test_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_CALIB_DIRECTORY'],
-                                      TESTS_CONFIG['FLOAT_CALIB_PREFIX'] +
-                                      TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                      TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
-        test = loadmat(test_data_path)
-
-        matlab_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], 'float_calib_test',
-                                             TESTS_CONFIG['FLOAT_CALIB_PREFIX'] +
-                                             TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                             TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
-        matlab = loadmat(matlab_data_path)
-
-        python_sal = test['cal_SAL']
-        matlab_sal = matlab['cal_SAL']
-
-        self.assertEqual(python_sal.shape, matlab_sal.shape)
-
-        for i in range(python_sal.shape[0]):
-            for j in range(python_sal.shape[1]):
-                if ~np.isnan(python_sal[i, j]):
-                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i, j], 3)
-
-        python_sal_err = test['cal_SAL_err']
-        matlab_sal_err = matlab['cal_SAL_err']
-
-        for i in range(python_sal_err.shape[0]):
-            for j in range(python_sal_err.shape[1]):
-                if ~np.isnan(python_sal_err[i, j]):
-                    self.assertAlmostEqual(python_sal_err[i, j], matlab_sal_err[i, j], 3)
-
-
 class Covarxytpv(unittest.TestCase):
     """
     Test cases for covar_xyt_pv function
