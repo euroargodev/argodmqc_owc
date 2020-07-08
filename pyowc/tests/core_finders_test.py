@@ -1,38 +1,27 @@
-"""
------Find 10 Theta Levels Test File-----
-
-Written by: Edward Small
-When: 01/06/2020
-
-Contains unit tests to check the functionality of the `find_10thetas` function
-
-Changes can be made to this file to test all different kinds of floats, as long
-as you have data for comparison
-
-To run this test specifically, look at the documentation at:
-https://gitlab.noc.soton.ac.uk/edsmall/bodc-dmqc-python
-"""
-
+import os
 import unittest
 import numpy as np
-import scipy.io as scipy
+from scipy.io import loadmat
+import random
+
 from pyowc import core
+from . import TESTS_CONFIG
 
 #pylint: disable=fixme
 #pylint: disable=too-many-instance-attributes
-class Find10ThetasTestCase(unittest.TestCase):
+class Find10Thetas(unittest.TestCase):
     """
     Test cases for find_10thetas function
     """
 
     def setUp(self):
         # set up data to run find_10thetas
-        float_source = "3901960"
-        mapped_values_path = "../../data/test_data/float_mapped_test/map_" + float_source + ".mat"
-        source_values_path = "../../data/float_source/" + float_source + ".mat"
+        float_source = TESTS_CONFIG['TEST_FLOAT_SOURCE']
+        mapped_values_path = os.path.sep.join([TESTS_CONFIG['TEST_DATA'], "float_mapped_test", "map_" + float_source + ".mat"])
+        source_values_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'], float_source + TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
 
-        mapped_values = scipy.loadmat(mapped_values_path)
-        source_values = scipy.loadmat(source_values_path)
+        mapped_values = loadmat(mapped_values_path)
+        source_values = loadmat(source_values_path)
 
         self.sal = source_values['SAL']
         self.ptmp = source_values['PTMP']
@@ -301,5 +290,306 @@ class Find10ThetasTestCase(unittest.TestCase):
                         "should have theta levels")
 
 
-if __name__ == '__main__':
-    unittest.main()
+class Find25Boxes(unittest.TestCase):
+    """
+    Test cases for find_25boxes function"
+    """
+
+    def setUp(self):
+        """
+        Setting up variables to be used in test cases
+        Is run before each test case
+        :return: Nothing
+        """
+        self.pa_wmo_boxes = loadmat(os.path.sep.join([TESTS_CONFIG['CONFIG_DIRECTORY'], TESTS_CONFIG['CONFIG_WMO_BOXES']]))
+        self.pn_float_long = 57.1794
+        self.pn_float_lat = -59.1868
+
+    def test_can_load_matrix(self):
+        """
+        Check that we can open a matlab matrix file (.mat)
+        :return: Nothing
+        """
+        print("Testing that a matlab matrix can be loaded in...")
+        self.assertNotEqual(self.pa_wmo_boxes, '', "Failed to load matlab matrix")
+
+    def test_nearest_neighbour_nan(self):
+        """
+        Check that the nearest neighbour algorithm returns grid point
+        :return: Nothing
+        """
+        print("Testing nearest_neighbour returns correct grid point")
+        x_axis = np.arange(0, 3, 1, int)
+        y_axis = np.arange(0, 3, 1, int)
+        data = np.full((1, 9), np.arange(3, 12)).reshape(3, 3)
+        self.assertEqual(
+            core.finders.nearest_neighbour(
+                x_axis, y_axis, data, 0, 0
+            ), 3, "Nearest neighbour interpolation is wrong"
+        )
+
+    def test_nearest_neighbour_returns_point_in_grid(self):
+        """
+        Check that, even if the nearest neighbour function is given a number outside
+        the grid, it still returns a value that exists within the grid
+        :return: Nothing
+        """
+        print("Testing nearest_neighbour returns data from the grid")
+        x_axis = np.arange(0, 10000, 5, int)
+        y_axis = np.arange(0, 10000, 5, int)
+        data = np.full((1, 10000 * 10000), np.arange(1, 10000 * 10000 + 1)).reshape(10000, 10000)
+        self.assertIn(
+            core.finders.nearest_neighbour(
+                x_axis, y_axis, data, 93820495.3958, -9283499184.439
+            ), data, "Answer is not in data grid"
+        )
+
+    def test_returned_array_is_correct_size(self):
+        """
+        Check that we get back 25 boxes, each with 4 values
+        :return: Nothing
+        """
+        print("Testing that the returned value is 25x4 matrix")
+        pa_wmo_numbers = core.finders.find_25boxes(self.pn_float_long, self.pn_float_lat, self.pa_wmo_boxes)
+        self.assertEqual(pa_wmo_numbers.shape, (25, 4), 'returned matrix shape is incorrect')
+
+    def test_returns_array_of_nan_for_nan_input(self):
+        """
+        Check that even if we get empty inputs, we still receive boxes
+        :return: Nothing
+        """
+        print("Testing nan input")
+        pa_wmo_numbers = core.finders.find_25boxes(np.nan, np.nan, self.pa_wmo_boxes)
+        self.assertEqual(
+            np.allclose(
+                pa_wmo_numbers, np.full((25, 4), np.nan), equal_nan=True
+            ), True, "nan input doesn't lead to nan output"
+        )
+
+    def test_returned_value_exists_in_wmo_boxes(self):
+        """
+        Check that each of the 25 boxes we receive definitely exists in the original
+        collection of wmo boxes
+        :return:
+        """
+        print("Testing returned value exists in wmo_boxes.mat")
+        pa_wmo_numbers = core.finders.find_25boxes(self.pn_float_long, self.pn_float_lat, self.pa_wmo_boxes)
+        result = np.full((25, 1), False)
+
+        count = 0
+        for i in np.array(pa_wmo_numbers):
+            for j in np.array(self.pa_wmo_boxes.get('la_wmo_boxes')):
+                if i[0] == j[0] and i[1] == j[1] and i[2] == j[2] and i[3] == j[3]:
+                    result[count] = True
+            count += 1
+
+        self.assertEqual(
+            np.all([result, np.full((25, 1), True)]), True, "Some values don't match wmo_boxes.mat"
+        )
+
+
+class FindBestHist(unittest.TestCase):
+    """
+    Test cases for find_besthist function
+    """
+
+    #pylint: disable=too-many-instance-attributes
+    def setUp(self):
+        """
+        Set up for the tests. Creates 1000 historical random data points that
+        are the float data points +/- 5. This could fail randomly if, by pure
+        chance, none of the generated data is in the ellipse, so use pseudo random
+        numbers just in case
+        :return: nothing
+        """
+        random.seed(1)
+        self.grid_lat = np.random.rand(1000) * 5 * random.choice([-1, 1]) + -59.1868
+        self.grid_long = np.random.rand(1000) * 5 * random.choice([-1, 1]) + 57.1794
+        self.grid_dates = np.random.rand(1000) * 5 * random.choice([-1, 1]) + 5.1083 * 10 ** 3
+        self.grid_z_values = np.random.rand(1000) * 5 * random.choice([-1, 1]) + 2.018 * 10 ** 3
+        self.lat = -59.1868
+        self.long = 57.1794
+        self.z_value = 2.018 * 10 ** 3
+        self.date = 5.1083 * 10 ** 3
+        self.lat_large = 4
+        self.lat_small = 2
+        self.long_large = 8
+        self.long_small = 4
+        self.phi_large = 0.5
+        self.phi_small = 0.1
+        self.age_large = 20
+        self.age_small = 10
+        self.map_pv_usage = 1
+        self.max_casts = 300
+
+    def test_returns_array(self):
+        """
+        Check that find_besthist gives back an array
+        :return: Nothing
+        """
+        print("Testing that find_besthist gives back a numpy array")
+
+        index = core.finders.find_besthist(self.grid_lat, self.grid_long, self.grid_dates, self.grid_z_values,
+                              self.lat, self.long, self.date, self.z_value,
+                              self.lat_large, self.lat_small, self.long_large, self.long_small,
+                              self.phi_large, self.phi_small, self.age_large, self.age_small,
+                              self.map_pv_usage, self.max_casts)
+
+        self.assertTrue(isinstance(index, np.ndarray), "find_besthist not returning array")
+
+    def test_returns_empty(self):
+        """
+        Check that find_besthist gives back an empty array if no data fits inside
+        the ellipse
+        :return: Nothing
+        """
+        print("Testing that find_besthist gives back an empty array if no data inside ellipse")
+
+        grid_lat = np.array([1, 1])
+        grid_long = np.array([10, 10])
+        grid_z_values = np.array([10, 10])
+        grid_dates = np.array([0, 0])
+
+        index = core.finders.find_besthist(grid_lat, grid_long, grid_dates, grid_z_values,
+                              self.lat, self.long, self.date, self.z_value,
+                              self.lat_large, self.lat_small, self.long_large, self.long_small,
+                              self.phi_large, self.phi_small, self.age_large, self.age_small,
+                              self.map_pv_usage, self.max_casts)
+
+        self.assertTrue(index.__len__() == 0, "No data should have been selected")
+
+    def test_returns_array_of_right_size(self):
+        """
+        Check that find_besthist gives back an array that is the size we asked
+        :return: Nothing
+        """
+        print("Testing that find_besthist gives back the right sized array")
+
+        index = core.finders.find_besthist(self.grid_lat, self.grid_long, self.grid_dates, self.grid_z_values,
+                              self.lat, self.long, self.date, self.z_value,
+                              self.lat_large, self.lat_small, self.long_large, self.long_small,
+                              self.phi_large, self.phi_small, self.age_large, self.age_small,
+                              self.map_pv_usage, self.max_casts)
+
+        self.assertTrue(index.__len__() == self.max_casts, "index is incorrect size")
+
+    def test_returns_expected_values(self):
+        """
+        Check that find_besthist gives us the values we expect
+        Since 1/3 of the data could be selected randomly, we will just check
+        that it removes data that isn't inside the ellipse
+        :return: Nothing
+        """
+        print("Testing that find_besthist gives back an array containing expected values")
+        grid_lat = np.array([1, 1, -60, -58])
+        grid_long = np.array([10, 10, 59, 57])
+        grid_dates = np.array([1, 1, 5.108 * 10 ** 3, 5.109 * 10 ** 3])
+        grid_z_values = np.array([1, 1, 2.02 * 10 ** 3, 2.015 * 10 ** 3])
+        expected = np.array([2, 3])
+
+        index = core.finders.find_besthist(grid_lat, grid_long, grid_dates, grid_z_values,
+                              self.lat, self.long, self.date, self.z_value,
+                              self.lat_large, self.lat_small, self.long_large, self.long_small,
+                              self.phi_large, self.phi_small, self.age_large, self.age_small,
+                              self.map_pv_usage, self.max_casts)
+
+        for i in range(0, index.__len__()):
+            self.assertTrue(index[i] == expected[i], "output is incorrect (wrong index selected)")
+
+
+class FindEllipse(unittest.TestCase):
+    """
+    Test cases for "find ellipse" function
+    """
+
+    def test_find_ellipse_returns_float(self):
+        """
+        Check that find_ellipse returns a float if only given floats
+        :return: Nothing
+        """
+        print("Testing that find_ellipse will return a float")
+
+        ellipse = core.finders.find_ellipse(1, 1, 1, 1, 1, 1, 1, 1)
+
+        self.assertTrue(isinstance(ellipse, float), "find ellipse did not return float")
+
+    def test_find_ellipse_returns_array(self):
+        """
+        Check that find_ellipse returns an array if vectorised
+        :return: Nothing
+        """
+        print("Testing that find_ellipse vectorised returns an array")
+
+        find_ellipse_vec = np.vectorize(core.finders.find_ellipse)
+        ellipse = find_ellipse_vec([1, 1], 1, 1, [1, 1], 1, 1, 1)
+
+        self.assertTrue(isinstance(ellipse, np.ndarray), "find_ellipse did not return array")
+
+    def test_find_ellipse_returns_expected_float(self):
+        """
+        Check that find_ellipse returns the correct float
+        :return: Nothing
+        """
+        print("Testing that find_ellipse returns the right answer")
+
+        ellipse = core.finders.find_ellipse(53.195, 57.1794, 8,
+                               -57.996, -59.1868, 4,
+                               0.5, -2.3547 * 10 ** -8, -2.452 * 10 ** -8)
+
+        self.assertEqual(round(ellipse, 4), 0.2017, "find_ellipse returned incorrect float")
+
+    def test_find_ellipse_returns_expected_float_without_pv(self):
+        """
+        Check that find_ellipse returns the correct float without potential vorticity
+        :return: Nothing
+        """
+        print("Testing that find_ellipse returns the right answer without potential vorticity")
+
+        ellipse = core.finders.find_ellipse(53.195, 57.1794, 8,
+                               -57.996, -59.1868, 4,
+                               0.5)
+
+        self.assertEqual(round(ellipse, 4), 0.1934, "find_ellipse returned incorrect float "
+                                                    "without potential vortcity")
+
+    def test_find_ellipse_returns_expected_array(self):
+        """
+        Check that find_ellipse returns the correct array
+        :return: Nothing
+        """
+        print("Testing that find_ellipse returns the right array answer")
+
+        ellipse_expected = [0.2018, 0.3286, 0.4428]
+        find_ellipse_vec = np.vectorize(core.finders.find_ellipse)
+        hist_long = [53.195, 51.954, 53.107]
+        hist_lat = [-57.996, -56.375, -54.496]
+        hist_pv = [-0.2354 * 10 ** -7,
+                   -0.2325 * 10 ** -7,
+                   -0.267 * 10 ** -7]
+        ellipse = find_ellipse_vec(hist_long, 57.1794, 8,
+                                   hist_lat, -59.1868, 4,
+                                   0.5, hist_pv, -2.452 * 10 ** -8)
+
+        for i in range(0, hist_long.__len__()):
+            self.assertEqual(round(ellipse[i], 4), ellipse_expected[i],
+                             "incorrect result in array")
+
+    def test_find_ellipse_returns_expected_array_without_pv(self):
+        """
+        Check that find_ellipse returns the correct array
+        :return: Nothing
+        """
+        print("Testing that find_ellipse returns the right array answer")
+
+        ellipse_expected = [0.1934, 0.3199, 0.4261]
+        find_ellipse_vec = np.vectorize(core.finders.find_ellipse)
+        hist_long = [53.195, 51.954, 53.107]
+        hist_lat = [-57.996, -56.375, -54.496]
+        ellipse = find_ellipse_vec(hist_long, 57.1794, 8,
+                                   hist_lat, -59.1868, 4,
+                                   0.5)
+
+        for i in range(0, hist_long.__len__()):
+            self.assertEqual(round(ellipse[i], 4), ellipse_expected[i],
+                             "incorrect result in array")
+
