@@ -1,11 +1,6 @@
 """ Functions to create plot dashboards
-
-        Parameters
-        ----------
-
-        Returns
-        -------
 """
+import os
 import copy
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
@@ -14,6 +9,7 @@ import numpy as np
 from pyowc.plot.plots import theta_sal_plot, cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, trajectory_plot
 from pyowc.plot.utils import create_dataframe
 from pyowc.core.finders import find_10thetas
+
 
 #pylint: disable=too-many-locals
 def plot_diagnostics(float_dir, float_name, config, levels=2):
@@ -31,14 +27,14 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
         Nothing, but will save the plots as PDFs
     """
 
-    grid_data_loc = config['FLOAT_MAPPED_DIRECTORY'] + config['FLOAT_MAPPED_PREFIX'] + \
-                    float_name + config['FLOAT_MAPPED_POSTFIX']
-    float_data_loc = config['FLOAT_SOURCE_DIRECTORY'] + float_dir + \
-                     float_name + config['FLOAT_SOURCE_POSTFIX']
-    cal_data_loc = config['FLOAT_CALIB_DIRECTORY'] + float_dir + config['FLOAT_CALIB_PREFIX'] + \
-                   float_name + config['FLOAT_SOURCE_POSTFIX']
-    cal_series_loc = config['FLOAT_CALIB_DIRECTORY'] + float_dir + "calseries_" + \
-                     float_name + config['FLOAT_SOURCE_POSTFIX']
+    grid_data_loc = os.path.sep.join([config['FLOAT_MAPPED_DIRECTORY'],
+                                      config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX']])
+    float_data_loc = os.path.sep.join([config['FLOAT_SOURCE_DIRECTORY'], float_dir,
+                                       float_name + config['FLOAT_SOURCE_POSTFIX']])
+    cal_data_loc = os.path.sep.join([config['FLOAT_CALIB_DIRECTORY'], float_dir,
+                                     config['FLOAT_CALIB_PREFIX'] + float_name + config['FLOAT_SOURCE_POSTFIX']])
+    cal_series_loc = os.path.sep.join([config['FLOAT_CALIB_DIRECTORY'], float_dir,
+                                       config['FLOAT_CALSERIES_PREFIX'] + float_name + config['FLOAT_SOURCE_POSTFIX']])
 
     grid_data = loadmat(grid_data_loc)
     float_data = loadmat(float_data_loc)

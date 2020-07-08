@@ -8,7 +8,7 @@ import numpy as np
 from scipy.io import loadmat
 
 from pyowc.configuration import load as load_configuration
-from pyowc.calibration import update_salinity_mapping, set_calseries
+from pyowc.calibration import update_salinity_mapping
 from . import TESTS_CONFIG
 
 
@@ -162,84 +162,6 @@ class UpdateSalinityMapping(unittest.TestCase):
         self.assertAlmostEqual(test_mean, result_mean, self.acceptable_diff,
                                "error: mean of signal salinity "
                                "differ between python andd matlab")
-
-
-class SetCalSeries(unittest.TestCase):
-    """
-    Test cases forset_calseries function
-    """
-
-    def setUp(self):
-        """
-        Only run if we are missing our test file
-        :return: Nothing
-        """
-
-        # self.float_source = "3901960"
-        # self.float_dir = "/"
-        # self.system_config = {'FLOAT_SOURCE_DIRECTORY': "../../data/float_source",
-        #                       'FLOAT_SOURCE_POSTFIX': ".mat",
-        #                       'FLOAT_CALIB_DIRECTORY': "../../data/float_calib",
-        #                       'FLOAT_CALSERIES_PREFIX': "calseries_",
-        #                       'FLOAT_CALIB_POSTFIX': ".mat"}
-        # self.python_output_path = "../../data/float_calib/calseries_" + \
-        #                           self.float_source + ".mat"
-        # matlab_output_path = "../../data/test_data/float_calib_test/calseries_" + \
-        #                      self.float_source + ".mat"
-
-        self.float_source = TESTS_CONFIG['TEST_FLOAT_SOURCE']
-        self.float_dir = "/"
-        self.python_output_path = os.path.sep.join([TESTS_CONFIG['FLOAT_CALIB_DIRECTORY'],
-                                                    TESTS_CONFIG['FLOAT_CALSERIES_PREFIX'] +
-                                                    TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                                    TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
-        matlab_output_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "float_calib_test",
-                                                    TESTS_CONFIG['FLOAT_CALSERIES_PREFIX'] +
-                                                    TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                                    TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
-        self.system_config = TESTS_CONFIG
-
-        if not os.path.exists(self.python_output_path):
-            print("Getting calibrated data for testing...")
-            set_calseries(self.float_dir, self.float_source, self.system_config)
-
-        self.matlab_output = loadmat(matlab_output_path)
-        self.python_output = loadmat(self.python_output_path)
-
-    def test_set_calseries(self):
-        """
-        Check that the function runs and saves
-        :return: Nothing
-        """
-        print("Testing that set_calseries saves file")
-
-        if os.path.exists(self.python_output_path):
-            os.remove(self.python_output_path)
-
-        try:
-            set_calseries(self.float_dir, self.float_source, self.system_config)
-            self.assertTrue(os.path.exists(self.python_output_path),
-                            "calseries file was not saved")
-
-        except KeyError:
-            self.fail("Update salinity mapping encountered an unexpected error")
-
-        # should use old file
-        set_calseries(self.float_dir, self.float_source, self.system_config)
-
-    def test_bad_boundaries(self):
-        """
-        Check that, even if we pass  in bad boundaries, we still get values
-        :return: nothing
-        """
-        print("Testing that set_calseries sets parameters even if boundaries are bad")
-
-        if os.path.exists(self.python_output_path):
-            os.remove(self.python_output_path)
-
-        set_calseries(self.float_dir, self.float_source, self.system_config)
-
-        self.assertTrue(os.path.exists(self.python_output_path))
 
 
 
