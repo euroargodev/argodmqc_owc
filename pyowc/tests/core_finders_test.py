@@ -1,3 +1,4 @@
+""" Tests for core.finders module functions """
 import os
 import unittest
 import numpy as np
@@ -593,8 +594,4 @@ class FindEllipse(unittest.TestCase):
 
         for i in range(0, hist_long.__len__()):
             self.assertEqual(round(ellipse[i], 4), ellipse_expected[i],
-                             "incorrect result in array"
-
-
-if __name__ == '__main__':
-    unittest.main()
+                             "incorrect result in array")
