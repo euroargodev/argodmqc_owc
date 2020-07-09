@@ -31,8 +31,8 @@ USER_CONFIG = owc.configuration.load() # fetch the default configuration and par
 USER_CONFIG['MAP_USE_PV'] = 0 # Possibly tune options
 print(owc.configuration.print_cfg(USER_CONFIG))
 
-owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
+owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
 ```
 
