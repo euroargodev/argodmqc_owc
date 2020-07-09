@@ -48,8 +48,8 @@ class MyTestCase(unittest.TestCase):
                                copy.deepcopy(theta),
                                copy.deepcopy(pres),
                                copy.deepcopy(map_ptmp),
-                               0, 0,
-                               0, 0,
+                               [], [],
+                               [], [],
                                0.5)
 
         index = thetas[2]
