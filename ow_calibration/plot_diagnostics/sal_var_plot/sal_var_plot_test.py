@@ -47,9 +47,11 @@ class MyTestCase(unittest.TestCase):
         cal_sal = cal_data['cal_SAL']
         cal_sal_errors = cal_data['cal_SAL_err']
 
-        no_boundaries = [0, 0, 0, 0, 0.5]
-        low_bound = [250, 0, 250, 0, 0.5]
-        up_bound = [0, 1, 0, 1, 0.5]
+        no_boundaries = [[], [], [], [], 0.5]
+        low_bound = [[250], [], [250], [], 0.5]
+        up_bound = [[], [1], [], [1], 0.5]
+        mid_bound = [[10], [-20], [1750], [500], 0.5]
+        band_bound = [[-0.1], [0.1], [1000], [1100], 0.5]
 
         profile_no = float_data['PROFILE_NO']
 
@@ -72,6 +74,18 @@ class MyTestCase(unittest.TestCase):
                                       copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                       copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                       up_bound,
+                                      profile_no, "3902960"), None)
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                      band_bound,
+                                      profile_no, "3902960"), None)
+        self.assertEqual(sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                      mid_bound,
                                       profile_no, "3902960"), None)
 
 

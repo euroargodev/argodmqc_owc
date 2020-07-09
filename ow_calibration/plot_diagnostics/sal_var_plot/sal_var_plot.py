@@ -118,7 +118,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_pres_lt != 0 and use_pres_gt == 0:
+    if use_pres_lt.__len__() > 0 and use_pres_gt.__len__() == 0:
         good = np.argwhere(pres > use_pres_lt)
         pres[good] = np.nan
         sal[good] = np.nan
@@ -128,7 +128,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_pres_lt == 0 and use_pres_gt != 0:
+    if use_pres_lt.__len__() == 0 and use_pres_gt.__len__() > 0:
         good = np.argwhere(pres < use_pres_gt)
         pres[good] = np.nan
         sal[good] = np.nan
@@ -138,7 +138,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_pres_lt != 0 and use_pres_gt != 0:
+    if use_pres_lt.__len__() > 0 and use_pres_gt.__len__() > 0:
         pres_range_lt = (pres < use_pres_gt)
         pres_range_gt = (pres > use_pres_lt)
 
