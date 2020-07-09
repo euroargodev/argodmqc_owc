@@ -83,10 +83,10 @@ def set_calseries(float_dir, float_name, system_config):
         # calseries = np.concatenate((np.ones((1, 33)), 2 * np.ones(1,no_profiles - 33)))
         calib_profile_no = profile_no
         use_percent_gt = 0.5
-        use_theta_lt = [20]
-        use_theta_gt = [-5]
-        use_pres_lt = [1500]
-        use_pres_gt = [-400]
+        use_theta_lt = []
+        use_theta_gt = []
+        use_pres_lt = []
+        use_pres_gt = []
 
     # ensure values are in a realistic range
 
