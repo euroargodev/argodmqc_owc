@@ -47,8 +47,8 @@ class MyTestCase(unittest.TestCase):
                                copy.deepcopy(ptmp),
                                copy.deepcopy(pres),
                                copy.deepcopy(grid_ptmp),
-                               0, 0,
-                               0, 0,
+                               [], [],
+                               [], [],
                                0.5)
 
         sal_var = thetas[3]
