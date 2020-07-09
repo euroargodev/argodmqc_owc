@@ -28,8 +28,12 @@ import pyowc as owc
 
 FLOAT_NAME = "3901960"
 USER_CONFIG = owc.configuration.load() # fetch the default configuration and parameters
+USER_CONFIG['MAP_USE_PV'] = 0 # Possibly tune options
+print(owc.configuration.print_cfg(USER_CONFIG))
 
 owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
+owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
+owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
 ```
 
 ### Parameters for your analysis
@@ -45,16 +49,37 @@ owc.plot.dashboard("/", FLOAT_NAME, USER_CONFIG)
 
 # Software history
 
-- Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this ! 
+- Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this !
 
-- Phase 3
-
-- Phase 2
-
-- Phase 1
+- [UAT: Phase 1, 2, 3](https://github.com/euroargodev/User-Acceptance-Test-Python-version-of-the-OWC-tool) 
 
 - Migration of the code from from BODC/NOC git to euroargodev/argodmqc_owc. See https://github.com/euroargodev/User-Acceptance-Test-Python-version-of-the-OWC-tool/issues/10 for more details on the migration. Contribution from [G. Maze](https://github.com/gmaze)
 
 - Alpha experts user testings with [feedbacks available here](https://github.com/euroargodev/User-Acceptance-Test-Python-version-of-the-OWC-tool/issues). Contributions from: [K. Walicka](https://github.com/kamwal), [C. Cabanes](https://github.com/cabanesc), [A. Wong](https://github.com/apswong)
 
 - BODC created [the first version of the code](https://git.noc.ac.uk/bodc/owc-software-python), following the [Matlab implementation](https://github.com/ArgoDMQC/matlab_owc). Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc), [K. Walicka](https://github.com/kamwal).
+
+
+## New positioning of functions 
+Note that functions name are not changed !
+
+- **pyowc/core**
+  - **stats.py**: brk_pt_fit, build_cov, covarxy_pv, covar_xyt_pv, noise_variance, signal_variance, fit_cond, nlbpfun
+  - **finders.py**: find_10thetas, find_25boxes, find_besthit, find_ellipse, nearest_neighbour
+
+- **pyowc/data**
+  - **fetchers.py**: get_region_data, get_region_hist_locations, get_data, get_topo_grid
+  - **wrangling.py**: interp_climatology, map_data_grid 
+
+- **pyowc/plot**
+  - **dashboard.py**: plot_diagnostics
+  - **plots.py**: cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, theta_sal_plot, trajectory_plot
+  - **utils.py**: create_dataframe
+
+- **pyowc/calibration.py**: update_salinity_mapping, calc_piecewisefit
+
+- **pyowc/configuration.py**: load_configuration, set_calseries, print_cfg
+
+- **pyowc/tests**  # Contain all the unit tests !
+
+- **pyowc/utilities.py**: change_dates, cal2dec, potential_vorticity, wrap_longitudes, sorter, spatial_correlation

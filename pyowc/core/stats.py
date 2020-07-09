@@ -76,9 +76,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
             -------
             residual
         """
-
-        # global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
-
         if nbr1 > 1:
             ubrk = ubrk_g[0:nbr1 - 1]
             for i in range(nbr1, ubrk_g.__len__()):
