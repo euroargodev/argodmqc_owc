@@ -16,6 +16,7 @@ import copy
 from scipy.interpolate import interpolate
 import numpy as np
 
+
 # pylint:disable=too-many-arguments
 # pylint:disable=too-many-locals
 # pylint:disable=too-many-branches
@@ -61,55 +62,62 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
 
     # only use theta and pressure from specified range
 
-    if use_theta_lt != 0 and use_theta_gt == 0:
+    if use_theta_lt.__len__() > 0 and use_theta_gt.__len__() == 0:
         theta_range = np.argwhere(ptmp > use_theta_lt)
         for i in theta_range:
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
 
-    if use_theta_lt == 0 and use_theta_gt != 0:
+    if use_theta_lt.__len__() == 0 and use_theta_gt.__len__() > 0:
         theta_range = np.argwhere(ptmp < use_theta_gt)
         for i in theta_range:
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
 
-    if use_theta_lt != 0 and use_theta_gt != 0:
+    if use_theta_lt.__len__() > 0 and use_theta_gt.__len__() > 0:
+        theta_range_lt = (ptmp < use_theta_gt)
+        theta_range_gt = (ptmp > use_theta_lt)
 
         if use_theta_lt < use_theta_gt:
             # exclude middle band
-            theta_range = np.argwhere(np.logical_and(use_theta_lt < ptmp, ptmp < use_theta_gt))
+            theta_range = np.argwhere(np.logical_and(theta_range_lt, theta_range_gt))
 
         else:
-            theta_range = np.argwhere(np.logical_xor(ptmp < use_theta_gt, ptmp > use_theta_lt))
+
+            theta_range = np.argwhere(np.logical_or(theta_range_gt, theta_range_lt))
 
         for i in theta_range:
-
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
 
-    if use_pres_lt != 0 and use_pres_gt == 0:
+    if use_pres_lt.__len__() > 0 and use_pres_gt.__len__() == 0:
         pres_range = np.argwhere(pres > use_pres_lt)
         for i in pres_range:
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
 
-    if use_pres_lt == 0 and use_pres_gt != 0:
+    if use_pres_lt.__len__() == 0 and use_pres_gt.__len__() > 0:
         pres_range = np.argwhere(pres < use_pres_gt)
         for i in pres_range:
             pres[i[0], i[1]] = np.nan
             sal[i[0], i[1]] = np.nan
             ptmp[i[0], i[1]] = np.nan
 
-    if use_pres_lt != 0 and use_pres_gt != 0:
+    if use_pres_lt.__len__() > 0 and use_pres_gt.__len__() > 0:
+        pres_range_lt = (pres < use_pres_gt)
+        pres_range_gt = (pres > use_pres_lt)
+
         if use_pres_lt < use_pres_gt:
-            pres_range = np.argwhere(np.logical_and(use_pres_lt < pres, pres < use_pres_gt))
+            # exclude middle band
+            pres_range = np.argwhere(np.logical_and(pres_range_lt, pres_range_gt))
 
         else:
-            pres_range = np.argwhere(np.logical_xor(pres < use_pres_gt, pres > use_pres_lt))
+
+            pres_range = np.argwhere(np.logical_or(pres_range_gt, pres_range_lt))
 
         for i in pres_range:
             pres[i[0], i[1]] = np.nan
