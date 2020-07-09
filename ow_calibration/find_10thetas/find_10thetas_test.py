@@ -151,7 +151,7 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
-                                                                               0, 0, 0, 0, 0.5)
+                                                                               [], [], [], [], 0.5)
 
         self.assertEqual(t_levels.shape, self.tlevels.shape,
                          "Got incorrect number of theta levels")
@@ -174,7 +174,7 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
-                                                                               0, 0, 0, 0, 0.5)
+                                                                               [], [], [], [], 0.5)
 
         for i in range(t_levels.__len__()):
             self.assertAlmostEqual(t_levels[i, 0], self.tlevels[i, 0], 10,
@@ -206,8 +206,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
-                                                                               10, -10,
-                                                                               1750, 500,
+                                                                               [10], [-10],
+                                                                               [1750], [500],
                                                                                0.5)
 
         for i in t_levels:
@@ -233,8 +233,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
-                                                                               -0.1, 0.1,
-                                                                               1000, 1100,
+                                                                               [-0.1], [0.1],
+                                                                               [1000], [1100],
                                                                                0.5)
 
         self.assertEqual(index.__len__(), 10, "should get 10 levels for bounded data")
@@ -260,8 +260,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
-                                                                               0, 0.1,
-                                                                               0, 500,
+                                                                               [], [0.1],
+                                                                               [], [500],
                                                                                0.5)
 
         for i in p_levels:
@@ -280,8 +280,8 @@ class Find10ThetasTestCase(unittest.TestCase):
                                                                                self.ptmp,
                                                                                self.pres,
                                                                                self.la_ptmp,
-                                                                               2, 0,
-                                                                               1500, 0,
+                                                                               [2], [],
+                                                                               [1500], [],
                                                                                0.5)
 
         for i in p_levels:
