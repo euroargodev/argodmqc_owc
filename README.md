@@ -27,7 +27,7 @@ Otherwise, in a python script, you can calibrate salinity data this way:
 import pyowc as owc
 
 FLOAT_NAME = "3901960"
-USER_CONFIG = owc.configuration.load() # fetch the configuration and parameters set by the user
+USER_CONFIG = owc.configuration.load() # fetch the default configuration and parameters
 
 owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 ```
@@ -45,7 +45,7 @@ owc.plot.dashboard("/", FLOAT_NAME, USER_CONFIG)
 
 # Software history
 
-- Phase 4: Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this ! 
+- Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this ! 
 
 - Phase 3
 
