@@ -1,4 +1,4 @@
-import pyowc as owc
+from argodmqc_owc import pyowc as owc
 import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
