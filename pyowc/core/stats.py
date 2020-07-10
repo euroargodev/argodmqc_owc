@@ -595,7 +595,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     if breaks.__len__() > 0:
         break_pts = breaks * x_scale + x_0
 
-    A[0] = A[0] * y_scale * y_0
+    A[0] = A[0] * y_scale + y_0
     P[0] = P[0] * y_scale
 
     if A.__len__() > 1:
