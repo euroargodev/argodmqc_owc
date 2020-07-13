@@ -113,7 +113,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
     max_brk_dflt = 4
     max_brk_in = []
     nbr1 = -1
-    brk_init = []  # guesses for break point
+    brk_init = [] # guesses for break point
+    breaks = np.array([])
     setbreaks = 0
 
     nloops = 200  # number of loops to fit profile error
@@ -396,7 +397,12 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 ubrk = optim['x'][0]
                 residual = optim['fun']
 
-            b_pts[0:nbr, nbr] = breaks.T
+            if breaks.__len__() > 0:
+                b_pts[0:nbr, nbr] = breaks.T
+
+            else:
+                b_pts[0:nbr, nbr] = np.nan
+
             b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
             rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
             p = 2 * (nbr + 1)
