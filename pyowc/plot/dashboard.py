@@ -60,6 +60,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     use_pres_lt = cal_series['use_pres_lt'][0][0]
     use_pres_gt = cal_series['use_pres_gt'][0][0]
     use_percent_gt = cal_series['use_percent_gt'][0][0]
+    profile_no = float_data['PROFILE_NO']
 
     thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
                            copy.deepcopy(map_ptmp), use_theta_lt, use_theta_gt,
@@ -69,7 +70,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     theta_sal_plot(copy.deepcopy(sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
-                   map_sal, map_ptmp, map_errors, index)
+                   map_sal, map_ptmp, map_errors, index, profile_no[0])
 
     # plot the calibration curve --------------------------
 
@@ -80,7 +81,6 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     sta_mean = cal_data['sta_mean']
     pcond_factor = cal_data['pcond_factor']
     pcond_factor_err = cal_data['pcond_factor_err']
-    profile_no = float_data['PROFILE_NO']
 
     cal_sal_curve_plot(copy.deepcopy(sal), copy.deepcopy(cal_sal),
                        copy.deepcopy(cal_sal_err), sta_sal,
@@ -91,7 +91,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
-                   map_sal, map_ptmp, map_errors, index, "calibrated")
+                   map_sal, map_ptmp, map_errors, index, profile_no[0], "calibrated")
 
     # plot the salinity time series on theta levels ----------
 

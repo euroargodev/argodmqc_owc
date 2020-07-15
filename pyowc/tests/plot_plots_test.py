@@ -216,6 +216,7 @@ class ThetaSal(unittest.TestCase):
         map_sal = grid_data['la_mapped_sal']
         map_ptmp = grid_data['la_ptmp']
         map_errors = grid_data['la_mapsalerrors']
+        profiles = float_data['PROFILE_NO'][0]
 
         thetas = find_10thetas(copy.deepcopy(sal),
                                copy.deepcopy(theta),
@@ -230,7 +231,7 @@ class ThetaSal(unittest.TestCase):
         # Check various types run
 
         self.assertEqual(plots.theta_sal_plot(sal.transpose(), theta.transpose(),
-                                        map_sal, map_ptmp, map_errors, index), None)
+                                        map_sal, map_ptmp, map_errors, index, profiles), None)
 
 
 #pylint: disable=bare-except

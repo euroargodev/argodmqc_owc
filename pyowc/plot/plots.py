@@ -116,7 +116,8 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 #pylint: disable=too-many-arguments
 #pylint: disable=too-many-locals
 #pylint: disable=no-member
-def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='uncalibrated'):
+def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
+                   index, profiles, title='uncalibrated'):
     """ Create the salinity theta curve
 
         Parameters
@@ -128,6 +129,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
         map_sal: mapped salinity
         map_theta: mapped potential temperature
         map_errors: mapped salinity errors
+        profiles: profile numbers array
 
         Returns
         -------
@@ -140,12 +142,12 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
     colors = pl.cm.jet(np.linspace(0, 1, color_n))
 
     # can only fit 30 profiles on legend
-    n_legend = np.arange(0, 30, np.ceil(color_n / 30))
+    n_legend = np.arange(0, profiles[profiles.__len__() - 1], np.ceil(color_n / 30))
 
     for i in range(sal.__len__()):
         # plot salinities
         if i in n_legend:
-            plt.plot(sal[i], theta[i], color=colors[i], label=i)
+            plt.plot(sal[i], theta[i], color=colors[i], label=profiles[i])
         else:
             plt.plot(sal[i], theta[i], color=colors[i])
 
@@ -156,7 +158,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
             plt.errorbar(map_sal[j, i],
                          map_theta[j, i],
                          xerr=map_errors[j, i],
-                         marker='o', color=colors[i], fillstyle='none')
+                         marker='o', color=colors[i], fillstyle='none', zorder=10)
 
     # neaten up plot
     plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5))
