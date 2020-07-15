@@ -776,9 +776,9 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                                       copy.deepcopy(unique_ptmp),
                                                       copy.deepcopy(unique_pres),
                                                       copy.deepcopy(unique_mapped_ptmp),
-                                                      use_theta_lt[0, 0], use_theta_gt[0, 0],
-                                                      use_pres_lt[0, 0], use_pres_gt[0, 0],
-                                                      use_percent_gt[0, 0])
+                                                      use_theta_lt, use_theta_gt,
+                                                      use_pres_lt, use_pres_gt,
+                                                      use_percent_gt)
 
         index = np.array(index, dtype=int)
         pp = np.argwhere(np.isnan(index) == 0)

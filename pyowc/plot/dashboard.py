@@ -55,11 +55,12 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     map_sal = grid_data['la_mapped_sal']
     map_ptmp = grid_data['la_ptmp']
     map_errors = grid_data['la_mapsalerrors']
-    use_theta_lt = cal_series['use_theta_lt'][0][0]
-    use_theta_gt = cal_series['use_theta_gt'][0][0]
-    use_pres_lt = cal_series['use_pres_lt'][0][0]
-    use_pres_gt = cal_series['use_pres_gt'][0][0]
-    use_percent_gt = cal_series['use_percent_gt'][0][0]
+
+    use_theta_lt = cal_series['use_theta_lt']
+    use_theta_gt = cal_series['use_theta_gt']
+    use_pres_lt = cal_series['use_pres_lt']
+    use_pres_gt = cal_series['use_pres_gt']
+    use_percent_gt = cal_series['use_percent_gt']
     profile_no = float_data['PROFILE_NO']
 
     thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),

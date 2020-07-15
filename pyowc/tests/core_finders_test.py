@@ -8,8 +8,9 @@ import random
 from pyowc import core
 from . import TESTS_CONFIG
 
-#pylint: disable=fixme
-#pylint: disable=too-many-instance-attributes
+
+# pylint: disable=fixme
+# pylint: disable=too-many-instance-attributes
 class Find10Thetas(unittest.TestCase):
     """
     Test cases for find_10thetas function
@@ -139,10 +140,10 @@ class Find10Thetas(unittest.TestCase):
         """
         print("Testing that we only get 10 theta levels")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(self.sal,
-                                                                               self.ptmp,
-                                                                               self.pres,
-                                                                               self.la_ptmp,
-                                                                               0, 0, 0, 0, 0.5)
+                                                                                            self.ptmp,
+                                                                                            self.pres,
+                                                                                            self.la_ptmp,
+                                                                                            [], [], [], [], 0.5)
 
         self.assertEqual(t_levels.shape, self.tlevels.shape,
                          "Got incorrect number of theta levels")
@@ -162,10 +163,10 @@ class Find10Thetas(unittest.TestCase):
         """
         print("Testing that we only get 10 theta levels")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(self.sal,
-                                                                               self.ptmp,
-                                                                               self.pres,
-                                                                               self.la_ptmp,
-                                                                               0, 0, 0, 0, 0.5)
+                                                                                            self.ptmp,
+                                                                                            self.pres,
+                                                                                            self.la_ptmp,
+                                                                                            [], [], [], [], 0.5)
 
         for i in range(t_levels.__len__()):
             self.assertAlmostEqual(t_levels[i, 0], self.tlevels[i, 0], 10,
@@ -194,13 +195,13 @@ class Find10Thetas(unittest.TestCase):
                 """
         print("Testing that we can include the middle band of data")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
-                                                                               self.sal,
-                                                                               self.ptmp,
-                                                                               self.pres,
-                                                                               self.la_ptmp,
-                                                                               10, -10,
-                                                                               1750, 500,
-                                                                               0.5)
+            self.sal,
+            self.ptmp,
+            self.pres,
+            self.la_ptmp,
+            [10], [-10],
+            [1750], [500],
+            0.5)
 
         for i in t_levels:
             self.assertTrue(-10 < i < 10, "No theta levels should be in this range")
@@ -222,13 +223,13 @@ class Find10Thetas(unittest.TestCase):
         """
         print("Testing that we can exclude the middle band of data")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
-                                                                               self.sal,
-                                                                               self.ptmp,
-                                                                               self.pres,
-                                                                               self.la_ptmp,
-                                                                               -0.1, 0.1,
-                                                                               1000, 1100,
-                                                                               0.5)
+            self.sal,
+            self.ptmp,
+            self.pres,
+            self.la_ptmp,
+            [-0.1], [0.1],
+            [1000], [1100],
+            0.5)
 
         self.assertEqual(index.__len__(), 10, "should get 10 levels for bounded data")
 
@@ -250,13 +251,13 @@ class Find10Thetas(unittest.TestCase):
                 """
         print("Testing that we can exclude data above/below points")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
-                                                                               self.sal,
-                                                                               self.ptmp,
-                                                                               self.pres,
-                                                                               self.la_ptmp,
-                                                                               0, 0.1,
-                                                                               0, 500,
-                                                                               0.5)
+            self.sal,
+            self.ptmp,
+            self.pres,
+            self.la_ptmp,
+            [], [0.1],
+            [], [500],
+            0.5)
 
         for i in p_levels:
             self.assertGreater(i, 500, "pressure levels should exceed lower bound")
@@ -271,13 +272,13 @@ class Find10Thetas(unittest.TestCase):
                         "should have theta levels")
 
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
-                                                                               self.sal,
-                                                                               self.ptmp,
-                                                                               self.pres,
-                                                                               self.la_ptmp,
-                                                                               2, 0,
-                                                                               1500, 0,
-                                                                               0.5)
+            self.sal,
+            self.ptmp,
+            self.pres,
+            self.la_ptmp,
+            [2], [],
+            [1500], [],
+            0.5)
 
         for i in p_levels:
             self.assertLess(i, 1500, "pressure levels should not exceed upper bound")
@@ -304,7 +305,8 @@ class Find25Boxes(unittest.TestCase):
         Is run before each test case
         :return: Nothing
         """
-        self.pa_wmo_boxes = loadmat(os.path.sep.join([TESTS_CONFIG['CONFIG_DIRECTORY'], TESTS_CONFIG['CONFIG_WMO_BOXES']]))
+        self.pa_wmo_boxes = loadmat(
+            os.path.sep.join([TESTS_CONFIG['CONFIG_DIRECTORY'], TESTS_CONFIG['CONFIG_WMO_BOXES']]))
         self.pn_float_long = 57.1794
         self.pn_float_lat = -59.1868
 
@@ -396,7 +398,7 @@ class FindBestHist(unittest.TestCase):
     Test cases for find_besthist function
     """
 
-    #pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes
     def setUp(self):
         """
         Set up for the tests. Creates 1000 historical random data points that
@@ -433,10 +435,10 @@ class FindBestHist(unittest.TestCase):
         print("Testing that find_besthist gives back a numpy array")
 
         index = core.finders.find_besthist(self.grid_lat, self.grid_long, self.grid_dates, self.grid_z_values,
-                              self.lat, self.long, self.date, self.z_value,
-                              self.lat_large, self.lat_small, self.long_large, self.long_small,
-                              self.phi_large, self.phi_small, self.age_large, self.age_small,
-                              self.map_pv_usage, self.max_casts)
+                                           self.lat, self.long, self.date, self.z_value,
+                                           self.lat_large, self.lat_small, self.long_large, self.long_small,
+                                           self.phi_large, self.phi_small, self.age_large, self.age_small,
+                                           self.map_pv_usage, self.max_casts)
 
         self.assertTrue(isinstance(index, np.ndarray), "find_besthist not returning array")
 
@@ -454,10 +456,10 @@ class FindBestHist(unittest.TestCase):
         grid_dates = np.array([0, 0])
 
         index = core.finders.find_besthist(grid_lat, grid_long, grid_dates, grid_z_values,
-                              self.lat, self.long, self.date, self.z_value,
-                              self.lat_large, self.lat_small, self.long_large, self.long_small,
-                              self.phi_large, self.phi_small, self.age_large, self.age_small,
-                              self.map_pv_usage, self.max_casts)
+                                           self.lat, self.long, self.date, self.z_value,
+                                           self.lat_large, self.lat_small, self.long_large, self.long_small,
+                                           self.phi_large, self.phi_small, self.age_large, self.age_small,
+                                           self.map_pv_usage, self.max_casts)
 
         self.assertTrue(index.__len__() == 0, "No data should have been selected")
 
@@ -469,10 +471,10 @@ class FindBestHist(unittest.TestCase):
         print("Testing that find_besthist gives back the right sized array")
 
         index = core.finders.find_besthist(self.grid_lat, self.grid_long, self.grid_dates, self.grid_z_values,
-                              self.lat, self.long, self.date, self.z_value,
-                              self.lat_large, self.lat_small, self.long_large, self.long_small,
-                              self.phi_large, self.phi_small, self.age_large, self.age_small,
-                              self.map_pv_usage, self.max_casts)
+                                           self.lat, self.long, self.date, self.z_value,
+                                           self.lat_large, self.lat_small, self.long_large, self.long_small,
+                                           self.phi_large, self.phi_small, self.age_large, self.age_small,
+                                           self.map_pv_usage, self.max_casts)
 
         self.assertTrue(index.__len__() == self.max_casts, "index is incorrect size")
 
@@ -491,10 +493,10 @@ class FindBestHist(unittest.TestCase):
         expected = np.array([2, 3])
 
         index = core.finders.find_besthist(grid_lat, grid_long, grid_dates, grid_z_values,
-                              self.lat, self.long, self.date, self.z_value,
-                              self.lat_large, self.lat_small, self.long_large, self.long_small,
-                              self.phi_large, self.phi_small, self.age_large, self.age_small,
-                              self.map_pv_usage, self.max_casts)
+                                           self.lat, self.long, self.date, self.z_value,
+                                           self.lat_large, self.lat_small, self.long_large, self.long_small,
+                                           self.phi_large, self.phi_small, self.age_large, self.age_small,
+                                           self.map_pv_usage, self.max_casts)
 
         for i in range(0, index.__len__()):
             self.assertTrue(index[i] == expected[i], "output is incorrect (wrong index selected)")
@@ -536,8 +538,8 @@ class FindEllipse(unittest.TestCase):
         print("Testing that find_ellipse returns the right answer")
 
         ellipse = core.finders.find_ellipse(53.195, 57.1794, 8,
-                               -57.996, -59.1868, 4,
-                               0.5, -2.3547 * 10 ** -8, -2.452 * 10 ** -8)
+                                            -57.996, -59.1868, 4,
+                                            0.5, -2.3547 * 10 ** -8, -2.452 * 10 ** -8)
 
         self.assertEqual(round(ellipse, 4), 0.2017, "find_ellipse returned incorrect float")
 
@@ -549,8 +551,8 @@ class FindEllipse(unittest.TestCase):
         print("Testing that find_ellipse returns the right answer without potential vorticity")
 
         ellipse = core.finders.find_ellipse(53.195, 57.1794, 8,
-                               -57.996, -59.1868, 4,
-                               0.5)
+                                            -57.996, -59.1868, 4,
+                                            0.5)
 
         self.assertEqual(round(ellipse, 4), 0.1934, "find_ellipse returned incorrect float "
                                                     "without potential vortcity")

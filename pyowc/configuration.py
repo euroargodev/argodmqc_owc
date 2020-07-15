@@ -185,24 +185,28 @@ def set_calseries(float_dir, float_name, system_config):
         # calseries = np.concatenate((np.ones((1, 33)), 2 * np.ones(1,no_profiles - 33)))
         calib_profile_no = profile_no
         use_percent_gt = 0.5
-        use_theta_lt = 0
-        use_theta_gt = 0
-        use_pres_lt = 0
-        use_pres_gt = 0
+        use_theta_lt = []
+        use_theta_gt = []
+        use_pres_lt = []
+        use_pres_gt = []
 
     # ensure values are in a realistic range
 
-    if use_theta_lt > 9999:
-        use_theta_lt = 0
+    if use_theta_lt.__len__() > 1:
+        print("More than one potential temperature boundary used, removing boundary...")
+        use_theta_lt = []
 
-    if use_theta_gt > 9999:
-        use_theta_gt = 0
+    if use_theta_gt.__len__() > 1:
+        print("More than one potential temperature boundary used, removing boundary...")
+        use_theta_gt = []
 
-    if use_pres_lt > 9999:
-        use_pres_lt = 0
+    if use_pres_lt.__len__() > 1:
+        print("More than one pressure boundary used, removing boundary...")
+        use_pres_lt = []
 
-    if use_pres_gt > 9999:
-        use_pres_gt = 0
+    if use_pres_gt.__len__() > 1:
+        print("More than one pressure boundary used, removing boundary...")
+        use_pres_gt = []
 
     # Check that there are no missing profiles between source and calseries files
 
