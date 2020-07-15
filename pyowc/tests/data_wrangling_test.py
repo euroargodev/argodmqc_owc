@@ -1,4 +1,3 @@
-
 import os
 import unittest
 import numpy as np
@@ -8,7 +7,7 @@ from pyowc.data.wrangling import interp_climatology, map_data_grid
 from . import TESTS_CONFIG
 
 
-#pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes
 class InterpClimatology(unittest.TestCase):
     """
     Test cases for interp_climatology function
@@ -37,19 +36,18 @@ class InterpClimatology(unittest.TestCase):
 
     def test_throws_error(self):
         """
-        Test that an error is thrown if we have no good climatology data
+        Test that an we get NaNs for bad data
         :return: Nothing
         """
-        print("Testing that interp_climatology throws an error if all data is bad")
+        print("Testing that interp_climatology gives NaNs if all data is bad")
 
         bad_grid_sal = np.full((5, 5), np.inf)
 
-        with self.assertRaises(ValueError) as bad_climatology:
-            interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
-                               self.float_sal, self.float_theta, self.float_pres)
+        sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
+                                       self.float_sal, self.float_theta, self.float_pres)
 
-        self.assertTrue("No good climatological data has been found"
-                        in str(bad_climatology.exception))
+        self.assertTrue(np.all(np.isnan(sal)), True)
+        self.assertTrue(np.all(np.isnan(pres)), True)
 
     def test_returns_correct_shape(self):
         """
@@ -100,7 +98,7 @@ class InterpClimatology(unittest.TestCase):
                                     ("Values at ", i, " and ", j, " do not match for pressure"))
 
 
-#pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes
 class MapDataGrid(unittest.TestCase):
     """
     Test cases for map_data_grid function
