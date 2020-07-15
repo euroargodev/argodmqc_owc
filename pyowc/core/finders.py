@@ -417,8 +417,8 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
 #pylint:disable=too-many-branches
 #pylint:disable=too-many-statements
 def find_10thetas(sal, ptmp, pres, la_ptmp,
-                  use_theta_lt=[], use_theta_gt=[],
-                  use_pres_lt=[], use_pres_gt=[], use_percent_gt=0.5):
+                  use_theta_lt, use_theta_gt,
+                  use_pres_lt, use_pres_gt, use_percent_gt=0.5):
     """ Find on which theta levels salinity variance is lowest
 
         Chooses 10 theta levels from the float series for use in the linear fit.

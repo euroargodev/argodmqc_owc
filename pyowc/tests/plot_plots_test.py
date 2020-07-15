@@ -180,8 +180,8 @@ class TS(unittest.TestCase):
                                copy.deepcopy(ptmp),
                                copy.deepcopy(pres),
                                copy.deepcopy(grid_ptmp),
-                               0, 0,
-                               0, 0,
+                               [], [],
+                               [], [],
                                0.5)
 
         sal_var = thetas[3]
@@ -234,8 +234,8 @@ class ThetaSal(unittest.TestCase):
                                copy.deepcopy(theta),
                                copy.deepcopy(pres),
                                copy.deepcopy(map_ptmp),
-                               0, 0,
-                               0, 0,
+                               [], [],
+                               [], [],
                                0.5)
 
         index = thetas[2]
