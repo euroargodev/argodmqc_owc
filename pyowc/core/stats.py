@@ -76,6 +76,9 @@ def fit_cond(x, y, n_err, lvcov, *args):
             -------
             residual
         """
+
+        global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
         if nbr1 > 1:
             ubrk = ubrk_g[0:nbr1 - 1]
             for i in range(nbr1, ubrk_g.__len__()):
@@ -101,12 +104,13 @@ def fit_cond(x, y, n_err, lvcov, *args):
             difference = np.argwhere(np.diff(breaks) == 0)
             breaks[difference + 1] = breaks[difference + 1] + 0.00001
 
-        residual = brk_pt_fit(xf, yf, w_i, breaks)
+        A, residual = brk_pt_fit(xf, yf, w_i, breaks)
 
-        return residual[1]
+        return residual
 
     # define global variables needed for line fitting
-    # global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+    global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
 
     # Set up some default values
     tol = 1e-06
@@ -376,7 +380,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             for n in range(nbr):
                 ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
-            if setbreaks:
+            if setbreaks != 0:
                 # break points are already set
                 if nbr1 == max_brk:
                     A, residual = brk_pt_fit(xf, yf, w_i, breaks)
@@ -403,6 +407,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             else:
                 b_pts[0:nbr, nbr] = np.nan
 
+            print(A)
             b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
             rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
             p = 2 * (nbr + 1)
