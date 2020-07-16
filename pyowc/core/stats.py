@@ -407,7 +407,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
             else:
                 b_pts[0:nbr, nbr] = np.nan
 
-            print(A)
             b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
             rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
             p = 2 * (nbr + 1)
