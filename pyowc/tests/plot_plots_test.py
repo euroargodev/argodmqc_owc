@@ -48,9 +48,14 @@ class CalSalCurve(unittest.TestCase):
         float_name = "3901960"
         profile_no = float_data['PROFILE_NO']
 
+        config = TESTS_CONFIG
+        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
+        config['FLOAT_PLOTS_FORMAT'] = "eps"
+
         self.assertEqual(plots.cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal,
                                                   sta_sal_err, sta_mean, pcond_factor,
-                                                  pcond_factor_err, profile_no, float_name),
+                                                  pcond_factor_err, profile_no,
+                                                  float_name, config),
                          None)
 
 
@@ -99,6 +104,7 @@ class SalVar(unittest.TestCase):
         grid_errors = grid_data['la_mapsalerrors']
         cal_sal = cal_data['cal_SAL']
         cal_sal_errors = cal_data['cal_SAL_err']
+        float_name = "3901960"
 
         no_boundaries = [[], [], [], [], 0.5]
         low_bound = [[250], [], [250], [], 0.5]
@@ -108,6 +114,10 @@ class SalVar(unittest.TestCase):
 
         profile_no = float_data['PROFILE_NO']
 
+        config = TESTS_CONFIG
+        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
+        config['FLOAT_PLOTS_FORMAT'] = "eps"
+
         # Check various types run
 
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
@@ -115,31 +125,31 @@ class SalVar(unittest.TestCase):
                                             copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                             copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                             no_boundaries,
-                                            profile_no, "3902960"), None)
+                                            profile_no, float_name, config), None)
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                             copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                             copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                             copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                             low_bound,
-                                            profile_no, "3902960"), None)
+                                            profile_no, float_name, config), None)
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                             copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                             copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                             copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                             up_bound,
-                                            profile_no, "3902960"), None)
+                                            profile_no, float_name, config), None)
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                             copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                             copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                             copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                             band_bound,
-                                            profile_no, "3902960"), None)
+                                            profile_no, float_name, config), None)
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
                                             copy.deepcopy(theta), copy.deepcopy(grid_sal),
                                             copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
                                             copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
                                             mid_bound,
-                                            profile_no, "3902960"), None)
+                                            profile_no, float_name, config), None)
 
 
 # pylint: disable=bare-except
@@ -189,8 +199,13 @@ class TS(unittest.TestCase):
         tlevels = thetas[0]
         plevels = thetas[1]
 
+        config = TESTS_CONFIG
+        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
+        config['FLOAT_PLOTS_FORMAT'] = "eps"
+
         self.assertEqual(plots.t_s_profile_plot(sal, ptmp, pres, sal_var,
-                                                theta_levels, tlevels, plevels, "3901960"), None)
+                                                theta_levels, tlevels, plevels,
+                                                "3901960", config), None)
 
 
 # pylint: disable=bare-except
@@ -241,10 +256,15 @@ class ThetaSal(unittest.TestCase):
 
         index = thetas[2]
 
+        config = TESTS_CONFIG
+        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
+        config['FLOAT_PLOTS_FORMAT'] = "eps"
+
         # Check various types run
 
         self.assertEqual(plots.theta_sal_plot(sal.transpose(), theta.transpose(),
-                                              map_sal, map_ptmp, map_errors, index, profiles),
+                                              map_sal, map_ptmp, map_errors, index,
+                                              profiles, config, "3901960"),
                          None)
 
 
@@ -262,6 +282,8 @@ class Trajectory(unittest.TestCase):
         print("Test that trajectory plot throws no errors")
 
         config = TESTS_CONFIG
+        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
+        config['FLOAT_PLOTS_FORMAT'] = "eps"
 
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
                                             TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
@@ -277,7 +299,7 @@ class Trajectory(unittest.TestCase):
         grid, floats = utils.create_dataframe(grid_data, float_data)
 
         try:
-            plots.trajectory_plot(1, 1, floats, grid, "3901960", config)
+            plots.trajectory_plot(1, 1, floats, grid, "3901960", TESTS_CONFIG)
 
         except:
             self.fail("Trajectory plotting routine failed unexpectedly")

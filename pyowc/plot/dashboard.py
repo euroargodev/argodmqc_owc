@@ -35,6 +35,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                                      config['FLOAT_CALIB_PREFIX'] + float_name + config['FLOAT_SOURCE_POSTFIX']])
     cal_series_loc = os.path.sep.join([config['FLOAT_CALIB_DIRECTORY'], float_dir,
                                        config['FLOAT_CALSERIES_PREFIX'] + float_name + config['FLOAT_SOURCE_POSTFIX']])
+    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'] + float_name])
 
     grid_data = loadmat(grid_data_loc)
     float_data = loadmat(float_data_loc)
@@ -71,7 +72,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     theta_sal_plot(copy.deepcopy(sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
-                   map_sal, map_ptmp, map_errors, index, profile_no[0])
+                   map_sal, map_ptmp, map_errors, index, profile_no[0],
+                   config, float_name)
 
     # plot the calibration curve --------------------------
 
@@ -86,13 +88,14 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     cal_sal_curve_plot(copy.deepcopy(sal), copy.deepcopy(cal_sal),
                        copy.deepcopy(cal_sal_err), sta_sal,
                        sta_sal_err, sta_mean, pcond_factor,
-                       pcond_factor_err, profile_no, float_name)
+                       pcond_factor_err, profile_no, float_name, config)
 
     # plot the calibrated theta-S curve from float ----------
 
     theta_sal_plot(copy.deepcopy(cal_sal).transpose(),
                    copy.deepcopy(ptmp).transpose(),
-                   map_sal, map_ptmp, map_errors, index, profile_no[0], "calibrated")
+                   map_sal, map_ptmp, map_errors, index,
+                   profile_no[0], config, float_name, "calibrated")
 
     # plot the salinity time series on theta levels ----------
 
@@ -104,7 +107,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                  copy.deepcopy(ptmp), copy.deepcopy(map_sal),
                  copy.deepcopy(map_errors), copy.deepcopy(map_ptmp),
                  copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_err),
-                 boundaries, profile_no, float_name)
+                 boundaries, profile_no, float_name, config)
 
     # plot the analysis plots ----------------------------------
 
@@ -114,4 +117,5 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     plevels = thetas[1]
 
     t_s_profile_plot(sal, ptmp, pres, sal_var,
-                     theta_levels, tlevels, plevels, float_name)
+                     theta_levels, tlevels, plevels,
+                     float_name, config)
