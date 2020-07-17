@@ -488,7 +488,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         plt.plot(profile_no, s_map[i, :], color='r',
                  linewidth=4, zorder=0)
         plt.plot(profile_no, s_cal[i, :], color=(0, 1, 0),
-                 label='calibrated float w/ 1xerr')
+                 label='calibrated float w/ 1xerr', zorder=0)
         plt.errorbar(profile_no, s_map[i, :], yerr=s_map_err[i, :], color='r', capsize=2)
         plt.fill_between(profile_no, s_cal[i, :] - s_cal_err[i, :],
                          s_cal[i, :] + s_cal_err[i, :], color=(0, 1, 0))
