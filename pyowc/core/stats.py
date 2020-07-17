@@ -18,7 +18,8 @@ from ..utilities import sorter
 
 
 #pylint: disable=too-many-lines
-
+#pylint: disable=global-variable-undefined
+#pylint: disable=redefined-outer-name
 #pylint: disable=invalid-name
 #pylint: disable=too-many-locals
 #pylint: disable=too-many-branches
