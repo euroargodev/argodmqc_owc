@@ -1,4 +1,3 @@
-
 import os
 import unittest
 import copy
@@ -11,8 +10,8 @@ from pyowc.plot import plots, utils
 from . import TESTS_CONFIG
 
 
-#pylint: disable=bare-except
-#pylint: disable=unused-argument
+# pylint: disable=bare-except
+# pylint: disable=unused-argument
 class CalSalCurve(unittest.TestCase):
     """
     Test cases for cal_sal_curve_plot function
@@ -34,8 +33,8 @@ class CalSalCurve(unittest.TestCase):
                                           TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
         cal_data = loadmat(cal_data_path)
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
+                                            TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                            TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
         float_data = loadmat(float_data_path)
 
         sal = float_data['SAL']
@@ -55,9 +54,9 @@ class CalSalCurve(unittest.TestCase):
                          None)
 
 
-#pylint: disable=bare-except
-#pylint: disable=unused-argument
-#pylint: disable=too-many-locals
+# pylint: disable=bare-except
+# pylint: disable=unused-argument
+# pylint: disable=too-many-locals
 class SalVar(unittest.TestCase):
     """
     Test cases for sal_var_plot function
@@ -82,14 +81,14 @@ class SalVar(unittest.TestCase):
                                           TESTS_CONFIG['FLOAT_CALIB_POSTFIX']])
         cal_data = loadmat(cal_data_path)
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
+                                            TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                            TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
         float_data = loadmat(float_data_path)
 
         grid_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "float_mapped_test",
-                                          TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
+                                           TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
+                                           TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                           TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
         grid_data = loadmat(grid_data_path)
 
         sal = float_data['SAL']
@@ -101,37 +100,51 @@ class SalVar(unittest.TestCase):
         cal_sal = cal_data['cal_SAL']
         cal_sal_errors = cal_data['cal_SAL_err']
 
-        no_boundaries = [0, 0, 0, 0, 0.5]
-        low_bound = [250, 0, 250, 0, 0.5]
-        up_bound = [0, 1, 0, 1, 0.5]
+        no_boundaries = [[], [], [], [], 0.5]
+        low_bound = [[250], [], [250], [], 0.5]
+        up_bound = [[], [1], [], [1], 0.5]
+        mid_bound = [[10], [-20], [1750], [500], 0.5]
+        band_bound = [[-0.1], [0.1], [1000], [1100], 0.5]
 
         profile_no = float_data['PROFILE_NO']
 
         # Check various types run
 
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
-                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
-                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
-                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
-                                      no_boundaries,
-                                      profile_no, "3902960"), None)
+                                            copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                            copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                            copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                            no_boundaries,
+                                            profile_no, "3902960"), None)
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
-                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
-                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
-                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
-                                      low_bound,
-                                      profile_no, "3902960"), None)
+                                            copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                            copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                            copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                            low_bound,
+                                            profile_no, "3902960"), None)
         self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
-                                      copy.deepcopy(theta), copy.deepcopy(grid_sal),
-                                      copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
-                                      copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
-                                      up_bound,
-                                      profile_no, "3902960"), None)
+                                            copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                            copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                            copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                            up_bound,
+                                            profile_no, "3902960"), None)
+        self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                            copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                            copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                            copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                            band_bound,
+                                            profile_no, "3902960"), None)
+        self.assertEqual(plots.sal_var_plot(2, copy.deepcopy(sal), copy.deepcopy(pres),
+                                            copy.deepcopy(theta), copy.deepcopy(grid_sal),
+                                            copy.deepcopy(grid_errors), copy.deepcopy(grid_ptmp),
+                                            copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_errors),
+                                            mid_bound,
+                                            profile_no, "3902960"), None)
 
 
-#pylint: disable=bare-except
-#pylint: disable=unused-argument
-#pylint: disable=too-many-locals
+# pylint: disable=bare-except
+# pylint: disable=unused-argument
+# pylint: disable=too-many-locals
 class TS(unittest.TestCase):
     """
     Test cases for t_s_plot function
@@ -148,14 +161,14 @@ class TS(unittest.TestCase):
         # grid_data = scipy.loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
 
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
+                                            TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                            TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
         float_data = loadmat(float_data_path)
 
         grid_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "float_mapped_test",
-                                          TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
+                                           TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
+                                           TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                           TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
         grid_data = loadmat(grid_data_path)
 
         sal = np.array(float_data['SAL'])
@@ -167,8 +180,8 @@ class TS(unittest.TestCase):
                                copy.deepcopy(ptmp),
                                copy.deepcopy(pres),
                                copy.deepcopy(grid_ptmp),
-                               0, 0,
-                               0, 0,
+                               [], [],
+                               [], [],
                                0.5)
 
         sal_var = thetas[3]
@@ -177,11 +190,11 @@ class TS(unittest.TestCase):
         plevels = thetas[1]
 
         self.assertEqual(plots.t_s_profile_plot(sal, ptmp, pres, sal_var,
-                                          theta_levels, tlevels, plevels, "3901960"), None)
+                                                theta_levels, tlevels, plevels, "3901960"), None)
 
 
-#pylint: disable=bare-except
-#pylint: disable=unused-argument
+# pylint: disable=bare-except
+# pylint: disable=unused-argument
 class ThetaSal(unittest.TestCase):
     """
     Test cases for theta_sal_plot function
@@ -200,14 +213,14 @@ class ThetaSal(unittest.TestCase):
         # float_data = loadmat("../../data/float_source/3901960.mat")
 
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
+                                            TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                            TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
         float_data = loadmat(float_data_path)
 
         grid_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "float_mapped_test",
-                                          TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
+                                           TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
+                                           TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                           TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
         grid_data = loadmat(grid_data_path)
 
         sal = np.array(float_data['SAL'])
@@ -216,13 +229,14 @@ class ThetaSal(unittest.TestCase):
         map_sal = grid_data['la_mapped_sal']
         map_ptmp = grid_data['la_ptmp']
         map_errors = grid_data['la_mapsalerrors']
+        profiles = float_data['PROFILE_NO'][0]
 
         thetas = find_10thetas(copy.deepcopy(sal),
                                copy.deepcopy(theta),
                                copy.deepcopy(pres),
                                copy.deepcopy(map_ptmp),
-                               0, 0,
-                               0, 0,
+                               [], [],
+                               [], [],
                                0.5)
 
         index = thetas[2]
@@ -230,10 +244,11 @@ class ThetaSal(unittest.TestCase):
         # Check various types run
 
         self.assertEqual(plots.theta_sal_plot(sal.transpose(), theta.transpose(),
-                                        map_sal, map_ptmp, map_errors, index), None)
+                                              map_sal, map_ptmp, map_errors, index, profiles),
+                         None)
 
 
-#pylint: disable=bare-except
+# pylint: disable=bare-except
 class Trajectory(unittest.TestCase):
     """
     Test cases for trajectory_plot function
@@ -249,14 +264,14 @@ class Trajectory(unittest.TestCase):
         config = TESTS_CONFIG
 
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
+                                            TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                            TESTS_CONFIG['FLOAT_SOURCE_POSTFIX']])
         float_data = loadmat(float_data_path)
 
         grid_data_path = os.path.sep.join([TESTS_CONFIG['TEST_DIRECTORY'], "float_mapped_test",
-                                          TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
-                                          TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
-                                          TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
+                                           TESTS_CONFIG['FLOAT_MAPPED_PREFIX'] +
+                                           TESTS_CONFIG['TEST_FLOAT_SOURCE'] +
+                                           TESTS_CONFIG['FLOAT_MAPPED_POSTFIX']])
         grid_data = loadmat(grid_data_path)
 
         grid, floats = utils.create_dataframe(grid_data, float_data)

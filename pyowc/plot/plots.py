@@ -116,7 +116,8 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 #pylint: disable=too-many-arguments
 #pylint: disable=too-many-locals
 #pylint: disable=no-member
-def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='uncalibrated'):
+def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
+                   index, profiles, title='uncalibrated'):
     """ Create the salinity theta curve
 
         Parameters
@@ -128,6 +129,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
         map_sal: mapped salinity
         map_theta: mapped potential temperature
         map_errors: mapped salinity errors
+        profiles: profile numbers array
 
         Returns
         -------
@@ -140,12 +142,12 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
     colors = pl.cm.jet(np.linspace(0, 1, color_n))
 
     # can only fit 30 profiles on legend
-    n_legend = np.arange(0, 30, np.ceil(color_n / 30))
+    n_legend = np.arange(0, profiles[profiles.__len__() - 1], np.ceil(color_n / 30))
 
     for i in range(sal.__len__()):
         # plot salinities
         if i in n_legend:
-            plt.plot(sal[i], theta[i], color=colors[i], label=i)
+            plt.plot(sal[i], theta[i], color=colors[i], label=profiles[i])
         else:
             plt.plot(sal[i], theta[i], color=colors[i])
 
@@ -156,7 +158,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors, index, title='unc
             plt.errorbar(map_sal[j, i],
                          map_theta[j, i],
                          xerr=map_errors[j, i],
-                         marker='o', color=colors[i], fillstyle='none')
+                         marker='o', color=colors[i], fillstyle='none', zorder=10)
 
     # neaten up plot
     plt.legend(loc='center right', bbox_to_anchor=(1.12, 0.5))
@@ -296,7 +298,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[i[0], i[1]] = np.nan
         cal_sal_errors[i[0], i[1]] = np.nan
 
-    if use_theta_lt != 0 and use_theta_gt == 0:
+    if use_theta_lt.__len__() > 0 and use_theta_gt.__len__() == 0:
         good = np.argwhere(ptmp > use_theta_lt)
         pres[good] = np.nan
         sal[good] = np.nan
@@ -306,7 +308,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_theta_lt == 0 and use_theta_gt != 0:
+    if use_theta_lt.__len__() == 0 and use_theta_gt.__len__() > 0:
         good = np.argwhere(ptmp < use_theta_gt)
         pres[good] = np.nan
         sal[good] = np.nan
@@ -316,12 +318,16 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_theta_lt != 0 and use_theta_gt != 0:
-        if use_theta_gt > use_theta_lt:
-            good = np.argwhere(use_theta_gt > ptmp > use_theta_lt)
+    if use_theta_lt.__len__() > 0 and use_theta_gt.__len__() > 0:
+        theta_range_lt = (ptmp < use_theta_gt)
+        theta_range_gt = (ptmp > use_theta_lt)
+
+        if use_theta_lt < use_theta_gt:
+            # exclude middle band
+            good = np.argwhere(np.logical_and(theta_range_lt, theta_range_gt))
 
         else:
-            good = np.argwhere(ptmp < use_theta_gt or ptmp > use_theta_lt)
+            good = np.argwhere(np.logical_or(theta_range_gt, theta_range_lt))
 
         pres[good] = np.nan
         sal[good] = np.nan
@@ -331,7 +337,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_pres_lt != 0 and use_pres_gt == 0:
+    if use_pres_lt.__len__() > 0 and use_pres_gt.__len__() == 0:
         good = np.argwhere(pres > use_pres_lt)
         pres[good] = np.nan
         sal[good] = np.nan
@@ -341,7 +347,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_pres_lt == 0 and use_pres_gt != 0:
+    if use_pres_lt.__len__() == 0 and use_pres_gt.__len__() > 0:
         good = np.argwhere(pres < use_pres_gt)
         pres[good] = np.nan
         sal[good] = np.nan
@@ -351,12 +357,16 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal[good] = np.nan
         cal_sal_errors[good] = np.nan
 
-    if use_pres_lt != 0 and use_pres_gt != 0:
-        if use_pres_gt > use_pres_lt:
-            good = np.argwhere(use_pres_gt > pres > use_pres_lt)
+    if use_pres_lt.__len__() > 0 and use_pres_gt.__len__() > 0:
+        pres_range_lt = (pres < use_pres_gt)
+        pres_range_gt = (pres > use_pres_lt)
+
+        if use_pres_lt < use_pres_gt:
+            # exclude middle band
+            good = np.argwhere(np.logical_and(pres_range_lt, pres_range_gt))
 
         else:
-            good = np.argwhere(pres < use_pres_gt or pres > use_pres_lt)
+            good = np.argwhere(np.logical_or(pres_range_gt, pres_range_lt))
 
         pres[good] = np.nan
         sal[good] = np.nan
