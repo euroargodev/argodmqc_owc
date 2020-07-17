@@ -66,6 +66,7 @@ def load():
         #
 
         'FLOAT_PLOTS_DIRECTORY': "data/float_plots/",
+        'Float_PLOTS_FORMAT': "eps",
 
         # ===============================
         #
