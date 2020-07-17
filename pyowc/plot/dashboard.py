@@ -35,7 +35,6 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                                      config['FLOAT_CALIB_PREFIX'] + float_name + config['FLOAT_SOURCE_POSTFIX']])
     cal_series_loc = os.path.sep.join([config['FLOAT_CALIB_DIRECTORY'], float_dir,
                                        config['FLOAT_CALSERIES_PREFIX'] + float_name + config['FLOAT_SOURCE_POSTFIX']])
-    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'] + float_name])
 
     grid_data = loadmat(grid_data_loc)
     float_data = loadmat(float_data_loc)
