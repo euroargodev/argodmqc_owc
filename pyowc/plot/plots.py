@@ -525,7 +525,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 
         format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-        plt.savefig(plot_loc + "_salinity_variance_" + str(i) + "." + format,
+        plt.savefig(plot_loc + "_salinity_variance_" + str(i + 1) + "." + format,
                     format=format)
 
         plt.show()
