@@ -111,8 +111,9 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 
     plt.legend(loc='center left', bbox_to_anchor=(0.85, 0.85))
 
+    format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_trajectory", format=config['FLOAT_PLOTS_FORMAT'])
+    plt.savefig(plot_loc + "_trajectory." + format, format=format)
 
 
 #pylint: disable=too-many-arguments
@@ -170,9 +171,10 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
     plt.xlabel("Salinity (PSS-78)")
     plt.ylabel(r"$\theta$ $^\circ$C")
 
+    format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_" + title + "_theta_sal",
-                format=config['FLOAT_PLOTS_FORMAT'])
+    plt.savefig(plot_loc + "_" + title + "_theta_sal." + format,
+                format=format)
 
     plt.show()
 
@@ -242,8 +244,9 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
 
     plt.tight_layout(pad=1)
 
+    format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_salinity_profile", format=config['FLOAT_PLOTS_FORMAT'])
+    plt.savefig(plot_loc + "_salinity_profile." + format, format=format)
 
     plt.show()
 
@@ -520,8 +523,10 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 
         plt.legend()
 
+        format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-        plt.savefig(plot_loc + "_salinity_variance_" + str(i), format=config['FLOAT_PLOTS_FORMAT'])
+        plt.savefig(plot_loc + "_salinity_variance_" + str(i) + "." + format,
+                    format=format)
 
         plt.show()
 
@@ -611,7 +616,8 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
                   r" vertically averaged salinity (PSS-78) additive " +
                   r"correction $\Delta$ S with errors")
 
+        format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-        plt.savefig(plot_loc + "_salinity_curve", format=config['FLOAT_PLOTS_FORMAT'])
+        plt.savefig(plot_loc + "_salinity_curve." + format, format=format)
 
         plt.show()
