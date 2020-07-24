@@ -858,17 +858,17 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                     sta_rms[0][calindex] = sta_rms_temp
 
                 else:
-                    (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
-                     sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
+                    (xfit, condslope, condslope_err, time_deriv_temp, time_deriv_err_temp,
+                     sta_mean_temp, sta_rms_temp, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
                                                                               covariance,
                                                                               'breaks',
                                                                               breaks_in)
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
-                    time_deriv[calindex] = time_deriv
-                    time_deriv_err[calindex] = time_deriv_err
-                    sta_mean[0][calindex], = sta_mean
-                    sta_rms[0][calindex] = sta_rms
+                    time_deriv[calindex] = time_deriv_temp
+                    time_deriv_err[calindex] = time_deriv_err_temp
+                    sta_mean[0][calindex], = sta_mean_temp
+                    sta_rms[0][calindex] = sta_rms_temp
 
             # apply calibrations to float data
 
