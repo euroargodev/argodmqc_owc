@@ -668,7 +668,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     fbreaks = []
 
     sstatus = 1
-    unique_cal = np.unique(calseries)
+    unique_cal = np.unique(calseries.flatten())
     # bad profiles are flagged as zero
     bad = np.argwhere(unique_cal == 0)
 
@@ -902,7 +902,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 sta_sal_err[:, calindex] = np.abs(sta_sal[:, calindex] - sta_sal1)
 
                 for n in range(fit_coef.__len__()):
-                    fceof.append(fit_coef[0])
+                    fceof.append(fit_coef[n])
 
                 if fit_breaks.__len__() > 0:
                     fbreaks.append(fit_breaks)
