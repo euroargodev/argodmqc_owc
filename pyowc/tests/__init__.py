@@ -8,6 +8,8 @@ data_root = pyowc_root.replace("pyowc", "data/")
 
 TESTS_CONFIG = load_configuration()
 TESTS_CONFIG['TEST_DIRECTORY'] = "data/test_data"
+TESTS_CONFIG['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
+TESTS_CONFIG['FLOAT_PLOTS_FORMAT'] = "eps"
 
 # Define specific values used in tests that depends on a specific float processing:
 TESTS_CONFIG['TEST_FLOAT_SOURCE'] = "3901960"

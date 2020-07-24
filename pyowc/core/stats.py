@@ -18,7 +18,8 @@ from ..utilities import sorter
 
 
 #pylint: disable=too-many-lines
-
+#pylint: disable=global-variable-undefined
+#pylint: disable=redefined-outer-name
 #pylint: disable=invalid-name
 #pylint: disable=too-many-locals
 #pylint: disable=too-many-branches
@@ -76,6 +77,9 @@ def fit_cond(x, y, n_err, lvcov, *args):
             -------
             residual
         """
+
+        global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
         if nbr1 > 1:
             ubrk = ubrk_g[0:nbr1 - 1]
             for i in range(nbr1, ubrk_g.__len__()):
@@ -101,19 +105,21 @@ def fit_cond(x, y, n_err, lvcov, *args):
             difference = np.argwhere(np.diff(breaks) == 0)
             breaks[difference + 1] = breaks[difference + 1] + 0.00001
 
-        residual = brk_pt_fit(xf, yf, w_i, breaks)
+        A, residual = brk_pt_fit(xf, yf, w_i, breaks)
 
-        return residual[1]
+        return residual
 
     # define global variables needed for line fitting
-    # global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+    global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+
 
     # Set up some default values
     tol = 1e-06
     max_brk_dflt = 4
     max_brk_in = []
     nbr1 = -1
-    brk_init = []  # guesses for break point
+    brk_init = [] # guesses for break point
+    breaks = np.array([])
     setbreaks = 0
 
     nloops = 200  # number of loops to fit profile error
@@ -375,7 +381,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             for n in range(nbr):
                 ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
-            if setbreaks:
+            if setbreaks != 0:
                 # break points are already set
                 if nbr1 == max_brk:
                     A, residual = brk_pt_fit(xf, yf, w_i, breaks)
@@ -396,7 +402,12 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 ubrk = optim['x'][0]
                 residual = optim['fun']
 
-            b_pts[0:nbr, nbr] = breaks.T
+            if breaks.__len__() > 0:
+                b_pts[0:nbr, nbr] = breaks.T
+
+            else:
+                b_pts[0:nbr, nbr] = np.nan
+
             b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
             rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
             p = 2 * (nbr + 1)
@@ -595,7 +606,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     if breaks.__len__() > 0:
         break_pts = breaks * x_scale + x_0
 
-    A[0] = A[0] * y_scale * y_0
+    A[0] = A[0] * y_scale + y_0
     P[0] = P[0] * y_scale
 
     if A.__len__() > 1:

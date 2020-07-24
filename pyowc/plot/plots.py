@@ -110,14 +110,17 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
         plt.annotate(txt, (floats['Longitude'][i], floats['Latitude'][i]))
 
     plt.legend(loc='center left', bbox_to_anchor=(0.85, 0.85))
-    plt.draw()
+
+    save_format = config['FLOAT_PLOTS_FORMAT']
+    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
+    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
 
 
 #pylint: disable=too-many-arguments
 #pylint: disable=too-many-locals
 #pylint: disable=no-member
 def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
-                   index, profiles, title='uncalibrated'):
+                   index, profiles, config, float_name, title='uncalibrated'):
     """ Create the salinity theta curve
 
         Parameters
@@ -130,6 +133,8 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
         map_theta: mapped potential temperature
         map_errors: mapped salinity errors
         profiles: profile numbers array
+        config: user configuration
+        float_name: name of the float
 
         Returns
         -------
@@ -165,11 +170,17 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
     plt.title(title + " float data with mapped salinity and objective errors")
     plt.xlabel("Salinity (PSS-78)")
     plt.ylabel(r"$\theta$ $^\circ$C")
+
+    save_format = config['FLOAT_PLOTS_FORMAT']
+    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
+    plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format,
+                format=save_format)
+
     plt.show()
 
 
 #pylint: disable=too-many-arguments
-def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name):
+def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
     """ Plots profile plots
 
         Parameters
@@ -182,6 +193,7 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
         tlevels: temp at theta levels
         plevels: pressure at theta levels
         float_name: name of the float
+        config: user configuration
 
         Returns
         -------
@@ -231,6 +243,11 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
         plt.axhline(y=-i, color=(0, 1, 0), linestyle='-', linewidth=0.5)
 
     plt.tight_layout(pad=1)
+
+    save_format = config['FLOAT_PLOTS_FORMAT']
+    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
+    plt.savefig(plot_loc + "_salinity_profile." + save_format, format=save_format)
+
     plt.show()
 
 
@@ -240,7 +257,8 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
 #pylint: disable=too-many-statements
 #pylint: disable=too-many-branches
 def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
-                 map_ptmp, cal_sal, cal_sal_errors, boundaries, profile_no, float_name):
+                 map_ptmp, cal_sal, cal_sal_errors, boundaries, profile_no,
+                 float_name, config):
     """ Create the salinity variance plot for each level
 
         Parameters
@@ -257,6 +275,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal: calibrated salinity
         cal_sal_errors: calibrated salinity errors
         boundaries: pressure and temperature boundaries
+        config: user configuration
 
         Returns
         -------
@@ -503,6 +522,12 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                  str(np.round(thetas[0][i][0], 5)) + r"$\circ$C")
 
         plt.legend()
+
+        save_format = config['FLOAT_PLOTS_FORMAT']
+        plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
+        plt.savefig(plot_loc + "_salinity_variance_" + str(i + 1) + "." + save_format,
+                    format=save_format)
+
         plt.show()
 
 
@@ -510,7 +535,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 #pylint: disable=too-many-locals
 #pylint: disable=no-member
 def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean,
-                       pcond_factor, pcond_factor_err, profile_no, float_name):
+                       pcond_factor, pcond_factor_err, profile_no, float_name, config):
     """ Create the calibrated salinity curve plot
 
         Parameters
@@ -525,6 +550,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         pcond_factor: slope
         pcond_factor_err: slope error
         float_name: name of the float
+        config: user configuration
 
         Returns
         -------
@@ -589,5 +615,9 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.title(float_name +
                   r" vertically averaged salinity (PSS-78) additive " +
                   r"correction $\Delta$ S with errors")
+
+        save_format = config['FLOAT_PLOTS_FORMAT']
+        plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
+        plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format)
 
         plt.show()
