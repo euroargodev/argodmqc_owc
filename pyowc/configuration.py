@@ -12,7 +12,7 @@ def print_cfg(config):
     cfg_str = []
     for k in config:
         cfg_str.append("%30s: %s\n" % (k, str(config[k])))
-    return "\n"+"".join(cfg_str)
+    return "\n" + "".join(cfg_str)
 
 
 def load():
@@ -114,12 +114,12 @@ def load():
     return collections.OrderedDict(sorted(cfg.items()))
 
 
-#pylint: disable=too-many-locals
-#pylint: disable=too-many-branches
-#pylint: disable=too-many-statements
-#pylint: disable=too-many-nested-blocks
-#pylint: disable=invalid-name
-#pylint: disable=fixme
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=invalid-name
+# pylint: disable=fixme
 def set_calseries(float_dir, float_name, system_config):
     """ Set the calseries parameters for analysis and line fitting
 
@@ -180,10 +180,11 @@ def set_calseries(float_dir, float_name, system_config):
 
         breaks = []
         max_breaks = 4  # 0 for linear trend, -1 for offset
-        calseries = np.ones((1, no_profiles)).flatten()
+        # calseries = np.ones((1, no_profiles)).flatten()
         # example for splitting time series at profile 33
-        calseries = np.concatenate((np.ones((1, 18)).flatten(),
-                                   2 * np.ones((1, no_profiles - 18)).flatten()))
+        calseries = np.concatenate((
+            np.ones((1, 18)).flatten(),
+            2 * np.ones((1, no_profiles - 18)).flatten()))
         calib_profile_no = profile_no
         use_percent_gt = 0.5
         use_theta_lt = []
