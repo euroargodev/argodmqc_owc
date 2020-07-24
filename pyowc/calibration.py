@@ -673,7 +673,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     bad = np.argwhere(unique_cal == 0)
 
     if bad.__len__() > 0:
-        unique_cal[bad] = np.delete(unique_cal, bad)
+        unique_cal = np.delete(unique_cal, bad)
 
     n_seq = unique_cal.__len__()
     if n_seq == 1 and max_breaks.__len__() > 1:

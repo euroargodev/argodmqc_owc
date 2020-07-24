@@ -180,11 +180,11 @@ def set_calseries(float_dir, float_name, system_config):
 
         breaks = []
         max_breaks = 4  # 0 for linear trend, -1 for offset
-        # calseries = np.ones((1, no_profiles)).flatten()
+        calseries = np.ones((1, no_profiles)).flatten()
         # example for splitting time series at profile 33
-        calseries = np.concatenate((
-            np.ones((1, 18)).flatten(),
-            2 * np.ones((1, no_profiles - 18)).flatten()))
+        # calseries = np.concatenate((
+        #   np.ones((1, 18)).flatten(),
+        #    2 * np.ones((1, no_profiles - 18)).flatten()))
         calib_profile_no = profile_no
         use_percent_gt = 0.5
         use_theta_lt = []
