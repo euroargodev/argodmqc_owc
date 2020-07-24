@@ -652,6 +652,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     m, n = pres.shape
 
     cal_sal = np.ones((m, n)) * np.nan
+    cal_sal1 = np.ones((m, n)) * np.nan
     cal_sal_err = np.ones((m, n)) * np.nan
     cal_cond = np.ones((m, n)) * np.nan
     cal_cond_err = np.ones((m, n)) * np.nan
@@ -880,7 +881,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                                                  0)
                 cal_cond_err[:, calindex] = np.dot(np.ones((m, 1)),
                                                    pcond_factor_err[:, calindex]) * unique_cond
-                cal_sal1 = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
+                cal_sal1[:, calindex] = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
                                                       cal_cond_err[:, calindex]),
                                                      unique_ptmp, 0)
 
