@@ -15,14 +15,15 @@ from .core.finders import find_besthist, find_25boxes, find_10thetas
 from .data.wrangling import interp_climatology, map_data_grid
 from .data.fetchers import get_topo_grid, get_region_data, get_region_hist_locations
 
-#pylint: disable=too-many-lines
 
-#pylint: disable=too-many-locals
-#pylint: disable=too-many-branches
-#pylint: disable=too-many-statements
-#pylint: disable=too-many-nested-blocks
-#pylint: disable=invalid-name
-#pylint: disable=fixme
+# pylint: disable=too-many-lines
+
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=invalid-name
+# pylint: disable=fixme
 def update_salinity_mapping(float_dir, float_name, config):
     """ Calculates values needed for analysis and save on file
 
@@ -556,11 +557,11 @@ def update_salinity_mapping(float_dir, float_name, config):
                             'selected_hist': selected_hist})
 
 
-#pylint: disable=invalid-name
-#pylint: disable=too-many-locals
-#pylint: disable=unused-variable
-#pylint: disable=too-many-branches
-#pylint: disable=too-many-statements
+# pylint: disable=invalid-name
+# pylint: disable=too-many-locals
+# pylint: disable=unused-variable
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def calc_piecewisefit(float_dir, float_name, system_config):
     """ Calibrate salinities
 
@@ -651,6 +652,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     m, n = pres.shape
 
     cal_sal = np.ones((m, n)) * np.nan
+    cal_sal1 = np.ones((m, n)) * np.nan
     cal_sal_err = np.ones((m, n)) * np.nan
     cal_cond = np.ones((m, n)) * np.nan
     cal_cond_err = np.ones((m, n)) * np.nan
@@ -824,49 +826,55 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
             # if no break points are set
             if breaks.__len__() == 0:
-                (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
-                 sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                          covariance,
-                                                                          'max_no_breaks',
-                                                                          max_breaks[i][0])
+                (xfit, condslope, condslope_err,
+                 time_deriv_temp, time_deriv_err_temp,
+                 sta_mean_temp, sta_rms_temp, ndf,
+                 fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                  covariance,
+                                                  'max_no_breaks',
+                                                  max_breaks[i][0])
                 pcond_factor[0][calindex] = condslope
                 pcond_factor_err[0][calindex] = condslope_err
-                time_deriv[calindex] = time_deriv
-                time_deriv_err[calindex] = time_deriv_err
-                sta_mean[0][calindex], = sta_mean
-                sta_rms[0][calindex] = sta_rms
+                time_deriv[0][calindex] = time_deriv_temp.flatten()
+                time_deriv_err[0][calindex] = time_deriv_err_temp.flatten()
+                sta_mean[0][calindex], = sta_mean_temp
+                sta_rms[0][calindex] = sta_rms_temp
 
             else:
                 breaks_in = breaks[i, :]
                 breaks_in = breaks_in[np.argwhere(np.isfinite(breaks_in))]
 
                 if max_breaks[i]:
-                    (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
-                     sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                              covariance,
-                                                                              'breaks',
-                                                                              breaks_in,
-                                                                              'max_no_breaks',
-                                                                              max_breaks[i][0])
+                    (xfit, condslope, condslope_err,
+                     time_deriv_temp, time_deriv_err_temp,
+                     sta_mean_temp, sta_rms_temp, ndf,
+                     fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                      covariance,
+                                                      'breaks',
+                                                      breaks_in,
+                                                      'max_no_breaks',
+                                                      max_breaks[i][0])
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
-                    time_deriv[calindex] = time_deriv
-                    time_deriv_err[calindex] = time_deriv_err
-                    sta_mean[0][calindex], = sta_mean
-                    sta_rms[0][calindex] = sta_rms
+                    time_deriv[calindex] = time_deriv_temp
+                    time_deriv_err[calindex] = time_deriv_err_temp
+                    sta_mean[0][calindex], = sta_mean_temp
+                    sta_rms[0][calindex] = sta_rms_temp
 
                 else:
-                    (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
-                     sta_mean, sta_rms, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                              covariance,
-                                                                              'breaks',
-                                                                              breaks_in)
+                    (xfit, condslope, condslope_err,
+                     time_deriv_temp, time_deriv_err_temp,
+                     sta_mean_temp, sta_rms_temp, ndf,
+                     fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                      covariance,
+                                                      'breaks',
+                                                      breaks_in)
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
-                    time_deriv[calindex] = time_deriv
-                    time_deriv_err[calindex] = time_deriv_err
-                    sta_mean[0][calindex], = sta_mean
-                    sta_rms[0][calindex] = sta_rms
+                    time_deriv[calindex] = time_deriv_temp
+                    time_deriv_err[calindex] = time_deriv_err_temp
+                    sta_mean[0][calindex], = sta_mean_temp
+                    sta_rms[0][calindex] = sta_rms_temp
 
             # apply calibrations to float data
 
@@ -879,9 +887,9 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                                                                  0)
                 cal_cond_err[:, calindex] = np.dot(np.ones((m, 1)),
                                                    pcond_factor_err[:, calindex]) * unique_cond
-                cal_sal1 = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
-                                                      cal_cond_err[:, calindex]),
-                                                     unique_ptmp, 0)
+                cal_sal1[:, calindex] = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
+                                                                   cal_cond_err[:, calindex]),
+                                                                  unique_ptmp, 0)
 
                 cal_sal_err[:, calindex] = np.abs(cal_sal[:, calindex] - cal_sal1[:, calindex])
 
