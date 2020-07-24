@@ -826,11 +826,13 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
             # if no break points are set
             if breaks.__len__() == 0:
-                (xfit, condslope, condslope_err, time_deriv_temp, time_deriv_err_temp,
-                 sta_mean_temp, sta_rms_temp, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                          covariance,
-                                                                          'max_no_breaks',
-                                                                          max_breaks[i][0])
+                (xfit, condslope, condslope_err,
+                 time_deriv_temp, time_deriv_err_temp,
+                 sta_mean_temp, sta_rms_temp, ndf,
+                 fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                  covariance,
+                                                  'max_no_breaks',
+                                                  max_breaks[i][0])
                 pcond_factor[0][calindex] = condslope
                 pcond_factor_err[0][calindex] = condslope_err
                 time_deriv[0][calindex] = time_deriv_temp.flatten()
@@ -843,13 +845,15 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 breaks_in = breaks_in[np.argwhere(np.isfinite(breaks_in))]
 
                 if max_breaks[i]:
-                    (xfit, condslope, condslope_err, time_deriv_temp, time_deriv_err_temp,
-                     sta_mean_temp, sta_rms_temp, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                                        covariance,
-                                                                                        'breaks',
-                                                                                        breaks_in,
-                                                                                        'max_no_breaks',
-                                                                                        max_breaks[i][0])
+                    (xfit, condslope, condslope_err,
+                     time_deriv_temp, time_deriv_err_temp,
+                     sta_mean_temp, sta_rms_temp, ndf,
+                     fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                      covariance,
+                                                      'breaks',
+                                                      breaks_in,
+                                                      'max_no_breaks',
+                                                      max_breaks[i][0])
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
                     time_deriv[calindex] = time_deriv_temp
@@ -858,11 +862,13 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                     sta_rms[0][calindex] = sta_rms_temp
 
                 else:
-                    (xfit, condslope, condslope_err, time_deriv_temp, time_deriv_err_temp,
-                     sta_mean_temp, sta_rms_temp, ndf, fit_coef, fit_breaks) = fit_cond(x, y, err,
-                                                                              covariance,
-                                                                              'breaks',
-                                                                              breaks_in)
+                    (xfit, condslope, condslope_err,
+                     time_deriv_temp, time_deriv_err_temp,
+                     sta_mean_temp, sta_rms_temp, ndf,
+                     fit_coef, fit_breaks) = fit_cond(x, y, err,
+                                                      covariance,
+                                                      'breaks',
+                                                      breaks_in)
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
                     time_deriv[calindex] = time_deriv_temp
@@ -882,8 +888,8 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 cal_cond_err[:, calindex] = np.dot(np.ones((m, 1)),
                                                    pcond_factor_err[:, calindex]) * unique_cond
                 cal_sal1[:, calindex] = gsw.conversions.SP_from_C((cal_cond[:, calindex] +
-                                                      cal_cond_err[:, calindex]),
-                                                     unique_ptmp, 0)
+                                                                   cal_cond_err[:, calindex]),
+                                                                  unique_ptmp, 0)
 
                 cal_sal_err[:, calindex] = np.abs(cal_sal[:, calindex] - cal_sal1[:, calindex])
 
