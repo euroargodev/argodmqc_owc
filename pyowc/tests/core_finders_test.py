@@ -293,6 +293,23 @@ class Find10Thetas(unittest.TestCase):
         self.assertTrue(theta_levels.__len__() > 0,
                         "should have theta levels")
 
+    def test_less_50_bar(self):
+        """
+        Check that we still get 10 thetas if intervals smaller than 50 bar
+        :return: Nothing
+        """
+        print("Testing we still get theta levels at <50 bar intervals")
+        t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
+            self.sal,
+            self.ptmp,
+            self.pres,
+            self.la_ptmp,
+            [], [],
+            [700], [500],
+            0.5)
+
+        self.assertTrue(theta_levels.__len__() > 0, "should get levels")
+
 
 class Find25Boxes(unittest.TestCase):
     """
