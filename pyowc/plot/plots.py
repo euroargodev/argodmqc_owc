@@ -502,15 +502,16 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     # plot data (one plot for each theta level, as selected by user)
     for i in range(levels):
         plt.figure(1)
+        good_index = np.isfinite(s_cal[i])
+        plt.errorbar(profile_no, s_map[i], yerr=s_map_err[i], color='r', capsize=2)
+        plt.fill_between(profile_no[good_index], s_cal[i, good_index] + s_cal_err[i, good_index],
+                         s_cal[i, good_index] - s_cal_err[i, good_index], color=(0, 1, 0))
         plt.plot(profile_no, s_int[i, :], marker='o', color='b',
                  label='uncalibrated float')
         plt.plot(profile_no, s_map[i, :], color='r',
                  linewidth=4, zorder=0)
         plt.plot(profile_no, s_cal[i, :], color=(0, 1, 0),
-                 label='calibrated float w/ 1xerr')
-        plt.errorbar(profile_no, s_map[i, :], yerr=s_map_err[i, :], color='r', capsize=2)
-        plt.fill_between(profile_no, s_cal[i, :] - s_cal_err[i, :],
-                         s_cal[i, :] + s_cal_err[i, :], color=(0, 1, 0))
+                 label='calibrated float w/ 1xerr', zorder=0)
         plt.plot(profile_no, s_map[i, :], color='r',
                  label='mapped salinity')
 
@@ -528,6 +529,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         plt.savefig(plot_loc + "_salinity_variance_" + str(i + 1) + "." + save_format,
                     format=save_format)
 
+        plt.ylim((np.nanmin(s_int)-0.05, np.nanmax(s_int)+0.05))
         plt.show()
 
 
