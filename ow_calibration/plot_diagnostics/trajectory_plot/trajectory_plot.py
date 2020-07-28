@@ -27,7 +27,7 @@ import harmonica as hm
 # pylint: disable=too-many-statements
 # pyline: disable=too-many-arguments
 def trajectory_plot(float_name, mapped_data, float_long, float_lat,
-                    depths=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                    depths=[-8000, -6000, -4000, -2000, -1000, -500, -200, 0],
                     bathy=False, cmap='gray', style='block'):
     """
     Reveal trajectory diagnostic plot
@@ -50,12 +50,14 @@ def trajectory_plot(float_name, mapped_data, float_long, float_lat,
     map_lat = mapped_data[:, 1]
 
     # plot land
+    plt.contour(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
+                 levels=[50, 10000], colors='black', antialiased=True, linestyles='solid', linewidths=0.5)
     plt.contourf(topo.coords['longitude'], topo.coords['latitude'], topo.variables['topography'],
-                 levels=[50, 10000], colors='bisque', antialiased=False, linestyles='solid')
+                 levels=[50, 10000], colors='#228B22', antialiased=True, linestyles='solid')
 
     # plot climatology
     traj_plot.plot(map_long, map_lat,
-                   color='#FF6347', marker='s',
+                   color='#3633FF', marker='s',
                    linestyle='None', markersize=2,
                    transform=projection, label="Climatology"
                    )
@@ -87,7 +89,7 @@ def trajectory_plot(float_name, mapped_data, float_long, float_lat,
         elif style == "block":
             pc = plt.contourf(topo.coords['longitude'], topo.coords['latitude'],
                               topo.variables['topography'],
-                              levels=[-8000, -6000, -4000, -2000, -1000, -800, -600, -400, -200, 0],
+                              levels=depths,
                               cmap=cmap, linestyles='solid', antialiased=True)
             plt.colorbar(
                 pc, label="metres", orientation="horizontal", aspect=50, pad=0.1, shrink=0.6
