@@ -593,7 +593,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
 
         # add line at x=1 to help operators
 
-        plt.plot([-1000, 1000], [1, 1], color=(0, 0, 0), linewidth=3)
+        plt.plot([-1000, 1000], [1, 1], color=(0, 0, 0), linewidth=1.8)
         plt.xlim((np.nanmin(profile_no), np.nanmax(profile_no)))
 
         plt.legend()
@@ -616,7 +616,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
 
         # add line at x=0 to help operators
 
-        plt.plot([-1000, 1000], [0, 0], color=(0, 0, 0), linewidth=3)
+        plt.plot([-1000, 1000], [0, 0], color=(0, 0, 0), linewidth=1.8)
         plt.xlim((np.nanmin(profile_no), np.nanmax(profile_no)))
 
         plt.legend()
