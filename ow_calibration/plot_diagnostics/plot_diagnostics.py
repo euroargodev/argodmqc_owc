@@ -46,4 +46,4 @@ def plot_diagnostics(float_dir, float_name, config):
 
     # create trajectory plot ------------------------------
 
-    trajectory_plot(float_name, mapped_loc, float_long, float_lat)
+    trajectory_plot(float_name, mapped_loc, float_long, float_lat, bathy=True)
