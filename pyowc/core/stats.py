@@ -282,8 +282,15 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     # intialise variable for search over number of break points
     max_brk_in = int(max_brk_in)
-    b_pts = np.ones((max_brk_in, max_brk_in + 1)) * np.nan
-    b_A = np.ones((max_brk_in + 2, max_brk_in + 1)) * np.nan
+
+    if max_brk_in == -1:
+        b_pts = np.ones((1, 1)) * np.nan
+        b_A = np.ones((1, 1)) * np.nan
+
+    else:
+        b_pts = np.ones((max_brk_in, max_brk_in + 1)) * np.nan
+        b_A = np.ones((max_brk_in + 2, max_brk_in + 1)) * np.nan
+
     rss = np.ones((1, max_brk_in + 2)) * np.nan
     aic = np.ones((1, max_brk_in + 2)) * np.nan
 
