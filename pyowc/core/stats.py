@@ -289,7 +289,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     else:
         b_pts = np.ones((max_brk_in, max_brk_in + 1)) * np.nan
-        b_A = np.ones((max_brk_in + 2, max_brk_in + 1)) * np.nan
+        b_A = np.ones((max_brk_in + 2, max_brk_in + 2)) * np.nan
 
     rss = np.ones((1, max_brk_in + 2)) * np.nan
     aic = np.ones((1, max_brk_in + 2)) * np.nan
