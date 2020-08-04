@@ -1,8 +1,9 @@
 from argodmqc_owc import pyowc as owc
 import warnings
+import time
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-FLOAT_NAMES = ["3901960", "OTHER FLOAT"] # add float numbers here
+FLOAT_NAMES = ["3901960", "3901960"] # add float numbers here
 USER_CONFIG = owc.configuration.load() # fetch the default configuration and parameters
 USER_CONFIG['MAP_USE_PV'] = 0 # Possibly tune options
 print(owc.configuration.print_cfg(USER_CONFIG))
@@ -10,9 +11,15 @@ print(owc.configuration.print_cfg(USER_CONFIG))
 #owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
 
 # only need salinity mapping
+start = time.time()
 
 for float in FLOAT_NAMES:
     owc.calibration.update_salinity_mapping("/", float, USER_CONFIG)
+    mid = time.time()
+    print("Time for float: ", mid - start)
+
+end = time.time()
+print("TIME ELAPSED: ", end - start)
 
 
 #owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
