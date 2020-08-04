@@ -582,7 +582,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.figure(1)
         plt.subplot(211)
 
-        plt.plot(profile_no[0], pcond_factor[0], color=(0, 1, 0), linestyle='-', linewidth=1)
+        plt.plot(profile_no[0], pcond_factor[0], color=(0, 1, 0), linestyle='-', linewidth=2)
         good = np.argwhere(np.isfinite(sta_mean))
         plt.plot(profile_no[0, good[:, 1]], sta_mean[0, good[:, 1]],
                  color=(1, 0, 0), linestyle='-', linewidth=1,
@@ -593,6 +593,11 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.errorbar(profile_no[0], pcond_factor[0], yerr=pcond_factor_err[0],
                      color=(0, 1, 0), linestyle='', capsize=2, label='1 x cal error')
 
+        # add line at x=1 to help operators
+
+        plt.plot([-1000, 1000], [1, 1], color=(0, 0, 0), linewidth=1.8)
+        plt.xlim((np.nanmin(profile_no), np.nanmax(profile_no)))
+
         plt.legend()
         plt.ylabel('r')
         plt.title(float_name +
@@ -602,7 +607,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.subplot(212)
         plt.figure(1)
 
-        plt.plot(profile_no[0], avg_sal_offset, color=(0, 1, 0), linestyle='-', linewidth=1)
+        plt.plot(profile_no[0], avg_sal_offset, color=(0, 1, 0), linestyle='-', linewidth=2)
         good = np.argwhere(np.isfinite(avg_sta_offset))
         plt.plot(profile_no[0, good[:, 0]], avg_sta_offset[good[:, 0]],
                  color=(1, 0, 0), linestyle='-', linewidth=1, label='1-1 profile fit')
@@ -610,6 +615,11 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
                      color=(0, 0, 1), linestyle='', capsize=2, label='2 x cal error')
         plt.errorbar(profile_no[0], avg_sal_offset, yerr=avg_sal_offset_err,
                      color=(0, 1, 0), linestyle='', capsize=2, label='1 x cal error')
+
+        # add line at x=0 to help operators
+
+        plt.plot([-1000, 1000], [0, 0], color=(0, 0, 0), linewidth=1.8)
+        plt.xlim((np.nanmin(profile_no), np.nanmax(profile_no)))
 
         plt.legend()
         plt.ylabel(r'$\Delta$ S')
