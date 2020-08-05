@@ -476,7 +476,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 E[ii, j + 1] = btem[j + 1] - btem[j]
 
     # get uncertainnties in fit parameters
-    B_i = (np.dot(np.dot(E.T, w_i), E)) ** -1
+    B_i = np.linalg.inv((np.dot(np.dot(E.T, w_i), E)))
     P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
                                            w_i), np.diag(err_var)),
                              w_i),
@@ -570,7 +570,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                     if ii.__len__() > 0:
                         E[ii, j + 1] = btem[j + 1] - btem[j]
 
-            err = err + (yfit - np.dot(E, A) ** 2)
+            err = err + (yfit - np.dot(E, A)) ** 2
 
         err = err / nloops
 
