@@ -636,7 +636,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.show()
 
 
-def sal_anom_plot(sal, ptmp, pres, profile_no, config):
+def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
     """ Create the csalinity anomoly plot
 
         Parameters
@@ -646,6 +646,7 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config):
         pres: pressure
         profile_no: profile numbers
         config: user configuration
+        float_name: name of the float
 
         Returns
         -------
@@ -657,7 +658,6 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config):
     theta_base = np.arange(0.1, 30.1, 0.1)
     ptmp_0 = gsw.conversions.pt0_from_t(sal, ptmp, pres)
     sal_int = np.nan * np.ones((len(theta_base), sal.shape[1]))
-    sal_std = np.nan * np.ones((len(theta_base), sal.shape[1]))
     sal_anom = np.nan * np.ones((len(theta_base), sal.shape[1]))
     prof_range = np.nan*np.ones((2, 1), dtype=int).flatten()
 
@@ -685,6 +685,35 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config):
             sal_int_interp = interpolate.interp1d(good_temp[good_data].flatten(), good_sal[good_data].flatten(),
                                                   bounds_error=False)
             sal_int[:, k] = sal_int_interp(theta_base[:])
+
+    # find median and calculate anomoly
+    sal_1 = sal_int.T
+    sal_size = sal_1.shape[1]
+    sal_med = np.nan * np.ones((1, sal_size)).flatten()
+    sal_std = np.nan * np.ones((1, sal_size)).flatten()
+
+    for i in range(sal_size):
+        good = np.argwhere(~np.isnan(sal_1[:, i]))
+        if good.__len__() > 0:
+            sal_med[i] = np.nanmedian(sal_1[good, i])
+            sal_std[i] = np.nanstd(sal_1[good, i])
+
+    sal_mean = sal_med
+    sal_std = sal_std.T
+
+    for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
+        sal_anom[:, k] = sal_int[:, k] - sal_med
+
+    # create plot
+
+    levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
+
+    cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
+    plt.colorbar(cb, label="Difference")
+    plt.xlabel("profile number")
+    plt.ylabel("theta")
+    plt.title("Salinity anomoly on theta " + float_name)
+    plt.show()
 
     input("**")
 
