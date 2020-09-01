@@ -633,3 +633,21 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format)
 
         plt.show()
+
+def sal_anom_plot(sal, ptmp, pres, profile_no, config):
+    """ Create the csalinity anomoly plot
+
+        Parameters
+        ----------
+        sal: salinity
+        ptmp: potential temperature,
+        pres: pressure
+        profile_no: profile numbers
+        config: user configuration
+
+        Returns
+        -------
+        Nothing
+    """
+
+    print("hello world")
