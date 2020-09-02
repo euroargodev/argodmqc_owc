@@ -708,11 +708,11 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
 
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
-    cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='RdYlBu_r')
+    cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='Spectral_r')
     plt.contourf(profile_no[0], theta_base, sal_anom, levels=[1, 1000], colors='red')
     plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -1], colors='blue')
     plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0])
-    plt.colorbar(cb, label="Difference")
+    plt.colorbar(cb, label="Difference", ticks=levels)
     plt.xlabel("profile number")
     plt.ylabel("theta")
     plt.title("Salinity anomoly on theta " + float_name)
