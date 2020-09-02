@@ -712,7 +712,9 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
         cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors='red')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -0.1], colors='blue')
-        plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0])
+        plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0], colors='black')
+        plt.contour(profile_no[0], theta_base,  sal_anom, levels=levels,
+                    colors='black', linestyles='solid', linewidths=0.25)
         plt.colorbar(cb, label="Difference", ticks=levels)
         plt.xlabel("profile number")
         plt.ylabel("theta")
