@@ -709,7 +709,7 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
     for bounds in config['THETA_BOUNDS']:
-        cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic_r')
+        cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors='red')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -0.1], colors='blue')
         plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0])
