@@ -498,7 +498,6 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                 else:
                     s_cal[i, j] = cal_sal[theta_index, j]
                     s_cal_err[i, j] = cal_sal_errors[theta_index, j]
-
     # plot data (one plot for each theta level, as selected by user)
     for i in range(levels):
         plt.figure(1)
