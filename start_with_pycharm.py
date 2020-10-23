@@ -11,5 +11,4 @@ owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
 owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
 owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
-# this is testing
-print("hello world")
+

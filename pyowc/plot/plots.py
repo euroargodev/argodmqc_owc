@@ -720,7 +720,9 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
         plt.ylim((bounds[0], bounds[1]))
         plt.title("Salinity anomaly on theta bounds " +
                   str(bounds[0]) + " - " + str(bounds[1]) + " for " + float_name)
+
+        save_format = config['FLOAT_PLOTS_FORMAT']
+        plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
+        plt.savefig(plot_loc + "_salinity_anomaly_" + str(bounds) + "." + save_format,
+                    format=save_format)
         plt.show()
-
-    input("**")
-
