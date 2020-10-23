@@ -6,7 +6,7 @@ from scipy.io import loadmat
 import matplotlib.pyplot as plt
 import numpy as np
 
-from pyowc.plot.plots import theta_sal_plot, cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, trajectory_plot
+from pyowc.plot.plots import theta_sal_plot, cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, trajectory_plot, sal_anom_plot
 from pyowc.plot.utils import create_dataframe
 from pyowc.core.finders import find_10thetas
 
@@ -48,7 +48,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     plt.show()
 
-    # create uncalibrated theta_s curve plot ---------------
+    # get data ---------------
     sal = np.array(float_data['SAL'])
     ptmp = np.array(float_data['PTMP'])
     pres = float_data['PRES']
@@ -62,6 +62,12 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     use_pres_gt = cal_series['use_pres_gt']
     use_percent_gt = cal_series['use_percent_gt']
     profile_no = float_data['PROFILE_NO']
+
+    # create salinity anomaly plot for float
+
+    sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name)
+
+    # create uncalibrated theta_s curve plot ---------------
 
     thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
                            copy.deepcopy(map_ptmp), use_theta_lt, use_theta_gt,

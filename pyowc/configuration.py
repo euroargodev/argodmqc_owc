@@ -109,7 +109,15 @@ def load():
         'MAP_P_EXCLUDE': 100,
 
         # only use historical data that are within +/- yyy dbar from float data
-        'MAP_P_DELTA': 250
+        'MAP_P_DELTA': 250,
+
+        # ===============================
+        #
+        #    Plotting Parameters
+        #
+
+        # Theta bounds for salinity anomaly plot
+        'THETA_BOUNDS': [[2, 5], [5, 20]]
     }
     return collections.OrderedDict(sorted(cfg.items()))
 

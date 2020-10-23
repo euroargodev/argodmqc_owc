@@ -2,18 +2,19 @@
 """
 import os
 import copy
+import gsw
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
-import geopandas as gdp #pylint: disable=import-error
+import geopandas as gdp  # pylint: disable=import-error
 from scipy.interpolate import interpolate
 
 from ..core.finders import find_10thetas
 
 
-#pylint: disable=too-many-locals
-#pylint: disable=too-many-statements
-#pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-arguments
 def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     """ Plot locations of all the data used in the analysis
 
@@ -116,9 +117,9 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
 
 
-#pylint: disable=too-many-arguments
-#pylint: disable=too-many-locals
-#pylint: disable=no-member
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=no-member
 def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
                    index, profiles, config, float_name, title='uncalibrated'):
     """ Create the salinity theta curve
@@ -179,7 +180,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
     plt.show()
 
 
-#pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments
 def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
     """ Plots profile plots
 
@@ -251,11 +252,11 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.show()
 
 
-#pylint: disable=too-many-arguments
-#pylint: disable=too-many-locals
-#pylint: disable=no-member
-#pylint: disable=too-many-statements
-#pylint: disable=too-many-branches
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=no-member
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-branches
 def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                  map_ptmp, cal_sal, cal_sal_errors, boundaries, profile_no,
                  float_name, config):
@@ -528,13 +529,13 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         plt.savefig(plot_loc + "_salinity_variance_" + str(i + 1) + "." + save_format,
                     format=save_format)
 
-        plt.ylim((np.nanmin(s_int)-0.05, np.nanmax(s_int)+0.05))
+        plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
         plt.show()
 
 
-#pylint: disable=too-many-arguments
-#pylint: disable=too-many-locals
-#pylint: disable=no-member
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=no-member
 def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean,
                        pcond_factor, pcond_factor_err, profile_no, float_name, config):
     """ Create the calibrated salinity curve plot
@@ -632,3 +633,94 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format)
 
         plt.show()
+
+
+def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
+    """ Create the csalinity anomoly plot
+
+        Parameters
+        ----------
+        sal: salinity
+        ptmp: potential temperature,
+        pres: pressure
+        profile_no: profile numbers
+        config: user configuration
+        float_name: name of the float
+
+        Returns
+        -------
+        Nothing
+    """
+
+    # Set up values and allocate memory for matrices
+
+    theta_base = np.arange(0.1, 30.1, 0.1)
+    ptmp_0 = gsw.conversions.pt0_from_t(sal, ptmp, pres)
+    sal_int = np.nan * np.ones((len(theta_base), sal.shape[1]))
+    sal_anom = np.nan * np.ones((len(theta_base), sal.shape[1]))
+    prof_range = np.nan*np.ones((2, 1), dtype=int).flatten()
+
+    # find anomoly
+
+    good_ptmp = np.where(~np.isnan(ptmp.T[:,:]))
+    prof_range[0] = int(np.nanmin(good_ptmp[0]))
+    prof_range[1] = int(np.nanmax(good_ptmp[0]))
+
+    for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
+        temp = ptmp[:, k]
+        sal1 = sal[:, k]
+        sal_temp = np.vstack((temp, sal1)).T
+        sal_temp_sorted = sal_temp[sal_temp[:,0].argsort()]
+
+        # make sure the values are unique
+
+        unique = np.unique(sal_temp_sorted[:, 0], return_index=True)[1]
+        good_temp = sal_temp_sorted[unique, 0]
+        good_sal = sal_temp_sorted[unique, 1]
+
+        good_data = np.argwhere(np.logical_and(~np.isnan(good_temp), ~np.isnan(good_sal)))
+
+        if good_data.__len__() >= 3:
+            sal_int_interp = interpolate.interp1d(good_temp[good_data].flatten(), good_sal[good_data].flatten(),
+                                                  bounds_error=False)
+            sal_int[:, k] = sal_int_interp(theta_base[:])
+
+    # find median and calculate anomoly
+    sal_1 = sal_int.T
+    sal_size = sal_1.shape[1]
+    sal_med = np.nan * np.ones((1, sal_size)).flatten()
+    sal_std = np.nan * np.ones((1, sal_size)).flatten()
+
+    for i in range(sal_size):
+        good = np.argwhere(~np.isnan(sal_1[:, i]))
+        if good.__len__() > 0:
+            sal_med[i] = np.nanmedian(sal_1[good, i])
+            sal_std[i] = np.nanstd(sal_1[good, i])
+
+    sal_mean = sal_med
+    sal_std = sal_std.T
+
+    for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
+        sal_anom[:, k] = sal_int[:, k] - sal_med
+
+    # create plot
+
+    levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
+
+    for bounds in config['THETA_BOUNDS']:
+        cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
+        plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors='red')
+        plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -0.1], colors='blue')
+        plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0], colors='black')
+        plt.contour(profile_no[0], theta_base,  sal_anom, levels=levels,
+                    colors='black', linestyles='solid', linewidths=0.25)
+        plt.colorbar(cb, label="Difference", ticks=levels)
+        plt.xlabel("profile number")
+        plt.ylabel("theta")
+        plt.ylim((bounds[0], bounds[1]))
+        plt.title("Salinity anomaly on theta bounds " +
+                  str(bounds[0]) + " - " + str(bounds[1]) + " for " + float_name)
+        plt.show()
+
+    input("**")
+
