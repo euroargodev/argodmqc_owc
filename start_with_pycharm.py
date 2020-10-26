@@ -7,12 +7,10 @@ import time
 
 if __name__ == '__main__':
 
-    FLOAT_NAMES = ["3901960", "3901960"] # add float names here
+    FLOAT_NAMES = ["6902766", "3900560"]# add float names here
     USER_CONFIG = owc.configuration.load() # fetch the default configuration and parameters
     USER_CONFIG['MAP_USE_PV'] = 0 # Possibly tune options
     print(owc.configuration.print_cfg(USER_CONFIG))
-
-    #owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
 
     start = time.time()
 
@@ -26,5 +24,12 @@ if __name__ == '__main__':
 
     print("\nTOTAL TIME ELAPSED: ", end - start)
 
-#owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
-#owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
+    FLOAT_NAME = "6902766"
+    owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
+    owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
+    owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
+
+    FLOAT_NAME = "3900560"
+    owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
+    owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
+    owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
