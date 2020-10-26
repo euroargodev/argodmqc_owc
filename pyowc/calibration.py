@@ -24,7 +24,7 @@ from .data.fetchers import get_topo_grid, get_region_data, get_region_hist_locat
 # pylint: disable=too-many-nested-blocks
 # pylint: disable=invalid-name
 # pylint: disable=fixme
-def update_salinity_mapping(float_dir, float_name, config):
+def update_salinity_mapping(float_dir, config, float_name):
     """ Calculates values needed for analysis and save on file
 
         Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used
