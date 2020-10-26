@@ -24,12 +24,20 @@ if __name__ == '__main__':
 
     print("\nTOTAL TIME ELAPSED: ", end - start)
 
-    FLOAT_NAME = "6902766"
-    owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
-    owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
-    owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
+    # loop for sequential run
+    for float in FLOAT_NAMES:
+        owc.configuration.set_calseries("/", float, USER_CONFIG)
+        owc.calibration.calc_piecewisefit("/", float, USER_CONFIG)
+        owc.dashboard("/", float, USER_CONFIG)
+        mid = time.time()
+        print("Time for float: ", mid - start)
 
-    FLOAT_NAME = "3900560"
-    owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
-    owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
-    owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
+    #FLOAT_NAME = "6902766"
+    #owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
+    #owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
+    #owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
+
+    #FLOAT_NAME = "3900560"
+    #owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
+    #owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
+    #owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
