@@ -36,8 +36,3 @@ if __name__ == '__main__':
     #owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
     #owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
     #owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
-
-    #FLOAT_NAME = "3900560"
-    #owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
-    #owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
-    #owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
