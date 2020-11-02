@@ -400,7 +400,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
         grid_ptmp = grid_ptmp.T
 
     except:
-        raise Exception("NO DATA FOUND")
+        raise Exception("NO DATA FOUND") from None
 
     # we have encountered a problem where some data coming in is all NaN
     # these columns need to be removed from the data set
