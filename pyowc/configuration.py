@@ -28,17 +28,17 @@ def load():
         #
         #    Climatology Data Input Paths
 
-        'HISTORICAL_DIRECTORY': "L:/bodc2/vault/archive/argo/cls100061",
-        'HISTORICAL_CTD_PREFIX': "/historical_ctd/CTD_for_DMQC_2019V01/ctd_",
-        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/WOD2001_v2/bot_",
-        'HISTORICAL_ARGO_PREFIX': "/argo_profiles/ARGO_for_DMQC_2020V01/argo_",
+        'HISTORICAL_DIRECTORY': "data/climatology",
+        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
+        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
+        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",
 
         # ===============================
         #
         #    Float Input Path
         #
 
-        'FLOAT_SOURCE_DIRECTORY': "L:/users/argo/ow/matlabow-2.0.1/data/float_source/",
+        'FLOAT_SOURCE_DIRECTORY': "data/float_source",
         'FLOAT_SOURCE_POSTFIX': ".mat",
 
         # ===============================
@@ -67,14 +67,15 @@ def load():
 
         'FLOAT_PLOTS_DIRECTORY': "data/float_plots/",
         'FLOAT_PLOTS_FORMAT': "eps",
+
         # ===============================
         #
         #    Constants File Path
         #
 
-        'CONFIG_DIRECTORY': "L:/users/argo/ow/matlabow-2.0.1/data/constants/",
+        'CONFIG_DIRECTORY': "data/constants/",
         'CONFIG_COASTLINES': "coastdat.mat",
-        'CONFIG_WMO_BOXES': "wmo_boxes_ctd.mat",
+        'CONFIG_WMO_BOXES': "wmo_boxes.mat",
         'CONFIG_SAF': "TypicalProfileAroundSAF.mat",
 
         # ===============================
@@ -98,15 +99,15 @@ def load():
         'MAPSCALE_LATITUDE_SMALL': 2,
 
         # cross-isobath scales, dimensionless, see BS(2005)
-        'MAPSCALE_PHI_LARGE': 0.1,
-        'MAPSCALE_PHI_SMALL': 0.02,
+        'MAPSCALE_PHI_LARGE': 0.5,
+        'MAPSCALE_PHI_SMALL': 0.1,
 
         # temporal decorrelation scale, in years
         'MAPSCALE_AGE_LARGE': 20,
-        'MAPSCALE_AGE_SMALL': 5,
+        'MAPSCALE_AGE_SMALL': 10,
 
         # exclude the top xxx dbar of the water column
-        'MAP_P_EXCLUDE': 100,
+        'MAP_P_EXCLUDE': 200,
 
         # only use historical data that are within +/- yyy dbar from float data
         'MAP_P_DELTA': 250,
