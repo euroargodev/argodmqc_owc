@@ -55,7 +55,7 @@ def load():
         #    Calibration Output Path
         #
 
-        'FLOAT_CALIB_DIRECTORY': "data/float_calib",
+        'FLOAT_CALIB_DIRECTORY': "data/float_calib/",
         'FLOAT_CALIB_PREFIX': "cal_",
         'FLOAT_CALSERIES_PREFIX': "calseries_",
         'FLOAT_CALIB_POSTFIX': ".mat",
@@ -72,9 +72,9 @@ def load():
         #    Constants File Path
         #
 
-        'CONFIG_DIRECTORY': "L:/users/argo/ow/matlabow-2.0.1/data/constants/",
+        'CONFIG_DIRECTORY': "data/constants/",
         'CONFIG_COASTLINES': "coastdat.mat",
-        'CONFIG_WMO_BOXES': "wmo_boxes_ctd.mat",
+        'CONFIG_WMO_BOXES': "wmo_boxes.mat",
         'CONFIG_SAF': "TypicalProfileAroundSAF.mat",
 
         # ===============================
@@ -117,7 +117,7 @@ def load():
         #
 
         # Theta bounds for salinity anomaly plot
-        'THETA_BOUNDS': [[2, 5], [5, 20]]
+        'THETA_BOUNDS': [[0, 5], [5, 20]]
     }
     return collections.OrderedDict(sorted(cfg.items()))
 
