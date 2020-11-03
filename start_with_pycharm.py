@@ -7,7 +7,7 @@ import time
 
 if __name__ == '__main__':
 
-    FLOAT_NAMES = ["3901950"]# add float names here
+    FLOAT_NAMES = ["3901960", "3901960"]# add float names here
     USER_CONFIG = owc.configuration.load() # fetch the default configuration and parameters
     USER_CONFIG['MAP_USE_PV'] = 0 # Possibly tune options
     print(owc.configuration.print_cfg(USER_CONFIG))

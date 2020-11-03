@@ -697,8 +697,6 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
             sal_med[i] = np.nanmedian(sal_1[good, i])
             sal_std[i] = np.nanstd(sal_1[good, i])
 
-    sal_mean = sal_med
-    sal_std = sal_std.T
 
     for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
         sal_anom[:, k] = sal_int[:, k] - sal_med
@@ -708,13 +706,13 @@ def sal_anom_plot(sal, ptmp, pres, profile_no, config, float_name):
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
     for bounds in config['THETA_BOUNDS']:
-        cb = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
+        c_bounds = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors='red')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -0.1], colors='blue')
         plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0], colors='black')
         plt.contour(profile_no[0], theta_base,  sal_anom, levels=levels,
                     colors='black', linestyles='solid', linewidths=0.25)
-        plt.colorbar(cb, label="Difference", ticks=levels)
+        plt.colorbar(c_bounds, label="Difference", ticks=levels)
         plt.xlabel("profile number")
         plt.ylabel("theta")
         plt.ylim((bounds[0], bounds[1]))
