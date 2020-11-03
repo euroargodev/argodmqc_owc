@@ -553,11 +553,12 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
         good = np.argwhere(np.logical_and(~np.isnan(pres[:, depth]),
                                           ~np.isnan(ptmp[:, depth])))
 
-        for pres_i in range(pres_levels.__len__()):
-            if np.max(pres[good, depth]) > pres_levels[pres_i] > np.min(pres[good, depth]):
-                interp = interpolate.interp1d(pres[good, depth].flatten(),
-                                              ptmp[good, depth].flatten())
-                interp_t[pres_i, depth] = interp(pres_levels[pres_i])
+        if good.__len__() > 0:
+            for pres_i in range(pres_levels.__len__()):
+                if np.nanmax(pres[good, depth]) > pres_levels[pres_i] > np.nanmin(pres[good, depth]):
+                    interp = interpolate.interp1d(pres[good, depth].flatten(),
+                                                  ptmp[good, depth].flatten())
+                    interp_t[pres_i, depth] = interp(pres_levels[pres_i])
 
     # find mean of the interpolated pressure at each level
 

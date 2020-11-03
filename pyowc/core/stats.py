@@ -238,7 +238,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     no_args = args.__len__()
 
     if np.remainder(no_args, 2) != 0:
-        raise ValueError("FIT_COND ERROR - inputs are incorrect")
+        raise ValueError("FIT_COND ERROR - inputs are incorrect") from None
 
     if no_args > 0:
         for n in range(int(no_args / 2)):
@@ -246,7 +246,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             value = args[(n * 2) + 1]
 
             if not isinstance(parm, str):
-                raise ValueError("FIT_COND ERROR - inputs are incorrect")
+                raise ValueError("FIT_COND ERROR - inputs are incorrect") from None
 
             param = str.lower(parm)
 
@@ -278,7 +278,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                     setbreaks = 1
 
             else:
-                raise ValueError("Paramater " + param + " not found in parameter list")
+                raise ValueError("Paramater " + param + " not found in parameter list") from None
 
     # intialise variable for search over number of break points
     max_brk_in = int(max_brk_in)
@@ -476,7 +476,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 E[ii, j + 1] = btem[j + 1] - btem[j]
 
     # get uncertainnties in fit parameters
-    B_i = (np.dot(np.dot(E.T, w_i), E)) ** -1
+    B_i = np.linalg.inv((np.dot(np.dot(E.T, w_i), E)))
     P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
                                            w_i), np.diag(err_var)),
                              w_i),
@@ -570,7 +570,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                     if ii.__len__() > 0:
                         E[ii, j + 1] = btem[j + 1] - btem[j]
 
-            err = err + (yfit - np.dot(E, A) ** 2)
+            err = err + (yfit - np.dot(E, A)) ** 2
 
         err = err / nloops
 
@@ -686,8 +686,7 @@ def signal_variance(sal):
     # check that we have got some valid values. If not, raise an exception
     num_sal = sal_no_nan.__len__()
     if num_sal == 0:
-        raise Exception("Received no valid salinity values when calculating signal variance")
-
+        raise RuntimeError("Received no valid salinity values when calculating signal variance") from None
     # approximate the signal variance
     sal_mean = np.mean(sal_no_nan)
     signal = (sal_no_nan - sal_mean)

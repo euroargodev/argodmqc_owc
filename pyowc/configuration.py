@@ -38,7 +38,7 @@ def load():
         #    Float Input Path
         #
 
-        'FLOAT_SOURCE_DIRECTORY': "data/float_source",
+        'FLOAT_SOURCE_DIRECTORY': "data/float_source/",
         'FLOAT_SOURCE_POSTFIX': ".mat",
 
         # ===============================
@@ -55,7 +55,7 @@ def load():
         #    Calibration Output Path
         #
 
-        'FLOAT_CALIB_DIRECTORY': "data/float_calib",
+        'FLOAT_CALIB_DIRECTORY': "data/float_calib/",
         'FLOAT_CALIB_PREFIX': "cal_",
         'FLOAT_CALSERIES_PREFIX': "calseries_",
         'FLOAT_CALIB_POSTFIX': ".mat",
@@ -67,7 +67,6 @@ def load():
 
         'FLOAT_PLOTS_DIRECTORY': "data/float_plots/",
         'FLOAT_PLOTS_FORMAT': "eps",
-
         # ===============================
         #
         #    Constants File Path
@@ -99,18 +98,26 @@ def load():
         'MAPSCALE_LATITUDE_SMALL': 2,
 
         # cross-isobath scales, dimensionless, see BS(2005)
-        'MAPSCALE_PHI_LARGE': 0.5,
-        'MAPSCALE_PHI_SMALL': 0.1,
+        'MAPSCALE_PHI_LARGE': 0.1,
+        'MAPSCALE_PHI_SMALL': 0.02,
 
         # temporal decorrelation scale, in years
         'MAPSCALE_AGE_LARGE': 20,
-        'MAPSCALE_AGE_SMALL': 10,
+        'MAPSCALE_AGE_SMALL': 5,
 
         # exclude the top xxx dbar of the water column
-        'MAP_P_EXCLUDE': 200,
+        'MAP_P_EXCLUDE': 100,
 
         # only use historical data that are within +/- yyy dbar from float data
-        'MAP_P_DELTA': 250
+        'MAP_P_DELTA': 200,
+
+        # ===============================
+        #
+        #    Plotting Parameters
+        #
+
+        # Theta bounds for salinity anomaly plot
+        'THETA_BOUNDS': [[0, 5], [5, 20]]
     }
     return collections.OrderedDict(sorted(cfg.items()))
 
