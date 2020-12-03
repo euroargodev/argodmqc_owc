@@ -13,7 +13,7 @@ import scipy.interpolate as interpolate
 from .core.stats import signal_variance, noise_variance, build_cov, fit_cond
 from .core.finders import find_besthist, find_25boxes, find_10thetas
 from .data.wrangling import interp_climatology, map_data_grid
-from .data.fetchers import get_topo_grid, get_region_data, get_region_hist_locations
+from .data.fetchers import get_topo_grid, get_region_data, get_region_hist_locations, frontal_constraint_saf
 
 
 # pylint: disable=too-many-lines
@@ -256,6 +256,7 @@ def update_salinity_mapping(float_dir, config, float_name):
         float_long = float_source_data['LONG'][0, missing_profile]
         float_date = float_source_data['DATES'][0, missing_profile]
         float_sal = float_source_data['SAL'][:, missing_profile]
+        float_tmp = float_source_data['TEMP'][:, missing_profile]
         float_ptmp = float_source_data['PTMP'][:, missing_profile]
         float_pres = float_source_data['PRES'][:, missing_profile]
 
@@ -335,8 +336,21 @@ def update_salinity_mapping(float_dir, config, float_name):
                 # the profile is north or south of it. Then we should remove data not on
                 # the same side the profile is on
                 if map_use_saf == 1:
-                    # TODO: Add the SAF functions here
-                    print("SAF functions unavailable in the current version")
+                    [best_hist_sal2, best_hist_ptmp2, best_hist_pres2,
+                     best_hist_lat2, best_hist_long2, best_hist_dates2, best_hist_z2] = frontal_constraint_saf(config, best_hist_sal, best_hist_ptmp,
+                                                                                              best_hist_pres, grid_lat, grid_long,
+                                                                                              grid_dates, grid_z, float_lat,
+                                                                                              float_pres, float_tmp, float_sal)
+                    # Use frontal separation only if there are at least 5 profiles
+                    if len(best_hist_sal2[0]) > 5:
+                        best_hist_sal = best_hist_sal2
+                        best_hist_ptmp = best_hist_ptmp2
+                        best_hist_pres = best_hist_pres2
+                        best_hist_lat = best_hist_lat2
+                        best_hist_long = best_hist_long2
+                        best_hist_dates = best_hist_dates2
+                        best_hist_z = best_hist_z2
+
 
                 # make the float longitude wrap around the 0-360 mark if the historical data has
                 if np.argwhere(best_hist_long > 360).__len__() > 0:
