@@ -12,6 +12,7 @@ import warnings
 import os
 import struct
 import numpy as np
+import gsw
 from scipy.io import loadmat
 import scipy.interpolate as interpolate
 
@@ -452,26 +453,26 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
 
     typical_profile_around_saf = loadmat(os.path.sep.join([config['CONFIG_DIRECTORY'], config['CONFIG_SAF']]))
 
-    S_meanS = typical_profile_around_saf['S_meanS']
-    S_meanN = typical_profile_around_saf['S_meanN']
-    S_stdS = typical_profile_around_saf['S_stdS']
-    T_stdS = typical_profile_around_saf['T_stdS']
-    S_stdN = typical_profile_around_saf['S_stdN']
-    T_stdN = typical_profile_around_saf['T_stdN']
-    T_meanS = typical_profile_around_saf['T_meanS']
-    T_meanN = typical_profile_around_saf['T_meanN']
-    Deph = typical_profile_around_saf['Deph']
+    s_mean_s = typical_profile_around_saf['S_meanS']
+    s_mean_n = typical_profile_around_saf['S_meanN']
+    s_std_s = typical_profile_around_saf['S_stdS']
+    t_std_s = typical_profile_around_saf['T_stdS']
+    s_std_n = typical_profile_around_saf['S_stdN']
+    t_std_n = typical_profile_around_saf['T_stdN']
+    t_mean_s = typical_profile_around_saf['T_meanS']
+    t_mean_n = typical_profile_around_saf['T_meanN']
+    deph = typical_profile_around_saf['Deph']
 
-    #keep only data below 100m depth data :
-    s_meanS = np.delete(S_meanS, [1, 2])
-    s_meanN = np.delete(S_meanN, [1, 2])
-    s_stdS = np.delete(S_stdS, [1, 2])
-    t_stdS = np.delete(T_stdS, [1, 2])
-    s_stdN = np.delete(S_stdN, [1, 2])
-    t_stdN = np.delete(T_stdN, [1, 2])
-    t_meanS = np.delete(T_meanS, [1, 2])
-    t_meanN = np.delete(T_meanN, [1, 2])
-    deph = np.delete(Deph, [1, 2])
+    # keep only data below 100m depth data:
+    s_mean_s = np.delete(s_mean_s, [0, 1], 1)
+    s_mean_n = np.delete(s_mean_n, [0, 1], 1)
+    s_std_s = np.delete(s_std_s, [0, 1], 1)
+    t_std_s = np.delete(t_std_s, [0, 1], 1)
+    s_std_s = np.delete(s_std_n, [0, 1], 1)
+    t_std_s = np.delete(t_std_n, [0, 1], 1)
+    t_mean_s = np.delete(t_mean_n, [0, 1], 1)
+    t_mean_s = np.delete(t_mean_n, [0, 1], 1)
+    deph = np.delete(deph, [0, 1], 1)
 
     # SAF is calculated for data below -30 degree
     if float_lat < -30:
@@ -486,93 +487,90 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
 
             if t300 > 0:
                 if t300 > 5:
-                    critSAF = 1
+                    crit_saf = 1
                 elif t300 < 3:
-                    critSAF = -1
+                    crit_saf = -1
                 else:
-                    critSAF = 0
+                    crit_saf = 0
             else:
-                critSAF = 0
+                crit_saf = 0
 
             # Second step: the envelope test
-            if critSAF == 0:
+            if crit_saf == 0:
                 sal_int = np.interp(deph.T.flatten(), float_pres[isok].flatten(), float_sal[isok].flatten())
                 temp_int = np.interp(deph.T.flatten(), float_pres[isok].flatten(), float_tmp[isok].flatten())
 
-                #southinf_int = np.ones((deph.T, 1)) * np.nan
-                #southsup_int = np.ones((deph.T, 1)) * np.nan
-                #northinf_int = np.ones((deph.T, 1)) * np.nan
-                #northsup_int = np.ones((deph.T, 1)) * np.nan
-
-                northinf_int = np.interp(temp_int.flatten(), t_meanN - t_stdN, s_meanN - s_stdN)
-                northsup_int = np.interp(temp_int.flatten(), t_meanN + t_stdN, s_meanN + s_stdN)
-                southinf_int = np.interp(sal_int.flatten(), s_meanS - s_stdS, t_meanS - t_stdS)
-                southsup_int = np.interp(sal_int.flatten(), s_meanS + s_stdS, t_meanS + t_stdS)
+                northinf_int = np.interp(temp_int.flatten(), t_mean_n - t_std_n, s_mean_n - s_std_n)
+                northsup_int = np.interp(temp_int.flatten(), t_mean_n + t_std_n, s_mean_n + s_std_n)
+                southinf_int = np.interp(sal_int.flatten(), s_mean_s - s_std_s, t_mean_s - t_std_s)
+                southsup_int = np.interp(sal_int.flatten(), s_mean_s + s_std_s, t_mean_s + t_std_s)
 
                 isok2 = np.argwhere((~np.isnan(sal_int)) & (~np.isnan(southinf_int)) & (~np.isnan(southsup_int)) & (~np.isnan(northinf_int)) & (~np.isnan(northsup_int)) & (deph.T > 150) & (deph.T < 1700))
 
                 if isok2.__len__() > 0:
-                    ptSouth = np.argwhere((temp_int[isok2] > southinf_int[isok2]) & (temp_int[isok2] < southsup_int[isok2]))
+                    pt_south = np.argwhere((temp_int[isok2] > southinf_int[isok2]) & (temp_int[isok2] < southsup_int[isok2]))
 
-                    ptNorth = np.argwhere((sal_int[isok2] > northinf_int[isok2]) & (sal_int[isok2] < northsup_int[isok2]))
+                    pt_north = np.argwhere((sal_int[isok2] > northinf_int[isok2]) & (sal_int[isok2] < northsup_int[isok2]))
 
-                    isSouth = 0
-                    isNorth = 0
+                    is_south = 0
+                    is_north = 0
 
-                    if len(ptSouth) == len(isok2):
-                        isSouth = 1
+                    if len(pt_south) == len(isok2):
+                        is_south = 1
 
-                    if len(ptNorth) == len(isok2):
-                        isNorth = 1
+                    if len(pt_north) == len(isok2):
+                        is_north = 1
 
-                    if isSouth & isNorth:#np.logical_and(isSouth, isNorth):
-                        critSAF = 0
+                    if is_south & is_north:#np.logical_and(isSouth, isNorth):
+                        crit_saf = 0
 
-                    elif (isSouth):
-                        critSAF = -1
+                    elif is_south:
+                        crit_saf = -1
 
-                    elif (isNorth):
-                        critSAF = 1
+                    elif is_north:
+                        crit_saf = 1
                     else:
-                        critSAF = 0
+                        crit_saf = 0
         else:
-            critSAF = 0
+            crit_saf = 0
 
 
         # Historical data
-        grid_critSAF = [0] * len(grid_long)
+        grid_crit_saf = [0] * len(grid_long)
 
-        if critSAF != 0:
-            for i in grid_long:
+        grid_sa = gsw.conversions.SA_from_SP(grid_sal, grid_pres, grid_long, grid_lat)
+        grid_ct = gsw.conversions.CT_from_pt(grid_sa, grid_ptmp)
+        grid_tmp = gsw.conversions.t_from_CT(grid_sa, grid_ct, grid_pres)
+
+        if crit_saf != 0:
+            for i in range(len(grid_long)):
                 isok = np.argwhere((~np.isnan(grid_pres[:, i])) & (~np.isnan(grid_sal[:, i]))
                                  & (~np.isnan(grid_ptmp[:, i])) & ([np.diff(grid_pres[:, i]), 0] != 0))
 
                 if np.argwhere((np.diff(grid_pres[isok, i]) == 0)).__len__() == 0 and (isok.__len__() > 2) and (np.min(grid_pres[isok, i]) < 300) and (np.max(grid_pres[isok, i]) > 300):
-
-                    grid_SA = gsw.conversions.SA_from_SP(grid_sal, grid_pres, grid_long, grid_lat)
-                    grid_CT = gsw.conversions.CT_from_pt(grid_SA, grid_ptmp)
-                    grid_tmp = gsw.conversions.t_from_CT(grid_SA, grid_CT, grid_pres)
-
                     t300 = np.interp(300, grid_pres[isok, i].flatten(), grid_tmp[isok, i].flatten())
 
                     if t300 > 5:
-                        grid_critSAF[i] = 1
+                        grid_crit_saf[i] = 1
                     elif t300 < 3:
-                        grid_critSAF[i] = -1
+                        grid_crit_saf[i] = -1
                     else:
-                        grid_critSAF[i] = 0
+                        grid_crit_saf[i] = 0
 
         #Test
-        # check here use logic_and? !!!
-        isSelect = np.argwhere(grid_critSAF == critSAF)
+        grid_crit_saf = np.array([grid_crit_saf])
+        crit_saf = np.array([crit_saf])
+        is_select = np.argwhere(grid_crit_saf == crit_saf)
+        is_select = is_select[:, 1]
 
-        best_hist_sal = grid_sal[:, isSelect]
-        best_hist_ptmp = grid_ptmp[:, isSelect]
-        best_hist_pres = grid_pres[:, isSelect]
-        best_hist_lat = grid_lat[isSelect]
-        best_hist_lon = grid_long[isSelect]
-        best_hist_dates = grid_dates[isSelect]
-        best_hist_z = grid_z[isSelect]
+
+        best_hist_sal = grid_sal[:, is_select]
+        best_hist_ptmp = grid_ptmp[:, is_select]
+        best_hist_pres = grid_pres[:, is_select]
+        best_hist_lat = grid_lat[is_select]
+        best_hist_lon = grid_long[is_select]
+        best_hist_dates = grid_dates[is_select]
+        best_hist_z = grid_z[is_select]
     # if Lat<-30
     else:
         best_hist_sal = grid_sal

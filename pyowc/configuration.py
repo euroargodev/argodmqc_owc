@@ -86,10 +86,10 @@ def load():
         'CONFIG_MAX_CASTS': 300,
 
         # 1=use PV constraint, 0=don't use PV constraint, in objective mapping
-        'MAP_USE_PV': 1,
+        'MAP_USE_PV': 0,
 
         # 1=use SAF separation criteria, 0=don't use SAF separation criteria, in objective mapping
-        'MAP_USE_SAF': 0,
+        'MAP_USE_SAF': 1,
 
         # spatial decorrelation scales, in degrees
         'MAPSCALE_LONGITUDE_LARGE': 8,
