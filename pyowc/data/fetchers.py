@@ -559,6 +559,7 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
 
         if crit_saf != 0:
             for i in range(grid_long.__len__()):
+                # check here for logical command in ([np.diff(grid_pres[:, i]), 0] != 0)
                 isok = np.argwhere((~np.isnan(grid_pres[:, i])) & (~np.isnan(grid_sal[:, i]))
                                  & (~np.isnan(grid_ptmp[:, i])) & ([np.diff(grid_pres[:, i]), 0] != 0))
 
