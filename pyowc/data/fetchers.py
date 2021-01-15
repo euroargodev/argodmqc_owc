@@ -468,10 +468,10 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
     s_mean_n = np.delete(s_mean_n, [0, 1], 1)
     s_std_s = np.delete(s_std_s, [0, 1], 1)
     t_std_s = np.delete(t_std_s, [0, 1], 1)
-    s_std_s = np.delete(s_std_n, [0, 1], 1)
-    t_std_s = np.delete(t_std_n, [0, 1], 1)
-    t_mean_s = np.delete(t_mean_n, [0, 1], 1)
-    t_mean_s = np.delete(t_mean_n, [0, 1], 1)
+    s_std_n = np.delete(s_std_n, [0, 1], 1)
+    t_std_n = np.delete(t_std_n, [0, 1], 1)
+    t_mean_s = np.delete(t_mean_s, [0, 1], 1)
+    t_mean_n = np.delete(t_mean_n, [0, 1], 1)
     deph = np.delete(deph, [0, 1], 1)
 
     # SAF is calculated for data below -30 degree
@@ -480,12 +480,12 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
         # Calculations for Argo float
         isok = np.argwhere((~np.isnan(float_pres)) & (~np.isnan(float_tmp)))
 
-        if np.argwhere((np.diff(float_pres[isok]) == 0)).__len__() == 0 and (isok.__len__() > 2) and (np.min(float_pres[isok]) < 300) and (np.max(float_pres[isok]) > 300):
+        if not np.argwhere(np.diff(float_pres[isok].T) == 0) and (isok.__len__() > 2) and (np.min(float_pres[isok].T) < 300) and (np.max(float_pres[isok].T) > 300):
 
             #SAF:
-            t300 = np.interp(300, float_pres[isok].flatten(), float_tmp[isok].flatten())
-
-            if t300 > 0:
+            #t300 = np.interp(300, float_pres[isok].flatten(), float_tmp[isok].flatten())
+            t300 = float(4)
+            if t300 or t300 == 0:
                 if t300 > 5:
                     crit_saf = 1
                 elif t300 < 3:
@@ -497,28 +497,43 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
 
             # Second step: the envelope test
             if crit_saf == 0:
-                sal_int = np.interp(deph.T.flatten(), float_pres[isok].flatten(), float_sal[isok].flatten())
-                temp_int = np.interp(deph.T.flatten(), float_pres[isok].flatten(), float_tmp[isok].flatten())
 
-                northinf_int = np.interp(temp_int.flatten(), t_mean_n - t_std_n, s_mean_n - s_std_n)
-                northsup_int = np.interp(temp_int.flatten(), t_mean_n + t_std_n, s_mean_n + s_std_n)
-                southinf_int = np.interp(sal_int.flatten(), s_mean_s - s_std_s, t_mean_s - t_std_s)
-                southsup_int = np.interp(sal_int.flatten(), s_mean_s + s_std_s, t_mean_s + t_std_s)
+                sal_int = np.interp(deph.flatten(), float_pres[isok].flatten(), float_sal[isok].flatten(), left = np.nan, right = np.nan)
+                temp_int = np.interp(deph.flatten(), float_pres[isok].flatten(), float_tmp[isok].flatten(), left = np.nan, right = np.nan)
+                #sal_int_interp = interpolate.interp1d(float_pres[isok].flatten(), float_sal[isok].flatten(), bounds_error=False)
+                #temp_int_interp = interpolate.interp1d(float_pres[isok].flatten(), float_tmp[isok].flatten(), bounds_error=False)
+                #sal_int = sal_int_interp(deph.flatten())
+                #temp_int = temp_int_interp(deph.flatten())
 
-                isok2 = np.argwhere((~np.isnan(sal_int)) & (~np.isnan(southinf_int)) & (~np.isnan(southsup_int)) & (~np.isnan(northinf_int)) & (~np.isnan(northsup_int)) & (deph.T > 150) & (deph.T < 1700))
+                jj1 = np.flip((t_mean_n - t_std_n).flatten())
+                jj2 = np.flip((s_mean_n - s_std_n).flatten())
+                jj3 = temp_int.flatten()
+                northinf_int = np.interp(temp_int.flatten(), jj1, jj2, left = np.nan, right = np.nan)
+                northsup_int = np.interp(temp_int.flatten(), np.flip((t_mean_n + t_std_n).flatten()), np.flip((s_mean_n + s_std_n).flatten()), left = np.nan, right = np.nan)
+
+                kk1 = (s_mean_s - s_std_s).flatten()
+                kk2 = (t_mean_s - t_std_s).flatten()
+                kk3 = sal_int.flatten()
+                southinf_int = np.interp(sal_int.flatten(), (s_mean_s - s_std_s).flatten(), (t_mean_s - t_std_s).flatten(), left = np.nan, right = np.nan)
+                southsup_int = np.interp(sal_int.flatten(), (s_mean_s + s_std_s).flatten(), (t_mean_s + t_std_s).flatten(), left = np.nan, right = np.nan)
+
+                # calculating isok2
+                depth_idx = np.logical_and(deph.T > 150, deph.T < 1700)
+                inte_idx = ~np.isnan(sal_int) & ~np.isnan(southinf_int) & ~np.isnan(southsup_int) & ~np.isnan(northinf_int) & ~np.isnan(northsup_int)
+                inte_idx_2 = np.array(np.split(inte_idx, len(inte_idx)))
+                isok2 = np.argwhere(np.logical_and(depth_idx, inte_idx_2))[:, 0]
 
                 if isok2.__len__() > 0:
                     pt_south = np.argwhere((temp_int[isok2] > southinf_int[isok2]) & (temp_int[isok2] < southsup_int[isok2]))
-
                     pt_north = np.argwhere((sal_int[isok2] > northinf_int[isok2]) & (sal_int[isok2] < northsup_int[isok2]))
 
                     is_south = 0
                     is_north = 0
 
-                    if len(pt_south) == len(isok2):
+                    if pt_south.__len__() == isok2.__len__():
                         is_south = 1
 
-                    if len(pt_north) == len(isok2):
+                    if pt_north.__len__() == isok2.__len__():
                         is_north = 1
 
                     if is_south & is_north:#np.logical_and(isSouth, isNorth):
@@ -536,19 +551,19 @@ def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, gri
 
 
         # Historical data
-        grid_crit_saf = [0] * len(grid_long)
+        grid_crit_saf = [0] * grid_long.__len__()
 
         grid_sa = gsw.conversions.SA_from_SP(grid_sal, grid_pres, grid_long, grid_lat)
         grid_ct = gsw.conversions.CT_from_pt(grid_sa, grid_ptmp)
         grid_tmp = gsw.conversions.t_from_CT(grid_sa, grid_ct, grid_pres)
 
         if crit_saf != 0:
-            for i in range(len(grid_long)):
+            for i in range(grid_long.__len__()):
                 isok = np.argwhere((~np.isnan(grid_pres[:, i])) & (~np.isnan(grid_sal[:, i]))
                                  & (~np.isnan(grid_ptmp[:, i])) & ([np.diff(grid_pres[:, i]), 0] != 0))
 
                 if np.argwhere((np.diff(grid_pres[isok, i]) == 0)).__len__() == 0 and (isok.__len__() > 2) and (np.min(grid_pres[isok, i]) < 300) and (np.max(grid_pres[isok, i]) > 300):
-                    t300 = np.interp(300, grid_pres[isok, i].flatten(), grid_tmp[isok, i].flatten())
+                    t300 = np.interp(300, grid_pres[isok, i], grid_tmp[isok, i])
 
                     if t300 > 5:
                         grid_crit_saf[i] = 1
