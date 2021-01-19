@@ -63,10 +63,6 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     use_percent_gt = cal_series['use_percent_gt']
     profile_no = float_data['PROFILE_NO']
 
-    # create salinity anomaly plot for float
-
-    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres), profile_no, config, float_name)
-
     # create uncalibrated theta_s curve plot ---------------
 
     thetas = find_10thetas(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres),
@@ -101,6 +97,10 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                    copy.deepcopy(ptmp).transpose(),
                    map_sal, map_ptmp, map_errors, index,
                    profile_no[0], config, float_name, "calibrated")
+
+    # create salinity anomaly plot for float
+
+    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres), profile_no, config, float_name)
 
     # plot the salinity time series on theta levels ----------
 

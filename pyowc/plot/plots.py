@@ -442,7 +442,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                     else:
                         k_index = theta_index
 
-                else:
+                if ptmp[theta_index, j] == thetas[0][i]:
                     k_index = theta_index
 
                 if ((k_index != theta_index and ~np.isnan(sal[theta_index, j])) and
