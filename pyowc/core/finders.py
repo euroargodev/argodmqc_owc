@@ -11,6 +11,7 @@
 import copy
 import math
 import numpy as np
+from numpy.core._multiarray_umath import ndarray
 from scipy.interpolate import interpolate
 
 from ..utilities import potential_vorticity, spatial_correlation
@@ -57,7 +58,7 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
 
 
 #pylint: disable=fixme
-# TODO: ARGODEV-155
+# TODO: ARGODEV-155 or github in argodmqc_owc/issues/27
 # Refactor this code to take objects and dictionaries instead of a ludicrous amount of arguments
 # In fact, this function still requires a serious refactor, because it is doing far too much
 #pylint: disable=too-many-arguments
@@ -149,15 +150,13 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
 
     index = index_ellipse
     # check to see if too many data points were found
-    if index.__len__() > max_casts:
+    if index_ellipse.__len__() > max_casts:
 
         # uses pseudo-random numbers so the same random numbers are selected for each run
         np.random.seed(index_ellipse.__len__())
 
         # pick max_casts/3 random points
-        rand_matrix = np.random.rand(math.ceil(max_casts / 3))
-        index_rand = np.round(rand_matrix * (index_ellipse.__len__() - 1))
-
+        index_rand = np.round(np.random.rand(math.ceil(max_casts / 3)) * (index_ellipse.__len__())-1)
         # make sure the points are all unique
         index_rand = np.unique(index_rand)
         # sort them into ascending order
@@ -182,7 +181,6 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
             remain_hist_z_value = np.append(remain_hist_z_value, grid_z_value[int(i)])
             remain_hist_dates = np.append(remain_hist_dates, grid_dates[int(i)])
 
-        # sort remaining points by large spatial correlations
         # if using potential vorticity, calculate it for remaining data
         if map_pv_use == 1:
             pv_hist = potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
@@ -264,11 +262,19 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
             )
 
         # put together the best random data, large spatial data, and small spatial data
-        index = np.concatenate((index_rand, index_large_spatial, index_small_spatial))
+        cc1 = []
+        for i in index_rand.flatten():
+            cc1.append(index_ellipse[int(i)])
+
+        index_rand_ellipse = np.concatenate(np.array(cc1))
+
+        index = np.concatenate((index_rand_ellipse, index_large_spatial, index_small_spatial))
+        index.sort()
+
         if index.__len__() != np.unique(index).__len__():
             print("WARNING: not all points are unique")
-            rand_large = np.concatenate((index_rand, index_large_spatial))
-            rand_small = np.concatenate((index_rand, index_small_spatial))
+            rand_large = np.concatenate((index_rand_ellipse, index_large_spatial))
+            rand_small = np.concatenate((index_rand_ellipse, index_small_spatial))
             large_small = np.concatenate((index_large_spatial, index_small_spatial))
             print("unique points: ", np.unique(index).__len__())
             print("unique rand large: ", rand_large.__len__(),
