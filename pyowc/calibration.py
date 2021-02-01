@@ -279,7 +279,7 @@ def update_salinity_mapping(float_dir, config, float_name):
                                                 float_y[:, 0],
                                                 float_elev,
                                                 kind='linear')
-            float_z = -float_interp(float_long, float_lat)[0]
+            float_z = -float_interp(float_long_tbase, float_lat)[0]
 
             # gather data from area surrounding the float location
             wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
@@ -528,8 +528,8 @@ def update_salinity_mapping(float_dir, config, float_name):
     la_profile_no = la_profile_no[sorted_profile_index]
 
     if selected_hist.__len__() > 0:
-        index = selected_hist[:, 2].argsort()
-        selected_hist = selected_hist[index, :]
+        ind = selected_hist[:, 2].argsort()
+        selected_hist = selected_hist[ind, :]
 
     # define the saving location
     save_location = os.path.sep.join([config['FLOAT_MAPPED_DIRECTORY'],
