@@ -655,7 +655,7 @@ def sal_anom_plot(sal, ptmp,pres, profile_no, config, float_name):
     # Set up values and allocate memory for matrices
 
     theta_base = np.arange(0.1, 30.1, 0.1)
-    ptmp_0 = gsw.conversions.pt0_from_t(sal, ptmp, pres)
+    #ptmp_0 = gsw.conversions.pt0_from_t(sal, ptmp, pres)
     sal_int = np.nan * np.ones((len(theta_base), sal.shape[1]))
     sal_anom = np.nan * np.ones((len(theta_base), sal.shape[1]))
     prof_range = np.nan*np.ones((2, 1), dtype=int).flatten()
