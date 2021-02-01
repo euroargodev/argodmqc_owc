@@ -55,7 +55,7 @@ def load():
         #    Calibration Output Path
         #
 
-        'FLOAT_CALIB_DIRECTORY': "data/float_calib/",
+        'FLOAT_CALIB_DIRECTORY': "data/float_calib",
         'FLOAT_CALIB_PREFIX': "cal_",
         'FLOAT_CALSERIES_PREFIX': "calseries_",
         'FLOAT_CALIB_POSTFIX': ".mat",
@@ -103,13 +103,13 @@ def load():
 
         # temporal decorrelation scale, in years
         'MAPSCALE_AGE_LARGE': 20,
-        'MAPSCALE_AGE_SMALL': 5,
+        'MAPSCALE_AGE_SMALL': 10,
 
         # exclude the top xxx dbar of the water column
         'MAP_P_EXCLUDE': 100,
 
         # only use historical data that are within +/- yyy dbar from float data
-        'MAP_P_DELTA': 200,
+        'MAP_P_DELTA': 250,
 
         # ===============================
         #
