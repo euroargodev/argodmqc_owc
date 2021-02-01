@@ -104,8 +104,8 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.xlabel("Longitude")
     plt.ylabel("Latitude")
     plt.axis([-180, 180, -90, 90])
-    plt.xlim(np.min(climatology['Longitude']) - 10, np.max(climatology['Longitude']) + 10)
-    plt.ylim(np.min(climatology['Latitude']) - 10, np.max(climatology['Latitude']) + 10)
+    plt.xlim(np.min(climatology['Longitude']) - 20, np.max(climatology['Longitude']) + 20)
+    plt.ylim(np.min(climatology['Latitude']) - 15, np.max(climatology['Latitude']) + 15)
 
     for i, txt in enumerate(floats['number']):
         plt.annotate(txt, (floats['Longitude'][i], floats['Latitude'][i]))
@@ -636,7 +636,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
 
 
 def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
-    """ Create the csalinity anomoly plot
+    """ Create the salinity anomoly plot
 
         Parameters
         ----------
