@@ -57,7 +57,7 @@ def find_ellipse(data_long, ellipse_long, ellipse_size_long,
 
 
 #pylint: disable=fixme
-# TODO: ARGODEV-155
+# TODO: ARGODEV-155 or github in argodmqc_owc/issues/27
 # Refactor this code to take objects and dictionaries instead of a ludicrous amount of arguments
 # In fact, this function still requires a serious refactor, because it is doing far too much
 #pylint: disable=too-many-arguments
@@ -149,14 +149,13 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
 
     index = index_ellipse
     # check to see if too many data points were found
-    if index.__len__() > max_casts:
+    if index_ellipse.__len__() > max_casts:
 
         # uses pseudo-random numbers so the same random numbers are selected for each run
         np.random.seed(index_ellipse.__len__())
 
         # pick max_casts/3 random points
-        rand_matrix = np.random.rand(math.ceil(max_casts / 3))
-        index_rand = np.round(rand_matrix * (index_ellipse.__len__() - 1))
+        index_rand = np.round(np.random.rand(math.ceil(max_casts / 3)) * (index_ellipse.__len__())-1)
 
         # make sure the points are all unique
         index_rand = np.unique(index_rand)
@@ -164,7 +163,6 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
         index_rand.sort()
 
         # create an array containing the indices of the remaining reference data
-        # (index_ellipse array without index_rand array)
         # Then create arrays containing the remaining reference lat, long, age, and z_value
         index_remain = []
         remain_hist_lat = []
@@ -172,17 +170,16 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
         remain_hist_z_value = []
         remain_hist_dates = []
 
-        for i in index_ellipse.flatten():
+        for i in range(0, len(hist_lat)):
             if i not in index_rand:
                 index_remain.append(i)
 
         for i in index_remain:
-            remain_hist_lat = np.append(remain_hist_lat, grid_lat[int(i)])
-            remain_hist_long = np.append(remain_hist_long, grid_long[int(i)])
-            remain_hist_z_value = np.append(remain_hist_z_value, grid_z_value[int(i)])
-            remain_hist_dates = np.append(remain_hist_dates, grid_dates[int(i)])
+            remain_hist_lat = np.append(remain_hist_lat, hist_lat[int(i)])
+            remain_hist_long = np.append(remain_hist_long, hist_long[int(i)])
+            remain_hist_z_value = np.append(remain_hist_z_value, hist_z_value[int(i)])
+            remain_hist_dates = np.append(remain_hist_dates, hist_dates[int(i)])
 
-        # sort remaining points by large spatial correlations
         # if using potential vorticity, calculate it for remaining data
         if map_pv_use == 1:
             pv_hist = potential_vorticity_vec(remain_hist_lat, remain_hist_z_value)
@@ -194,81 +191,102 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
                                                     remain_hist_dates, date, age_large,
                                                     pv_hist, pv_float, phi_large)
 
-        # combine the large spatial correlation with their indices in a 2d matrix
-        correlation_large_combined = np.stack((index_remain, correlation_large)).transpose()
-        # sort the matrix in ascending order of correlation
-        correlation_large_combined_sorted = correlation_large_combined[
-            correlation_large_combined[:, 1].argsort()
-        ]
+        correlation_large_sorted = correlation_large.argsort()
+
+        z_remain_lat = []
+        z_remain_long = []
+        z_remain_z_value = []
+        z_remain_dates = []
+
+        for i in correlation_large_sorted:
+            z_remain_lat = np.append(z_remain_lat, remain_hist_lat[int(i)])
+            z_remain_long = np.append(z_remain_long, remain_hist_long[int(i)])
+            z_remain_z_value = np.append(z_remain_z_value, remain_hist_z_value[int(i)])
+            z_remain_dates = np.append(z_remain_dates, remain_hist_dates[int(i)])
 
         # work out how many large spatial data points needed
-        lsegment2 = 2 * math.ceil(max_casts / 3) - index_rand.__len__()
+        lsegment2 = math.ceil(max_casts / 3) + math.ceil(max_casts / 3) - index_rand.__len__()
 
-        # select the best large spatial data points
-        index_large_spatial = []
-        for i in range(0, lsegment2):
-            index_large_spatial = np.append(
-                index_large_spatial, correlation_large_combined_sorted[i][0]
-            )
-
-        # create array to hold selected indices from random and spatial selection
-        rand_large_index = np.concatenate((index_rand, index_large_spatial))
-        # sort into ascending order
-        rand_large_index.sort()
+        index_z = np.arange(lsegment2, int(len(z_remain_long)))
 
         # remove the currently selected indices again
-        index_remain = []
-        remain_hist_lat = []
-        remain_hist_long = []
-        remain_hist_z_value = []
-        remain_hist_dates = []
-        for i in index_ellipse.flatten():
-            if i not in rand_large_index:
-                index_remain.append(i)
+        s_remain_hist_lat = []
+        s_remain_hist_long = []
+        s_remain_hist_z_value = []
+        s_remain_hist_dates = []
 
-        for i in index_remain:
-            remain_hist_lat = np.append(remain_hist_lat, grid_lat[int(i)])
-            remain_hist_long = np.append(remain_hist_long, grid_long[int(i)])
-            remain_hist_z_value = np.append(remain_hist_z_value, grid_z_value[int(i)])
-            remain_hist_dates = np.append(remain_hist_dates, grid_dates[int(i)])
+        for i in index_z:
+            s_remain_hist_lat = np.append(s_remain_hist_lat, z_remain_lat[int(i)])
+            s_remain_hist_long = np.append(s_remain_hist_long, z_remain_long[int(i)])
+            s_remain_hist_z_value = np.append(s_remain_hist_z_value, z_remain_z_value[int(i)])
+            s_remain_hist_dates = np.append(s_remain_hist_dates, z_remain_dates[int(i)])
 
         # sort the remaining points by short spatial and temporal correlations
         # if using potential vorticity, calculate it
         if map_pv_use == 1:
             pv_hist = potential_vorticity_vec(
-                remain_hist_lat, remain_hist_z_value)
+                s_remain_hist_lat, s_remain_hist_z_value)
 
         # calculate the small spatial correlation for each point
-        correlation_small = spatial_correlation_vec(remain_hist_long,
+        correlation_small = spatial_correlation_vec(s_remain_hist_long,
                                                     long, longitude_small,
-                                                    remain_hist_lat,
+                                                    s_remain_hist_lat,
                                                     lat, latitude_small,
-                                                    remain_hist_dates,
+                                                    s_remain_hist_dates,
                                                     date, age_small,
                                                     pv_hist, pv_float, phi_small)
 
-        # combine the small spatial correlation with their indices in a 2d matrix
-        correlation_small_combined = np.stack((index_remain, correlation_small)).transpose()
-        # sort the matrix in ascending order of correlation
-        correlation_small_combined_sorted = correlation_small_combined[
-            correlation_small_combined[:, 1].argsort()
-        ]
+        correlation_small_sorted = correlation_small.argsort()
 
         # select the amount we need for short spatial/temporal correlation
         leftover = max_casts - index_rand.__len__() - lsegment2
 
-        index_small_spatial = []
-        for i in range(0, leftover):
-            index_small_spatial = np.append(
-                index_small_spatial, correlation_small_combined_sorted[i][0]
-            )
+        # get index into original list of stations
+        # index1_rand_ellipse
+        i1_ellipse = []
+        for i in index_rand.flatten():
+            i1_ellipse.append(index_ellipse[int(i)])
+        index_rand_ellipse = np.concatenate(np.array(i1_ellipse))
 
-        # put together the best random data, large spatial data, and small spatial data
-        index = np.concatenate((index_rand, index_large_spatial, index_small_spatial))
+        # index for hist_lat(index_random)
+        # index2_large_spatial
+        i2_large = correlation_large_sorted[:lsegment2]
+
+        i2_remain = []
+        for i in i2_large.flatten():
+            i2_remain.append(index_remain[int(i)])
+
+        i2_ellipse = []
+        for i in i2_remain:
+            i2_ellipse.append(index_ellipse[int(i)])
+        index_large_spatial = np.concatenate(np.array(i2_ellipse))
+
+        # index3_small_spatial
+        i3_small = correlation_small_sorted[:leftover]
+
+        i3_z = []
+        for i in i3_small.flatten():
+            i3_z.append(index_z[int(i)])
+
+        i3_large = []
+        for i in i3_z:
+            i3_large.append(correlation_large_sorted[int(i)])
+
+        i3_remain = []
+        for i in i3_large:
+            i3_remain.append(index_remain[int(i)])
+
+        i3_ellipse = []
+        for i in i3_remain:
+            i3_ellipse.append(index_ellipse[int(i)])
+        index_small_spatial = np.concatenate(np.array(i3_ellipse))
+
+        index = np.concatenate((index_rand_ellipse, index_large_spatial, index_small_spatial))
+
         if index.__len__() != np.unique(index).__len__():
             print("WARNING: not all points are unique")
-            rand_large = np.concatenate((index_rand, index_large_spatial))
-            rand_small = np.concatenate((index_rand, index_small_spatial))
+            rand_large = np.concatenate((index_rand_ellipse, index_large_spatial))
+            rand_small = np.concatenate((index_rand_ellipse, index_small_spatial))
             large_small = np.concatenate((index_large_spatial, index_small_spatial))
             print("unique points: ", np.unique(index).__len__())
             print("unique rand large: ", rand_large.__len__(),

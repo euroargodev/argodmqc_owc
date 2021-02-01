@@ -633,10 +633,10 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format)
 
         plt.show()
-
-
-def sal_anom_plot(sal, ptmp,pres, profile_no, config, float_name):
-    """ Create the salinity anomaly plot
+        
+        
+def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
+    """ Create the salinity anomoly plot
 
         Parameters
         ----------
@@ -655,14 +655,14 @@ def sal_anom_plot(sal, ptmp,pres, profile_no, config, float_name):
     # Set up values and allocate memory for matrices
 
     theta_base = np.arange(0.1, 30.1, 0.1)
-    ptmp_0 = gsw.conversions.pt0_from_t(sal, ptmp, pres)
+    #ptmp_0 = gsw.conversions.pt0_from_t(sal, ptmp, pres)
     sal_int = np.nan * np.ones((len(theta_base), sal.shape[1]))
     sal_anom = np.nan * np.ones((len(theta_base), sal.shape[1]))
     prof_range = np.nan*np.ones((2, 1), dtype=int).flatten()
 
     # find anomoly
 
-    good_ptmp = np.where(~np.isnan(ptmp.T[:,:]))
+    good_ptmp = np.where(~np.isnan(ptmp.T[:, :]))
     prof_range[0] = int(np.nanmin(good_ptmp[0]))
     prof_range[1] = int(np.nanmax(good_ptmp[0]))
 
@@ -670,7 +670,7 @@ def sal_anom_plot(sal, ptmp,pres, profile_no, config, float_name):
         temp = ptmp[:, k]
         sal1 = sal[:, k]
         sal_temp = np.vstack((temp, sal1)).T
-        sal_temp_sorted = sal_temp[sal_temp[:,0].argsort()]
+        sal_temp_sorted = sal_temp[sal_temp[:, 0].argsort()]
 
         # make sure the values are unique
 
@@ -696,7 +696,6 @@ def sal_anom_plot(sal, ptmp,pres, profile_no, config, float_name):
         if good.__len__() > 0:
             sal_med[i] = np.nanmedian(sal_1[good, i])
             sal_std[i] = np.nanstd(sal_1[good, i])
-
 
     for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
         sal_anom[:, k] = sal_int[:, k] - sal_med

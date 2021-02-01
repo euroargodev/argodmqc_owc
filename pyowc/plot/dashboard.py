@@ -100,7 +100,7 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
 
     # create salinity anomaly plot for float
 
-    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), copy.deepcopy(pres), profile_no, config, float_name)
+    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), profile_no, config, float_name)
 
     # plot the salinity time series on theta levels ----------
 
