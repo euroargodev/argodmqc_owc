@@ -28,17 +28,17 @@ def load():
         #
         #    Climatology Data Input Paths
 
-        'HISTORICAL_DIRECTORY': "data/climatology",
-        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_",
-        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_",
-        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_",
+        'HISTORICAL_DIRECTORY': "L:/bodc2/vault/archive/argo/cls100061",
+        'HISTORICAL_CTD_PREFIX': "/historical_ctd/CTD_for_DMQC_2019V01/ctd_",
+        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/WOD2001_v2/bot_",
+        'HISTORICAL_ARGO_PREFIX': "/argo_profiles/ARGO_for_DMQC_2020V03/argo_",
 
         # ===============================
         #
         #    Float Input Path
         #
 
-        'FLOAT_SOURCE_DIRECTORY': "data/float_source/",
+        'FLOAT_SOURCE_DIRECTORY': "L:/users/argo/ow/matlabow-2.0.1/data/float_source/",
         'FLOAT_SOURCE_POSTFIX': ".mat",
 
         # ===============================
@@ -72,9 +72,9 @@ def load():
         #    Constants File Path
         #
 
-        'CONFIG_DIRECTORY': "data/constants/",
+        'CONFIG_DIRECTORY': "L:/users/argo/ow/matlabow-2.0.1/data/constants/",
         'CONFIG_COASTLINES': "coastdat.mat",
-        'CONFIG_WMO_BOXES': "wmo_boxes.mat",
+        'CONFIG_WMO_BOXES': "wmo_boxes_ctd.mat",
         'CONFIG_SAF': "TypicalProfileAroundSAF.mat",
 
         # ===============================
@@ -103,13 +103,13 @@ def load():
 
         # temporal decorrelation scale, in years
         'MAPSCALE_AGE_LARGE': 20,
-        'MAPSCALE_AGE_SMALL': 10,
+        'MAPSCALE_AGE_SMALL': 5,
 
         # exclude the top xxx dbar of the water column
         'MAP_P_EXCLUDE': 100,
 
         # only use historical data that are within +/- yyy dbar from float data
-        'MAP_P_DELTA': 250,
+        'MAP_P_DELTA': 200,
 
         # ===============================
         #

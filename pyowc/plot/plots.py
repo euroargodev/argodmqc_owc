@@ -2,12 +2,11 @@
 """
 import os
 import copy
-import gsw
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
-import geopandas as gdp  # pylint: disable=import-error
 from scipy.interpolate import interpolate
+import geopandas as gdp  # pylint: disable=import-error
 
 from ..core.finders import find_10thetas
 
@@ -705,11 +704,11 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
     for bounds in config['THETA_BOUNDS']:
-        c_bounds = plt.contourf(profile_no[0], theta_base,  sal_anom, levels=levels, cmap='seismic')
+        c_bounds = plt.contourf(profile_no[0], theta_base, sal_anom, levels=levels, cmap='seismic')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors='red')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -0.1], colors='blue')
-        plt.contour(profile_no[0], theta_base,  sal_anom, levels=[0], colors='black')
-        plt.contour(profile_no[0], theta_base,  sal_anom, levels=levels,
+        plt.contour(profile_no[0], theta_base, sal_anom, levels=[0], colors='black')
+        plt.contour(profile_no[0], theta_base, sal_anom, levels=levels,
                     colors='black', linestyles='solid', linewidths=0.25)
         plt.colorbar(c_bounds, label="Difference", ticks=levels)
         plt.xlabel("profile number")

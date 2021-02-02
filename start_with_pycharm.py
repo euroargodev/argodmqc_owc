@@ -1,10 +1,12 @@
-from argodmqc_owc import pyowc as owc
-import warnings
-
-warnings.filterwarnings("ignore", category=RuntimeWarning)
+""" starting code
+"""
 import multiprocessing
 from functools import partial
 import time
+import warnings
+from argodmqc_owc import pyowc as owc
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 if __name__ == '__main__':
 
@@ -26,10 +28,10 @@ if __name__ == '__main__':
     print("\nTOTAL TIME ELAPSED: ", end - start)
 
     # loop for sequential run
-    for float in FLOAT_NAMES:
-        owc.configuration.set_calseries("/", float, USER_CONFIG)
-        owc.calibration.calc_piecewisefit("/", float, USER_CONFIG)
-        owc.dashboard("/", float, USER_CONFIG)
+    for flt in FLOAT_NAMES:
+        owc.configuration.set_calseries("/", flt, USER_CONFIG)
+        owc.calibration.calc_piecewisefit("/", flt, USER_CONFIG)
+        owc.dashboard("/", flt, USER_CONFIG)
         mid = time.time()
         print("Time for float: ", mid - start)
 
