@@ -633,8 +633,8 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format)
 
         plt.show()
-        
-        
+
+
 def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
     """ Create the salinity anomoly plot
 
@@ -660,7 +660,7 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
     sal_anom = np.nan * np.ones((len(theta_base), sal.shape[1]))
     prof_range = np.nan*np.ones((2, 1), dtype=int).flatten()
 
-    # find anomoly
+    # find anomaly
 
     good_ptmp = np.where(~np.isnan(ptmp.T[:, :]))
     prof_range[0] = int(np.nanmin(good_ptmp[0]))
@@ -685,7 +685,7 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
                                                   bounds_error=False)
             sal_int[:, k] = sal_int_interp(theta_base[:])
 
-    # find median and calculate anomoly
+    # find median and calculate anomaly
     sal_1 = sal_int.T
     sal_size = sal_1.shape[1]
     sal_med = np.nan * np.ones((1, sal_size)).flatten()

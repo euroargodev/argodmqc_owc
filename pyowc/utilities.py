@@ -3,10 +3,6 @@
 
 import math
 import numpy as np
-import gsw
-from scipy.io import loadmat
-import scipy.interpolate as interpolate
-import os
 
 #pylint: disable=too-many-arguments
 def spatial_correlation(
@@ -209,10 +205,9 @@ def change_dates(cal_dates):
             if cal_dates_string[i].__len__() > 11:
                 minute = int(cal_dates_string[i][10:12])
 
-            if 13 > month > 0:
-                if 32 > day > 0:
-                    day = year + (cal2dec(month - 1, day, hour, minute) / 365)
-                    dec_dates[i] = day
+            if 13 > month > 0 and 32 > day > 0:
+                day = year + (cal2dec(month - 1, day, hour, minute) / 365)
+                dec_dates[i] = day
 
         except ValueError:
             print("Date is incorrect length or format")
