@@ -13,6 +13,7 @@ import os
 import struct
 import numpy as np
 from scipy.io import loadmat
+from pymatreader import read_mat
 import gsw
 from ..utilities import wrap_longitude, change_dates
 from ..configuration import print_cfg
@@ -72,10 +73,10 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
 
     # Open the binary file
     elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")
-
+    #elev_file = open(rb"L:\users\argo\kamwal\OWC_Python_Test_2\argodmqc_owc\data\constants\tbase.int", "rb")
     # decode the file, and get values
     for i in range(nlat):
-        elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)
+        elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)# ERROR HERE
 
         for j in range(nlong):
             topo[i, j] = struct.unpack('h', elev_file.read(2))[0]
@@ -121,11 +122,10 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     box_name = str(int(wmo_box[0]))
     # check if we should use this data. If so, get the data
     if wmo_box[data_type] == 1 and data_type == 1:
-        data = loadmat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
+        data = read_mat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
                                          config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat']))
-
     if wmo_box[data_type] == 1 and data_type == 2:
-        data = loadmat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
+        data = read_mat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
                                          config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat']))
 
         # if data dimensions don't match, transpose to avoid indexing issues
@@ -137,21 +137,19 @@ def get_data(wmo_box, data_type, config, pa_float_name):
             data['temp'] = data['temp'].T
 
     if wmo_box[data_type] == 1 and data_type == 3:
-        data = loadmat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                         config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat']))
-
+        data = read_mat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat')
         # remove the argo float being analysed from the data
         not_use = []
-        for i in range(0, data['lat'][0].__len__()):
-            if str(data['source'][0][i]).find(pa_float_name) != -1:
+        for i in range(0, data['lat'].__len__()):
+            if str(data['source'][i]).find(pa_float_name) != -1:
                 not_use.append(i)
 
-        data['lat'] = [np.delete(data['lat'], not_use)]
-        data['long'] = [np.delete(data['long'], not_use)]
-        data['dates'] = [np.delete(data['dates'], not_use)]
-        data['sal'] = [np.delete(data['sal'], not_use, axis=1)]
-        data['ptmp'] = [np.delete(data['ptmp'], not_use, axis=1)]
-        data['pres'] = [np.delete(data['pres'], not_use, axis=1)]
+        data['lat'] = np.array(np.delete(data['lat'], not_use))
+        data['long'] = np.array(np.delete(data['long'], not_use))
+        data['dates'] = np.array(np.delete(data['dates'], not_use))
+        data['sal'] = np.array(np.delete(data['sal'], not_use, axis=1))
+        data['ptmp'] = np.array(np.delete(data['ptmp'], not_use, axis=1))
+        data['pres'] = np.array(np.delete(data['pres'], not_use, axis=1))
 
     return data
 
@@ -194,12 +192,11 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
             # get the data
             try:
                 data = get_data(wmo_box, data_type, config, pa_float_name)
-
                 # if we have data, combine it with the other data then reset it
                 if data:
-                    grid_lat = np.concatenate([grid_lat, data['lat'][0]])
-                    grid_long = np.concatenate([grid_long, data['long'][0]])
-                    grid_dates = np.concatenate([grid_dates, data['dates'][0]])
+                    grid_lat = np.concatenate([grid_lat, data['lat']])
+                    grid_long = np.concatenate([grid_long, data['long']])
+                    grid_dates = np.concatenate([grid_dates, data['dates']])
                     data = []
 
             except:
@@ -293,7 +290,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                         data['dates'] = data['dates'][0].reshape(-1, 1)
 
                     #  check the index of each station to see if it should be loaded
-                    data_length = data['lat'][0].__len__()
+                    data_length = data['lat'].__len__()
                     data_indices = np.arange(0, data_length) + starting_index
 
                     # remember location of last entry
@@ -361,9 +358,9 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                                     how_many_cols + 1, how_many_rows)
 
                             # save the latitude, longitude, and date of the new data
-                            grid_lat = np.append(grid_lat, data['lat'][0, i])
-                            grid_long = np.append(grid_long, data['long'][0, i])
-                            grid_dates = np.append(grid_dates, data['dates'][0, i])
+                            grid_lat = np.append(grid_lat, data['lat'][i])
+                            grid_long = np.append(grid_long, data['long'][i])
+                            grid_dates = np.append(grid_dates, data['dates'][i])
 
                             # readjust our values so we know what column to add the new data to,
                             # and what shape we should expect the data to be
