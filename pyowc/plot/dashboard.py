@@ -76,6 +76,10 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                    map_sal, map_ptmp, map_errors, index, profile_no[0],
                    config, float_name)
 
+    # create the calibrated salinity anomaly plot for float
+
+    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), profile_no, config, float_name, "uncalibrated")
+
     # plot the calibration curve --------------------------
 
     cal_sal = cal_data['cal_SAL']
@@ -98,10 +102,6 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                    map_sal, map_ptmp, map_errors, index,
                    profile_no[0], config, float_name, "calibrated")
 
-    # create salinity anomaly plot for float
-
-    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), profile_no, config, float_name)
-
     # plot the salinity time series on theta levels ----------
 
     boundaries = [use_theta_lt, use_theta_gt,
@@ -113,6 +113,10 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
                  copy.deepcopy(map_errors), copy.deepcopy(map_ptmp),
                  copy.deepcopy(cal_sal), copy.deepcopy(cal_sal_err),
                  boundaries, profile_no, float_name, config)
+
+    # create the calibrated salinity anomaly plot for float
+
+    sal_anom_plot(copy.deepcopy(cal_sal), copy.deepcopy(ptmp), profile_no, config, float_name, "calibrated")
 
     # plot the analysis plots ----------------------------------
 

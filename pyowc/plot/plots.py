@@ -634,7 +634,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         plt.show()
 
 
-def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
+def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title='uncalibrated'):
     """ Create the salinity anomoly plot
 
         Parameters
@@ -645,6 +645,7 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
         profile_no: profile numbers
         config: user configuration
         float_name: name of the float
+        title: Addition to the title
 
         Returns
         -------
@@ -714,11 +715,11 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name):
         plt.xlabel("profile number")
         plt.ylabel("theta")
         plt.ylim((bounds[0], bounds[1]))
-        plt.title("Salinity anomaly on theta bounds " +
+        plt.title(title + " salinity anomaly on theta bounds " +
                   str(bounds[0]) + " - " + str(bounds[1]) + " for " + float_name)
 
         save_format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-        plt.savefig(plot_loc + "_salinity_anomaly_" + str(bounds) + "." + save_format,
+        plt.savefig(plot_loc + "_" + title + "_salinity_anomaly_" + str(bounds) + "." + save_format,
                     format=save_format)
         plt.show()
