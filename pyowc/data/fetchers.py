@@ -445,7 +445,8 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     return grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates
 
 
-def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates, grid_z, float_lat, float_pres, float_tmp, float_sal):
+def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates, grid_z, float_lat,
+                           float_pres, float_tmp, float_sal):
 
     """ Function to
 

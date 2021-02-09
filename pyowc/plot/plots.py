@@ -36,7 +36,6 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
         -------
         Nothing
     """
-
     # load in the coastline data
     coastline = os.path.sep.join([config['CONFIG_DIRECTORY'], "coastline", "ne_10m_coastline.shp"])
     map_coast = gdp.read_file(coastline)
@@ -142,7 +141,8 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
     """
 
     # set up plot
-    plt.subplots()
+    plt.figure(figsize=(10, 6))
+    #plt.subplots()
     color_n = sal.__len__()
     colors = pl.cm.jet(np.linspace(0, 1, color_n))
 
@@ -173,11 +173,8 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
 
     save_format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format,
-                format=save_format, bbox_inches='tight')
-
+    plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format, format=save_format)
     plt.show()
-
 
 # pylint: disable=too-many-arguments
 def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
@@ -200,8 +197,8 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
         Nothing
     """
 
-    plt.figure(1)
-
+    #plt.figure(1)
+    plt.figure(1, figsize=(7, 9))
     # plot t-s profile
     plt.subplot(222)
 
@@ -500,7 +497,8 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                     s_cal_err[i, j] = cal_sal_errors[theta_index, j]
     # plot data (one plot for each theta level, as selected by user)
     for i in range(levels):
-        plt.figure(1)
+        #plt.figure(1)
+        plt.figure(figsize=(12, 6))
         good_index = np.isfinite(s_cal[i])
         plt.errorbar(profile_no, s_map[i], yerr=s_map_err[i], color='r', capsize=2)
         plt.fill_between(profile_no[good_index], s_cal[i, good_index] + s_cal_err[i, good_index],
@@ -578,7 +576,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
         # begin plotting data (two plots)
 
         # potential conductivity plot
-        plt.figure(1)
+        plt.figure(figsize=(12, 7))
         plt.subplot(211)
 
         plt.plot(profile_no[0], pcond_factor[0], color=(0, 1, 0), linestyle='-', linewidth=2)
@@ -705,6 +703,7 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title='uncalibrated
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
     for bounds in config['THETA_BOUNDS']:
+        plt.figure(figsize=(10, 6))
         c_bounds = plt.contourf(profile_no[0], theta_base, sal_anom, levels=levels, cmap='seismic')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors='red')
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[-1000, -0.1], colors='blue')
