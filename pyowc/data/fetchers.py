@@ -66,7 +66,6 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
 
     # Open the binary file
     elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")
-    #elev_file = open('L:/users/argo/kamwal/OWC_Python_Test_2/argodmqc_owc/data/constants/tbase.int', 'rb')
 
     if decoder[1] > 4319:
         nlat = int(round(decoder[2] - decoder[3])) + 1  # get the amount of elevation values we need
