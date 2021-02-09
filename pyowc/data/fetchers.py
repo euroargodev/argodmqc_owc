@@ -64,22 +64,45 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
 
     decoder = [llong, rlong, 90 * 12 - blat, 90 * 12 - tlat]
 
-    # get the amount of elevation values we need
-    nlat = int(round(decoder[2] - decoder[3])) + 1
-    nlong = int(round(decoder[1] - decoder[0])) + 1
-
-    # initialise matrix to hold z values
-    topo = np.zeros((nlat, nlong))
-
     # Open the binary file
     elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")
-    #elev_file = open(rb"L:\users\argo\kamwal\OWC_Python_Test_2\argodmqc_owc\data\constants\tbase.int", "rb")
-    # decode the file, and get values
-    for i in range(nlat):
-        elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)# ERROR HERE
+    #elev_file = open('L:/users/argo/kamwal/OWC_Python_Test_2/argodmqc_owc/data/constants/tbase.int', 'rb')
 
-        for j in range(nlong):
-            topo[i, j] = struct.unpack('h', elev_file.read(2))[0]
+    if decoder[1] > 4319:
+        nlat = int(round(decoder[2] - decoder[3])) + 1  # get the amount of elevation values we need
+        nlgr = int(round(decoder[1] - 4320)) + 1
+        nlgl = int(4320 - decoder[0])
+
+        # initialise matrix to hold z values
+        topo_end = np.zeros((nlat, nlgr))
+
+        # decode the file, and get values
+        for i in range(nlat):
+            elev_file.seek((i + decoder[3]) * 360 * 12 * 2)
+            for j in range(nlgr):
+                topo_end[i, j] = struct.unpack('h', elev_file.read(2))[0]
+
+        topo_beg = np.zeros((nlat, nlgl))
+
+        for i in range(nlat):
+            elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)
+            for j in range(nlgl):
+                topo_beg[i, j] = struct.unpack('h', elev_file.read(2))[0]
+
+        topo = np.concatenate([topo_beg, topo_end], axis=1)
+    else:
+        # get the amount of elevation values we need
+        nlat = int(round(decoder[2] - decoder[3])) + 1
+        nlong = int(round(decoder[1] - decoder[0])) + 1
+
+        # initialise matrix to hold z values
+        topo = np.zeros((nlat, nlong))
+
+        # decode the file, and get values
+        for i in range(nlat):
+            elev_file.seek((i + decoder[3]) * 360 * 12 * 2 + decoder[0] * 2)
+            for j in range(nlong):
+                topo[i, j] = struct.unpack('h', elev_file.read(2))[0]
 
     # make the grid
     longs, lats = np.meshgrid(lgs, lts)
@@ -123,10 +146,10 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     # check if we should use this data. If so, get the data
     if wmo_box[data_type] == 1 and data_type == 1:
         data = read_mat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                         config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat']))
+                                          config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat']))
     if wmo_box[data_type] == 1 and data_type == 2:
         data = read_mat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                         config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat']))
+                                          config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat']))
 
         # if data dimensions don't match, transpose to avoid indexing issues
         if (data['lat'].size == data['pres'].size and

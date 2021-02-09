@@ -113,7 +113,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 
     save_format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
+    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format, bbox_inches='tight')
 
 
 # pylint: disable=too-many-arguments
@@ -174,7 +174,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
     save_format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
     plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format,
-                format=save_format)
+                format=save_format, bbox_inches='tight')
 
     plt.show()
 
@@ -246,7 +246,7 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
 
     save_format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_salinity_profile." + save_format, format=save_format)
+    plt.savefig(plot_loc + "_salinity_profile." + save_format, format=save_format, bbox_inches='tight')
 
     plt.show()
 
@@ -526,7 +526,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         save_format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
         plt.savefig(plot_loc + "_salinity_variance_" + str(i + 1) + "." + save_format,
-                    format=save_format)
+                    format=save_format, bbox_inches='tight')
 
         plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
         plt.show()
@@ -629,7 +629,7 @@ def cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal, sta_sal_err, sta_mean
 
         save_format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-        plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format)
+        plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format, bbox_inches='tight')
 
         plt.show()
 
@@ -721,5 +721,5 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title='uncalibrated
         save_format = config['FLOAT_PLOTS_FORMAT']
         plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
         plt.savefig(plot_loc + "_" + title + "_salinity_anomaly_" + str(bounds) + "." + save_format,
-                    format=save_format)
+                    format=save_format, bbox_inches='tight')
         plt.show()
