@@ -7,6 +7,7 @@ import copy
 
 import gsw
 import numpy as np
+
 from scipy.io import loadmat, savemat
 import scipy.interpolate as interpolate
 
@@ -337,10 +338,10 @@ def update_salinity_mapping(float_dir, config, float_name):
                 # the same side the profile is on
                 if map_use_saf == 1:
                     [best_hist_sal2, best_hist_ptmp2, best_hist_pres2,
-                     best_hist_lat2, best_hist_long2, best_hist_dates2, best_hist_z2] = frontal_constraint_saf(config, best_hist_sal, best_hist_ptmp,
-                                                                                              best_hist_pres, best_hist_lat, best_hist_long,
-                                                                                              best_hist_dates, best_hist_z, float_lat,
-                                                                                              float_pres, float_tmp, float_sal)
+                     best_hist_lat2, best_hist_long2, best_hist_dates2,
+                     best_hist_z2] = frontal_constraint_saf(config, best_hist_sal, best_hist_ptmp, best_hist_pres,
+                                                            best_hist_lat, best_hist_long, best_hist_dates, best_hist_z,
+                                                            float_lat, float_pres, float_tmp, float_sal)
                     # Use frontal separation only if there are at least 5 profiles
                     if len(best_hist_sal2[0]) > 5:
                         best_hist_sal = best_hist_sal2
