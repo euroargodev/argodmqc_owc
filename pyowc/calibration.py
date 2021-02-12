@@ -5,8 +5,8 @@ import os
 import time
 import copy
 
-import gsw
 import numpy as np
+import gsw
 
 from scipy.io import loadmat, savemat
 import scipy.interpolate as interpolate
@@ -398,10 +398,10 @@ def update_salinity_mapping(float_dir, config, float_name):
                             # Need to check for statistical outliers
                             mean_sal = np.mean(hist_sal)
                             signal_sal = signal_variance(hist_sal)
-                            outlier = np.argwhere(np.abs(hist_sal - mean_sal) /
-                                                  np.sqrt(signal_sal) > 3)
-
-                            # remove the statstical outliers
+                            outlier1 = np.argwhere(np.abs(hist_sal - mean_sal) /
+                                                   np.sqrt(signal_sal) > 3)
+                            outlier = outlier1[:, 0]
+                            # remove the statistical outliers
                             if outlier.__len__() > 0:
                                 hist_sal = np.delete(hist_sal, outlier)
                                 hist_pres = np.delete(hist_pres, outlier)
@@ -418,8 +418,8 @@ def update_salinity_mapping(float_dir, config, float_name):
                             signal_sal = signal_variance(hist_sal)
 
                             # map residuals
-                            hist_data = np.array([hist_lat, hist_long,
-                                                  hist_dates, hist_z])
+                            # hist_data = np.array([hist_lat, hist_long,
+                            #                      hist_dates, hist_z])
                             float_data = np.array([float_lat,
                                                    float_long,
                                                    float_date,
@@ -543,8 +543,8 @@ def update_salinity_mapping(float_dir, config, float_name):
     la_profile_no = la_profile_no[sorted_profile_index]
 
     if selected_hist.__len__() > 0:
-        ind = selected_hist[:, 2].argsort()
-        selected_hist = selected_hist[ind, :]
+        selected_hist_1 = np.array(sorted(selected_hist, key=lambda x: x[2]))
+    selected_hist = selected_hist_1
 
     # define the saving location
     save_location = os.path.sep.join([config['FLOAT_MAPPED_DIRECTORY'],

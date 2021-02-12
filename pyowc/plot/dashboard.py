@@ -10,7 +10,6 @@ from pyowc.plot.plots import theta_sal_plot, cal_sal_curve_plot, sal_var_plot, t
 from pyowc.plot.utils import create_dataframe
 from pyowc.core.finders import find_10thetas
 
-
 #pylint: disable=too-many-locals
 def plot_diagnostics(float_dir, float_name, config, levels=2):
     """ Run the plotting procedures
