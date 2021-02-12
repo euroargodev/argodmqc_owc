@@ -398,8 +398,9 @@ def update_salinity_mapping(float_dir, config, float_name):
                             # Need to check for statistical outliers
                             mean_sal = np.mean(hist_sal)
                             signal_sal = signal_variance(hist_sal)
-                            outlier = np.argwhere(np.abs(hist_sal - mean_sal) /
-                                                  np.sqrt(signal_sal) > 3)
+                            outlier1 = np.argwhere(np.abs(hist_sal - mean_sal) /
+                                                   np.sqrt(signal_sal) > 3)
+                            outlier = outlier1[:, 0]
 
                             # remove the statstical outliers
                             if outlier.__len__() > 0:
