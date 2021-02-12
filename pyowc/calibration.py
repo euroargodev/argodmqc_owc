@@ -541,7 +541,8 @@ def update_salinity_mapping(float_dir, config, float_name):
     p_exclude = p_exclude[sorted_profile_index]
     la_profile_no = la_profile_no[sorted_profile_index]
 
-    selected_hist_1 = np.array(sorted(selected_hist, key=lambda x: x[2]))
+    if selected_hist.__len__() > 0:
+        selected_hist_1 = np.array(sorted(selected_hist, key=lambda x: x[2]))
     selected_hist = selected_hist_1
 
     # define the saving location
