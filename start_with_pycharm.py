@@ -4,7 +4,7 @@ import multiprocessing
 from functools import partial
 import time
 import warnings
-from argodmqc_owc import pyowc as owc
+import pyowc as owc
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
