@@ -789,37 +789,24 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
         -------
         m*n matrix containing the covariance of each point
     """
+    points1 = np.atleast_2d(points1)
+    points2 = np.atleast_2d(points2)
 
-    # create the m*n covariance matrix filled with 0's
-    if points1.shape.__len__() < 2:
-        points1 = np.array([points1])
+    long_covar = ((points1[:, np.newaxis, 0] - points2[np.newaxis, :, 0]) / long)**2
+    lat_covar = ((points1[:, np.newaxis, 1] - points2[np.newaxis, :, 1]) / lat)**2
+    age_covar = 0.0
+    p_v_covar = 0.0
 
-    if points2.shape.__len__() < 2:
-        points2 = np.array([points2])
+    if age != 0:
+        age_covar = ((points1[:, np.newaxis, 2] - points2[np.newaxis, :, 2]) / age)**2
 
-    points_covar = np.full((points1.shape[0], points2.shape[0]), 0, float)
+    # pylint: disable=fixme
+    # TODO: ARGODEV-163
+    # use the potential vorticity function made in ARGODEV-150
+    if map_pv_use == 1:
+        print("pv not yet included. Phi: ", phi)
 
-    for i in range(0, points1.__len__()):
-        for j in range(0, points2.__len__()):
-
-            # calculate the absolute difference between points over characteristic length scale
-            long_covar = ((points1[i][0] - points2[j][0]) / long) ** 2
-            lat_covar = ((points1[i][1] - points2[j][1]) / lat) ** 2
-            age_covar = 0
-            p_v_covar = 0
-
-            if age != 0:
-                age_covar = ((points1[i][2] - points2[j][2]) / age) ** 2
-
-            #pylint: disable=fixme
-            # TODO: ARGODEV-163
-            # use the potential vorticity function made in ARGODEV-150
-            if map_pv_use == 1:
-                print("pv not yet included. Phi: ", phi)
-
-            points_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
-
-    return points_covar
+    return np.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
 
 
 #pylint: disable=too-many-locals
