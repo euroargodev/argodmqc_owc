@@ -44,7 +44,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
         if not os.path.exists(self.python_output_path):
             print("Getting mapped data for testing...")
-            update_salinity_mapping("/", self.float_source, self.config)
+            update_salinity_mapping("/", self.config, self.float_source)
 
         self.matlab_output = loadmat(matlab_output_path)
         self.python_output = loadmat(self.python_output_path)
@@ -62,7 +62,7 @@ class UpdateSalinityMapping(unittest.TestCase):
             os.remove(self.python_output_path)
 
         try:
-            update_salinity_mapping("/", self.float_source, self.config)
+            update_salinity_mapping("/", self.config, self.float_source)
 
         except:
             self.fail("Update salinity mapping encountered an unexpected error")
@@ -70,7 +70,7 @@ class UpdateSalinityMapping(unittest.TestCase):
         # Should use precalculated data
         captured_output = io.StringIO()
         sys.stdout = captured_output
-        update_salinity_mapping("/", self.float_source, self.config)
+        update_salinity_mapping("/", self.config, self.float_source)
         sys.stdout = sys.__stdout__
 
         self.assertTrue("Using precalculated data" in captured_output.getvalue(),
