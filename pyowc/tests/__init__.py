@@ -11,6 +11,8 @@ TESTS_CONFIG['TEST_DIRECTORY'] = "data/test_data"
 TESTS_CONFIG['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
 TESTS_CONFIG['FLOAT_PLOTS_FORMAT'] = "eps"
 
+TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'] = "data/test_data/float_source/"
+
 # Define specific values used in tests that depends on a specific float processing:
 TESTS_CONFIG['TEST_FLOAT_SOURCE'] = "3901960"
 TESTS_CONFIG['TEST_FLOAT_WMO_BOXES'] = [3505, 3506]
@@ -22,4 +24,4 @@ TESTS_CONFIG['TEST_FLOAT_N_DATA'] = 830
 
 # Fix paths for tests:
 for path in [k for k in TESTS_CONFIG.keys() if "DIRECTORY" in k]:
-    TESTS_CONFIG[path] = os.path.abspath(TESTS_CONFIG[path].replace("data/", data_root))
+    TESTS_CONFIG[path] = os.path.abspath(TESTS_CONFIG[path].replace("data/", data_root, 1))
