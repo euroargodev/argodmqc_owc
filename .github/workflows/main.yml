@@ -31,7 +31,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install distributed
-        pip install geopandas descartes
 
     - name: Lint with pylint (tests used at NOC)
       run: |
