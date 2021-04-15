@@ -3,6 +3,7 @@ import os
 import sys
 import io
 import unittest
+import tempfile
 import math
 import numpy as np
 from scipy.io import loadmat
@@ -58,14 +59,15 @@ class UpdateSalinityMapping(unittest.TestCase):
 
         print("testing that update salinity mapping runs through")
 
-        if os.path.exists(self.python_output_path):
-            os.remove(self.python_output_path)
+        # use temporary directory for output to ensure the file doesn't exist
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # override the output directory for this call
+            tmp_config = {**self.config, "FLOAT_MAPPED_DIRECTORY": tmpdir}
 
-        try:
-            update_salinity_mapping("/", self.config, self.float_source)
-
-        except:
-            self.fail("Update salinity mapping encountered an unexpected error")
+            try:
+                update_salinity_mapping("/", tmp_config, self.float_source)
+            except:
+                self.fail("Update salinity mapping encountered an unexpected error")
 
         # Should use precalculated data
         captured_output = io.StringIO()
