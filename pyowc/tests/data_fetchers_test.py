@@ -45,7 +45,6 @@ class GetData(unittest.TestCase):
         wmo_boxes = np.array([self.config['TEST_FLOAT_WMO_BOXES'][0], 1, 1, 1])
 
         data_ctd = get_data(wmo_boxes, 1, self.config, self.float_name)
-        print(data_ctd)
         self.assertTrue(data_ctd['long'].shape[0] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][0],
                         "should return some data when fetching ctd")
 
