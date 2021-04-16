@@ -45,17 +45,17 @@ class GetData(unittest.TestCase):
         wmo_boxes = np.array([self.config['TEST_FLOAT_WMO_BOXES'][0], 1, 1, 1])
 
         data_ctd = get_data(wmo_boxes, 1, self.config, self.float_name)
-        self.assertTrue(data_ctd['long'].shape[1] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][0],
+        print(data_ctd)
+        self.assertTrue(data_ctd['long'].shape[0] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][0],
                         "should return some data when fetching ctd")
 
         data_bot = get_data(wmo_boxes, 2, self.config, self.float_name)
-        self.assertTrue(data_bot['long'].shape[1] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][1],
+        self.assertTrue(data_bot['long'].shape[0] == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][1],
                         "should return some data when fetching argo")
 
         data_argo = get_data(wmo_boxes, 3, self.config, self.float_name)
-        self.assertTrue(data_argo['long'][0].__len__() == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][2],
+        self.assertTrue(data_argo['long'].__len__() == self.config['TEST_FLOAT_WMO_BOXES_Nhist'][2],
                         "should return some data when fetching argo")
-
     def test_removes_argo_float(self):
         """
         See if it removes the argo float currently being analysed
@@ -69,7 +69,7 @@ class GetData(unittest.TestCase):
         data_normal = get_data(wmo_boxes, 3, self.config, self.float_name)
         data_removed = get_data(wmo_boxes, 3, self.config, float_removed)
 
-        self.assertTrue(data_normal['long'][0].__len__() - data_removed['long'][0].__len__() ==
+        self.assertTrue(data_normal['long'].__len__() - data_removed['long'].__len__() ==
                         self.config['TEST_FLOAT_N_TO_REMOVE'],
                         "Should have removed data associated with the float being processed")
 
@@ -87,7 +87,7 @@ class GetData(unittest.TestCase):
                         "Ocean characteristic data should be the same shape")
         self.assertTrue(this_data['long'].shape == this_data['lat'].shape == this_data['dates'].shape,
                         "Spatial/temporal data should be the same shape")
-        self.assertTrue(this_data['sal'].shape[1] == this_data['long'].shape[1],
+        self.assertTrue(this_data['sal'].shape[1] == this_data['long'].shape[0],
                         "Should be a profile for every location")
 
 
