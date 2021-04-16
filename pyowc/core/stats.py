@@ -677,23 +677,13 @@ def signal_variance(sal):
         -------
         float estimate of the variance of the signal of the given data
     """
+    sal = np.array(sal)
+    non_zero_values = sal[sal != 0.0]
 
-    # remove 0's and NaN's from our data set
-    sal_no_nan = []
-    for i in range(0, sal.__len__()):
-        if sal[i] != 0 and not math.isnan(sal[i]):
-            sal_no_nan.append(sal[i])
-
-    # check that we have got some valid values. If not, raise an exception
-    num_sal = sal_no_nan.__len__()
-    if num_sal == 0:
+    if np.all(np.isnan(non_zero_values)):
         raise RuntimeError("Received no valid salinity values when calculating signal variance") from None
-    # approximate the signal variance
-    sal_mean = np.mean(sal_no_nan)
-    signal = (sal_no_nan - sal_mean)
-    variance = np.sum(signal ** 2) / num_sal
 
-    return variance
+    return np.nanvar(non_zero_values)
 
 
 def noise_variance(sal, lat, long):
