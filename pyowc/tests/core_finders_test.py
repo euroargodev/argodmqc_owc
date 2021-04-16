@@ -33,7 +33,7 @@ class Find10Thetas(unittest.TestCase):
 
         self.la_ptmp = mapped_values['la_ptmp']
 
-        # matlab answers
+        # matlab answers (for file 3901960)
 
         self.tlevels = np.array([1.93961369305644,
                                  1.94046894952240,
@@ -244,6 +244,7 @@ class Find10Thetas(unittest.TestCase):
         for i in p_levels:
             self.assertFalse(1000 < i < 1100, "No pressure levels should be in this range")
 
+        # TODO (15/04/21) these test are already called within test_theta_levels_shape maybe these should be remove
         self.assertEqual(var_sal_theta.shape, self.var_s_thetalevels.shape,
                          "Got incorrect number of theta levels")
         self.assertEqual(theta_levels.shape, self.thetalevels.shape,
