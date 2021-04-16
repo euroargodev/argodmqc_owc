@@ -3,6 +3,7 @@ import os
 import sys
 import io
 import unittest
+import tempfile
 import math
 import numpy as np
 from scipy.io import loadmat
@@ -44,7 +45,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
         if not os.path.exists(self.python_output_path):
             print("Getting mapped data for testing...")
-            update_salinity_mapping("/", self.float_source, self.config)
+            update_salinity_mapping("/", self.config, self.float_source)
 
         self.matlab_output = loadmat(matlab_output_path)
         self.python_output = loadmat(self.python_output_path)
@@ -58,19 +59,20 @@ class UpdateSalinityMapping(unittest.TestCase):
 
         print("testing that update salinity mapping runs through")
 
-        if os.path.exists(self.python_output_path):
-            os.remove(self.python_output_path)
+        # use temporary directory for output to ensure the file doesn't exist
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # override the output directory for this call
+            tmp_config = {**self.config, "FLOAT_MAPPED_DIRECTORY": tmpdir}
 
-        try:
-            update_salinity_mapping("/", self.float_source, self.config)
-
-        except:
-            self.fail("Update salinity mapping encountered an unexpected error")
+            try:
+                update_salinity_mapping("/", tmp_config, self.float_source)
+            except:
+                self.fail("Update salinity mapping encountered an unexpected error")
 
         # Should use precalculated data
         captured_output = io.StringIO()
         sys.stdout = captured_output
-        update_salinity_mapping("/", self.float_source, self.config)
+        update_salinity_mapping("/", self.config, self.float_source)
         sys.stdout = sys.__stdout__
 
         self.assertTrue("Using precalculated data" in captured_output.getvalue(),
