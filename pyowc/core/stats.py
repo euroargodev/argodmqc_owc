@@ -13,6 +13,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
+from scipy.spatial import KDTree
 
 from ..utilities import sorter
 
@@ -722,39 +723,20 @@ def noise_variance(sal, lat, long):
         -------
         the variance in the noise_variance
     """
-    # set up our numpy matrix for memory efficiency
-    sal_noise = np.zeros(sal.shape, dtype=float)
+    locations = np.column_stack((lat, long))
 
-    # find the difference in salinities between each point and its closest other point (x-u)
-    for i in range(0, sal.__len__()):
-        # find the nearest spatial point to lat[i], long[i]
-        distances = (long - long[i]) ** 2 + (lat - lat[i]) ** 2
+    kdtree = KDTree(locations)
 
-        # find the smallest distance between this point and another point
-        # we do this by first finding the instances where there is some distance
-        # between points (> 0), and then finding the minimum of these instances
-        try:
-            min_distance = np.min(distances[np.nonzero(distances)])
+    # query the second nearest neighbour to exclude self
+    distances, min_distances_indices = kdtree.query(locations, k=[2])
 
-        except ValueError:
-            print("WARNING: no unique points")
-            return 0
+    if np.all(distances == 0.0):
+        print("WARNING: no unique points")
+        return 0.0
 
-        # find index of the minimum distance
-        min_index = np.argwhere(distances == min_distance)[0]
-
-        # store the differences in salinities between these two points
-        sal_noise[i] = sal[i] - sal[min_index]
-
-    # make sure we have unique points
-    index = np.argwhere(sal_noise != 0)
-
-    # find the variance in the noise by summing the difference squared
-    # and dividing it
-    sal_noise_var = (sum(sal_noise[index] ** 2) / (2 * index.__len__()))
-
-    # change data type from numpy array to float
-    sal_noise_var = sal_noise_var[0]
+    # since we query the second nearest neighbour, we need to remove the last axis for indexing
+    sal_noise = sal - sal[np.squeeze(min_distances_indices, -1)]
+    sal_noise_var = np.mean(np.square(sal_noise[sal_noise != 0.0])) / 2
 
     return sal_noise_var
 
