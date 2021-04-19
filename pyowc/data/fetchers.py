@@ -396,22 +396,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     try:
         grid_long = wrap_longitude(grid_long)
 
-        # make sure salinity, pressure, and potential temperature data have all the same NaNs
-        sal_nans = np.argwhere(np.isnan(grid_sal))
-        for nan in sal_nans:
-            grid_pres[nan[0], nan[1]] = np.nan
-            grid_ptmp[nan[0], nan[1]] = np.nan
-
-        pres_nans = np.argwhere(np.isnan(grid_pres))
-        for nan in pres_nans:
-            grid_sal[nan[0], nan[1]] = np.nan
-            grid_ptmp[nan[0], nan[1]] = np.nan
-
-        ptmp_nans = np.argwhere(np.isnan(grid_ptmp))
-        for nan in ptmp_nans:
-            grid_sal[nan[0], nan[1]] = np.nan
-            grid_pres[nan[0], nan[1]] = np.nan
-
+        _sync_nans(grid_sal, grid_pres, grid_ptmp)
         grid_dates = change_dates(grid_dates)
 
         # transpose data
@@ -442,6 +427,22 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
               " all NaNs in your dataset. These water columns have been removed")
 
     return grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates
+
+
+def _sync_nans(grid_sal, grid_pres, grid_ptmp):
+    """Ensure a NaN in any array means all arrays have a NaN at the same position."""
+    # make sure salinity, pressure, and potential temperature data have all the same NaNs
+    sal_nans = np.isnan(grid_sal)
+    grid_pres[sal_nans] = np.nan
+    grid_ptmp[sal_nans] = np.nan
+
+    pres_nans = np.isnan(grid_pres)
+    grid_sal[pres_nans] = np.nan
+    grid_ptmp[pres_nans] = np.nan
+
+    ptmp_nans = np.isnan(grid_ptmp)
+    grid_sal[ptmp_nans] = np.nan
+    grid_pres[ptmp_nans] = np.nan
 
 
 def frontal_constraint_saf(config, grid_sal, grid_ptmp, grid_pres, grid_lat, grid_long, grid_dates, grid_z, float_lat,
