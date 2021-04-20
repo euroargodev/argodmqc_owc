@@ -131,12 +131,12 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
         # now find the max level
         grid_good_data_len = grid_good_data_index.__len__()
-        if grid_good_data_len != 0:
-            for j in range(0, grid_good_data_len):
-                grid_sal[j, i] = grid_sal[grid_good_data_index[j], i]
-                grid_theta[j, i] = grid_theta[grid_good_data_index[j], i]
-                grid_pres[j, i] = grid_pres[grid_good_data_index[j], i]
-                max_level = np.maximum(max_level, grid_good_data_len)
+        for j in range(0, grid_good_data_len):
+            grid_sal[j, i] = grid_sal[grid_good_data_index[j], i]
+            grid_theta[j, i] = grid_theta[grid_good_data_index[j], i]
+            grid_pres[j, i] = grid_pres[grid_good_data_index[j], i]
+
+        max_level = np.maximum(max_level, grid_good_data_len)
 
     # Truncate the number of levels to the maximum level that has
     # available data
