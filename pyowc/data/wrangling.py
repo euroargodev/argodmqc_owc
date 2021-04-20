@@ -130,11 +130,10 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 grid_good_data_index.append(j)
 
         # now find the max level
-        grid_good_data_len = grid_good_data_index.__len__()
-        for j in range(0, grid_good_data_len):
-            grid_sal[j, i] = grid_sal[grid_good_data_index[j], i]
-            grid_theta[j, i] = grid_theta[grid_good_data_index[j], i]
-            grid_pres[j, i] = grid_pres[grid_good_data_index[j], i]
+        grid_good_data_len = len(grid_good_data_index)
+        grid_sal[:grid_good_data_len, i] = grid_sal[grid_good_data_index, i]
+        grid_theta[:grid_good_data_len, i] = grid_theta[grid_good_data_index, i]
+        grid_pres[:grid_good_data_len, i] = grid_pres[grid_good_data_index, i]
 
         max_level = np.maximum(max_level, grid_good_data_len)
 
