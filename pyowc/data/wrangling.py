@@ -174,8 +174,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
         # Find the indices of the closest pressure value each climatological station has to
         # the float pressures
-        abs_delta_pres = np.abs(delta_pres)
-        delta_pres_min_index = np.nanargmin(abs_delta_pres, axis=0)
+        delta_pres_min_index = np.nanargmin(np.abs(delta_pres), axis=0)
 
         # go through all the climatological stations
         for j in range(0, grid_stations):
