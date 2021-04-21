@@ -158,15 +158,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         if float_good_sal[i] and float_good_theta[i] and float_good_pres[i]:
             float_good_data_index.append(i)
 
-    # get the number of good float data observations
-    float_data_len = float_good_data_index.__len__()
-
     # compare good float data to the closest climatological data
-    for i in range(0, float_data_len):
-
-        # get index of good float data
-        index = float_good_data_index[i]
-
+    for index in float_good_data_index:
         # Find the difference between the float data and the climatological data
         delta_theta = grid_theta - float_theta[index]
 
