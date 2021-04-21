@@ -129,16 +129,14 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
     # compare good float data to the closest climatological data
     for index in float_good_data_index:
-        # Find the difference between the float data and the climatological data
-        delta_theta = grid_theta - float_theta[index]
-
-        # Find the indices of the closest pressure value each climatological station has to
-        # the float pressures
+        # Find the indices of the closest pressure value each climatological station has to the float pressures
         delta_pres_min_index = np.nanargmin(np.abs(grid_pres - float_pres[index]), axis=0)
 
+        # Find the difference between the float data and the climatological data
+        delta_theta = grid_theta - float_theta[index]
         sign_changes = delta_theta * np.take_along_axis(delta_theta, delta_pres_min_index[np.newaxis], axis=0)
 
-        # if there is no sign change for a station (that is, a negative entry) then it cannot have
+        # if there is no sign change for a station (that is, no negative entries) then it cannot have
         # any values which we can use to interpolate.
         stations_with_possible_interp = np.unique(np.nonzero(sign_changes.T < 0)[0])
 
@@ -184,6 +182,11 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
 
 def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
+    """Return a copy of grid data where finite values have been moved up to the top of each station."""
+    # ensure no changes made to reference data
+    grid_sal = np.copy(grid_sal)
+    grid_theta = np.copy(grid_theta)
+    grid_pres = np.copy(grid_pres)
 
     grid_good_data = _get_finite_element_mask(grid_sal, grid_theta, grid_pres)
 
@@ -197,8 +200,7 @@ def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
         grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
         grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
 
-    # Truncate the number of levels to the maximum level that has
-    # available data
+    # Truncate the number of levels to the maximum level that has available data
     if max_level > 0:
         grid_sal = grid_sal[:max_level, :]
         grid_theta = grid_theta[:max_level, :]
@@ -211,6 +213,7 @@ def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
 
 
 def _get_finite_element_mask(sal, theta, pres):
+    """Return a boolean array where True entries indicate all of sal/theta/pres are finite."""
     # check that the climatology data has no infinite (bad) values in the middle of the profiles.
     good_sal = np.isfinite(sal)
     good_theta = np.isfinite(theta)
