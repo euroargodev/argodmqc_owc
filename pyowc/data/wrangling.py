@@ -168,13 +168,11 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         index = float_good_data_index[i]
 
         # Find the difference between the float data and the climatological data
-        delta_sal = np.array(grid_sal - float_sal[index])
-        delta_pres = np.array(grid_pres - float_pres[index])
-        delta_theta = np.array(grid_theta - float_theta[index])
+        delta_theta = grid_theta - float_theta[index]
 
         # Find the indices of the closest pressure value each climatological station has to
         # the float pressures
-        delta_pres_min_index = np.nanargmin(np.abs(delta_pres), axis=0)
+        delta_pres_min_index = np.nanargmin(np.abs(grid_pres - float_pres[index]), axis=0)
 
         # go through all the climatological stations
         for j in range(0, grid_stations):
