@@ -182,10 +182,10 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
             tst = delta_theta[:, j] * delta_theta[delta_pres_min_index[j], j]
 
             # look for a theta match below (after in the array) the float pressure
-            grid_theta_below_pres = _find_closest_negative_index(tst[delta_pres_min_index[j]:grid_level])
+            grid_theta_below_pres = _find_closest_negative_by_index(tst[delta_pres_min_index[j]:grid_level])
 
             # look for a theta match above (before in the array) the float pressure
-            grid_theta_above_pres = _find_closest_negative_index(tst[:delta_pres_min_index[j]], reverse_search=True)
+            grid_theta_above_pres = _find_closest_negative_by_index(tst[:delta_pres_min_index[j]], reverse_search=True)
 
             # initialise arrays to hold interpolated pressure and salinity
             interp_pres = []
@@ -217,7 +217,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     return interp_sal_final, interp_pres_final
 
 
-def _find_closest_negative_index(search_array, reverse_search=False):
+def _find_closest_negative_by_index(search_array, reverse_search=False):
     """Find the closest (by index) negative entry in an array, optionally searching in the reverse direction."""
     idx = None
     step = -1 if reverse_search else 1
