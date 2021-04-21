@@ -207,12 +207,12 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
                 interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
 
-            if interp_pres.__len__() > 0:
+            if interp_pres:
                 # if there are two nearby theta values, choose the closest one
-                abs_interp_pres = np.abs(interp_pres - float_pres[index])
-                k = np.argmin(abs_interp_pres)
-                interp_sal_final[index, j] = interp_sal[k]
-                interp_pres_final[index, j] = interp_pres[k]
+                abs_interp_pres = np.abs(float_pres[index] - interp_pres)
+                location = np.argmin(abs_interp_pres)
+                interp_sal_final[index, j] = interp_sal[location]
+                interp_pres_final[index, j] = interp_pres[location]
 
     return interp_sal_final, interp_pres_final
 
