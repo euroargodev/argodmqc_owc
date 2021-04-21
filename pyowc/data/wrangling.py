@@ -120,26 +120,23 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     # check that the climatology data has no infinite (bad) values in the middle
     # of the profiles.
     max_level = 0
-    for i in range(0, grid_stations):
 
-        # find where data is not missing
-        grid_good_sal = np.isfinite(grid_sal[:, i])
-        grid_good_theta = np.isfinite(grid_theta[:, i])
-        grid_good_pres = np.isfinite(grid_pres[:, i])
+    grid_good_sal_all = np.isfinite(grid_sal)
+    grid_good_theta_all = np.isfinite(grid_theta)
+    grid_good_pres_all = np.isfinite(grid_pres)
 
-        # find indices of good data
-        grid_good_data_index = []
-        for j in range(0, grid_level):
-            if grid_good_sal[j] and grid_good_theta[j] and grid_good_pres[j]:
-                grid_good_data_index.append(j)
+    # create an array where True indicates that sal/theta/pres are all finite
+    grid_good_data = grid_good_sal_all & grid_good_theta_all & grid_good_pres_all
 
-        # now find the max level
-        grid_good_data_len = len(grid_good_data_index)
-        grid_sal[:grid_good_data_len, i] = grid_sal[grid_good_data_index, i]
-        grid_theta[:grid_good_data_len, i] = grid_theta[grid_good_data_index, i]
-        grid_pres[:grid_good_data_len, i] = grid_pres[grid_good_data_index, i]
+    # find the max number of levels from all stations
+    column_counts = np.count_nonzero(grid_good_data, axis=0)
+    max_level = np.max(column_counts)
 
-        max_level = np.maximum(max_level, grid_good_data_len)
+    for station_id in range(grid_stations):
+        good_values = column_counts[station_id]
+        grid_sal[:good_values, station_id] = grid_sal[:, station_id][grid_good_data[:, station_id]]
+        grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
+        grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
 
     # Truncate the number of levels to the maximum level that has
     # available data
