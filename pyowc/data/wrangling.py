@@ -113,6 +113,10 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     interp_sal_final = np.full((float_len, grid_stations), np.nan, dtype=np.float64)
     interp_pres_final = np.full((float_len, grid_stations), np.nan, dtype=np.float64)
 
+    # guard against mismatched arrays
+    if not (grid_sal.shape == grid_theta.shape == grid_pres.shape):
+        return interp_sal_final, interp_pres_final
+
     # check that the climatology data has no infinite (bad) values in the middle
     # of the profiles.
     max_level = 0
