@@ -114,7 +114,7 @@ def update_salinity_mapping(float_dir, config, float_name):
     data = load_varibales_from_file(mapped_data_path, float_level_count)
 
     # Compare profile numbers in the float source against the mapped data matrix -
-    profile_index = 0
+    profile_index = data['profile_index']
     missing_profile_index = []
 
     for i in range(0, profile_no.__len__()):
