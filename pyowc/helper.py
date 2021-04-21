@@ -1,3 +1,6 @@
+"""
+A set of helper method to size of update_salinity_mapping
+"""
 from copy import deepcopy
 from pathlib import Path
 
@@ -7,8 +10,19 @@ from scipy.io import loadmat
 
 from .data.fetchers import get_topo_grid
 
-
+# pylint: disable=too-many-statements
 def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
+    """
+
+    Parameters
+    ----------
+    mapped_data_path :
+    float_level_count :
+
+    Returns
+    -------
+
+    """
     float_mapped_data = {}
     if Path(mapped_data_path).is_file():
 
@@ -35,7 +49,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
             float_mapped_data["use_saf"] = np.zeros(float_mapped_data['use_pv'].shape)
 
         # Get mapped data shape
-        profile_index = float_mapped_data["la_mapped_sal"].shape[1]
+        float_mapped_data["profile_index"] = float_mapped_data["la_mapped_sal"].shape[1]
         max_depth = float_mapped_data["la_mapped_sal"].shape[0]
         how_many_cols = float_mapped_data["la_mapped_sal"].shape[1]
         new_depth = float_level_count
@@ -72,7 +86,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
 
     else:
         # initialise variables
-        profile_index = 0
+        float_mapped_data["profile_index"] = 0
         float_mapped_data["la_mapped_sal"] = np.empty((float_level_count, 0))
         float_mapped_data["la_map_sal_errors"] = np.empty((float_level_count, 0))
         float_mapped_data["la_noise_sal"] = np.empty((float_level_count, 0))
@@ -96,10 +110,21 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
         print("No precalculated data at: %s" % mapped_data_path)
         print("__________________________________________________________\n")
 
-        return float_mapped_data
+    return float_mapped_data
 
 
 def get_float_data(float_source_data, missing_profile) -> dict:
+    """
+
+    Parameters
+    ----------
+    float_source_data :
+    missing_profile :
+
+    Returns
+    -------
+
+    """
     data = {}
     # get data from float
     data['float_lat'] = float_source_data['LAT'][0, missing_profile]
@@ -114,6 +139,18 @@ def get_float_data(float_source_data, missing_profile) -> dict:
 
 
 def process_profiles_la_variables(data, float_level_count, profile_index):
+    """
+
+    Parameters
+    ----------
+    data :
+    float_level_count :
+    profile_index :
+
+    Returns
+    -------
+
+    """
     # if we are inserting changing a column in existing data
     if profile_index < data['la_ptmp'].shape[1]:
         data['la_ptmp'][:, profile_index] = np.nan * np.ones(float_level_count)
@@ -138,6 +175,17 @@ def process_profiles_la_variables(data, float_level_count, profile_index):
 
 
 def process_profiles_grid_variables(grid_data, config):
+    """
+
+    Parameters
+    ----------
+    grid_data :
+    config :
+
+    Returns
+    -------
+
+    """
     # tbase.int file requires longitudes from 0 to +/-180
     grid_long_tbase = deepcopy(grid_data['grid_long'])
 
@@ -168,8 +216,23 @@ def process_profiles_grid_variables(grid_data, config):
 
     return grid_data
 
-
+# pylint: disable=too-many-arguments
 def process_profile_hist_variables(grid_data, float_pres, hist_interp_sal, hist_interp_pres, n_level, map_p_delta):
+    """
+
+    Parameters
+    ----------
+    grid_data :
+    float_pres :
+    hist_interp_sal :
+    hist_interp_pres :
+    n_level :
+    map_p_delta :
+
+    Returns
+    -------
+
+    """
     max_hist_casts = np.argwhere(np.isnan(hist_interp_sal[n_level, :]) == 0)
     hist_sal = hist_interp_sal[n_level, max_hist_casts]
     hist_pres = hist_interp_pres[n_level, max_hist_casts]
@@ -191,6 +254,17 @@ def process_profile_hist_variables(grid_data, float_pres, hist_interp_sal, hist_
 
 
 def remove_statical_outliers(outlier, hist_data):
+    """
+
+    Parameters
+    ----------
+    outlier :
+    hist_data :
+
+    Returns
+    -------
+
+    """
     if outlier.__len__() > 0:
         hist_data['hist_sal'] = np.delete(hist_data['hist_sal'], outlier)
         hist_data['hist_pres'] = np.delete(hist_data['hist_pres'], outlier)
@@ -198,7 +272,8 @@ def remove_statical_outliers(outlier, hist_data):
         hist_data['hist_lat'] = np.delete(hist_data['hist_lat'], outlier).reshape((-1, 1))
         hist_data['hist_dates'] = np.delete(hist_data['hist_dates'], outlier).reshape((-1, 1))
         hist_data['hist_z'] = np.delete(hist_data['hist_z'], outlier).reshape((-1, 1))
-        return hist_data
+
+    return hist_data
 
 
 def check_and_make_numpy_arry(data):
@@ -245,6 +320,18 @@ def sort_numpy_array(data, index, keys=None):
 
 
 def selected_historical_points(data, hist_data, profile_index):
+    """
+
+    Parameters
+    ----------
+    data :
+    hist_data :
+    profile_index :
+
+    Returns
+    -------
+
+    """
     # only save selected historical points
     if data['selected_hist'].__len__() == 0:
         data['selected_hist'] = np.array([hist_data['hist_long'][0][0], hist_data['hist_lat'][0][0],
@@ -253,11 +340,11 @@ def selected_historical_points(data, hist_data, profile_index):
         data['selected_hist'] = np.reshape(data['selected_hist'], (1, 3))
 
     for j in range(hist_data['hist_long'].__len__()):
-        m = data['selected_hist'].shape[0]
-        b = np.array([hist_data['hist_long'][j][0], hist_data['hist_lat'][j][0]])
-        c = data['selected_hist'][:, 0:2] - np.ones((m, 1)) * b
-        d = np.argwhere(np.abs(c[:, 0]) < 1 / 60)
-        d_1 = np.argwhere(np.abs(c[d, 1]) < 1 / 60)
+        length = data['selected_hist'].shape[0]
+        lon_lat = np.array([hist_data['hist_long'][j][0], hist_data['hist_lat'][j][0]])
+        new_object = data['selected_hist'][:, 0:2] - np.ones((length, 1)) * lon_lat
+        d_0 = np.argwhere(np.abs(new_object[:, 0]) < 1 / 60)
+        d_1 = np.argwhere(np.abs(new_object[d_0, 1]) < 1 / 60)
         if d_1.__len__() == 0:
             add_hist_data = np.array([hist_data['hist_long'][j][0], hist_data['hist_lat'][j][0],
                                       data['la_profile_no'][profile_index]])
