@@ -174,10 +174,16 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         # the float pressures
         delta_pres_min_index = np.nanargmin(np.abs(grid_pres - float_pres[index]), axis=0)
 
-        # go through all the climatological stations
-        for j in range(0, grid_stations):
+        sign_changes = delta_theta * np.take_along_axis(delta_theta, delta_pres_min_index[np.newaxis], axis=0)
 
-            tst = delta_theta[:, j] * delta_theta[delta_pres_min_index[j], j]
+        # if there is no sign change for a station (that is, a negative entry) then it cannot have
+        # any values which we can use to interpolate.
+        stations_with_possible_interp = np.unique(np.nonzero(sign_changes.T < 0)[0])
+
+        # go through all the climatological stations with possible interpolation candidates
+        for j in stations_with_possible_interp:
+
+            tst = sign_changes[:, j]
 
             # look for a theta match below (after in the array) the float pressure
             grid_theta_below_pres = _find_closest_negative_by_index(tst[delta_pres_min_index[j]:grid_level])
