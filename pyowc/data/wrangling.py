@@ -117,44 +117,15 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     if not (grid_sal.shape == grid_theta.shape == grid_pres.shape):
         return interp_sal_final, interp_pres_final
 
-    # check that the climatology data has no infinite (bad) values in the middle
-    # of the profiles.
-    max_level = 0
+    grid_data = _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres)
 
-    grid_good_sal_all = np.isfinite(grid_sal)
-    grid_good_theta_all = np.isfinite(grid_theta)
-    grid_good_pres_all = np.isfinite(grid_pres)
-
-    # create an array where True indicates that sal/theta/pres are all finite
-    grid_good_data = grid_good_sal_all & grid_good_theta_all & grid_good_pres_all
-
-    # find the max number of levels from all stations
-    column_counts = np.count_nonzero(grid_good_data, axis=0)
-    max_level = np.max(column_counts)
-
-    for station_id in range(grid_stations):
-        good_values = column_counts[station_id]
-        grid_sal[:good_values, station_id] = grid_sal[:, station_id][grid_good_data[:, station_id]]
-        grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
-        grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
-
-    # Truncate the number of levels to the maximum level that has
-    # available data
-    if max_level > 0:
-        grid_sal = grid_sal[:max_level, :]
-        grid_theta = grid_theta[:max_level, :]
-        grid_pres = grid_pres[:max_level, :]
-    else:
-        print("No good climatological data has been found for this profile")
+    if grid_data is None:
         return interp_sal_final, interp_pres_final
 
-    # find where data isn't missing in the float
-    float_good_sal = np.isfinite(float_sal)
-    float_good_theta = np.isfinite(float_theta)
-    float_good_pres = np.isfinite(float_pres)
+    grid_sal, grid_theta, grid_pres = grid_data
 
     # get the indices of the good float data
-    float_good_data_index = np.nonzero(float_good_sal & float_good_theta & float_good_pres)[0]
+    float_good_data_index = np.nonzero(_get_finite_element_mask(float_sal, float_theta, float_pres))[0]
 
     # compare good float data to the closest climatological data
     for index in float_good_data_index:
@@ -210,6 +181,43 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 interp_pres_final[index, j] = interp_pres[location]
 
     return interp_sal_final, interp_pres_final
+
+
+def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
+
+    grid_good_data = _get_finite_element_mask(grid_sal, grid_theta, grid_pres)
+
+    # find the max number of levels from all stations
+    column_counts = np.count_nonzero(grid_good_data, axis=0)
+    max_level = np.max(column_counts)
+
+    for station_id in range(grid_stations):
+        good_values = column_counts[station_id]
+        grid_sal[:good_values, station_id] = grid_sal[:, station_id][grid_good_data[:, station_id]]
+        grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
+        grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
+
+    # Truncate the number of levels to the maximum level that has
+    # available data
+    if max_level > 0:
+        grid_sal = grid_sal[:max_level, :]
+        grid_theta = grid_theta[:max_level, :]
+        grid_pres = grid_pres[:max_level, :]
+    else:
+        print("No good climatological data has been found for this profile")
+        return None
+
+    return grid_sal, grid_theta, grid_pres
+
+
+def _get_finite_element_mask(sal, theta, pres):
+    # check that the climatology data has no infinite (bad) values in the middle of the profiles.
+    good_sal = np.isfinite(sal)
+    good_theta = np.isfinite(theta)
+    good_pres = np.isfinite(pres)
+
+    # create an array where True indicates that sal/theta/pres are all finite
+    return good_sal & good_theta & good_pres
 
 
 def _find_closest_negative_by_index(search_array, reverse_search=False):
