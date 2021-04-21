@@ -94,9 +94,11 @@ class InterpClimatology(unittest.TestCase):
                 if not (np.isnan(sal[i, j]) and np.isnan(self.expected_interp_sal[i, j])):
                     sal_diff = np.abs(sal[i, j] - self.expected_interp_sal[i, j])
                     pres_diff = np.abs(pres[i, j] - self.expected_interp_pres[i, j])
+
+                    # if the difference is less than 10^-12 then consider them equal
                     if sal_diff < 1e-12 and pres_diff < 1e-12:
                         continue
-                    print(i, j, sal_diff, pres[i, j], self.expected_interp_sal[i, j], pres_diff)
+
                     self.assertTrue(sal[i, j] == self.expected_interp_sal[i, j],
                                     ("Values at ", i, " and ", j, " do not match for salinity"))
                     self.assertTrue(pres[i, j] == self.expected_interp_pres[i, j],
