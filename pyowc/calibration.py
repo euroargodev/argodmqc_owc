@@ -15,7 +15,7 @@ from .core.stats import signal_variance, noise_variance, build_cov, fit_cond
 from .core.finders import find_besthist, find_25boxes, find_10thetas
 from .data.wrangling import interp_climatology, map_data_grid
 from .data.fetchers import get_topo_grid, get_region_data, get_region_hist_locations, frontal_constraint_saf
-
+from .helper import load_varibales_from_file, process_profiles_la_variables, process_profiles_grid_variables, get_float_data
 
 # pylint: disable=too-many-lines
 
@@ -107,98 +107,15 @@ def update_salinity_mapping(float_dir, config, float_name):
                                          config['FLOAT_MAPPED_POSTFIX']])
     mapped_data_path = os.path.abspath(mapped_data_path)
 
-    try:
-
-        # open up mapped data
-        float_mapped_data = loadmat(mapped_data_path)
-
-        # Save the data to variables
-        la_mapped_sal = float_mapped_data['la_mapped_sal']
-        la_mapsalerrors = float_mapped_data['la_mapsalerrors']
-        la_noise_sal = float_mapped_data['la_noise_sal']
-        la_signal_sal = float_mapped_data['la_signal_sal']
-        la_ptmp = float_mapped_data['la_ptmp']
-        la_profile_no = float_mapped_data['la_profile_no'].flatten()
-        scale_long_large = float_mapped_data['scale_long_large'].flatten()
-        scale_lat_large = float_mapped_data['scale_lat_large'].flatten()
-        scale_long_small = float_mapped_data['scale_long_small'].flatten()
-        scale_lat_small = float_mapped_data['scale_lat_small'].flatten()
-        scale_phi_large = float_mapped_data['scale_phi_large'].flatten()
-        scale_phi_small = float_mapped_data['scale_phi_small'].flatten()
-        scale_age_large = float_mapped_data['scale_age_large'].flatten()
-        scale_age_small = float_mapped_data['scale_age_small'].flatten()
-        use_pv = float_mapped_data['use_pv'].flatten()
-        use_saf = float_mapped_data['use_saf'].flatten()
-        p_delta = float_mapped_data['p_delta'].flatten()
-        p_exclude = float_mapped_data['p_exclude'].flatten()
-        selected_hist = float_mapped_data['selected_hist']
-
-        # Check to see if this is an older version run without the saf constraint
-        if not "use_saf" in float_mapped_data:
-            use_saf = np.zeros(float_mapped_data['use_pv'].shape)
-
-        # Get mapped data shape
-        profile_index = la_mapped_sal.shape[1]
-        max_depth = la_mapped_sal.shape[0]
-        how_many_cols = la_mapped_sal.shape[1]
-        new_depth = float_level_count
-
-        # if we have more data available than in the current mapped data, we need to extend
-        # the matrices so we can add this data
-
-        if new_depth > max_depth != 0:
-            la_mapped_sal = np.insert(la_mapped_sal, la_mapped_sal.shape[0],
-                                      np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
-                                      axis=0)
-            la_mapsalerrors = np.insert(la_mapsalerrors, la_mapsalerrors.shape[0],
-                                        np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
-                                        axis=0)
-            la_noise_sal = np.insert(la_noise_sal, la_noise_sal.shape[0],
-                                     np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
-                                     axis=0)
-            la_signal_sal = np.insert(la_signal_sal, la_signal_sal.shape[0],
-                                      np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
-                                      axis=0)
-            la_ptmp = np.insert(la_ptmp, la_ptmp.shape[0],
-                                np.ones((new_depth - max_depth, how_many_cols)) * np.nan,
-                                axis=0)
-
-        print("Using precalculated data: ", mapped_data_path)
-        print("__________________________________________________________")
-
-    # If we don't have any precalculated mapped data
-    except FileNotFoundError:
-
-        # initialise variables
-        profile_index = 0
-        la_profile_no = np.empty(0)
-        selected_hist = []
-        la_ptmp = np.empty((float_level_count, 0))
-        la_mapped_sal = np.empty((float_level_count, 0))
-        la_mapsalerrors = np.empty((float_level_count, 0))
-        la_noise_sal = np.empty((float_level_count, 0))
-        la_signal_sal = np.empty((float_level_count, 0))
-        scale_long_large = []
-        scale_lat_large = []
-        scale_long_small = []
-        scale_lat_small = []
-        scale_phi_large = []
-        scale_phi_small = []
-        scale_age_large = []
-        scale_age_small = []
-        use_pv = []
-        use_saf = []
-        p_delta = []
-        p_exclude = []
-
-        print("No precalculated data at: %s" % mapped_data_path)
-        print("__________________________________________________________\n")
+    # load data from file
+    data = load_varibales_from_file(mapped_data_path, float_level_count)
 
     # Compare profile numbers in the float source against the mapped data matrix -
+    profile_index = 0
     missing_profile_index = []
 
     for i in range(0, profile_no.__len__()):
-        profiles = np.argwhere(la_profile_no == profile_no[i])
+        profiles = np.argwhere(data['la_profile_no'] == profile_no[i])
         if profiles.size == 0:
             missing_profile_index.append(i)
 
@@ -217,107 +134,74 @@ def update_salinity_mapping(float_dir, config, float_name):
         la_profile_no = np.insert(la_profile_no, profile_index, profile_no[missing_profile])
         # Construct elements for this profile
 
-        # if we are inserting changing a column in existing data
-        if profile_index < la_ptmp.shape[1]:
-            la_ptmp[:, profile_index] = np.nan * np.ones(float_level_count)
-            la_mapped_sal[:, profile_index] = np.nan * np.ones(float_level_count)
-            la_mapsalerrors[:, profile_index] = np.nan * np.ones(float_level_count)
-            la_noise_sal[:, profile_index] = np.nan * np.ones(float_level_count)
-            la_signal_sal[:, profile_index] = np.nan * np.ones(float_level_count)
-
-        # if we are adding a new column
-        else:
-            la_ptmp = np.hstack((la_ptmp,
-                                 np.nan * np.ones((float_level_count, 1))))
-            la_mapped_sal = np.hstack((la_mapped_sal,
-                                       np.nan * np.ones((float_level_count, 1))))
-            la_mapsalerrors = np.hstack((la_mapsalerrors,
-                                         np.nan * np.ones((float_level_count, 1))))
-            la_noise_sal = np.hstack((la_noise_sal,
-                                      np.nan * np.ones((float_level_count, 1))))
-            la_signal_sal = np.hstack((la_signal_sal,
-                                       np.nan * np.ones((float_level_count, 1))))
-
         # initialise matrices to hold and save parameter settings
-        scale_long_large.append(np.nan)
-        scale_lat_large.append(np.nan)
-        scale_long_small.append(np.nan)
-        scale_lat_small.append(np.nan)
-        scale_phi_large.append(np.nan)
-        scale_phi_small.append(np.nan)
-        scale_age_large.append(np.nan)
-        scale_age_small.append(np.nan)
-        use_pv.append(np.nan)
-        use_saf.append(np.nan)
-        p_delta.append(np.nan)
-        p_exclude.append(np.nan)
+        data['scale_long_large'].append(np.nan)
+        data['scale_lat_large'].append(np.nan)
+        data['scale_long_small'].append(np.nan)
+        data['scale_lat_small'].append(np.nan)
+        data['scale_phi_large'].append(np.nan)
+        data['scale_phi_small'].append(np.nan)
+        data['scale_age_large'].append(np.nan)
+        data['scale_age_small'].append(np.nan)
+        data['use_pv'].append(np.nan)
+        data['use_saf'].append(np.nan)
+        data['p_delta'].append(np.nan)
+        data['p_exclude'].append(np.nan)
+
+        # helper method 1
+        data = process_profiles_la_variables(data, float_level_count, profile_index)
 
         # get data from float
-        float_lat = float_source_data['LAT'][0, missing_profile]
-        float_long = float_source_data['LONG'][0, missing_profile]
-        float_date = float_source_data['DATES'][0, missing_profile]
-        float_sal = float_source_data['SAL'][:, missing_profile]
-        float_tmp = float_source_data['TEMP'][:, missing_profile]
-        float_ptmp = float_source_data['PTMP'][:, missing_profile]
-        float_pres = float_source_data['PRES'][:, missing_profile]
+        float_data = get_float_data(float_source_data, missing_profile)
 
         # if we have any good location data and pressure data from the float
-        if not np.isnan(float_long) \
-                and not np.isnan(float_lat) \
-                and np.argwhere(np.isnan(float_pres) == 0).any():
+        if not np.isnan(float_data['float_long']) and not np.isnan(float_data['float_lat']) \
+                and np.argwhere(np.isnan(float_data['float_pres']) == 0).any():
 
             # tbase.int file requires longitudes from 0 to +/-180
-            float_long_tbase = copy.deepcopy(float_long)
+            float_long_tbase = copy.deepcopy(float_data['float_long'])
+
             if float_long_tbase > 180:
                 float_long_tbase -= 360
 
             # find the depth of the ocean at the float location
             float_elev, float_x, float_y = get_topo_grid(float_long_tbase - 1,
                                                          float_long_tbase + 1,
-                                                         float_lat - 1,
-                                                         float_lat + 1,
+                                                         float_data['float_lat'] - 1,
+                                                         float_data['float_lat'] + 1,
                                                          config)
+
             float_interp = interpolate.interp2d(float_x[0, :],
                                                 float_y[:, 0],
                                                 float_elev,
                                                 kind='linear')
-            float_z = -float_interp(float_long_tbase, float_lat)[0]
+
+            float_z = -float_interp(float_long_tbase, float_data['float_lat'])[0]
 
             # gather data from area surrounding the float location
-            wmo_numbers = find_25boxes(float_long, float_lat, wmo_boxes)
+            wmo_numbers = find_25boxes(float_data['float_long'], float_data['float_lat'], wmo_boxes)
+
+            grid_data = {}
             grid_lat, grid_long, grid_dates = get_region_hist_locations(wmo_numbers, float_name, config)
+
+            grid_data['grid_lat'] = grid_lat
+            grid_data['grid_long'] = grid_long
+            grid_data['grid_dates'] = grid_dates
 
             # if we have data in the surrounding area, find depths at these points
             if grid_lat.__len__() > 0:
-                # tbase.int file requires longitudes from 0 to +/-180
-                grid_long_tbase = copy.deepcopy(grid_long)
-                g_180 = np.argwhere(grid_long_tbase > 180)
-                grid_long_tbase[g_180] -= 360
 
-                # find depth of the ocean at historical locations
-                grid_elev, grid_x, grid_y = get_topo_grid(np.amin(grid_long_tbase) - 1,
-                                                          np.amax(grid_long_tbase) + 1,
-                                                          np.amin(grid_lat) - 1,
-                                                          np.amax(grid_lat) + 1,
-                                                          config)
-
-                grid_interp = interpolate.interp2d(grid_x[0], grid_y[:, 0],
-                                                   grid_elev, kind='linear')
-
-                # As a note, the reason we vectorise the function here is because we do not
-                # want to compare every longitudinal value to ever latitude. Rather, we simply
-                # want to interpolate each pair of longitudes and latitudes.
-
-                grid_z = -1 * np.vectorize(grid_interp)(grid_long_tbase, grid_lat)
+                grid_data = process_profiles_grid_variables(grid_data, config)
 
                 # make sure that the grid and float longitudes match at the 0-360 mark
-                float_long_0 = float_long
+                float_long_0 = float_data['float_long']
                 if np.argwhere(grid_long > 360).__len__() > 0:
-                    if 0 <= float_long <= 20:
+                    if 0 <= float_data['float_long'] <= 20:
                         float_long_0 += 360
 
-                index = find_besthist(grid_lat, grid_long, grid_dates, grid_z,
-                                      float_lat, float_long_0, float_date, float_z,
+                index = find_besthist(grid_data['grid_lat'], grid_data['grid_long'], grid_data['grid_dates'],
+                                      grid_data['grid_z'], float_data['float_lat'], float_long_0,
+                                      float_data['float_date'], float_z,
                                       lat_large, lat_small, long_large, long_small,
                                       phi_large, phi_small, map_age_large, map_age_small,
                                       map_use_pv, max_casts)
@@ -329,9 +213,9 @@ def update_salinity_mapping(float_dir, config, float_name):
                                                                                    float_name,
                                                                                    config,
                                                                                    index,
-                                                                                   float_pres)
+                                                                                   float_data['float_pres'])
 
-                best_hist_z = grid_z[index]
+                best_hist_z = grid_data['grid_z'][index]
 
                 # If we are near the Subantarctic Front we need to figure out if
                 # the profile is north or south of it. Then we should remove data not on
