@@ -143,15 +143,15 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         stations_with_possible_interp = np.unique(np.nonzero(sign_changes.T < 0)[0])
 
         # go through all the climatological stations with possible interpolation candidates
-        for j in stations_with_possible_interp:
+        for station_id in stations_with_possible_interp:
 
-            tst = sign_changes[:, j]
+            tst = sign_changes[:, station_id]
 
             # look for a theta match below (after in the array) the float pressure
-            grid_theta_below_pres = _find_closest_negative_by_index(tst[delta_pres_min_index[j]:grid_level])
+            grid_theta_below_pres = _find_closest_negative_by_index(tst[delta_pres_min_index[station_id]:grid_level])
 
             # look for a theta match above (before in the array) the float pressure
-            grid_theta_above_pres = _find_closest_negative_by_index(tst[:delta_pres_min_index[j]], reverse_search=True)
+            grid_theta_above_pres = _find_closest_negative_by_index(tst[:delta_pres_min_index[station_id]], reverse_search=True)
 
             # initialise arrays to hold interpolated pressure and salinity
             interp_pres = []
@@ -159,16 +159,16 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
             # there is a theta value at a deeper level
             if grid_theta_below_pres is not None:
-                i_1 = np.min(grid_theta_below_pres) + delta_pres_min_index[j]
-                indices = (slice(i_1 - 1, i_1 + 1), j)
+                i_1 = grid_theta_below_pres + delta_pres_min_index[station_id]
+                indices = (slice(i_1-1, i_1+1), station_id)
 
                 interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
                 interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
 
             # there is a theta value at a shallower level
             if grid_theta_above_pres is not None:
-                i_2 = np.max(grid_theta_above_pres)
-                indices = (slice(i_2, i_2+2), j)
+                i_2 = grid_theta_above_pres
+                indices = (slice(i_2, i_2+2), station_id)
 
                 interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
                 interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
@@ -177,8 +177,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 # if there are two nearby theta values, choose the closest one
                 abs_interp_pres = np.abs(float_pres[index] - interp_pres)
                 location = np.argmin(abs_interp_pres)
-                interp_sal_final[index, j] = interp_sal[location]
-                interp_pres_final[index, j] = interp_pres[location]
+                interp_sal_final[index, station_id] = interp_sal[location]
+                interp_pres_final[index, station_id] = interp_pres[location]
 
     return interp_sal_final, interp_pres_final
 
