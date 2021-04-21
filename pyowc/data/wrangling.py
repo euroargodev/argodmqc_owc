@@ -153,10 +153,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     float_good_pres = np.isfinite(float_pres)
 
     # get the indices of the good float data
-    float_good_data_index = []
-    for i in range(0, float_len):
-        if float_good_sal[i] and float_good_theta[i] and float_good_pres[i]:
-            float_good_data_index.append(i)
+    float_good_data_index = np.nonzero(float_good_sal & float_good_theta & float_good_pres)[0]
 
     # compare good float data to the closest climatological data
     for index in float_good_data_index:
