@@ -179,21 +179,20 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         # go through all the climatological stations
         for j in range(0, grid_stations):
 
-            # find if delta_theta is different to delta_theta for closest pressure
-            # (equals -1 if different)
-            tst = np.sign(delta_theta[:, j]) * np.sign(delta_theta[delta_pres_min_index[j], j])
+            tst = delta_theta[:, j] * delta_theta[delta_pres_min_index[j], j]
 
-            # look for a theta match below the float pressure
-            grid_theta_below_pres = np.argwhere(tst[delta_pres_min_index[j]:grid_level] < 0)
+            # look for a theta match below (after in the array) the float pressure
+            grid_theta_below_pres = _find_closest_negative_index(tst[delta_pres_min_index[j]:grid_level])
 
-            # look for a theta match above the float pressure
-            grid_theta_above_pres = np.argwhere(tst[0:delta_pres_min_index[j]] < 0)
+            # look for a theta match above (before in the array) the float pressure
+            grid_theta_above_pres = _find_closest_negative_index(tst[:delta_pres_min_index[j]], reverse_search=True)
+
             # initialise arrays to hold interpolated pressure and salinity
             interp_pres = []
             interp_sal = []
 
             # there is a theta value at a deeper level
-            if grid_theta_below_pres.__len__() > 0:
+            if grid_theta_below_pres is not None:
                 i_1 = np.min(grid_theta_below_pres) + delta_pres_min_index[j]
                 indices = (slice(i_1 - 1, i_1 + 1), j)
 
@@ -201,7 +200,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
 
             # there is a theta value at a shallower level
-            if grid_theta_above_pres.__len__() > 0:
+            if grid_theta_above_pres is not None:
                 i_2 = np.max(grid_theta_above_pres)
                 indices = (slice(i_2, i_2+2), j)
 
@@ -216,6 +215,22 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
                 interp_pres_final[index, j] = interp_pres[k]
 
     return interp_sal_final, interp_pres_final
+
+
+def _find_closest_negative_index(search_array, reverse_search=False):
+    """Find the closest (by index) negative entry in an array, optionally searching in the reverse direction."""
+    idx = None
+    step = -1 if reverse_search else 1
+    if search_array.size:
+        first_index = np.argmax(search_array[::step] < 0)
+
+        if reverse_search:
+            first_index = (len(search_array) - 1) - first_index
+
+        if search_array[first_index] < 0:
+            idx = first_index
+
+    return idx
 
 
 def _interp_single_value(x_interp, x_reference, y_reference):
