@@ -192,10 +192,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
             interp_pres = []
             interp_sal = []
 
-            # there is a theta value at a deeper level
-            if grid_theta_below_pres.__len__() > 0:
-                i_1 = np.min(grid_theta_below_pres) + delta_pres_min_index[j]
-                indices = slice(i_1-1, i_1+1)
+            def _ref_interp(indices):
                 step = 1 if np.all(np.diff(grid_theta[indices, j]) > 0.0) else -1
 
                 theta_interp = grid_theta[indices, j][::step]
@@ -204,19 +201,20 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
                 interp_pres.append(np.interp(float_theta[index], theta_interp, pres_interp))
                 interp_sal.append(np.interp(float_theta[index], theta_interp, sal_interp))
+
+            # there is a theta value at a deeper level
+            if grid_theta_below_pres.__len__() > 0:
+                i_1 = np.min(grid_theta_below_pres) + delta_pres_min_index[j]
+                indices = slice(i_1-1, i_1+1)
+
+                _ref_interp(indices)
 
             # there is a theta value at a shallower level
             if grid_theta_above_pres.__len__() > 0:
                 i_2 = np.max(grid_theta_above_pres)
                 indices = slice(i_2, i_2+2)
-                step = 1 if np.all(np.diff(grid_theta[indices, j]) > 0.0) else -1
 
-                theta_interp = grid_theta[indices, j][::step]
-                pres_interp = grid_pres[indices, j][::step]
-                sal_interp = grid_sal[indices, j][::step]
-
-                interp_pres.append(np.interp(float_theta[index], theta_interp, pres_interp))
-                interp_sal.append(np.interp(float_theta[index], theta_interp, sal_interp))
+                _ref_interp(indices)
 
             if interp_pres.__len__() > 0:
                 # if there are two nearby theta values, choose the closest one
