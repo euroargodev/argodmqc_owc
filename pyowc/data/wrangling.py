@@ -114,7 +114,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     interp_pres_final = np.full((float_len, grid_stations), np.nan, dtype=np.float64)
 
     # guard against mismatched arrays
-    if not (grid_sal.shape == grid_theta.shape == grid_pres.shape):
+    if not grid_sal.shape == grid_theta.shape == grid_pres.shape:
         return interp_sal_final, interp_pres_final
 
     grid_data = _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres)
@@ -241,6 +241,6 @@ def _find_closest_negative_by_index(search_array, reverse_search=False):
 
 def _interp_single_value(x_interp, x_reference, y_reference):
     """Interpolate a single value based on reference data."""
-    wt = (x_reference[1] - x_interp) / np.diff(x_reference)
+    w_t = (x_reference[1] - x_interp) / np.diff(x_reference)
 
-    return y_reference[1] * (1 - wt) + y_reference[0] * wt
+    return y_reference[1] * (1 - w_t) + y_reference[0] * w_t
