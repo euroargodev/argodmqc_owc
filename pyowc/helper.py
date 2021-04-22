@@ -238,8 +238,8 @@ def process_profile_hist_variables(grid_data, float_pres, hist_interp_sal, hist_
     hist_pres = hist_interp_pres[n_level, max_hist_casts]
     hist_long = grid_data['grid_long'][max_hist_casts]
     hist_lat = grid_data['grid_lat'][max_hist_casts]
-    hist_dates = grid_data['gird_dates'][max_hist_casts]
-    hist_z = grid_data['gird_z'][max_hist_casts]
+    hist_dates = grid_data['grid_dates'][max_hist_casts]
+    hist_z = grid_data['grid_z'][max_hist_casts]
 
     # Need points +/- map_p_delta of float pressure
     delta_index = np.argwhere(np.abs(hist_pres - float_pres[n_level]) < map_p_delta)[:, 0]
