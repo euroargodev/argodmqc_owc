@@ -179,7 +179,7 @@ def update_salinity_mapping(float_dir, config, float_name):
                                                 float_elev,
                                                 kind='linear')
 
-            float_z = -float_interp(float_long_tbase, float_data['float_lat'])[0]
+            float_data['float_z'] = -float_interp(float_long_tbase, float_data['float_lat'])[0]
 
             # gather data from area surrounding the float location
             wmo_numbers = find_25boxes(float_data['float_long'], float_data['float_lat'], wmo_boxes)
@@ -204,7 +204,7 @@ def update_salinity_mapping(float_dir, config, float_name):
 
                 index = find_besthist(grid_data['grid_lat'], grid_data['grid_long'], grid_data['grid_dates'],
                                       grid_data['grid_z'], float_data['float_lat'], float_long_0,
-                                      float_data['float_date'], float_z,
+                                      float_data['float_date'], float_data['float_z'],
                                       lat_large, lat_small, long_large, long_small,
                                       phi_large, phi_small, map_age_large, map_age_small,
                                       map_use_pv, max_casts)
