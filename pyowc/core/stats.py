@@ -13,7 +13,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
-from scipy.spatial import KDTree
+from scipy.spatial import cKDTree
 
 from ..utilities import sorter
 
@@ -715,7 +715,7 @@ def noise_variance(sal, lat, long):
     """
     locations = np.column_stack((lat, long))
 
-    kdtree = KDTree(locations)
+    kdtree = cKDTree(locations)
 
     # query the second nearest neighbour to exclude self
     distances, min_distances_indices = kdtree.query(locations, k=[2])
@@ -724,8 +724,10 @@ def noise_variance(sal, lat, long):
         print("WARNING: no unique points")
         return 0.0
 
-    # since we query the second nearest neighbour, we need to remove the last axis for indexing
-    sal_noise = sal - sal[np.squeeze(min_distances_indices, -1)]
+    # remove the last (singleton) axis which results from querying only the second nearest neighbour
+    min_distances_indices = np.squeeze(min_distances_indices, axis=-1)
+
+    sal_noise = sal - sal[min_distances_indices]
     sal_noise_var = np.mean(np.square(sal_noise[sal_noise != 0.0])) / 2
 
     return sal_noise_var
