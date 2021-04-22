@@ -715,7 +715,7 @@ def noise_variance(sal, lat, long):
     """
     locations = np.column_stack((lat, long))
 
-    kdtree = cKDTree(locations)
+    kdtree = cKDTree(locations)  # pylint: disable=not-callable
 
     # query the second nearest neighbour to exclude self
     distances, min_distances_indices = kdtree.query(locations, k=[2])
