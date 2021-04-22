@@ -718,18 +718,14 @@ def noise_variance(sal, lat, long):
     kdtree = KDTree(locations)
 
     # query the second nearest neighbour to exclude self
-    distances, min_distances_indices = kdtree.query(locations, k=2)
-
-    # exclude nearest point (as it will be the same point as passed in)
-    distances = distances[:, 1]
-    min_distances_indices = min_distances_indices[:, 1]
+    distances, min_distances_indices = kdtree.query(locations, k=[2])
 
     if np.all(distances == 0.0):
         print("WARNING: no unique points")
         return 0.0
 
     # since we query the second nearest neighbour, we need to remove the last axis for indexing
-    sal_noise = sal - sal[min_distances_indices]
+    sal_noise = sal - sal[np.squeeze(min_distances_indices, -1)]
     sal_noise_var = np.mean(np.square(sal_noise[sal_noise != 0.0])) / 2
 
     return sal_noise_var
