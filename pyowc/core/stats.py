@@ -13,7 +13,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
-from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
 
 from ..utilities import sorter
 
