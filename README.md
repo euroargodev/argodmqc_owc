@@ -34,7 +34,7 @@ owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
 owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
 ```
 
-### Parameters for your analysis
+## Parameters for your analysis
 
 Parameters for the analysis are set in a configuration dictionary. 
 The configuration has the same parameters as the Matlab software.
@@ -49,7 +49,7 @@ And you can see it content like this:
 print(owc.configuration.print_cfg(USER_CONFIG))
 ```
 
-### Plots
+## Plots
 
 ```python
 owc.plot.dashboard("/", FLOAT_NAME, USER_CONFIG)

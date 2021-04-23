@@ -1004,16 +1004,15 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
         y = A(1) + A(2)*x+eps                     for x(1) <= x <= b(1)
         y = A(1) + A(2)*b(1) + A(3)*(x-b(1))+eps  for b(1) <= x <= b(2)
         ...                                            ...
-        y = A(1) + A(2)*(b(2)-b(1)) + ...
-                               A(m+2)*(x-b(m)+eps for b(m) <= x <= x(n)
-        where x = vector of observed indepedent variables [n]
-              y = vector of observed dependent variables  [n]
-              W_i = inverse of weights for fit [n]
-                    if W_i is empty, then equal weighting for each point
-              b = vector of break points as values of x   [m]
+        y = A(1) + A(2)*(b(2)-b(1)) + ... + A(m+2)*(x-b(m)+eps for b(m) <= x <= x(n)
 
-              A = fitting coefficients                    [m+1]
-              yg = fitted estimate of y
+        where:
+        x = vector of observed indepedent variables [n]
+        y = vector of observed dependent variables  [n]
+        W_i = inverse of weights for fit [n] if W_i is empty, then equal weighting for each point
+        b = vector of break points as values of x   [m]
+        A = fitting coefficients                    [m+1]
+        yg = fitted estimate of y
 
         Parameters
         ----------
