@@ -34,7 +34,7 @@ class InterpClimatology(unittest.TestCase):
         self.expected_interp_pres = results['P_h']
         self.expected_interp_sal = results['S_h']
 
-    def test_throws_error(self):
+    def test_mismatched_grid_data_returns_nans(self):
         """
         Test that an we get NaNs for bad data
         :return: Nothing
@@ -46,8 +46,21 @@ class InterpClimatology(unittest.TestCase):
         sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
                                        self.float_sal, self.float_theta, self.float_pres)
 
-        self.assertTrue(np.all(np.isnan(sal)), True)
-        self.assertTrue(np.all(np.isnan(pres)), True)
+        self.assertTrue(np.all(np.isnan(sal)))
+        self.assertTrue(np.all(np.isnan(pres)))
+
+    def test_no_finite_grid_data_returns_nans(self):
+        """
+        Test that an we get NaNs for grid data with all values infinite.
+        """
+
+        bad_grid_sal = bad_grid_theta = bad_grid_pres = np.full((5, 5), np.inf)
+
+        sal, pres = interp_climatology(bad_grid_sal, bad_grid_theta, bad_grid_pres,
+                                       self.float_sal, self.float_theta, self.float_pres)
+
+        self.assertTrue(np.all(np.isnan(sal)))
+        self.assertTrue(np.all(np.isnan(pres)))
 
     def test_returns_correct_shape(self):
         """
