@@ -355,6 +355,8 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
             ...|...   ...  ... ...  ...  ...
             -85| 648   18  36  ...  648   18
 
+        ..
+
          We do this using 3 matrices:
 
          - A 1-D matrix for the x axis (la_lookup_x)
