@@ -310,11 +310,13 @@ def sort_numpy_array(data, index, keys=None):
 
     """
     if keys:
-        for key in keys:
-            data[key] = data[key][:, index]
+        data.update({key: data[key][:, index] for key in keys})
+        #for key in keys:
+        #    data[key] = data[key][:, index]
     else:
-        for key, value in data.items():
-            data[key] = value[index]
+        data.update({key: value[index] for (key, value) in data.items() if value.__len__() > 0})
+        #for key, value in data.items():
+        #    data[key] = value[index]
 
     return data
 
