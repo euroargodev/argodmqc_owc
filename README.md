@@ -67,6 +67,34 @@ print(owc.configuration.print_cfg(USER_CONFIG))
 owc.plot.dashboard("/", FLOAT_NAME, USER_CONFIG)
 ```
 
+# Building the documentation
+
+If you wish to build the documentation locally, you will need a virtual environment.
+Assuming your virtual environment is activated, follow these steps:
+
+1. Install the required documentation packages
+    ```bash
+    pip install -r requirements-docs.txt
+    ```
+2. Change directory to the `docs` directory, for example on Linux:
+    ```bash
+    cd docs
+    ```
+3. Run the `sphinx-build` command:
+    ```bash
+    sphinx-build -M html source build -W
+    ```
+
+This will build the HTML documentation under the `docs/build/html` directory and can be viewed
+using your normal web browser.
+
+```{admonition} Note
+:class: note
+
+If you make modifications to the code or documentation configuration, you may need to delete
+the `docs/source/generated` directory for the documentation to build correctly.
+```
+
 # Software history
 
 - Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this !
