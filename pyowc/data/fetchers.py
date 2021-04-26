@@ -65,7 +65,8 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
     decoder = [llong, rlong, 90 * 12 - blat, 90 * 12 - tlat]
 
     # Open the binary file
-    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")
+    # TODO: this should use a with statement to avoid holding on to an open handle in the event of an exception
+    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")  # pylint: disable=consider-using-with
 
     if decoder[1] > 4319:
         nlat = int(round(decoder[2] - decoder[3])) + 1  # get the amount of elevation values we need
