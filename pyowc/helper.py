@@ -29,6 +29,10 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
         # open up mapped data
         float_mapped_data = loadmat(mapped_data_path)
 
+        if 'la_mapsalerrors' in float_mapped_data.keys():
+            float_mapped_data['la_map_sal_errors'] = float_mapped_data['la_mapsalerrors']
+            float_mapped_data.pop('la_mapsalerrors')
+
         # flatten the data
         float_mapped_data["la_profile_no"] = float_mapped_data['la_profile_no'].flatten()
         float_mapped_data["scale_long_large"] = float_mapped_data['scale_long_large'].flatten()
@@ -314,7 +318,7 @@ def sort_numpy_array(data, index, keys=None):
         #for key in keys:
         #    data[key] = data[key][:, index]
     else:
-        data.update({key: value[index] for (key, value) in data.items() if value.__len__() > 0})
+        data.update({key: value[index] for (key, value) in data.items() if value.size > 1})
         #for key, value in data.items():
         #    data[key] = value[index]
 
