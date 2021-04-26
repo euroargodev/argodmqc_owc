@@ -18,9 +18,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 # -- Project information -----------------------------------------------------
 
 project = 'pyowc'
-copyright = '2021, Euro-Argo'
-author = 'Euro-Argo'
+# copyright = ''
+author = 'pyowc Developers'
 
+# TODO: remove this once copyright notice above is provided to include it in the footer
+html_theme_options = {
+  "footer_items": ["sphinx-version"],
+}
 
 # -- General configuration ---------------------------------------------------
 
