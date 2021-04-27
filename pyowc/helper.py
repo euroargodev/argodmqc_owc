@@ -10,6 +10,7 @@ from scipy.io import loadmat
 
 from .data.fetchers import get_topo_grid
 
+
 # pylint: disable=too-many-statements
 def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
     """
@@ -220,6 +221,7 @@ def process_profiles_grid_variables(grid_data, config):
 
     return grid_data
 
+
 # pylint: disable=too-many-arguments
 def process_profile_hist_variables(grid_data, float_pres, hist_interp_sal, hist_interp_pres, n_level, map_p_delta):
     """
@@ -315,12 +317,16 @@ def sort_numpy_array(data, index, keys=None):
     """
     if keys:
         data.update({key: data[key][:, index] for key in keys})
-        #for key in keys:
+        # for key in keys:
         #    data[key] = data[key][:, index]
     else:
-        data.update({key: value[index] for (key, value) in data.items() if value.size > 1})
-        #for key, value in data.items():
-        #    data[key] = value[index]
+        # data.update({key: value[index] for (key, value) in data.items() if value.size > 1})
+        for key, value in data.items():
+            if value.size > 1:
+                if len(value.shape) > 1:
+                    data[key] = value[:, index]
+                else:
+                    data[key] = value[index]
 
     return data
 
@@ -340,20 +346,26 @@ def selected_historical_points(data, hist_data, profile_index):
     """
     # only save selected historical points
     if data['selected_hist'].__len__() == 0:
-        data['selected_hist'] = np.array([hist_data['hist_long'][0][0], hist_data['hist_lat'][0][0],
-                                          data['la_profile_no'][profile_index]])
+        selected_hist = np.array([hist_data['hist_long'][0][0], hist_data['hist_lat'][0][0],
+                                  data['la_profile_no'][profile_index]])
 
-        data['selected_hist'] = np.reshape(data['selected_hist'], (1, 3))
+        selected_hist = np.reshape(selected_hist, (1, 3))
+        data['selected_hist'] = selected_hist
 
-    for j in range(hist_data['hist_long'].__len__()):
+    count = len(hist_data['hist_long'])
+
+    for j in range(count):
         length = data['selected_hist'].shape[0]
         lon_lat = np.array([hist_data['hist_long'][j][0], hist_data['hist_lat'][j][0]])
         new_object = data['selected_hist'][:, 0:2] - np.ones((length, 1)) * lon_lat
         d_0 = np.argwhere(np.abs(new_object[:, 0]) < 1 / 60)
         d_1 = np.argwhere(np.abs(new_object[d_0, 1]) < 1 / 60)
-        if d_1.__len__() == 0:
+        if len(d_1) == 0:
             add_hist_data = np.array([hist_data['hist_long'][j][0], hist_data['hist_lat'][j][0],
                                       data['la_profile_no'][profile_index]])
-            data['selected_hist'] = np.vstack((data['selected_hist'], add_hist_data))
+            if len(data['selected_hist']) == 0:
+                data['selected_hist'] = add_hist_data
+            else:
+                data['selected_hist'] = np.vstack((data['selected_hist'], add_hist_data))
 
     return data

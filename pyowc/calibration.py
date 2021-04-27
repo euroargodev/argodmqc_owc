@@ -350,11 +350,14 @@ def update_salinity_mapping(float_dir, config, float_name):
     # check is numpy array
     data = check_and_make_numpy_arry(data)
 
+    # remove problem element from dic before genral sort
+    selected_hist = data.pop('selected_hist')
+
+    if len(selected_hist) > 0:
+        selected_hist_1 = np.array(sorted(selected_hist, key=lambda x: x[2]))
+
     # sort value in dic
     data = sort_numpy_array(data, sorted_profile_index)
-
-    if data['selected_hist'].__len__() > 0:
-        selected_hist_1 = np.array(sorted(data['selected_hist'], key=lambda x: x[2]))
 
     data['selected_hist'] = selected_hist_1
 
@@ -363,6 +366,7 @@ def update_salinity_mapping(float_dir, config, float_name):
                                       config['FLOAT_MAPPED_PREFIX'] + float_name + config['FLOAT_MAPPED_POSTFIX']])
 
     # save the data
+    data['la_mapsalerrors'] = data.pop('la_map_sal_errors')
     savemat(save_location, data)
 
 
