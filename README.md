@@ -33,7 +33,7 @@ pip install pyowc
 
 [![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/master?filepath=docs%2FTryit.ipynb)
 
-Otherwise, you can run the code in this way:
+Otherwise, you can run the code in your local machine in this way:
 
 In start_with_pycharm.py code, you can specify the WMO float number that you want to do analysis.
 You can also add more float numbers, then the calculations of all floats will be done at the
@@ -70,10 +70,8 @@ The configuration has the same parameters as the Matlab software (https://github
         'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
         'FLOAT_SOURCE_POSTFIX': ".mat"
 ```
-- The output from the analysis will be saved in default directory of the code.
-- The default format of plots is .eps. You can also save plots in different formats 
-
-- You can change the default directories to locations of your historical data.
+- The output from the analysis will be saved in default directory of the code.You can change 
+the default directories to locations of your constants.
 ```python
         #    Constants File Path
         'CONFIG_DIRECTORY': "data/constants/"
@@ -150,7 +148,8 @@ the `docs/source/generated` directory for the documentation to build correctly.
 
 - Alpha experts user testings with [feedbacks available here](https://github.com/euroargodev/User-Acceptance-Test-Python-version-of-the-OWC-tool/issues). Contributions from: [K. Walicka](https://github.com/kamwal), [C. Cabanes](https://github.com/cabanesc), [A. Wong](https://github.com/apswong)
 
-- BODC created [the first version of the code](https://git.noc.ac.uk/bodc/owc-software-python), following the [Matlab implementation](https://github.com/ArgoDMQC/matlab_owc). Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc), [K. Walicka](https://github.com/kamwal).
+- BODC created [the first version of the code](https://git.noc.ac.uk/bodc/owc-software-python), following the [Matlab implementation](https://github.com/ArgoDMQC/matlab_owc).
+  Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc), [K. Walicka](https://github.com/kamwal).
 
 
 ## New positioning of functions 
