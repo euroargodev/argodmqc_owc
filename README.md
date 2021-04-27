@@ -149,7 +149,8 @@ the `docs/source/generated` directory for the documentation to build correctly.
 - Alpha experts user testings with [feedbacks available here](https://github.com/euroargodev/User-Acceptance-Test-Python-version-of-the-OWC-tool/issues). Contributions from: [K. Walicka](https://github.com/kamwal), [C. Cabanes](https://github.com/cabanesc), [A. Wong](https://github.com/apswong)
 
 - BODC created [the first version of the code](https://git.noc.ac.uk/bodc/owc-software-python), following the [Matlab implementation](https://github.com/ArgoDMQC/matlab_owc).
-  Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc), [K. Walicka](https://github.com/kamwal).
+  Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc),
+   [K. Walicka](https://github.com/kamwal), [A. Hale](https://github.com/halebodc), [T. Gardner](https://github.com/thogar-computer).
 
 
 ## New positioning of functions 
