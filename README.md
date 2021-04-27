@@ -31,7 +31,7 @@ pip install pyowc
 
 # Software usage
 
-[![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/refactor-configuration?urlpath=lab/tree/docs/Tryit.ipynb)
+[![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/master?filepath=docs%2FTryit.ipynb)
 
 Otherwise, in a python script, you can calibrate salinity data this way:
 
