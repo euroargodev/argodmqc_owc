@@ -34,38 +34,83 @@ pip install pyowc
 
 [![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/refactor-configuration?urlpath=lab/tree/docs/Tryit.ipynb)
 
-Otherwise, in a python script, you can calibrate salinity data this way:
+Otherwise, you can run the code in this way:
+
+In start_with_pycharm.py code, you can specify the WMO float number that you want to do analysis.
+You can also add more float numbers, then the calculations of all floats will be done at the
+same time.
 
 ```python
 import pyowc as owc
 
-FLOAT_NAME = "3901960"
-USER_CONFIG = owc.configuration.load() # fetch the default configuration and parameters
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
-owc.calibration.update_salinity_mapping("/", FLOAT_NAME, USER_CONFIG)
-owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
+if __name__ == '__main__':
+
+    FLOAT_NAMES = ["3901960"]  # add float names here e.g. ["3901960","3901961","3901962"]
+    USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
+    print(owc.configuration.print_cfg(USER_CONFIG))
 ```
 
-## Parameters for your analysis
+### Parameters for your analysis
 
-Parameters for the analysis are set in a configuration dictionary. 
-The configuration has the same parameters as the Matlab software.
+Parameters for the analysis are set in a configuration.py python code. 
+The configuration has the same parameters as the Matlab software (https://github.com/ArgoDMQC/matlab_owc).
 
-You can change parameters this way:
+- You can change the default directories to locations of your historical data.
 ```python
-USER_CONFIG['MAP_USE_PV'] = 0 # Possibly tune options
+        #    Climatology Data Input Paths
+        'HISTORICAL_DIRECTORY': "data/climatology/"
+        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_"
+        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_"
+        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"
+```
+- To run the analysis,you need to have the float source file in .mat format. 
+```python
+        #    Float Input Path
+        'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
+        'FLOAT_SOURCE_POSTFIX': ".mat"
+```
+- The output from the analysis will be saved in default directory of the code.
+- The default format of plots is .eps. You can also save plots in different formats 
+
+- You can change the default directories to locations of your historical data.
+```python
+        #    Constants File Path
+        'CONFIG_DIRECTORY': "data/constants/"
+        'CONFIG_COASTLINES': "coastdat.mat"
+        'CONFIG_WMO_BOXES': "wmo_boxes.mat"
+        'CONFIG_SAF': "TypicalProfileAroundSAF.mat"
+```
+- Final step is to set your objective mapping parameters, e.g.
+```python
+        'MAP_USE_PV': 0
+        'MAP_USE_SAF': 0
+
+        'MAPSCALE_LONGITUDE_LARGE': 8
+        'MAPSCALE_LONGITUDE_SMALL': 4
+        'MAPSCALE_LATITUDE_LARGE': 4
+        'MAPSCALE_LATITUDE_SMALL': 2
+ ```
+- Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
+The code will crete two separate plots with set ranges.
+```python 
+     #    Plotting Parameters
+        # Theta bounds for salinity anomaly plot
+        'THETA_BOUNDS': [[0, 5], [5, 20]]
 ```
 
-And you can see it content like this:
-```python
-print(owc.configuration.print_cfg(USER_CONFIG))
-```
+### Plots
+The plots are automatically generated. It is worth to note that only one plot will be 
+displayed at one time in the PyCharm. The next plot will be displayed after closing
+the window of the current plot. 
 
-## Plots
+The number of generated plots at specific theta levels (from 1 to 10 theta levels) can be
+currently changed in the dashboard.py code. The default is set to 2. The plots will be 
+generated separately for each theta level.
 
 ```python
-owc.plot.dashboard("/", FLOAT_NAME, USER_CONFIG)
+def plot_diagnostics(float_dir, float_name, config, levels=2):
 ```
 
 # Building the documentation
