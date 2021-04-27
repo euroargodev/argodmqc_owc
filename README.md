@@ -33,7 +33,7 @@ pip install pyowc
 
 [![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/master?filepath=docs%2FTryit.ipynb)
 
-Otherwise, you can run the code in your local machine in this way:
+Otherwise, you can run the pyowc code in your local machine in this way:
 
 In start_with_pycharm.py code, you can specify the WMO float number that you want to do analysis.
 You can also add more float numbers, then the calculations of all floats will be done at the
