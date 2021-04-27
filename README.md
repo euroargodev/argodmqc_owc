@@ -4,7 +4,6 @@
 [![codecov](https://codecov.io/gh/euroargodev/argodmqc_owc/branch/refactor-configuration/graph/badge.svg)](https://codecov.io/gh/euroargodev/argodmqc_owc)
 [![Requirements Status](https://requires.io/github/euroargodev/argodmqc_owc/requirements.svg?branch=master)](https://requires.io/github/euroargodev/argodmqc_owc/requirements/?branch=refactor-configuration)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
-[![Documentation Status](https://readthedocs.org/projects/pyowc-test/badge/?version=latest)](https://pyowc-test.readthedocs.io/en/latest/?badge=latest)
 
 [![Gitter](https://badges.gitter.im/Argo-floats/owc-python.svg)](https://gitter.im/Argo-floats/owc-python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -32,7 +31,7 @@ pip install pyowc
 
 # Software usage
 
-[![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/refactor-configuration?urlpath=lab/tree/docs/Tryit.ipynb)
+[![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/master?filepath=docs%2FTryit.ipynb)
 
 Otherwise, you can run the code in this way:
 
