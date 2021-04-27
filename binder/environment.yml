@@ -1,0 +1,6 @@
+name: euroargodev
+dependencies:
+  - python=3.7
+  - pip
+  - pip:
+    - ..  # install pyowc
