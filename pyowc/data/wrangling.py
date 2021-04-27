@@ -113,107 +113,134 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     interp_sal_final = np.full((float_len, grid_stations), np.nan, dtype=np.float64)
     interp_pres_final = np.full((float_len, grid_stations), np.nan, dtype=np.float64)
 
-    # check that the climatology data has no infinite (bad) values in the middle
-    # of the profiles.
-    max_level = 0
-    for i in range(0, grid_stations):
+    # guard against mismatched arrays
+    if not grid_sal.shape == grid_theta.shape == grid_pres.shape:
+        return interp_sal_final, interp_pres_final
 
-        # find where data is not missing
-        grid_good_sal = np.isfinite(grid_sal[:, i])
-        grid_good_theta = np.isfinite(grid_theta[:, i])
-        grid_good_pres = np.isfinite(grid_pres[:, i])
+    grid_data = _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres)
 
-        # find indices of good data
-        grid_good_data_index = []
-        for j in range(0, grid_level):
-            if grid_good_sal[j] and grid_good_theta[j] and grid_good_pres[j]:
-                grid_good_data_index.append(j)
+    if grid_data is None:
+        return interp_sal_final, interp_pres_final
 
-        # now find the max level
-        grid_good_data_len = grid_good_data_index.__len__()
-        if grid_good_data_len != 0:
-            for j in range(0, grid_good_data_len):
-                grid_sal[j, i] = grid_sal[grid_good_data_index[j], i]
-                grid_theta[j, i] = grid_theta[grid_good_data_index[j], i]
-                grid_pres[j, i] = grid_pres[grid_good_data_index[j], i]
-                max_level = np.maximum(max_level, grid_good_data_len)
+    grid_sal, grid_theta, grid_pres = grid_data
 
-    # Truncate the number of levels to the maximum level that has
-    # available data
+    # get the indices of the good float data
+    float_good_data_index = np.nonzero(_get_finite_element_mask(float_sal, float_theta, float_pres))[0]
+
+    # compare good float data to the closest climatological data
+    for index in float_good_data_index:
+        # Find the indices of the closest pressure value each climatological station has to the float pressures
+        delta_pres_min_index = np.nanargmin(np.abs(grid_pres - float_pres[index]), axis=0)
+
+        # Find the difference between the float data and the climatological data
+        delta_theta = grid_theta - float_theta[index]
+        sign_changes = delta_theta * np.take_along_axis(delta_theta, delta_pres_min_index[np.newaxis], axis=0)
+
+        # if there is no sign change for a station (that is, no negative entries) then it cannot have
+        # any values which we can use to interpolate.
+        stations_with_possible_interp = np.unique(np.nonzero(sign_changes.T < 0)[0])
+
+        # go through all the climatological stations with possible interpolation candidates
+        for station_id in stations_with_possible_interp:
+
+            tst = sign_changes[:, station_id]
+
+            # look for a theta match below (after in the array) the float pressure
+            grid_theta_below_pres = _find_closest_negative_by_index(tst[delta_pres_min_index[station_id]:grid_level])
+
+            # look for a theta match above (before in the array) the float pressure
+            grid_theta_above_pres = _find_closest_negative_by_index(tst[:delta_pres_min_index[station_id]], reverse_search=True)
+
+            # initialise arrays to hold interpolated pressure and salinity
+            interp_pres = []
+            interp_sal = []
+
+            # there is a theta value at a deeper level
+            if grid_theta_below_pres is not None:
+                i_1 = grid_theta_below_pres + delta_pres_min_index[station_id]
+                indices = (slice(i_1-1, i_1+1), station_id)
+
+                interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
+                interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
+
+            # there is a theta value at a shallower level
+            if grid_theta_above_pres is not None:
+                i_2 = grid_theta_above_pres
+                indices = (slice(i_2, i_2+2), station_id)
+
+                interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
+                interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
+
+            if interp_pres:
+                # if there are two nearby theta values, choose the closest one
+                abs_interp_pres = np.abs(float_pres[index] - interp_pres)
+                location = np.argmin(abs_interp_pres)
+                interp_sal_final[index, station_id] = interp_sal[location]
+                interp_pres_final[index, station_id] = interp_pres[location]
+
+    return interp_sal_final, interp_pres_final
+
+
+def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
+    """Return a copy of grid data where finite values have been moved up to the top of each station."""
+    # ensure no changes made to reference data
+    grid_sal = np.copy(grid_sal)
+    grid_theta = np.copy(grid_theta)
+    grid_pres = np.copy(grid_pres)
+
+    grid_good_data = _get_finite_element_mask(grid_sal, grid_theta, grid_pres)
+
+    # find the max number of levels from all stations
+    column_counts = np.count_nonzero(grid_good_data, axis=0)
+    max_level = np.max(column_counts)
+
+    for station_id in range(grid_stations):
+        good_values = column_counts[station_id]
+        grid_sal[:good_values, station_id] = grid_sal[:, station_id][grid_good_data[:, station_id]]
+        grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
+        grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
+
+    # Truncate the number of levels to the maximum level that has available data
     if max_level > 0:
         grid_sal = grid_sal[:max_level, :]
         grid_theta = grid_theta[:max_level, :]
         grid_pres = grid_pres[:max_level, :]
     else:
         print("No good climatological data has been found for this profile")
-        return interp_sal_final, interp_pres_final
+        return None
 
-    # find where data isn't missing in the float
-    float_good_sal = np.isfinite(float_sal)
-    float_good_theta = np.isfinite(float_theta)
-    float_good_pres = np.isfinite(float_pres)
+    return grid_sal, grid_theta, grid_pres
 
-    # get the indices of the good float data
-    float_good_data_index = []
-    for i in range(0, float_len):
-        if float_good_sal[i] and float_good_theta[i] and float_good_pres[i]:
-            float_good_data_index.append(i)
 
-    # get the number of good float data observations
-    float_data_len = float_good_data_index.__len__()
+def _get_finite_element_mask(sal, theta, pres):
+    """Return a boolean array where True entries indicate all of sal/theta/pres are finite."""
+    # check that the climatology data has no infinite (bad) values in the middle of the profiles.
+    good_sal = np.isfinite(sal)
+    good_theta = np.isfinite(theta)
+    good_pres = np.isfinite(pres)
 
-    # compare good float data to the closest climatological data
-    for i in range(0, float_data_len):
+    # create an array where True indicates that sal/theta/pres are all finite
+    return good_sal & good_theta & good_pres
 
-        # get index of good float data
-        index = float_good_data_index[i]
 
-        # Find the difference between the float data and the climatological data
-        delta_sal = np.array(grid_sal - float_sal[index])
-        delta_pres = np.array(grid_pres - float_pres[index])
-        delta_theta = np.array(grid_theta - float_theta[index])
+def _find_closest_negative_by_index(search_array, reverse_search=False):
+    """Find the closest (by index) negative entry in an array, optionally searching in the reverse direction."""
+    idx = None
+    step = -1 if reverse_search else 1
+    if search_array.size:
+        first_index = np.argmax(search_array[::step] < 0)
 
-        # Find the indices of the closest pressure value each climatological station has to
-        # the float pressures
-        abs_delta_pres = np.abs(delta_pres)
-        delta_pres_min_index = np.nanargmin(abs_delta_pres, axis=0)
+        if reverse_search:
+            first_index = (len(search_array) - 1) - first_index
 
-        # go through all the climatological stations
-        for j in range(0, grid_stations):
+        if search_array[first_index] < 0:
+            idx = first_index
 
-            # find if delta_theta is different to delta_theta for closest pressure
-            # (equals -1 if different)
-            tst = np.sign(delta_theta[:, j]) * np.sign(delta_theta[delta_pres_min_index[j], j])
+    return idx
 
-            # look for a theta match below the float pressure
-            grid_theta_below_pres = np.argwhere(tst[delta_pres_min_index[j]:grid_level] < 0)
 
-            # look for a theta match above the float pressure
-            grid_theta_above_pres = np.argwhere(tst[0:delta_pres_min_index[j]] < 0)
-            # initialise arrays to hold interpolated pressure and salinity
-            interp_pres = []
-            interp_sal = []
+def _interp_single_value(x_interp, x_reference, y_reference):
+    """Interpolate a single value based on reference data."""
+    w_t = (x_reference[1] - x_interp) / np.diff(x_reference)
 
-            # there is a theta value at a deeper level
-            if grid_theta_below_pres.__len__() > 0:
-                min_grid_theta_index = np.min(grid_theta_below_pres)
-                i_1 = min_grid_theta_index + delta_pres_min_index[j]
-                w_t = delta_theta[i_1, j] / (delta_theta[i_1, j] - delta_theta[i_1 - 1, j])
-                interp_pres.append(w_t * delta_pres[i_1 - 1, j] + (1 - w_t) * delta_pres[i_1, j])
-                interp_sal.append(w_t * delta_sal[i_1 - 1, j] + (1 - w_t) * delta_sal[i_1, j])
-
-            # there is a theta value at a shallower level
-            if grid_theta_above_pres.__len__() > 0:
-                i_2 = np.max(grid_theta_above_pres)
-                w_t = delta_theta[i_2, j] / (delta_theta[i_2, j] - delta_theta[i_2 + 1, j])
-                interp_pres.append(w_t * delta_pres[i_2 + 1, j] + (1 - w_t) * delta_pres[i_2, j])
-                interp_sal.append(w_t * delta_sal[i_2 + 1, j] + (1 - w_t) * delta_sal[i_2, j])
-
-            if interp_pres.__len__() > 0:
-                # if there are two nearby theta values, choose the closest one
-                abs_interp_pres = np.abs(interp_pres)
-                k = np.argmin(abs_interp_pres)
-                interp_sal_final[index, j] = interp_sal[k] + float_sal[index]
-                interp_pres_final[index, j] = interp_pres[k] + float_pres[index]
-
-    return interp_sal_final, interp_pres_final
+    return y_reference[1] * (1 - w_t) + y_reference[0] * w_t

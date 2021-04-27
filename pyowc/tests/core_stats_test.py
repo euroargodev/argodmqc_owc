@@ -375,6 +375,26 @@ class Covarxytpv(unittest.TestCase):
                 self.assertAlmostEqual(covar[i][j], expected[i][j], 15,
                                        "covariances is not as expected")
 
+    def test_returns_expected_answers_regression(self):
+        """Check that the correct result is returned for a generic set of input (based on legacy output)."""
+        expected = np.array([[0.985163822020838, 0.986423041063023, 0.999577585526622],
+                             [0.973460871292432, 0.979453972007370, 0.990506470004002],
+                             [0.951726465610844, 0.999423913838712, 0.990524511241315],
+                             [0.948404575871346, 0.999963001768981, 0.989719865936469],
+                             [0.991515953082956, 0.979652596853285, 0.997735776041853]])
+        inp1 = np.array([[0.34097335, 0.48557151, 0.672727,  0.98830669],
+                         [0.96305315, 0.58006043, 0.38471916, 0.50453707],
+                         [0.15381054, 0.88279222, 0.07064759, 0.26916668],
+                         [0.04172798, 0.90806218, 0.30539825, 0.1291726],
+                         [0.13502508, 0.3533438, 0.45718207, 0.32551069]])
+        inp2 = np.array([[0.3487758740, 3.92049930e-04, 0.366825482, 0.460229042],
+                         [0.0392067276, 0.924711166, 0.393886206, 0.347020499],
+                         [0.2105210250, 0.524422238, 0.830542407, 0.778033533]])
+
+        output = core.stats.covar_xyt_pv(inp1, inp2, self.lat, self.long, self.age, self.phi, self.p_v)
+
+        self.assertTrue(np.allclose(expected, output, rtol=0.0, atol=1.0e-15))
+
     def test_allows_1_dimensional_data(self):
         """
         Check that using 1 dimensional data sets does not through an error

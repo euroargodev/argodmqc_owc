@@ -13,6 +13,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
+from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
 
 from ..utilities import sorter
 
@@ -676,23 +677,13 @@ def signal_variance(sal):
         -------
         float estimate of the variance of the signal of the given data
     """
+    sal = np.array(sal)
+    non_zero_values = sal[sal != 0.0]
 
-    # remove 0's and NaN's from our data set
-    sal_no_nan = []
-    for i in range(0, sal.__len__()):
-        if sal[i] != 0 and not math.isnan(sal[i]):
-            sal_no_nan.append(sal[i])
-
-    # check that we have got some valid values. If not, raise an exception
-    num_sal = sal_no_nan.__len__()
-    if num_sal == 0:
+    if np.all(np.isnan(non_zero_values)):
         raise RuntimeError("Received no valid salinity values when calculating signal variance") from None
-    # approximate the signal variance
-    sal_mean = np.mean(sal_no_nan)
-    signal = (sal_no_nan - sal_mean)
-    variance = np.sum(signal ** 2) / num_sal
 
-    return variance
+    return np.nanvar(non_zero_values)
 
 
 def noise_variance(sal, lat, long):
@@ -722,39 +713,22 @@ def noise_variance(sal, lat, long):
         -------
         the variance in the noise_variance
     """
-    # set up our numpy matrix for memory efficiency
-    sal_noise = np.zeros(sal.shape, dtype=float)
+    locations = np.column_stack((lat, long))
 
-    # find the difference in salinities between each point and its closest other point (x-u)
-    for i in range(0, sal.__len__()):
-        # find the nearest spatial point to lat[i], long[i]
-        distances = (long - long[i]) ** 2 + (lat - lat[i]) ** 2
+    kdtree = cKDTree(locations)  # pylint: disable=not-callable
 
-        # find the smallest distance between this point and another point
-        # we do this by first finding the instances where there is some distance
-        # between points (> 0), and then finding the minimum of these instances
-        try:
-            min_distance = np.min(distances[np.nonzero(distances)])
+    # query the second nearest neighbour to exclude self
+    distances, min_distances_indices = kdtree.query(locations, k=[2])
 
-        except ValueError:
-            print("WARNING: no unique points")
-            return 0
+    if np.all(distances == 0.0):
+        print("WARNING: no unique points")
+        return 0.0
 
-        # find index of the minimum distance
-        min_index = np.argwhere(distances == min_distance)[0]
+    # remove the last (singleton) axis which results from querying only the second nearest neighbour
+    min_distances_indices = np.squeeze(min_distances_indices, axis=-1)
 
-        # store the differences in salinities between these two points
-        sal_noise[i] = sal[i] - sal[min_index]
-
-    # make sure we have unique points
-    index = np.argwhere(sal_noise != 0)
-
-    # find the variance in the noise by summing the difference squared
-    # and dividing it
-    sal_noise_var = (sum(sal_noise[index] ** 2) / (2 * index.__len__()))
-
-    # change data type from numpy array to float
-    sal_noise_var = sal_noise_var[0]
+    sal_noise = sal - sal[min_distances_indices]
+    sal_noise_var = np.mean(np.square(sal_noise[sal_noise != 0.0])) / 2
 
     return sal_noise_var
 
@@ -789,37 +763,24 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
         -------
         m*n matrix containing the covariance of each point
     """
+    points1 = np.atleast_2d(points1)
+    points2 = np.atleast_2d(points2)
 
-    # create the m*n covariance matrix filled with 0's
-    if points1.shape.__len__() < 2:
-        points1 = np.array([points1])
+    long_covar = ((points1[:, np.newaxis, 0] - points2[np.newaxis, :, 0]) / long)**2
+    lat_covar = ((points1[:, np.newaxis, 1] - points2[np.newaxis, :, 1]) / lat)**2
+    age_covar = 0.0
+    p_v_covar = 0.0
 
-    if points2.shape.__len__() < 2:
-        points2 = np.array([points2])
+    if age != 0:
+        age_covar = ((points1[:, np.newaxis, 2] - points2[np.newaxis, :, 2]) / age)**2
 
-    points_covar = np.full((points1.shape[0], points2.shape[0]), 0, float)
+    # pylint: disable=fixme
+    # TODO: ARGODEV-163
+    # use the potential vorticity function made in ARGODEV-150
+    if map_pv_use == 1:
+        print("pv not yet included. Phi: ", phi)
 
-    for i in range(0, points1.__len__()):
-        for j in range(0, points2.__len__()):
-
-            # calculate the absolute difference between points over characteristic length scale
-            long_covar = ((points1[i][0] - points2[j][0]) / long) ** 2
-            lat_covar = ((points1[i][1] - points2[j][1]) / lat) ** 2
-            age_covar = 0
-            p_v_covar = 0
-
-            if age != 0:
-                age_covar = ((points1[i][2] - points2[j][2]) / age) ** 2
-
-            #pylint: disable=fixme
-            # TODO: ARGODEV-163
-            # use the potential vorticity function made in ARGODEV-150
-            if map_pv_use == 1:
-                print("pv not yet included. Phi: ", phi)
-
-            points_covar[i][j] = math.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
-
-    return points_covar
+    return np.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
 
 
 #pylint: disable=too-many-locals
