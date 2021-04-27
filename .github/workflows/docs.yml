@@ -28,4 +28,5 @@ jobs:
         pip install -r requirements-docs.txt
 
     - name: Build documentation
+      working-directory: docs
       run: sphinx-build -M html source build -W
