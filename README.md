@@ -98,7 +98,6 @@ The code will crete two separate plots with set ranges.
         # Theta bounds for salinity anomaly plot
         'THETA_BOUNDS': [[0, 5], [5, 20]]
 ```
-
 ### Plots
 The plots are automatically generated. It is worth to note that only one plot will be 
 displayed at one time in the PyCharm. The next plot will be displayed after closing
@@ -162,7 +161,7 @@ Note that functions name are not changed !
 
 - **pyowc/data**
   - **fetchers.py**: get_region_data, get_region_hist_locations, get_data, get_topo_grid, frontal_constraint_saf
-  - **wrangling.py**: interp_climatology, map_data_grid 
+  - **wrangling.py**: interp_climatology, map_data_grid
 
 - **pyowc/plot**
   - **dashboard.py**: plot_diagnostics
