@@ -161,7 +161,7 @@ Note that functions name are not changed !
   - **finders.py**: find_10thetas, find_25boxes, find_besthit, find_ellipse, nearest_neighbour
 
 - **pyowc/data**
-  - **fetchers.py**: get_region_data, get_region_hist_locations, get_data, get_topo_grid
+  - **fetchers.py**: get_region_data, get_region_hist_locations, get_data, get_topo_grid, frontal_constraint_saf
   - **wrangling.py**: interp_climatology, map_data_grid 
 
 - **pyowc/plot**
