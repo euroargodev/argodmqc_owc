@@ -51,7 +51,7 @@ if __name__ == '__main__':
     print(owc.configuration.print_cfg(USER_CONFIG))
 ```
 
-### Parameters for your analysis
+## Parameters for your analysis
 
 Parameters for the analysis are set in a configuration.py python code. 
 The configuration has the same parameters as the Matlab software (https://github.com/ArgoDMQC/matlab_owc).
@@ -99,7 +99,7 @@ The code will crete two separate plots with set ranges.
         'THETA_BOUNDS': [[0, 5], [5, 20]]
 ```
 
-### Plots
+## Plots
 The plots are automatically generated. It is worth to note that only one plot will be 
 displayed at one time in the PyCharm. The next plot will be displayed after closing
 the window of the current plot. 
