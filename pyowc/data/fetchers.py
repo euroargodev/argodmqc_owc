@@ -65,7 +65,8 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
     decoder = [llong, rlong, 90 * 12 - blat, 90 * 12 - tlat]
 
     # Open the binary file
-    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")
+    # TODO: this should use a with statement to avoid holding on to an open handle in the event of an exception
+    elev_file = open(os.path.sep.join([config['CONFIG_DIRECTORY'], "tbase.int"]), "rb")  # pylint: disable=consider-using-with
 
     if decoder[1] > 4319:
         nlat = int(round(decoder[2] - decoder[3])) + 1  # get the amount of elevation values we need
@@ -393,22 +394,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
     try:
         grid_long = wrap_longitude(grid_long)
 
-        # make sure salinity, pressure, and potential temperature data have all the same NaNs
-        sal_nans = np.argwhere(np.isnan(grid_sal))
-        for nan in sal_nans:
-            grid_pres[nan[0], nan[1]] = np.nan
-            grid_ptmp[nan[0], nan[1]] = np.nan
-
-        pres_nans = np.argwhere(np.isnan(grid_pres))
-        for nan in pres_nans:
-            grid_sal[nan[0], nan[1]] = np.nan
-            grid_ptmp[nan[0], nan[1]] = np.nan
-
-        ptmp_nans = np.argwhere(np.isnan(grid_ptmp))
-        for nan in ptmp_nans:
-            grid_sal[nan[0], nan[1]] = np.nan
-            grid_pres[nan[0], nan[1]] = np.nan
-
+        _sync_nans(grid_sal, grid_pres, grid_ptmp)
         grid_dates = change_dates(grid_dates)
 
         # transpose data
@@ -439,6 +425,22 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
 
     return {'grid_sal': grid_sal, 'grid_ptmp': grid_ptmp, 'grid_pres': grid_pres, 'grid_lat': grid_lat,
             'grid_long': grid_long, 'grid_dates': grid_dates}
+
+
+def _sync_nans(grid_sal, grid_pres, grid_ptmp):
+    """Ensure a NaN in any array means all arrays have a NaN at the same position."""
+    # make sure salinity, pressure, and potential temperature data have all the same NaNs
+    sal_nans = np.isnan(grid_sal)
+    grid_pres[sal_nans] = np.nan
+    grid_ptmp[sal_nans] = np.nan
+
+    pres_nans = np.isnan(grid_pres)
+    grid_sal[pres_nans] = np.nan
+    grid_ptmp[pres_nans] = np.nan
+
+    ptmp_nans = np.isnan(grid_ptmp)
+    grid_sal[ptmp_nans] = np.nan
+    grid_pres[ptmp_nans] = np.nan
 
 
 def frontal_constraint_saf(config, grid_data, float_data):

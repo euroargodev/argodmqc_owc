@@ -34,7 +34,7 @@ class InterpClimatology(unittest.TestCase):
         self.expected_interp_pres = results['P_h']
         self.expected_interp_sal = results['S_h']
 
-    def test_throws_error(self):
+    def test_mismatched_grid_data_returns_nans(self):
         """
         Test that an we get NaNs for bad data
         :return: Nothing
@@ -46,8 +46,21 @@ class InterpClimatology(unittest.TestCase):
         sal, pres = interp_climatology(bad_grid_sal, self.grid_theta, self.grid_pres,
                                        self.float_sal, self.float_theta, self.float_pres)
 
-        self.assertTrue(np.all(np.isnan(sal)), True)
-        self.assertTrue(np.all(np.isnan(pres)), True)
+        self.assertTrue(np.all(np.isnan(sal)))
+        self.assertTrue(np.all(np.isnan(pres)))
+
+    def test_no_finite_grid_data_returns_nans(self):
+        """
+        Test that an we get NaNs for grid data with all values infinite.
+        """
+
+        bad_grid_sal = bad_grid_theta = bad_grid_pres = np.full((5, 5), np.inf)
+
+        sal, pres = interp_climatology(bad_grid_sal, bad_grid_theta, bad_grid_pres,
+                                       self.float_sal, self.float_theta, self.float_pres)
+
+        self.assertTrue(np.all(np.isnan(sal)))
+        self.assertTrue(np.all(np.isnan(pres)))
 
     def test_returns_correct_shape(self):
         """
@@ -89,13 +102,22 @@ class InterpClimatology(unittest.TestCase):
         sal, pres = interp_climatology(self.grid_sal, self.grid_theta, self.grid_pres,
                                        self.float_sal, self.float_theta, self.float_pres)
 
-        for i in range(0, sal.shape[0]):
-            for j in range(0, sal.shape[1]):
-                if not (np.isnan(sal[i, j]) and np.isnan(self.expected_interp_sal[i, j])):
-                    self.assertTrue(sal[i, j] == self.expected_interp_sal[i, j],
-                                    ("Values at ", i, " and ", j, " do not match for salinity"))
-                    self.assertTrue(pres[i, j] == self.expected_interp_pres[i, j],
-                                    ("Values at ", i, " and ", j, " do not match for pressure"))
+        np.testing.assert_allclose(
+            sal,
+            self.expected_interp_sal,
+            rtol=0,
+            atol=1e-12,
+            equal_nan=True,
+            err_msg="Interpolated salinity does not match expected value",
+        )
+        np.testing.assert_allclose(
+            pres,
+            self.expected_interp_pres,
+            rtol=0,
+            atol=1e-12,
+            equal_nan=True,
+            err_msg="Interpolated pressure does not match expected value",
+        )
 
 
 # pylint: disable=too-many-instance-attributes

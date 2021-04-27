@@ -12,7 +12,6 @@ if __name__ == '__main__':
 
     FLOAT_NAMES = ["3901960"]  # add float names here
     USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
-    #USER_CONFIG['MAP_USE_PV'] = 0  # Possibly tune options
     print(owc.configuration.print_cfg(USER_CONFIG))
 
     start = time.time()
@@ -35,7 +34,3 @@ if __name__ == '__main__':
         mid = time.time()
         print("Time for float: ", mid - start)
 
-    # FLOAT_NAME = "3901960"
-    # owc.configuration.set_calseries("/", FLOAT_NAME, USER_CONFIG)
-    # owc.calibration.calc_piecewisefit("/", FLOAT_NAME, USER_CONFIG)
-    # owc.dashboard("/", FLOAT_NAME, USER_CONFIG)
