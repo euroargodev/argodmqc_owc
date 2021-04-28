@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from scipy.io import loadmat
 
-from pyowc.data.wrangling import interp_climatology, map_data_grid
+from pyowc.data.wrangling import interp_climatology, map_data_grid, _get_cleaned_grid_data
 from . import TESTS_CONFIG
 
 
@@ -118,6 +118,27 @@ class InterpClimatology(unittest.TestCase):
             equal_nan=True,
             err_msg="Interpolated pressure does not match expected value",
         )
+
+    def test_clean_grid_data_adds_nans(self):
+        """Check the cleaned data moves finite values to top of column, but pads the rest of the columns with NaNs."""
+        sal = np.array(
+            [
+                [1, 2, np.inf],
+                [3, np.nan, 5],
+                [6, 7, 8],
+            ],
+        )
+        expected = np.array(
+            [
+                [1, 2, 5],
+                [3, 7, 8],
+                [6, np.nan, np.nan],
+            ],
+        )
+
+        sal_out, _, _ = _get_cleaned_grid_data(3, sal, sal, sal)
+
+        np.testing.assert_array_equal(sal_out, expected)
 
 
 # pylint: disable=too-many-instance-attributes
