@@ -125,13 +125,13 @@ class GetRegionData(unittest.TestCase):
         test = get_region_data(self.wmo_boxes, self.float_name, self.config,
                                self.index, self.pres)
 
-        self.assertTrue(test[0].shape == test[1].shape == test[2].shape,
+        self.assertTrue(test['grid_sal'].shape == test['grid_ptmp'].shape == test['grid_pres'].shape,
                         "salinity, pressure, and potential temperature "
                         "arrays should be same shape")
-        self.assertTrue(test[3].shape == test[4].shape == test[5].shape,
+        self.assertTrue(test['grid_lat'].shape == test['grid_long'].shape == test['grid_dates'].shape,
                         "longitude, latitude, and date arrays should be the same shape")
-        self.assertTrue(test[0].shape[1] == test[1].shape[1] == test[2].shape[1] ==
-                        test[3].shape[0] == test[4].shape[0] == test[5].shape[0] ==
+        self.assertTrue(test['grid_sal'].shape[1] == test['grid_ptmp'].shape[1] == test['grid_pres'].shape[1] ==
+                        test['grid_lat'].shape[0] == test['grid_long'].shape[0] == test['grid_dates'].shape[0] ==
                         self.index.__len__(),
                         "Should get the same number of casts as we have asked for")
 
@@ -149,9 +149,9 @@ class GetRegionData(unittest.TestCase):
         test_argo = get_region_data(np.array([[self.config['TEST_FLOAT_WMO_BOXES'][0], 0, 0, 1]]),
                                                   self.float_name, self.config, self.index, self.pres)
 
-        self.assertTrue(test_ctd[0].shape[1] != test_argo[0].shape[1],
+        self.assertTrue(test_ctd['grid_sal'].shape[1] != test_argo['grid_sal'].shape[1],
                         "Should get a different data set, if we have specified it")
-        self.assertTrue(test_bot[0].shape[1] != test_argo[0].shape[1],
+        self.assertTrue(test_bot['grid_sal'].shape[1] != test_argo['grid_sal'].shape[1],
                         "Should get a different data set, if we have specified it")
 
     def test_should_only_get_specific_indices(self):
@@ -163,12 +163,12 @@ class GetRegionData(unittest.TestCase):
 
         test_many = get_region_data(self.wmo_boxes, self.float_name, self.config, self.index, self.pres)
 
-        self.assertTrue(test_many[0].shape[1] == self.index.__len__())
+        self.assertTrue(test_many['grid_sal'].shape[1] == self.index.__len__())
 
         test_one = get_region_data(self.wmo_boxes, self.float_name, self.config,
                                    [50], self.pres)
 
-        self.assertTrue(test_one[0].shape[1] == 1)
+        self.assertTrue(test_one['grid_sal'].shape[1] == 1)
 
     def test_raise_exception_bad_indices(self):
         """
