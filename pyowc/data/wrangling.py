@@ -175,14 +175,14 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     return interp_sal_final, interp_pres_final
 
 
-def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
+def _get_cleaned_grid_data(grid_stations, grid_sal_in, grid_theta_in, grid_pres_in):
     """Return a copy of grid data where finite values have been moved up to the top of each station."""
     # ensure no changes made to reference data
-    grid_sal = np.copy(grid_sal)
-    grid_theta = np.copy(grid_theta)
-    grid_pres = np.copy(grid_pres)
+    grid_sal = np.full_like(grid_sal_in, np.nan)
+    grid_theta = np.full_like(grid_theta_in, np.nan)
+    grid_pres = np.full_like(grid_pres_in, np.nan)
 
-    grid_good_data = _get_finite_element_mask(grid_sal, grid_theta, grid_pres)
+    grid_good_data = _get_finite_element_mask(grid_sal_in, grid_theta_in, grid_pres_in)
 
     # find the max number of levels from all stations
     column_counts = np.count_nonzero(grid_good_data, axis=0)
@@ -190,9 +190,9 @@ def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
 
     for station_id in range(grid_stations):
         good_values = column_counts[station_id]
-        grid_sal[:good_values, station_id] = grid_sal[:, station_id][grid_good_data[:, station_id]]
-        grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
-        grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
+        grid_sal[:good_values, station_id] = grid_sal_in[:, station_id][grid_good_data[:, station_id]]
+        grid_theta[:good_values, station_id] = grid_theta_in[:, station_id][grid_good_data[:, station_id]]
+        grid_pres[:good_values, station_id] = grid_pres_in[:, station_id][grid_good_data[:, station_id]]
 
     # Truncate the number of levels to the maximum level that has available data
     if max_level > 0:
