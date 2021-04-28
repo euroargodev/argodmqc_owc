@@ -14,6 +14,7 @@ from . import core
 from . import data
 from . import plot
 from . import utilities
+from . import helper
 from .plot import dashboard
 
 from . import calibration
