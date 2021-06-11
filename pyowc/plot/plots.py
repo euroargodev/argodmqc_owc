@@ -39,7 +39,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     # load in the coastline data
     coastline = os.path.sep.join([config['CONFIG_DIRECTORY'], "coastline", "ne_10m_coastline.shp"])
     map_coast = gdp.read_file(coastline)
-    traj_map = map_coast.plot(color='black', label='coastline')
+    traj_map = map_coast.plot(color='black', label='coastline', linewidth=0.5,)
 
     # if wanted, load in bathymetric data and plot it
     if bath == 1:
@@ -54,7 +54,6 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
         bathymetry7000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_D_7000.shp"])
         bathymetry8000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_C_8000.shp"])
         bathymetry9000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_B_9000.shp"])
-        bathymetry10000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_A_10000.shp"])
         map_bath0 = gdp.read_file(bathymetry0)
         map_bath200 = gdp.read_file(bathymetry200)
         map_bath1000 = gdp.read_file(bathymetry1000)
@@ -66,19 +65,18 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
         map_bath7000 = gdp.read_file(bathymetry7000)
         map_bath8000 = gdp.read_file(bathymetry8000)
         map_bath9000 = gdp.read_file(bathymetry9000)
-        map_bath10000 = gdp.read_file(bathymetry10000)
-        traj_map = map_bath0.plot(ax=traj_map, color='#BEBEBE', label='>200m', linewidth=2)
-        traj_map = map_bath200.plot(ax=traj_map, color='#B8B8B8', linewidth=2)
-        traj_map = map_bath1000.plot(ax=traj_map, color='#B0B0B0', label='1000m', linewidth=2)
-        traj_map = map_bath2000.plot(ax=traj_map, color='#A9A9A9')
-        traj_map = map_bath3000.plot(ax=traj_map, color='#A8A8A8')
-        traj_map = map_bath4000.plot(ax=traj_map, color='#A0A0A0')
-        traj_map = map_bath5000.plot(ax=traj_map, color='#989898')
-        traj_map = map_bath6000.plot(ax=traj_map, color='#909090', label='6000m')
-        traj_map = map_bath7000.plot(ax=traj_map, color='#888888')
-        traj_map = map_bath8000.plot(ax=traj_map, color='#808080')
-        traj_map = map_bath9000.plot(ax=traj_map, color='#787878')
-        traj_map = map_bath10000.plot(ax=traj_map, color='#707070')
+
+        traj_map = map_bath0.plot(ax=traj_map, color='#F0F0F0', label='>200m', linewidth=2)
+        traj_map = map_bath200.plot(ax=traj_map, color='#D2D2D2', linewidth=2)
+        traj_map = map_bath1000.plot(ax=traj_map, color='#B4B4B4', label='1000m', linewidth=2)
+        traj_map = map_bath2000.plot(ax=traj_map, color='#969696')
+        traj_map = map_bath3000.plot(ax=traj_map, color='#737373')
+        traj_map = map_bath4000.plot(ax=traj_map, color='#646464')
+        traj_map = map_bath5000.plot(ax=traj_map, color='#505050')
+        traj_map = map_bath6000.plot(ax=traj_map, color='#464646', label='6000m')
+        traj_map = map_bath7000.plot(ax=traj_map, color='#323232')
+        traj_map = map_bath8000.plot(ax=traj_map, color='#1E1E1E')
+        traj_map = map_bath9000.plot(ax=traj_map, color='#0A0A0A')
 
     # if we want reef data, load it in and plot it
     if reef == 1:
@@ -94,9 +92,12 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
                                        geometry=gdp.points_from_xy(climatology.Longitude,
                                                                    climatology.Latitude))
 
-    traj_map = geo_floats.plot(ax=traj_map, color='red', marker="+", label='profile')
-    geo_climatology.plot(ax=traj_map, color='#00008B', marker="s",
-                         markersize=12, label='climatology')
+    traj_map = geo_floats.plot(ax=traj_map, color='red', marker="o", label="Float Profiles", linestyle='-',
+                               linewidth=0.05, markersize=5)
+
+    geo_climatology.plot(ax=traj_map, color='mediumblue', marker="o",
+                         markersize=0.5, label="Climatology")
+
     plt.plot(floats['Longitude'], floats['Latitude'], color='red', linestyle='-')
     plt.title(("Locations of float " + float_name + " with historical data"))
     plt.xlabel("Longitude")
@@ -105,16 +106,23 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.xlim(np.min(climatology['Longitude']) - 20, np.max(climatology['Longitude']) + 20)
     plt.ylim(np.min(climatology['Latitude']) - 15, np.max(climatology['Latitude']) + 15)
 
-    for i, txt in enumerate(floats['number']):
-        plt.annotate(txt, (floats['Longitude'][i], floats['Latitude'][i]))
+    # annotate float data (every 5, plus first and last float))
+    color = plt.get_cmap('jet')
 
-    plt.legend(loc='center left', bbox_to_anchor=(0.85, 0.85))
+    for i in range(floats['Latitude'].__len__()):
+        if i == 0 or i % 2 == 0 or i == floats['Latitude'].__len__() - 1:
+            plt.annotate(i + 1, (floats['Longitude'][i], floats['Latitude'][i]),
+                         color=color((i + 1) / floats['Latitude'].__len__()), size=3)
+
+    plt.legend(loc=4, prop={'size': 6})
 
     save_format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
     plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format, bbox_inches='tight')
 
+    plt.show()
 
+    plt.show()
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
