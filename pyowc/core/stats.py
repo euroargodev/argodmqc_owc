@@ -8,14 +8,13 @@
 
 """
 import copy
-import math
 import numpy as np
 import scipy.interpolate as interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
 from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
 
-from ..utilities import sorter
+from ..utilities import sorter, potential_vorticity
 
 
 #pylint: disable=too-many-lines
@@ -751,8 +750,8 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
 
         Parameters
         ----------
-        points1: m*4 matrix containing the latitude, longitude, date, and depth of each data point
-        points2: n*4 matrix containing the latitude, longitude, date, and depth of each data point
+        points1: m*4 model matrix containing the latitude, longitude, date, and depth of each data point
+        points2: n*4 data matrix containing the latitude, longitude, date, and depth of each data point
         lat: float, the characteristic latitude
         long: float, the characteristic longitude
         age: float, the characteristic time scale
@@ -775,10 +774,21 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
         age_covar = ((points1[:, np.newaxis, 2] - points2[np.newaxis, :, 2]) / age)**2
 
     # pylint: disable=fixme
-    # TODO: ARGODEV-163
-    # use the potential vorticity function made in ARGODEV-150
+    pv_x1 = []
+    pv_x2 = []
     if map_pv_use == 1:
-        print("pv not yet included. Phi: ", phi)
+        for i in range(0, len(points1[:, 0])):
+            pv_x11 = potential_vorticity(points1[i, 0], points1[i, 3])
+            pv_x1.append(pv_x11)
+
+        for i in range(0, len(points2[:, 0])):
+            pv_x22 = potential_vorticity(points2[i, 0], points2[i, 3])
+            pv_x2.append(pv_x22)
+
+        pv_lat1 = np.array(pv_x1)
+        pv_lat2 = np.array(pv_x2)
+        p_v_covar = ((pv_lat1[:, np.newaxis] - pv_lat2[np.newaxis, :]) /
+                     np.sqrt(pv_lat1[:, np.newaxis]**2 + pv_lat2[np.newaxis, :]**2) / phi)**2
 
     return np.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
 

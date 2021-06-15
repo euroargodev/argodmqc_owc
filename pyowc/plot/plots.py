@@ -36,6 +36,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
         -------
         Nothing
     """
+    #plt.figure(figsize=(6, 8))
     # load in the coastline data
     coastline = os.path.sep.join([config['CONFIG_DIRECTORY'], "coastline", "ne_10m_coastline.shp"])
     map_coast = gdp.read_file(coastline)
@@ -93,7 +94,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
                                                                    climatology.Latitude))
 
     traj_map = geo_floats.plot(ax=traj_map, color='red', marker="o", label="Float Profiles", linestyle='-',
-                               linewidth=0.05, markersize=5)
+                               linewidth=0.05, markersize=4)
 
     geo_climatology.plot(ax=traj_map, color='mediumblue', marker="o",
                          markersize=0.5, label="Climatology")
@@ -106,23 +107,21 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.xlim(np.min(climatology['Longitude']) - 20, np.max(climatology['Longitude']) + 20)
     plt.ylim(np.min(climatology['Latitude']) - 15, np.max(climatology['Latitude']) + 15)
 
-    # annotate float data (every 5, plus first and last float))
+    # annotate float data (every 3, plus first and last float))
     color = plt.get_cmap('jet')
 
     for i in range(floats['Latitude'].__len__()):
-        if i == 0 or i % 2 == 0 or i == floats['Latitude'].__len__() - 1:
+        if i == 0 or i % 3 == 0 or i == floats['Latitude'].__len__() - 1:
             plt.annotate(i + 1, (floats['Longitude'][i], floats['Latitude'][i]),
-                         color=color((i + 1) / floats['Latitude'].__len__()), size=3)
+                         color=color((i + 1) / floats['Latitude'].__len__()), size=5)
 
     plt.legend(loc=4, prop={'size': 6})
 
     save_format = config['FLOAT_PLOTS_FORMAT']
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format, bbox_inches='tight')
+    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
 
-    plt.show()
 
-    plt.show()
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member

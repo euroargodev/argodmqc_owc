@@ -50,10 +50,11 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
             float_long.append(i)
         else:
             float_long.append(i)
+
     float_long = np.array(float_long)
     float_data['LONG'] = np.transpose(float_long)
-
     long_i = grid_data['selected_hist']
+
     grid_long = []
     for i in long_i[:, 0]:
         if i > 180:
@@ -61,13 +62,13 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
             grid_long.append(i)
         else:
             grid_long.append(i)
+
     long_i[:, 0] = np.transpose(np.array(grid_long))
 
     # create trajectory plot ------------------------------
     grid, floats = create_dataframe(grid_data, float_data)
 
     trajectory_plot(1, 0, floats, grid, float_name, config)
-
     plt.show()
 
     # get data ---------------
