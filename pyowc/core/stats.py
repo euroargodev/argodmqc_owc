@@ -14,7 +14,7 @@ from scipy.optimize import least_squares
 from scipy import linalg
 from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
 
-from ..utilities import sorter
+from ..utilities import sorter, potential_vorticity
 
 
 #pylint: disable=too-many-lines
@@ -776,11 +776,10 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
 
     if map_pv_use == 1:
         # define a vectorized function to calculation potential vorticity
-        pot_vorticity = np.vectorize(lambda latitude, depth:
-                                     (2 * 7.292 * 10 ** -5 * np.sin(latitude * np.pi / 180)) / depth)
+        potential_vorticity_vec = np.vectorize(potential_vorticity)
 
-        pv_lat1 = pot_vorticity(points1[:, 0], points1[:, 3])
-        pv_lat2 = pot_vorticity(points2[:, 0], points2[:, 3])
+        pv_lat1 = potential_vorticity_vec(points1[:, 0], points1[:, 3])
+        pv_lat2 = potential_vorticity_vec(points2[:, 0], points2[:, 3])
 
         p_v_covar = ((pv_lat1[:, np.newaxis] - pv_lat2[np.newaxis, :]) /
                      np.sqrt(pv_lat1[:, np.newaxis]**2 + pv_lat2[np.newaxis, :]**2) / phi)**2
