@@ -773,7 +773,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
     if age != 0:
         age_covar = ((points1[:, np.newaxis, 2] - points2[np.newaxis, :, 2]) / age)**2
 
-     if map_pv_use == 1:
+    if map_pv_use == 1:
         # define a vectorized function to calculation potential vorticity
         pot_vorticity = np.vectorize(lambda latitude, depth:
                                      (2 * 7.292 * 10 ** -5 * np.sin(latitude * np.pi / 180)) / depth)
