@@ -41,29 +41,15 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     cal_data = loadmat(cal_data_loc)
     cal_series = loadmat(cal_series_loc)
 
-    longi = np.transpose(float_data['LONG'])
+    float_long = np.transpose(float_data['LONG'])
+    float_long[float_long > 180] -= 360
+    float_data['LONG'] = float_long
 
-    float_long = []
-    for i in longi:
-        if i > 180:
-            i = i - 360
-            float_long.append(i)
-        else:
-            float_long.append(i)
-
-    float_long = np.array(float_long)
-    float_data['LONG'] = np.transpose(float_long)
     long_i = grid_data['selected_hist']
+    grid_long = long_i[:, 0]
+    grid_long[grid_long > 180] -= 360
 
-    grid_long = []
-    for i in long_i[:, 0]:
-        if i > 180:
-            i = i - 360
-            grid_long.append(i)
-        else:
-            grid_long.append(i)
-
-    long_i[:, 0] = np.transpose(np.array(grid_long))
+    long_i[:, 0] = np.transpose(grid_long)
 
     # create trajectory plot ------------------------------
     grid, floats = create_dataframe(grid_data, float_data)
