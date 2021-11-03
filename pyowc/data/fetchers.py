@@ -185,15 +185,19 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     box_name = str(int(wmo_box[0]))
     # check if we should use this data. If so, get the data
     if wmo_box[data_type] == 1 and data_type == 1:
-        data = read_mat_ctd(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                          config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat']))
+        data = read_mat_ctd(
+            os.path.sep.join([config['HISTORICAL_DIRECTORY'], config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat'])
+        )
     if wmo_box[data_type] == 1 and data_type == 2:
-        data = read_mat_bottle(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                                 config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat']))
+        data = read_mat_bottle(
+            os.path.sep.join([config['HISTORICAL_DIRECTORY'], config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat'])
+        )
 
     if wmo_box[data_type] == 1 and data_type == 3:
-        data = read_mat_argo(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                               config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat']))
+        data = read_mat_argo(
+            os.path.sep.join([config['HISTORICAL_DIRECTORY'], config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat']),
+            pa_float_name,
+        )
 
     return data
 
