@@ -143,11 +143,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         # no sign changes between consecutive values for a station means there are no values to interpolate
         stations_with_possible_interp = find_columns_with_true(sign_changes)
 
-        # now convert to indices as we will be using it often
-        sign_changes = np.nonzero(sign_changes)
-
         # calculate the weighting factor for all interpolants
-        interp_factor = (float_theta[index] - grid_theta[:-1][sign_changes]) / grid_theta_diff[sign_changes]
+        interp_factor, sign_changes = calculate_interpolation_weights(float_theta[index], grid_theta)
 
         # interpolate values of pres
         output_placeholder[sign_changes] = grid_pres[:-1][sign_changes] + interp_factor * grid_pres_diff[sign_changes]
@@ -171,6 +168,26 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         output_placeholder[sign_changes] = np.nan
 
     return interp_sal_final, interp_pres_final
+
+
+def calculate_interpolation_weights(value, reference_values):
+    """Find interpolation weights of a value on some given data, also returning the locations in the data."""
+    diffs = reference_values - value
+
+    # boolean array which is true if a sign change occurred between rows in a column
+    sign_changes = find_sign_changes_in_columns(diffs)
+
+    # now convert to indices as we will be using it often
+    sign_changes = np.nonzero(sign_changes)
+
+    # find the bracketing values
+    value_before = reference_values[:-1][sign_changes]
+    value_after = reference_values[1:][sign_changes]
+
+    # calculate the interpolation weights
+    interpolation_factors = (value - value_before) / (value_after - value_before)
+
+    return interpolation_factors, sign_changes
 
 
 def find_sign_changes_in_columns(values):

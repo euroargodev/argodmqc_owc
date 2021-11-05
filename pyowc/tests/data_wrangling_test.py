@@ -4,7 +4,14 @@ import numpy as np
 import pytest
 from scipy.io import loadmat
 
-from pyowc.data.wrangling import interp_climatology, map_data_grid, _get_cleaned_grid_data, find_sign_changes_in_columns, find_columns_with_true
+from pyowc.data.wrangling import (
+    interp_climatology,
+    map_data_grid,
+    _get_cleaned_grid_data,
+    find_sign_changes_in_columns,
+    find_columns_with_true,
+    calculate_interpolation_weights
+)
 from . import TESTS_CONFIG
 
 
@@ -259,6 +266,24 @@ def test_find_columns_with_true():
     output = find_columns_with_true(values)
 
     np.testing.assert_array_equal(output, expected)
+
+
+def test_calculate_interpolation_weights():
+    """Check that the correct weights (and locations are returned)."""
+    value = 1.5
+    reference = np.array(
+        [
+            [0, 1, 1, 0],
+            [1, 5, 1.5, -1],
+            [2, 3, 3, -2],
+            [3, -3, 10, -3]
+        ]
+    )
+
+    weights, locations = calculate_interpolation_weights(value, reference)
+
+    np.testing.assert_array_equal(weights, [0.125, 1, 0.5, 0, 0.25])
+    np.testing.assert_array_equal(locations, [[0, 0, 1, 1, 2], [1, 2, 0, 2, 1]])
 
 
 if __name__ == '__main__':
