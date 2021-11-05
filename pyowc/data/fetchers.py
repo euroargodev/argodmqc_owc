@@ -44,6 +44,12 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
         -------
         Matrices containing a uniform grid of latitudes and longitudes, along with the depth at these points
     """
+     # check for max lat values
+    if max_lat > 90:
+        max_lat = 90
+    elif min_lat < -90:
+        min_lat = -90
+
     # manipulate input values to match file for decoding
     blat = int(np.max((np.floor(min_lat * 12), -90 * 12 + 1)))
     tlat = int(np.ceil(max_lat * 12))
