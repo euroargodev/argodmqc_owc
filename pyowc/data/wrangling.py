@@ -137,13 +137,11 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         # Find the difference between the float data and the climatological data
         delta_theta = grid_theta - float_theta[index]
 
-        # find where sign changes occur in delta_theta
-        sign_changes = np.diff(np.sign(delta_theta), axis=0)
-        sign_changes[np.isnan(sign_changes)] = 0
-        sign_changes = sign_changes.astype(bool)
+        # boolean array which is true if a sign change occurred between rows in a column
+        sign_changes = find_sign_changes_in_columns(delta_theta)
 
         # no sign changes between consecutive values for a station means there are no values to interpolate
-        stations_with_possible_interp = np.nonzero(np.any(sign_changes, axis=0))[0]
+        stations_with_possible_interp = find_columns_with_true(sign_changes)
 
         # now convert to indices as we will be using it often
         sign_changes = np.nonzero(sign_changes)
@@ -173,6 +171,22 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         output_placeholder[sign_changes] = np.nan
 
     return interp_sal_final, interp_pres_final
+
+
+def find_sign_changes_in_columns(values):
+    """Find sign changes which occur in consecutive rows."""
+    # check that we have a 2d array
+    assert values.ndim == 2
+
+    # find where sign changes occur
+    sign_changes = np.diff(np.sign(values), axis=0)
+    sign_changes[np.isnan(sign_changes)] = 0
+    return sign_changes.astype(bool)
+
+
+def find_columns_with_true(sign_changes):
+    """Find columns which contain a True."""
+    return np.nonzero(np.any(sign_changes, axis=0))[0]
 
 
 def _get_cleaned_grid_data(grid_stations, grid_sal_in, grid_theta_in, grid_pres_in):

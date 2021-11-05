@@ -1,9 +1,10 @@
 import os
 import unittest
 import numpy as np
+import pytest
 from scipy.io import loadmat
 
-from pyowc.data.wrangling import interp_climatology, map_data_grid, _get_cleaned_grid_data
+from pyowc.data.wrangling import interp_climatology, map_data_grid, _get_cleaned_grid_data, find_sign_changes_in_columns, find_columns_with_true
 from . import TESTS_CONFIG
 
 
@@ -223,6 +224,41 @@ class MapDataGrid(unittest.TestCase):
                                    "grid mapped field is not as expected")
             self.assertAlmostEqual(ans[3][i], expected_data_error[i], 15,
                                    "grid error is not as expected")
+
+
+def test_sign_changes_in_column():
+    """Check that the correct locations of sign changes are found."""
+    values = np.array([[1, 2, -1, -2, 0, 0]]).T
+    expected = np.array([[0, 1, 0, 1, 0]]).T
+    output = find_sign_changes_in_columns(values)
+
+    np.testing.assert_array_equal(output, expected)
+
+
+def test_sign_changes_in_column_multiple():
+    """Check that the correct locations of sign changes are found."""
+    values = np.array([[1, 2, -1, -2], [1, 2, 3, 4]]).T
+    expected = np.array([[0, 1, 0], [0, 0, 0]]).T
+    output = find_sign_changes_in_columns(values)
+
+    np.testing.assert_array_equal(output, expected)
+
+
+def test_sign_changes_in_column_must_be_2d():
+    """Check that an exception is raised for bad input."""
+    values = np.array([1, 2, -1, -2])
+
+    with pytest.raises(AssertionError):
+        find_sign_changes_in_columns(values)
+
+
+def test_find_columns_with_true():
+    """Check that columns with a True are correctly found."""
+    values = np.array([[False, False, False], [True, False, False], [False, False, True], [False, False, False]]).T
+    expected = np.array([1, 2])
+    output = find_columns_with_true(values)
+
+    np.testing.assert_array_equal(output, expected)
 
 
 if __name__ == '__main__':
