@@ -134,12 +134,6 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
     # compare good float data to the closest climatological data
     for index in float_good_data_index:
-        # Find the difference between the float data and the climatological data
-        delta_theta = grid_theta - float_theta[index]
-
-        # boolean array which is true if a sign change occurred between rows in a column
-        sign_changes = find_sign_changes_in_columns(delta_theta)
-
         # calculate the weighting factor for all interpolants
         interp_factor, sign_changes = calculate_interpolation_weights(float_theta[index], grid_theta)
 
