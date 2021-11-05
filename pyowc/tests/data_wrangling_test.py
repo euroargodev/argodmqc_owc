@@ -235,7 +235,7 @@ class MapDataGrid(unittest.TestCase):
 def test_sign_changes_in_column():
     """Check that the correct locations of sign changes are found."""
     values = np.array([[1, 2, -1, -2, 0, 0]]).T
-    expected = np.array([[0, 1, 0, 1, 0]]).T
+    expected = np.array([[0, 1, 0, 1, 1]]).T
     output = find_sign_changes_in_columns(values)
 
     np.testing.assert_array_equal(output, expected)
@@ -248,14 +248,6 @@ def test_sign_changes_in_column_multiple():
     output = find_sign_changes_in_columns(values)
 
     np.testing.assert_array_equal(output, expected)
-
-
-def test_sign_changes_in_column_must_be_2d():
-    """Check that an exception is raised for bad input."""
-    values = np.array([1, 2, -1, -2])
-
-    with pytest.raises(AssertionError):
-        find_sign_changes_in_columns(values)
 
 
 def test_calculate_interpolation_weights():

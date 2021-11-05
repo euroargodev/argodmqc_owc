@@ -189,14 +189,12 @@ def interpolate_values(interpolation_weights, sign_changes, reference, reference
 
 
 def find_sign_changes_in_columns(values):
-    """Find sign changes which occur in consecutive rows."""
-    # check that we have a 2d array
-    assert values.ndim == 2
+    """Find sign changes which occur in consecutive rows.
 
-    # find where sign changes occur
-    sign_changes = np.diff(np.sign(values), axis=0)
-    sign_changes[np.isnan(sign_changes)] = 0
-    return sign_changes.astype(bool)
+    Note: returns True if a value is 0.0 since we're using to find points for interpolation,
+        in this case the interpolation coincides with a value and so the weight will be 0.0 or 1.0.
+    """
+    return values[1:, :] * values[:-1, :] <= 0.0
 
 
 def _get_cleaned_grid_data(grid_stations, grid_sal_in, grid_theta_in, grid_pres_in):
