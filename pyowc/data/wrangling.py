@@ -135,10 +135,10 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     # compare good float data to the closest climatological data
     for index in float_good_data_index:
         # calculate the weighting factor for all interpolants
-        interp_factor, sign_changes = calculate_interpolation_weights(float_theta[index], grid_theta)
+        interp_factor, sign_changes = calculate_interpolation_weights(float_theta[index], grid_theta, grid_theta_diff)
 
         # interpolate values of pres
-        output_placeholder[sign_changes] = grid_pres[:-1][sign_changes] + interp_factor * grid_pres_diff[sign_changes]
+        output_placeholder[sign_changes] = interpolate_values(interp_factor, sign_changes, grid_pres, grid_pres_diff)
 
         # no sign changes between consecutive values for a station means there are no values to interpolate
         stations_with_possible_interp = np.unique(sign_changes[1])
@@ -153,7 +153,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         output_placeholder[sign_changes] = np.nan
 
         # interpolate values of sal
-        output_placeholder[sign_changes] = grid_sal[:-1][sign_changes] + interp_factor * grid_sal_diff[sign_changes]
+        output_placeholder[sign_changes] = interpolate_values(interp_factor, sign_changes, grid_sal, grid_sal_diff)
 
         # select the values of sal matching the closest pres values
         interp_sal_final[index, stations_with_possible_interp] = output_placeholder[min_pres, stations_with_possible_interp]
@@ -164,7 +164,7 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     return interp_sal_final, interp_pres_final
 
 
-def calculate_interpolation_weights(value, reference_values):
+def calculate_interpolation_weights(value, reference_values, reference_values_diff):
     """Find interpolation weights of a value on some given data, also returning the locations in the data."""
     diffs = reference_values - value
 
@@ -176,12 +176,16 @@ def calculate_interpolation_weights(value, reference_values):
 
     # find the bracketing values
     value_before = reference_values[:-1][sign_changes]
-    value_after = reference_values[1:][sign_changes]
 
     # calculate the interpolation weights
-    interpolation_factors = (value - value_before) / (value_after - value_before)
+    interpolation_factors = (value - value_before) / reference_values_diff[sign_changes]
 
     return interpolation_factors, sign_changes
+
+
+def interpolate_values(interpolation_weights, sign_changes, reference, reference_diff):
+    """Use iterpolation weights and sign changes previously calculated to interpolate reference data."""
+    return reference[:-1][sign_changes] + interpolation_weights * reference_diff[sign_changes]
 
 
 def find_sign_changes_in_columns(values):

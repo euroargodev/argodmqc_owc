@@ -269,8 +269,9 @@ def test_calculate_interpolation_weights():
             [3, -3, 10, -3]
         ]
     )
+    reference_diffs = np.diff(reference, axis=0)
 
-    weights, locations = calculate_interpolation_weights(value, reference)
+    weights, locations = calculate_interpolation_weights(value, reference, reference_diffs)
 
     np.testing.assert_array_equal(weights, [0.125, 1, 0.5, 0, 0.25])
     np.testing.assert_array_equal(locations, [[0, 0, 1, 1, 2], [1, 2, 0, 2, 1]])
