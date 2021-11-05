@@ -9,7 +9,6 @@ from pyowc.data.wrangling import (
     map_data_grid,
     _get_cleaned_grid_data,
     find_sign_changes_in_columns,
-    find_columns_with_true,
     calculate_interpolation_weights
 )
 from . import TESTS_CONFIG
@@ -257,15 +256,6 @@ def test_sign_changes_in_column_must_be_2d():
 
     with pytest.raises(AssertionError):
         find_sign_changes_in_columns(values)
-
-
-def test_find_columns_with_true():
-    """Check that columns with a True are correctly found."""
-    values = np.array([[False, False, False], [True, False, False], [False, False, True], [False, False, False]]).T
-    expected = np.array([1, 2])
-    output = find_columns_with_true(values)
-
-    np.testing.assert_array_equal(output, expected)
 
 
 def test_calculate_interpolation_weights():

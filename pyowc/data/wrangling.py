@@ -140,14 +140,14 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         # boolean array which is true if a sign change occurred between rows in a column
         sign_changes = find_sign_changes_in_columns(delta_theta)
 
-        # no sign changes between consecutive values for a station means there are no values to interpolate
-        stations_with_possible_interp = find_columns_with_true(sign_changes)
-
         # calculate the weighting factor for all interpolants
         interp_factor, sign_changes = calculate_interpolation_weights(float_theta[index], grid_theta)
 
         # interpolate values of pres
         output_placeholder[sign_changes] = grid_pres[:-1][sign_changes] + interp_factor * grid_pres_diff[sign_changes]
+
+        # no sign changes between consecutive values for a station means there are no values to interpolate
+        stations_with_possible_interp = np.unique(sign_changes[1])
 
         # find the interpolated pres value which is closest to the float pres for each station
         min_pres = np.nanargmin(np.abs(output_placeholder[:, stations_with_possible_interp] - float_pres[index]), axis=0)
@@ -199,11 +199,6 @@ def find_sign_changes_in_columns(values):
     sign_changes = np.diff(np.sign(values), axis=0)
     sign_changes[np.isnan(sign_changes)] = 0
     return sign_changes.astype(bool)
-
-
-def find_columns_with_true(sign_changes):
-    """Find columns which contain a True."""
-    return np.nonzero(np.any(sign_changes, axis=0))[0]
 
 
 def _get_cleaned_grid_data(grid_stations, grid_sal_in, grid_theta_in, grid_pres_in):
