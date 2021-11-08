@@ -726,7 +726,7 @@ def noise_variance(sal, lat, long):
     min_distances_indices = np.squeeze(min_distances_indices, axis=-1)
 
     sal_noise = sal - sal[min_distances_indices]
-    sal_noise_var = np.mean(np.square(sal_noise[sal_noise != 0.0])) / 2
+    sal_noise_var = np.nanmean(np.square(sal_noise)) / 2
 
     return sal_noise_var
 
