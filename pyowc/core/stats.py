@@ -677,12 +677,11 @@ def signal_variance(sal):
         float estimate of the variance of the signal of the given data
     """
     sal = np.array(sal)
-    non_zero_values = sal[sal != 0.0]
 
-    if np.all(np.isnan(non_zero_values)):
+    if np.all(np.isnan(sal)):
         raise RuntimeError("Received no valid salinity values when calculating signal variance") from None
 
-    return np.nanvar(non_zero_values)
+    return np.nanvar(sal)
 
 
 def noise_variance(sal, lat, long):
