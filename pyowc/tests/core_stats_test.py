@@ -632,7 +632,7 @@ class SignalVariance(unittest.TestCase):
         print("Testing that signal_variance throws an exception for no valid salinities")
 
         with self.assertRaises(Exception) as no_valid_sal:
-            signal_variance([0, 0, float('nan'), float('nan')])
+            signal_variance([float('nan'), float('nan')])
 
         self.assertTrue('Received no valid salinity values when calculating signal variance'
                         in str(no_valid_sal.exception))
@@ -645,10 +645,8 @@ class SignalVariance(unittest.TestCase):
         print("Testing that signal_variance ignores 0's/NaNs correctly")
 
         expected = signal_variance([1, 2, 3, 4, 5])
-        zeroes = signal_variance([1, 0, 2, 0, 3, 0, 4, 0, 5, 0])
         nans = signal_variance([1, 2, 3, 4, 5, float('nan'), float('nan')])
 
-        self.assertEqual(expected, zeroes, "signal variance is not ignoring 0's")
         self.assertEqual(expected, nans, "sign_variance is not ignoring NaN's")
 
     def test_negtive_inputs_against_positive(self):
