@@ -9,7 +9,7 @@
 """
 import copy
 import numpy as np
-import scipy.interpolate as interpolate
+from scipy import interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
 from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
