@@ -7,7 +7,7 @@
         -------
 
 """
-
+from functools import lru_cache
 import warnings
 import os
 import struct
@@ -18,6 +18,46 @@ import gsw
 from ..utilities import wrap_longitude, change_dates
 from ..configuration import print_cfg
 
+
+@lru_cache(maxsize=50)
+def read_mat_ctd(filepath):
+    """Cache the result of reading a ctd .mat file from disk."""
+    return read_mat(filepath)
+
+
+@lru_cache(maxsize=50)
+def read_mat_bottle(filepath):
+    """Load and transform a bottle .mat file."""
+    data = read_mat(filepath)
+
+    # if data dimensions don't match, transpose to avoid indexing issues
+    if (data['lat'].size == data['pres'].size and data['lat'].shape[1] == data['pres'].shape[1]):
+        data['pres'] = data['pres'].T
+        data['ptmp'] = data['ptmp'].T
+        data['sal'] = data['sal'].T
+        data['temp'] = data['temp'].T
+
+    return data
+
+
+@lru_cache(maxsize=50)
+def read_mat_argo(filepath, pa_float_name):
+    """Load and transform an Argo .mat file."""
+    data = read_mat(filepath)
+    # remove the argo float being analysed from the data
+    not_use = []
+    for i in range(0, data['lat'].__len__()):
+        if str(data['source'][i]).find(pa_float_name) != -1:
+            not_use.append(i)
+
+    data['lat'] = np.array(np.delete(data['lat'], not_use))
+    data['long'] = np.array(np.delete(data['long'], not_use))
+    data['dates'] = np.array(np.delete(data['dates'], not_use))
+    data['sal'] = np.array(np.delete(data['sal'], not_use, axis=1))
+    data['ptmp'] = np.array(np.delete(data['ptmp'], not_use, axis=1))
+    data['pres'] = np.array(np.delete(data['pres'], not_use, axis=1))
+
+    return data
 
 # pylint: disable=too-many-locals
 def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
@@ -151,34 +191,19 @@ def get_data(wmo_box, data_type, config, pa_float_name):
     box_name = str(int(wmo_box[0]))
     # check if we should use this data. If so, get the data
     if wmo_box[data_type] == 1 and data_type == 1:
-        data = read_mat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                          config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat']))
+        data = read_mat_ctd(
+            os.path.sep.join([config['HISTORICAL_DIRECTORY'], config['HISTORICAL_CTD_PREFIX'] + box_name + '.mat'])
+        )
     if wmo_box[data_type] == 1 and data_type == 2:
-        data = read_mat(os.path.sep.join([config['HISTORICAL_DIRECTORY'],
-                                          config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat']))
-
-        # if data dimensions don't match, transpose to avoid indexing issues
-        if (data['lat'].size == data['pres'].size and
-                data['lat'].shape[1] == data['pres'].shape[1]):
-            data['pres'] = data['pres'].T
-            data['ptmp'] = data['ptmp'].T
-            data['sal'] = data['sal'].T
-            data['temp'] = data['temp'].T
+        data = read_mat_bottle(
+            os.path.sep.join([config['HISTORICAL_DIRECTORY'], config['HISTORICAL_BOTTLE_PREFIX'] + box_name + '.mat'])
+        )
 
     if wmo_box[data_type] == 1 and data_type == 3:
-        data = read_mat(config['HISTORICAL_DIRECTORY'] + config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat')
-        # remove the argo float being analysed from the data
-        not_use = []
-        for i in range(0, data['lat'].__len__()):
-            if str(data['source'][i]).find(pa_float_name) != -1:
-                not_use.append(i)
-
-        data['lat'] = np.array(np.delete(data['lat'], not_use))
-        data['long'] = np.array(np.delete(data['long'], not_use))
-        data['dates'] = np.array(np.delete(data['dates'], not_use))
-        data['sal'] = np.array(np.delete(data['sal'], not_use, axis=1))
-        data['ptmp'] = np.array(np.delete(data['ptmp'], not_use, axis=1))
-        data['pres'] = np.array(np.delete(data['pres'], not_use, axis=1))
+        data = read_mat_argo(
+            os.path.sep.join([config['HISTORICAL_DIRECTORY'], config['HISTORICAL_ARGO_PREFIX'] + box_name + '.mat']),
+            pa_float_name,
+        )
 
     return data
 
