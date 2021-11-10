@@ -30,7 +30,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
         # open up mapped data
         float_mapped_data = loadmat(mapped_data_path)
 
-        if 'la_mapsalerrors' in float_mapped_data.keys():
+        if 'la_mapsalerrors' in float_mapped_data:
             float_mapped_data['la_map_sal_errors'] = float_mapped_data['la_mapsalerrors']
             float_mapped_data.pop('la_mapsalerrors')
 
