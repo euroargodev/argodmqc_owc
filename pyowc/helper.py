@@ -112,7 +112,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
         float_mapped_data["p_exclude"] = []
         float_mapped_data["selected_hist"] = []
 
-        print("No precalculated data at: %s" % mapped_data_path)
+        print(f"No precalculated data at: {mapped_data_path}")
         print("__________________________________________________________\n")
 
     return float_mapped_data

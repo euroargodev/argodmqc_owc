@@ -11,7 +11,7 @@ def print_cfg(config):
     """ Return a string of the configuration dictionnary """
     cfg_str = []
     for k in config:
-        cfg_str.append("%30s: %s\n" % (k, str(config[k])))
+        cfg_str.append(f"{k:>30}: {config[k]}")
     return "\n" + "".join(cfg_str)
 
 
