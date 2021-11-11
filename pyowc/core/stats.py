@@ -12,7 +12,6 @@ import numpy as np
 import scipy.interpolate as interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
-from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
 
 from ..utilities import sorter, potential_vorticity
 
@@ -711,19 +710,17 @@ def noise_variance(sal, lat, long):
         -------
         the variance in the noise_variance
     """
-    locations = np.column_stack((lat, long))
+    # note: currently we don't use a kd-tree or other structure as the original implementation
+    #       ignored distinct points which have the same lat/long, and we want match it.
+    dist = ((lat[:, np.newaxis] - lat[np.newaxis, :])**2 + (long[:, np.newaxis] - long[np.newaxis, :])**2).astype(float)
 
-    kdtree = cKDTree(locations)  # pylint: disable=not-callable
-
-    # query the second nearest neighbour to exclude self
-    distances, min_distances_indices = kdtree.query(locations, k=[2])
-
-    if np.all(distances == 0.0):
+    if np.all(dist == 0.0):
         print("WARNING: no unique points")
         return 0.0
 
-    # remove the last (singleton) axis which results from querying only the second nearest neighbour
-    min_distances_indices = np.squeeze(min_distances_indices, axis=-1)
+    # exclude points which coincide
+    dist[dist == 0.0] = np.nan
+    min_distances_indices = np.nanargmin(dist, axis=1)
 
     sal_noise = sal - sal[min_distances_indices]
     sal_noise_var = np.nanmean(np.square(sal_noise)) / 2
