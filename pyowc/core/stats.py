@@ -9,7 +9,7 @@
 """
 import copy
 import numpy as np
-import scipy.interpolate as interpolate
+from scipy import interpolate
 from scipy.optimize import least_squares
 from scipy import linalg
 from scipy.spatial import cKDTree  # pylint: disable=no-name-in-module
@@ -78,7 +78,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
             residual
         """
 
-        global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+        # TODO Address the use of globals in this file.
+        global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim  # pylint: disable=global-variable-not-assigned
 
         if nbr1 > 1:
             ubrk = ubrk_g[0:nbr1 - 1]

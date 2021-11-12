@@ -9,7 +9,7 @@ import gsw
 import numpy as np
 
 from scipy.io import loadmat, savemat
-import scipy.interpolate as interpolate
+from scipy import interpolate
 
 from .core.stats import signal_variance, noise_variance, build_cov, fit_cond
 from .core.finders import find_besthist, find_25boxes, find_10thetas

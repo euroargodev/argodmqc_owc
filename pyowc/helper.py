@@ -30,7 +30,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
         # open up mapped data
         float_mapped_data = loadmat(mapped_data_path)
 
-        if 'la_mapsalerrors' in float_mapped_data.keys():
+        if 'la_mapsalerrors' in float_mapped_data:
             float_mapped_data['la_map_sal_errors'] = float_mapped_data['la_mapsalerrors']
             float_mapped_data.pop('la_mapsalerrors')
 
@@ -112,7 +112,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
         float_mapped_data["p_exclude"] = []
         float_mapped_data["selected_hist"] = []
 
-        print("No precalculated data at: %s" % mapped_data_path)
+        print(f"No precalculated data at: {mapped_data_path}")
         print("__________________________________________________________\n")
 
     return float_mapped_data
