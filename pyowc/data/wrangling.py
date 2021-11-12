@@ -184,7 +184,7 @@ def calculate_interpolation_weights(value, reference_values, reference_values_di
 
 
 def interpolate_values(interpolation_weights, sign_changes, reference, reference_diff):
-    """Use iterpolation weights and sign changes previously calculated to interpolate reference data."""
+    """Use interpolation weights and sign changes previously calculated to interpolate reference data."""
     return reference[:-1][sign_changes] + interpolation_weights * reference_diff[sign_changes]
 
 
