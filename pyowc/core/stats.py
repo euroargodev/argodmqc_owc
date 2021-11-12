@@ -78,7 +78,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
             residual
         """
 
-        global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
+        # TODO Address the use of globals in this file.
+        global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim  # pylint: disable=global-variable-not-assigned
 
         if nbr1 > 1:
             ubrk = ubrk_g[0:nbr1 - 1]
