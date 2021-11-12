@@ -596,6 +596,13 @@ class NoiseVariance(unittest.TestCase):
         noise_var = noise_variance(np.array([0, 0]), np.array([-1, -1]), np.array([1, 1]))
         self.assertEqual(noise_var, 0, "Variance is not 0 for equal points")
 
+    def test_ignores_distinct_coincident_points(self):
+        """Check that noise_variance ignore points which are distinct but have the same lat/long."""
+        noise_var = noise_variance(np.array([1, 0.5, 2]), np.array([0, 0, 1]), np.array([-1, -1, 0]))
+
+        assert noise_var == 0.7083333333333334
+
+
     def test_returns_expected(self):
         """
         Check that noise_variance returns the expected answer
