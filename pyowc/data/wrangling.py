@@ -105,7 +105,6 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         Matrices [number of floats x number of historical profiles] of interpolated salinity and interpolated pressure on float theta surface
     """
     # get the shape of the data inputs (float and climatology)
-    grid_level = grid_sal.shape[0]
     grid_stations = grid_sal.shape[1]
     float_len = float_sal.shape[0]
 
@@ -127,68 +126,85 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
     # get the indices of the good float data
     float_good_data_index = np.nonzero(_get_finite_element_mask(float_sal, float_theta, float_pres))[0]
 
+    grid_theta_diff = np.diff(grid_theta, axis=0)
+    grid_pres_diff = np.diff(grid_pres, axis=0)
+    grid_sal_diff = np.diff(grid_sal, axis=0)
+
+    output_placeholder = np.full_like(grid_theta_diff, np.nan, dtype=float)
+
     # compare good float data to the closest climatological data
     for index in float_good_data_index:
-        # Find the indices of the closest pressure value each climatological station has to the float pressures
-        delta_pres_min_index = np.nanargmin(np.abs(grid_pres - float_pres[index]), axis=0)
+        # calculate the weighting factor for all interpolants
+        interp_factor, sign_changes = calculate_interpolation_weights(float_theta[index], grid_theta, grid_theta_diff)
 
-        # Find the difference between the float data and the climatological data
-        delta_theta = grid_theta - float_theta[index]
-        sign_changes = delta_theta * np.take_along_axis(delta_theta, delta_pres_min_index[np.newaxis], axis=0)
+        # interpolate values of pres
+        output_placeholder[sign_changes] = interpolate_values(interp_factor, sign_changes, grid_pres, grid_pres_diff)
 
-        # if there is no sign change for a station (that is, no negative entries) then it cannot have
-        # any values which we can use to interpolate.
-        stations_with_possible_interp = np.unique(np.nonzero(sign_changes.T < 0)[0])
+        # no sign changes between consecutive values for a station means there are no values to interpolate
+        stations_with_possible_interp = np.unique(sign_changes[1])
 
-        # go through all the climatological stations with possible interpolation candidates
-        for station_id in stations_with_possible_interp:
+        # find the interpolated pres value which is closest to the float pres for each station
+        min_pres = np.nanargmin(np.abs(output_placeholder[:, stations_with_possible_interp] - float_pres[index]), axis=0)
 
-            tst = sign_changes[:, station_id]
+        # use the closest pres value for the interpolated value
+        interp_pres_final[index, stations_with_possible_interp] = output_placeholder[min_pres, stations_with_possible_interp]
 
-            # look for a theta match below (after in the array) the float pressure
-            grid_theta_below_pres = _find_closest_negative_by_index(tst[delta_pres_min_index[station_id]:grid_level])
+        # clear any values which have been written to the placeholder
+        output_placeholder[sign_changes] = np.nan
 
-            # look for a theta match above (before in the array) the float pressure
-            grid_theta_above_pres = _find_closest_negative_by_index(tst[:delta_pres_min_index[station_id]], reverse_search=True)
+        # interpolate values of sal
+        output_placeholder[sign_changes] = interpolate_values(interp_factor, sign_changes, grid_sal, grid_sal_diff)
 
-            # initialise arrays to hold interpolated pressure and salinity
-            interp_pres = []
-            interp_sal = []
+        # select the values of sal matching the closest pres values
+        interp_sal_final[index, stations_with_possible_interp] = output_placeholder[min_pres, stations_with_possible_interp]
 
-            # there is a theta value at a deeper level
-            if grid_theta_below_pres is not None:
-                i_1 = grid_theta_below_pres + delta_pres_min_index[station_id]
-                indices = (slice(i_1-1, i_1+1), station_id)
-
-                interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
-                interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
-
-            # there is a theta value at a shallower level
-            if grid_theta_above_pres is not None:
-                i_2 = grid_theta_above_pres
-                indices = (slice(i_2, i_2+2), station_id)
-
-                interp_pres.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_pres[indices]))
-                interp_sal.append(_interp_single_value(float_theta[index], grid_theta[indices], grid_sal[indices]))
-
-            if interp_pres:
-                # if there are two nearby theta values, choose the closest one
-                abs_interp_pres = np.abs(float_pres[index] - interp_pres)
-                location = np.argmin(abs_interp_pres)
-                interp_sal_final[index, station_id] = interp_sal[location]
-                interp_pres_final[index, station_id] = interp_pres[location]
+        # clear any values which have been written to the placeholder
+        output_placeholder[sign_changes] = np.nan
 
     return interp_sal_final, interp_pres_final
 
 
-def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
+def calculate_interpolation_weights(value, reference_values, reference_values_diff):
+    """Find interpolation weights of a value on some given data, also returning the locations in the data."""
+    diffs = reference_values - value
+
+    # boolean array which is true if a sign change occurred between rows in a column
+    sign_changes = find_sign_changes_in_columns(diffs)
+
+    # now convert to indices as we will be using it often
+    sign_changes = np.nonzero(sign_changes)
+
+    # find the bracketing values
+    value_before = reference_values[:-1][sign_changes]
+
+    # calculate the interpolation weights
+    interpolation_factors = (value - value_before) / reference_values_diff[sign_changes]
+
+    return interpolation_factors, sign_changes
+
+
+def interpolate_values(interpolation_weights, sign_changes, reference, reference_diff):
+    """Use interpolation weights and sign changes previously calculated to interpolate reference data."""
+    return reference[:-1][sign_changes] + interpolation_weights * reference_diff[sign_changes]
+
+
+def find_sign_changes_in_columns(values):
+    """Find sign changes which occur in consecutive rows.
+
+    Note: returns True if a value is 0.0 since we're using to find points for interpolation,
+        in this case the interpolation coincides with a value and so the weight will be 0.0 or 1.0.
+    """
+    return values[1:, :] * values[:-1, :] <= 0.0
+
+
+def _get_cleaned_grid_data(grid_stations, grid_sal_in, grid_theta_in, grid_pres_in):
     """Return a copy of grid data where finite values have been moved up to the top of each station."""
     # ensure no changes made to reference data
-    grid_sal = np.copy(grid_sal)
-    grid_theta = np.copy(grid_theta)
-    grid_pres = np.copy(grid_pres)
+    grid_sal = np.full_like(grid_sal_in, np.nan)
+    grid_theta = np.full_like(grid_theta_in, np.nan)
+    grid_pres = np.full_like(grid_pres_in, np.nan)
 
-    grid_good_data = _get_finite_element_mask(grid_sal, grid_theta, grid_pres)
+    grid_good_data = _get_finite_element_mask(grid_sal_in, grid_theta_in, grid_pres_in)
 
     # find the max number of levels from all stations
     column_counts = np.count_nonzero(grid_good_data, axis=0)
@@ -196,9 +212,9 @@ def _get_cleaned_grid_data(grid_stations, grid_sal, grid_theta, grid_pres):
 
     for station_id in range(grid_stations):
         good_values = column_counts[station_id]
-        grid_sal[:good_values, station_id] = grid_sal[:, station_id][grid_good_data[:, station_id]]
-        grid_theta[:good_values, station_id] = grid_theta[:, station_id][grid_good_data[:, station_id]]
-        grid_pres[:good_values, station_id] = grid_pres[:, station_id][grid_good_data[:, station_id]]
+        grid_sal[:good_values, station_id] = grid_sal_in[:, station_id][grid_good_data[:, station_id]]
+        grid_theta[:good_values, station_id] = grid_theta_in[:, station_id][grid_good_data[:, station_id]]
+        grid_pres[:good_values, station_id] = grid_pres_in[:, station_id][grid_good_data[:, station_id]]
 
     # Truncate the number of levels to the maximum level that has available data
     if max_level > 0:
@@ -221,26 +237,3 @@ def _get_finite_element_mask(sal, theta, pres):
 
     # create an array where True indicates that sal/theta/pres are all finite
     return good_sal & good_theta & good_pres
-
-
-def _find_closest_negative_by_index(search_array, reverse_search=False):
-    """Find the closest (by index) negative entry in an array, optionally searching in the reverse direction."""
-    idx = None
-    step = -1 if reverse_search else 1
-    if search_array.size:
-        first_index = np.argmax(search_array[::step] < 0)
-
-        if reverse_search:
-            first_index = (len(search_array) - 1) - first_index
-
-        if search_array[first_index] < 0:
-            idx = first_index
-
-    return idx
-
-
-def _interp_single_value(x_interp, x_reference, y_reference):
-    """Interpolate a single value based on reference data."""
-    w_t = (x_reference[1] - x_interp) / np.diff(x_reference)
-
-    return y_reference[1] * (1 - w_t) + y_reference[0] * w_t

@@ -1,9 +1,16 @@
 import os
 import unittest
 import numpy as np
+import pytest
 from scipy.io import loadmat
 
-from pyowc.data.wrangling import interp_climatology, map_data_grid
+from pyowc.data.wrangling import (
+    interp_climatology,
+    map_data_grid,
+    _get_cleaned_grid_data,
+    find_sign_changes_in_columns,
+    calculate_interpolation_weights
+)
 from . import TESTS_CONFIG
 
 
@@ -119,6 +126,27 @@ class InterpClimatology(unittest.TestCase):
             err_msg="Interpolated pressure does not match expected value",
         )
 
+    def test_clean_grid_data_adds_nans(self):
+        """Check the cleaned data moves finite values to top of column, but pads the rest of the columns with NaNs."""
+        sal = np.array(
+            [
+                [1, 2, np.inf],
+                [3, np.nan, 5],
+                [6, 7, 8],
+            ],
+        )
+        expected = np.array(
+            [
+                [1, 2, 5],
+                [3, 7, 8],
+                [6, np.nan, np.nan],
+            ],
+        )
+
+        sal_out, _, _ = _get_cleaned_grid_data(3, sal, sal, sal)
+
+        np.testing.assert_array_equal(sal_out, expected)
+
 
 # pylint: disable=too-many-instance-attributes
 class MapDataGrid(unittest.TestCase):
@@ -202,6 +230,43 @@ class MapDataGrid(unittest.TestCase):
                                    "grid mapped field is not as expected")
             self.assertAlmostEqual(ans[3][i], expected_data_error[i], 15,
                                    "grid error is not as expected")
+
+
+def test_sign_changes_in_column():
+    """Check that the correct locations of sign changes are found."""
+    values = np.array([[1, 2, -1, -2, 0, 0]]).T
+    expected = np.array([[0, 1, 0, 1, 1]]).T
+    output = find_sign_changes_in_columns(values)
+
+    np.testing.assert_array_equal(output, expected)
+
+
+def test_sign_changes_in_column_multiple():
+    """Check that the correct locations of sign changes are found."""
+    values = np.array([[1, 2, -1, -2], [1, 2, 3, 4]]).T
+    expected = np.array([[0, 1, 0], [0, 0, 0]]).T
+    output = find_sign_changes_in_columns(values)
+
+    np.testing.assert_array_equal(output, expected)
+
+
+def test_calculate_interpolation_weights():
+    """Check that the correct weights (and locations are returned)."""
+    value = 1.5
+    reference = np.array(
+        [
+            [0, 1, 1, 0],
+            [1, 5, 1.5, -1],
+            [2, 3, 3, -2],
+            [3, -3, 10, -3]
+        ]
+    )
+    reference_diffs = np.diff(reference, axis=0)
+
+    weights, locations = calculate_interpolation_weights(value, reference, reference_diffs)
+
+    np.testing.assert_array_equal(weights, [0.125, 1, 0.5, 0, 0.25])
+    np.testing.assert_array_equal(locations, [[0, 0, 1, 1, 2], [1, 2, 0, 2, 1]])
 
 
 if __name__ == '__main__':

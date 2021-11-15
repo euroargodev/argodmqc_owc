@@ -156,6 +156,7 @@ def find_besthist(grid_lat, grid_long, grid_dates, grid_z_value, lat, long, date
 
         # pick max_casts/3 random points
         index_rand = np.round(np.random.rand(math.ceil(max_casts / 3)) * (index_ellipse.__len__())-1)
+        index_rand[index_rand == -1] = 0
 
         # make sure the points are all unique
         index_rand = np.unique(index_rand)

@@ -19,13 +19,13 @@ from ..utilities import wrap_longitude, change_dates
 from ..configuration import print_cfg
 
 
-@lru_cache(maxsize=50)
+@lru_cache()
 def read_mat_ctd(filepath):
     """Cache the result of reading a ctd .mat file from disk."""
     return read_mat(filepath)
 
 
-@lru_cache(maxsize=50)
+@lru_cache()
 def read_mat_bottle(filepath):
     """Load and transform a bottle .mat file."""
     data = read_mat(filepath)
@@ -40,7 +40,7 @@ def read_mat_bottle(filepath):
     return data
 
 
-@lru_cache(maxsize=50)
+@lru_cache()
 def read_mat_argo(filepath, pa_float_name):
     """Load and transform an Argo .mat file."""
     data = read_mat(filepath)
