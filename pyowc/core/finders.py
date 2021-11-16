@@ -697,6 +697,9 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
     # select the best 10 theta levels
 
     for i in range(no_levels):
+        # ensure there is a non-nan minimum value to find
+        if np.all(np.isnan(var_sal_tlevels)):
+            continue
         min_theta_index = np.argwhere(var_sal_tlevels == np.nanmin(var_sal_tlevels))[0, 0]
         index[i, :] = theta_level_indices[min_theta_index, :]
         t_levels[i] = theta_levels[min_theta_index]
