@@ -3,12 +3,27 @@
 import os
 import copy
 import numpy as np
+from matplotlib.path import Path
+from matplotlib.patches import PathPatch
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 from scipy.interpolate import interpolate
-import geopandas as gdp  # pylint: disable=import-error
+import shapefile
 
 from ..core.finders import find_10thetas
+
+
+def draw_shapes_as_patches(ax, shapes, **kwargs):
+    """Draw a series of shapes as PathPatches on a given Matplotlib axis."""
+    for shape in shapes:
+        points = np.array(shape.points)
+
+        codes = Path.LINETO * np.ones(len(points), dtype=Path.code_type)
+        codes[shape.parts] = Path.MOVETO
+
+        path = Path(points, codes)
+        patch = PathPatch(path, **kwargs)
+        ax.add_patch(patch)
 
 
 # pylint: disable=too-many-locals
@@ -36,70 +51,67 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
         -------
         Nothing
     """
-    #plt.figure(figsize=(6, 8))
+
+    ax = plt.gca()
+    ax.set_aspect(1)
+
     # load in the coastline data
     coastline = os.path.sep.join([config['CONFIG_DIRECTORY'], "coastline", "ne_10m_coastline.shp"])
-    map_coast = gdp.read_file(coastline)
-    traj_map = map_coast.plot(color='black', label='coastline', linewidth=0.5,)
+    with shapefile.Reader(coastline) as shp:
+        shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYLINE]
+        draw_shapes_as_patches(ax, shapes, linewidth=0.5, edgecolor="black", facecolor="None")
 
     # if wanted, load in bathymetric data and plot it
-    if bath == 1:
-        bathymetry0 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_L_0.shp"])
-        bathymetry200 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_K_200.shp"])
-        bathymetry1000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_J_1000.shp"])
-        bathymetry2000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_I_2000.shp"])
-        bathymetry3000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_H_3000.shp"])
-        bathymetry4000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_G_4000.shp"])
-        bathymetry5000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_F_5000.shp"])
-        bathymetry6000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_E_6000.shp"])
-        bathymetry7000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_D_7000.shp"])
-        bathymetry8000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_C_8000.shp"])
-        bathymetry9000 = os.path.sep.join([config['CONFIG_DIRECTORY'], "bathymetry", "ne_10m_bathymetry_B_9000.shp"])
-        map_bath0 = gdp.read_file(bathymetry0)
-        map_bath200 = gdp.read_file(bathymetry200)
-        map_bath1000 = gdp.read_file(bathymetry1000)
-        map_bath2000 = gdp.read_file(bathymetry2000)
-        map_bath3000 = gdp.read_file(bathymetry3000)
-        map_bath4000 = gdp.read_file(bathymetry4000)
-        map_bath5000 = gdp.read_file(bathymetry5000)
-        map_bath6000 = gdp.read_file(bathymetry6000)
-        map_bath7000 = gdp.read_file(bathymetry7000)
-        map_bath8000 = gdp.read_file(bathymetry8000)
-        map_bath9000 = gdp.read_file(bathymetry9000)
+    if bath:
+        root_path = os.path.join(config['CONFIG_DIRECTORY'], "bathymetry")
+        bathymetry_config = {
+            "ne_10m_bathymetry_L_0": {"facecolor": "#F0F0F0"},
+            "ne_10m_bathymetry_K_200.shp": {"facecolor": "#D2D2D2"},
+            "ne_10m_bathymetry_J_1000.shp": {"facecolor": "#B4B4B4"},
+            "ne_10m_bathymetry_I_2000.shp": {"facecolor": "#969696"},
+            "ne_10m_bathymetry_H_3000.shp": {"facecolor": "#737373"},
+            "ne_10m_bathymetry_G_4000.shp": {"facecolor": "#646464"},
+            "ne_10m_bathymetry_F_5000.shp": {"facecolor": "#505050"},
+            "ne_10m_bathymetry_E_6000.shp": {"facecolor": "#464646"},
+            "ne_10m_bathymetry_D_7000.shp": {"facecolor": "#323232"},
+            "ne_10m_bathymetry_C_8000.shp": {"facecolor": "#1E1E1E"},
+            "ne_10m_bathymetry_B_9000.shp": {"facecolor": "#0A0A0A"},
+        }
 
-        traj_map = map_bath0.plot(ax=traj_map, color='#F0F0F0', label='>200m', linewidth=2)
-        traj_map = map_bath200.plot(ax=traj_map, color='#D2D2D2', linewidth=2)
-        traj_map = map_bath1000.plot(ax=traj_map, color='#B4B4B4', label='1000m', linewidth=2)
-        traj_map = map_bath2000.plot(ax=traj_map, color='#969696')
-        traj_map = map_bath3000.plot(ax=traj_map, color='#737373')
-        traj_map = map_bath4000.plot(ax=traj_map, color='#646464')
-        traj_map = map_bath5000.plot(ax=traj_map, color='#505050')
-        traj_map = map_bath6000.plot(ax=traj_map, color='#464646', label='6000m')
-        traj_map = map_bath7000.plot(ax=traj_map, color='#323232')
-        traj_map = map_bath8000.plot(ax=traj_map, color='#1E1E1E')
-        traj_map = map_bath9000.plot(ax=traj_map, color='#0A0A0A')
+        for filename, plot_config in bathymetry_config.items():
+            with shapefile.Reader(os.path.join(root_path, filename)) as shp:
+                shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYGON]
+                draw_shapes_as_patches(ax, shapes, linewidth=0.0, **plot_config)
 
     # if we want reef data, load it in and plot it
-    if reef == 1:
+    if reef:
         reef = os.path.sep.join([config['CONFIG_DIRECTORY'], "reefs", "ne_10m_reefs.shp"])
-        map_reef = gdp.read_file(reef)
-        traj_map = map_reef.plot(ax=traj_map, color='green', label='reef')
+        with shapefile.Reader(reef) as shp:
+            shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYGON]
+            draw_shapes_as_patches(ax, shapes, linewidth=0.0, facecolor="green", label="Reef")
 
     # set up the latitude and longitude data
-    geo_floats = gdp.GeoDataFrame(floats,
-                                  geometry=gdp.points_from_xy(floats.Longitude,
-                                                              floats.Latitude))
-    geo_climatology = gdp.GeoDataFrame(climatology,
-                                       geometry=gdp.points_from_xy(climatology.Longitude,
-                                                                   climatology.Latitude))
+    ax.plot(
+        "Longitude",
+        "Latitude",
+        data=floats,
+        color="red",
+        marker="o",
+        markersize=0.5,
+        label="Float Profiles",
+        linestyle="-",
+    )
+    ax.plot(
+        "Longitude",
+        "Latitude",
+        data=climatology,
+        color='mediumblue',
+        marker="o",
+        markersize=0.5,
+        label="Climatology",
+        linestyle="None",
+    )
 
-    traj_map = geo_floats.plot(ax=traj_map, color='red', marker="o", label="Float Profiles", linestyle='-',
-                               linewidth=0.05, markersize=4)
-
-    geo_climatology.plot(ax=traj_map, color='mediumblue', marker="o",
-                         markersize=0.5, label="Climatology")
-
-    plt.plot(floats['Longitude'], floats['Latitude'], color='red', linestyle='-')
     plt.title(("Locations of float " + float_name + " with historical data"))
     plt.xlabel("Longitude")
     plt.ylabel("Latitude")
@@ -107,13 +119,20 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.xlim(np.min(climatology['Longitude']) - 20, np.max(climatology['Longitude']) + 20)
     plt.ylim(np.min(climatology['Latitude']) - 15, np.max(climatology['Latitude']) + 15)
 
-    # annotate float data (every 3, plus first and last float))
     color = plt.get_cmap('jet')
 
-    for i in range(floats['Latitude'].__len__()):
-        if i == 0 or i % 3 == 0 or i == floats['Latitude'].__len__() - 1:
-            plt.annotate(i + 1, (floats['Longitude'][i], floats['Latitude'][i]),
-                         color=color((i + 1) / floats['Latitude'].__len__()), size=5)
+    # annotate float data (every 3, plus first and last float))
+    row_count = len(floats.index)
+
+    for row in floats.itertuples():
+        idx = row.Index
+        if idx == 0 or idx % 3 == 0 or idx == row_count - 1:
+            plt.annotate(
+                row.number,
+                (row.Longitude, row.Latitude),
+                color=color((idx + 1) / row_count),
+                size=5,
+            )
 
     plt.legend(loc=4, prop={'size': 6})
 
@@ -182,6 +201,7 @@ def theta_sal_plot(sal, theta, map_sal, map_theta, map_errors,
     plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
     plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format, format=save_format)
     plt.show()
+
 
 # pylint: disable=too-many-arguments
 def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
