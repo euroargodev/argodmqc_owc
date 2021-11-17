@@ -309,6 +309,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     # set up matrices
     profile_no = profile_no.flatten()
     no_profiles = pres.shape[1]
+    # TODO A description of what each of these vars are would be helpful
     s_int = np.nan * np.ones((levels, no_profiles))
     s_map = np.nan * np.ones((levels, no_profiles))
     s_map_err = np.nan * np.ones((levels, no_profiles))
@@ -323,7 +324,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     use_pres_gt = boundaries[3]
     use_percent_gt = boundaries[4]
 
-    thetas = find_10thetas(copy.deepcopy(sal),
+    tlevels, _, _, _, _ = find_10thetas(copy.deepcopy(sal),
                            copy.deepcopy(ptmp),
                            copy.deepcopy(pres),
                            copy.deepcopy(map_ptmp),
@@ -342,7 +343,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
         cal_sal_errors[i[0], i[1]] = np.nan
 
     if use_theta_lt.__len__() > 0 and use_theta_gt.__len__() == 0:
-        good = np.argwhere(ptmp > use_theta_lt)
+        good = ptmp > use_theta_lt
         pres[good] = np.nan
         sal[good] = np.nan
         ptmp[good] = np.nan
@@ -422,8 +423,8 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
     for i in range(no_profiles):
         for j in range(levels):
 
-            if np.nanmax(ptmp[:, i]) > thetas[0][j] > np.nanmin(ptmp[:, i]):
-                diff_theta = np.abs(ptmp[:, i] - thetas[0][j])
+            if np.nanmax(ptmp[:, i]) > tlevels[j] > np.nanmin(ptmp[:, i]):
+                diff_theta = np.abs(ptmp[:, i] - tlevels[j])
 
                 if np.argwhere(~np.isnan(diff_theta)).__len__() == 0:
                     thetalevel_index[j, i] = np.nan
@@ -445,7 +446,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 
                 ptmp_diff = ptmp[theta_index, j] - ptmp[inter, j]
 
-                if ptmp[theta_index, j] > thetas[0][i]:
+                if ptmp[theta_index, j] > tlevels[i]:
                     pos_diff = np.argwhere(ptmp_diff > 0)
 
                     if pos_diff.__len__() > 0:
@@ -455,7 +456,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                     else:
                         k_index = theta_index
 
-                if ptmp[theta_index, j] < thetas[0][i]:
+                if ptmp[theta_index, j] < tlevels[i]:
                     neg_diff = np.argwhere(ptmp_diff < 0)
 
                     if neg_diff.__len__() > 0:
@@ -465,7 +466,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                     else:
                         k_index = theta_index
 
-                if ptmp[theta_index, j] == thetas[0][i]:
+                if ptmp[theta_index, j] == tlevels[i]:
                     k_index = theta_index
 
                 if ((k_index != theta_index and ~np.isnan(sal[theta_index, j])) and
@@ -477,7 +478,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                                                            [sal[theta_index, j],
                                                             sal[k_index, j]])
 
-                    s_int[i, j] = interp_ptmp_sal(thetas[0][i][0])
+                    s_int[i, j] = interp_ptmp_sal(tlevels[i][0])
 
                 else:
                     s_int[i, j] = sal[theta_index, j]
@@ -490,14 +491,14 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                                                            ptmp[k_index, j]],
                                                           [map_sal[theta_index, j],
                                                            map_sal[k_index, j]])
-                    s_map[i, j] = interp_map_sal(thetas[0][i][0])
+                    s_map[i, j] = interp_map_sal(tlevels[i][0])
 
                     interp_map_sal_err = interpolate.interp1d([ptmp[theta_index, j],
                                                                ptmp[k_index, j]],
                                                               [map_sal_errors[theta_index, j],
                                                                map_sal_errors[k_index, j]])
 
-                    s_map_err[i, j] = interp_map_sal_err(thetas[0][i][0])
+                    s_map_err[i, j] = interp_map_sal_err(tlevels[i][0])
 
                 else:
                     s_map[i, j] = map_sal[theta_index, j]
@@ -516,8 +517,8 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                                                               [cal_sal_errors[theta_index, j],
                                                                cal_sal_errors[k_index, j]])
 
-                    s_cal[i, j] = interp_cal_sal(thetas[0][i][0])
-                    s_cal_err[i, j] = interp_cal_sal_err(thetas[0][i][0])
+                    s_cal[i, j] = interp_cal_sal(tlevels[i][0])
+                    s_cal_err[i, j] = interp_cal_sal_err(tlevels[i][0])
 
                 else:
                     s_cal[i, j] = cal_sal[theta_index, j]
@@ -544,7 +545,7 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
 
         pl.title(float_name +
                  r" salinities with error on $\theta$=" +
-                 str(np.round(thetas[0][i][0], 5)) + r"$\circ$C")
+                 str(np.round(tlevels[i][0], 5)) + r"$\circ$C")
 
         plt.legend()
 
