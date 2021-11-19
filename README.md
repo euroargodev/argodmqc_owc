@@ -25,7 +25,6 @@ and install `geopandas` using `conda` and then use `pip` to install `pyowc`.
 Assuming your `conda` environment is activated:
 
 ```bash
-conda install geopandas
 pip install pyowc
 ```
 
