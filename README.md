@@ -13,16 +13,8 @@ This software is in very active development and its usage may change any time. P
 
 # Installation
 
-If you are using Linux or macOS, you can simply install this package using `pip` in a virtual environment.
+If you are using Linux, Windows or macOS, you can simply install this package using `pip` in a virtual environment.
 Assuming your virtual environment is activated:
-
-```bash
-pip install pyowc
-```
-
-If you are using Windows, then we recommend using `conda` to manage your environments
-and install `geopandas` using `conda` and then use `pip` to install `pyowc`.
-Assuming your `conda` environment is activated:
 
 ```bash
 pip install pyowc
