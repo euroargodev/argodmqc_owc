@@ -1,4 +1,4 @@
-|<img src="https://raw.githubusercontent.com/euroargodev/argodmqc_owc/master/docs/_static/pyowc_logo.png" alt="pyowc logo" width="200"/>|``pyowc`` is a python library for OWC salinity calibration in Python|
+|<img src="https://raw.githubusercontent.com/euroargodev/argodmqc_owc/master/docs/_static/logo_pyowc.png" alt="pyowc logo" width="70"/>|``pyowc`` is a python library for OWC salinity calibration in Python|
 |:---------:|:---------:|
 | |[![build](https://github.com/euroargodev/argodmqc_owc/actions/workflows/main.yml/badge.svg)](https://github.com/euroargodev/argodmqc_owc/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/euroargodev/argodmqc_owc/branch/refactor-configuration/graph/badge.svg)](https://codecov.io/gh/euroargodev/argodmqc_owc) ![Python](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg) [![Status](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://www.tidyverse.org/lifecycle/#stable) [![Gitter](https://badges.gitter.im/Argo-floats/owc-python.svg)](https://gitter.im/Argo-floats/owc-python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)|
 
