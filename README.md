@@ -1,15 +1,10 @@
-# pyowc: OWC salinity calibration in Python
-
-![build](https://github.com/euroargodev/argodmqc_owc/workflows/build/badge.svg)
-[![codecov](https://codecov.io/gh/euroargodev/argodmqc_owc/branch/refactor-configuration/graph/badge.svg)](https://codecov.io/gh/euroargodev/argodmqc_owc)
-[![Requirements Status](https://requires.io/github/euroargodev/argodmqc_owc/requirements.svg?branch=master)](https://requires.io/github/euroargodev/argodmqc_owc/requirements/?branch=refactor-configuration)
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
-
-[![Gitter](https://badges.gitter.im/Argo-floats/owc-python.svg)](https://gitter.im/Argo-floats/owc-python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+|<img src="https://raw.githubusercontent.com/euroargodev/argodmqc_owc/master/docs/_static/pyowc_logo.png" alt="pyowc logo" width="200"/>|``pyowc`` is a python library for OWC salinity calibration in Python|
+|:---------:|:---------:|
+| |[![build](https://github.com/euroargodev/argodmqc_owc/actions/workflows/main.yml/badge.svg)](https://github.com/euroargodev/argodmqc_owc/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/euroargodev/argodmqc_owc/branch/refactor-configuration/graph/badge.svg)](https://codecov.io/gh/euroargodev/argodmqc_owc) ![Python](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg) [![Status](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://www.tidyverse.org/lifecycle/#stable) [![Gitter](https://badges.gitter.im/Argo-floats/owc-python.svg)](https://gitter.im/Argo-floats/owc-python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)|
 
 This software is a python implementation of the "OWC" salinity calibration method used in Argo floats Delayed Mode Quality Control.
 
-This software is in very active development and its usage may change any time. Please [post an issue to get involved if you're interested](https://github.com/euroargodev/argodmqc_owc/issues/new/choose).
+[Post an issue to get involved if you're interested](https://github.com/euroargodev/argodmqc_owc/issues/new/choose).
 
 # Installation
 
@@ -17,14 +12,14 @@ If you are using Linux, Windows or macOS, you can simply install this package us
 Assuming your virtual environment is activated:
 
 ```bash
-pip install pyowc
+pip install git+https://github.com/euroargodev/argodmqc_owc
 ```
 
 # Software usage
 
-[![badge](https://img.shields.io/static/v1.svg?logo=Jupyter&label=Pangeo+Binder&message=Click+here+to+try+this+software+online+!&color=blue&style=for-the-badge)](https://binder.pangeo.io/v2/gh/euroargodev/argodmqc_owc/master?filepath=docs%2FTryit.ipynb)
+A short tutorial is available on the [argopy documentation here](https://argopy.readthedocs.io/en/latest/data_quality_control.html#running-the-calibration).
 
-Otherwise, you can run the pyowc code in your local machine in this way:
+For Python beginners, you can run the pyowc in this way:
 
 In start_with_pycharm.py code, you can specify the WMO float number that you want to do analysis.
 You can also add more float numbers, then the calculations of all floats will be done at the
