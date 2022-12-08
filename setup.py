@@ -10,9 +10,9 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name='pyowc',
-    version='0.1.1',
+    version='0.1.2',
     author="pyowc Developers",
-    author_email="edsmall@bodc.ac.uk",
+    author_email="argo@bodc.ac.uk",
     description="OWC salinity calibration in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
