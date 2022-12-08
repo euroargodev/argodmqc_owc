@@ -32,7 +32,7 @@ jobs:
         working-directory: docs
         run: sphinx-build -M html source build -W
 
-  build:
+  tests:
 
     runs-on: ${{ matrix.os }}
     strategy:
