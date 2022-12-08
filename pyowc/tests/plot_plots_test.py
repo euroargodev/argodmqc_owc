@@ -49,8 +49,6 @@ class CalSalCurve(unittest.TestCase):
         profile_no = float_data['PROFILE_NO']
 
         config = TESTS_CONFIG
-        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
-        config['FLOAT_PLOTS_FORMAT'] = "eps"
 
         self.assertEqual(plots.cal_sal_curve_plot(sal, cal_sal, cal_sal_err, sta_sal,
                                                   sta_sal_err, sta_mean, pcond_factor,
@@ -115,8 +113,6 @@ class SalVar(unittest.TestCase):
         profile_no = float_data['PROFILE_NO']
 
         config = TESTS_CONFIG
-        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
-        config['FLOAT_PLOTS_FORMAT'] = "eps"
 
         # Check various types run
 
@@ -200,8 +196,6 @@ class TS(unittest.TestCase):
         plevels = thetas[1]
 
         config = TESTS_CONFIG
-        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
-        config['FLOAT_PLOTS_FORMAT'] = "eps"
 
         self.assertEqual(plots.t_s_profile_plot(sal, ptmp, pres, sal_var,
                                                 theta_levels, tlevels, plevels,
@@ -257,8 +251,6 @@ class ThetaSal(unittest.TestCase):
         index = thetas[2]
 
         config = TESTS_CONFIG
-        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
-        config['FLOAT_PLOTS_FORMAT'] = "eps"
 
         # Check various types run
 
@@ -282,8 +274,6 @@ class Trajectory(unittest.TestCase):
         print("Test that trajectory plot throws no errors")
 
         config = TESTS_CONFIG
-        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
-        config['FLOAT_PLOTS_FORMAT'] = "eps"
 
         float_data_path = os.path.sep.join([TESTS_CONFIG['FLOAT_SOURCE_DIRECTORY'],
                                             TESTS_CONFIG['TEST_FLOAT_SOURCE'] +

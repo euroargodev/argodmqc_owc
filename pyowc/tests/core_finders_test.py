@@ -33,7 +33,7 @@ class Find10Thetas(unittest.TestCase):
 
         self.la_ptmp = mapped_values['la_ptmp']
 
-        # matlab answers (for file 3901960)
+        # matlab answers (for file 3901960) A validity date ?
 
         self.tlevels = np.array([1.93961369305644,
                                  1.94046894952240,

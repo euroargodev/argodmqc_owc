@@ -2,6 +2,8 @@
 """
 import os
 import copy
+import warnings
+
 import numpy as np
 from matplotlib.path import Path
 from matplotlib.patches import PathPatch
@@ -137,8 +139,9 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.legend(loc=4, prop={'size': 6})
 
     save_format = config['FLOAT_PLOTS_FORMAT']
-    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], float_name])
-    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
+    file_name = float_name + "_trajectory." + save_format
+    plot_loc = os.path.sep.join([config['FLOAT_PLOTS_DIRECTORY'], file_name])
+    plt.savefig(plot_loc, format=save_format)
 
 
 # pylint: disable=too-many-arguments
