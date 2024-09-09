@@ -1,6 +1,7 @@
 name: euroargodev
 dependencies:
-  - python=3.7
+  - python=3.9
   - pip
   - pip:
+    - netcdf4==1.6
     - ..  # install pyowc
