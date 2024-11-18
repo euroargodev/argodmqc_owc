@@ -62,7 +62,7 @@ jobs:
         pytest --verbosity=3 --cov=./ --cov-config=.coveragerc --cov-report xml:cov.xml --cov-report term-missing --disable-pytest-warnings
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
         file: ./cov.xml # optional
