@@ -21,11 +21,6 @@ project = 'pyowc'
 # copyright = ''
 author = 'pyowc Developers'
 
-# TODO: remove this once copyright notice above is provided to include it in the footer
-html_theme_options = {
-  "footer_items": ["sphinx-version"],
-}
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
