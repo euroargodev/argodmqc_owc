@@ -49,13 +49,13 @@ jobs:
 
     - name: Install dependencies with pip
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install distributed
+          python -m pip install --upgrade pip
+          pip install Poetry 
+          pip install distributed
+          poetry install --with test
 
     - name: Test with pytest
       run: |
-        pip install pytest pytest-cov
         echo `pwd`
         ls -al
         pytest --verbosity=3 --cov=./ --cov-config=.coveragerc --cov-report xml:cov.xml --cov-report term-missing --disable-pytest-warnings

@@ -34,3 +34,12 @@ optional = true
 sphinx = "^8.2.3"
 myst-parser = "4.0.1"
 pydata-sphinx-theme = "^0.16.1"
+
+
+[tool.poetry.group.tests]
+optional = true
+
+[tool.poetry.group.tests.dependencies]
+pytest = "8.4.1"
+pytest-cov = "6.2.1"
+
