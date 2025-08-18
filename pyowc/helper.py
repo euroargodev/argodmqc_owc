@@ -5,7 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
-from scipy.interpolate import interp2d
+from scipy.interpolate import RegularGridInterpolator
 from scipy.io import loadmat
 
 from .data.fetchers import get_topo_grid
@@ -205,14 +205,18 @@ def process_profiles_grid_variables(grid_data, config):
                                               np.amax(grid_data['grid_lat']) + 1,
                                               config)
 
-    grid_interp = interp2d(grid_x[0], grid_y[:, 0],
-                           grid_elev, kind='linear')
+    grid_interp = RegularGridInterpolator((grid_y[:, 0], grid_x[0]),
+            grid_elev,
+            method="linear"
+        )
 
-    # As a note, the reason we vectorise the function here is because we do not
-    # want to compare every longitudinal value to ever latitude. Rather, we simply
-    # want to interpolate each pair of longitudes and latitudes.
+    points = np.column_stack((
+        grid_data['grid_lat'].ravel(),
+        grid_long_tbase.ravel()         
+    ))
 
-    grid_z = -1 * np.vectorize(grid_interp)(grid_long_tbase, grid_data['grid_lat'])
+
+    grid_z = -1 * grid_interp(points).reshape(grid_data['grid_lat'].shape)
 
     grid_data['grid_z'] = grid_z
     grid_data['grid_x'] = grid_x

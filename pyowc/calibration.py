@@ -173,13 +173,15 @@ def update_salinity_mapping(float_dir, config, float_name):
                                                          float_data['float_lat'] - 1,
                                                          float_data['float_lat'] + 1,
                                                          config)
+   
+            float_interp = interpolate.RegularGridInterpolator(
+                (float_y[:, 0], float_x[0, :]),
+                float_elev,
+                method="linear"
+            )
 
-            float_interp = interpolate.interp2d(float_x[0, :],
-                                                float_y[:, 0],
-                                                float_elev,
-                                                kind='linear')
+            float_data['float_z'] = -float_interp([[float_data['float_lat'], float_long_tbase]])[0]
 
-            float_data['float_z'] = -float_interp(float_long_tbase, float_data['float_lat'])[0]
 
             # gather data from area surrounding the float location
             wmo_numbers = find_25boxes(float_data['float_long'], float_data['float_lat'], wmo_boxes)
