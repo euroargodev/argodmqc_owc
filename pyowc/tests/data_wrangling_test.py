@@ -179,8 +179,8 @@ class MapDataGrid(unittest.TestCase):
                             self.signal_var, self.noise_var, self.phi, self.map_pv_use)
 
         self.assertTrue(isinstance(ans, tuple), "should return a tuple")
-        self.assertTrue(isinstance(ans[0], np.float), "1st return should be a float")
-        self.assertTrue(isinstance(ans[1], np.float), "2nd return should a float")
+        self.assertTrue(isinstance(ans[0], np.float64), "1st return should be a float 64")
+        self.assertTrue(isinstance(ans[1], np.float64), "2nd return should a float 64")
         self.assertTrue(isinstance(ans[2], np.ndarray), "3rd  return should a numpy array")
         self.assertTrue(isinstance(ans[3], np.ndarray), "4th return should be a numpy array")
 
