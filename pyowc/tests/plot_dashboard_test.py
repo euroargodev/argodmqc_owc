@@ -1,14 +1,13 @@
-import os
 import unittest
 from unittest.mock import patch
 
 from pyowc.plot import dashboard
+
 from . import TESTS_CONFIG
 
 
 class Dashboard(unittest.TestCase):
-    """
-    Test dashboard function
+    """Test dashboard function
     plot_diagnostics(float_dir, float_name, config, levels=2)
 
     """
@@ -17,8 +16,8 @@ class Dashboard(unittest.TestCase):
     def test_dashboard(self, mockshow):
         print("Test that dashboard plot throws no errors")
         float_dir = "/"
-        float_name = TESTS_CONFIG['TEST_FLOAT_SOURCE']
+        float_name = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
         config = TESTS_CONFIG
-        config['FLOAT_PLOTS_DIRECTORY'] = "data/test_data/float_plots/"
-        config['FLOAT_PLOTS_FORMAT'] = "eps"
+        config["FLOAT_PLOTS_DIRECTORY"] = "data/test_data/float_plots/"
+        config["FLOAT_PLOTS_FORMAT"] = "eps"
         self.assertEqual(dashboard(float_dir, float_name, config, levels=2), None)

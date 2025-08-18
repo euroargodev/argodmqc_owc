@@ -1,13 +1,13 @@
 """starting code"""
 
 import multiprocessing
-from functools import partial
 import time
 import warnings
+from functools import partial
+
 import pyowc as owc
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
-
 
 
 def main() -> None:
@@ -37,8 +37,5 @@ def main() -> None:
         print("Time for float: ", mid - start)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-   

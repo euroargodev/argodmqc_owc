@@ -43,3 +43,10 @@ optional = true
 pytest = "8.4.1"
 pytest-cov = "6.2.1"
 
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+ruff = "^0.4.2"
+
