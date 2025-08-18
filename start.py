@@ -1,5 +1,5 @@
-""" starting code
-"""
+"""starting code"""
+
 import multiprocessing
 from functools import partial
 import time
@@ -8,8 +8,10 @@ import pyowc as owc
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-if __name__ == '__main__':
 
+
+def main() -> None:
+    """Entry point for processing."""
     FLOAT_NAMES = ["3901960"]  # add float names here
     USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
     print(owc.configuration.print_cfg(USER_CONFIG))
@@ -34,3 +36,9 @@ if __name__ == '__main__':
         mid = time.time()
         print("Time for float: ", mid - start)
 
+
+
+if __name__ == '__main__':
+    main()
+
+   

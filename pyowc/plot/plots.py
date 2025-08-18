@@ -473,10 +473,11 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                         ~np.isnan(sal[k_index, j]) and ~np.isnan(ptmp[theta_index, j]) and
                         ~np.isnan(ptmp[k_index, j])):
 
-                    interp_ptmp_sal = interpolate.interp1d([ptmp[theta_index, j],
-                                                            ptmp[k_index, j]],
-                                                           [sal[theta_index, j],
-                                                            sal[k_index, j]])
+
+                    interp_ptmp_sal = interpolate.interp1d([float(ptmp[theta_index, j]),
+                                                            float(ptmp[k_index, j])],
+                                                           [float(sal[theta_index, j]),
+                                                            float(sal[k_index, j])])
 
                     s_int[i, j] = interp_ptmp_sal(tlevels[i][0])
 
@@ -487,16 +488,16 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                         ~np.isnan(map_sal[k_index, j]) and ~np.isnan(ptmp[theta_index, j]) and
                         ~np.isnan(ptmp[k_index, j])):
 
-                    interp_map_sal = interpolate.interp1d([ptmp[theta_index, j],
-                                                           ptmp[k_index, j]],
-                                                          [map_sal[theta_index, j],
-                                                           map_sal[k_index, j]])
+                    interp_map_sal = interpolate.interp1d([float(ptmp[theta_index, j]),
+                                                           float(ptmp[k_index, j])],
+                                                          [float(map_sal[theta_index, j]),
+                                                           float(map_sal[k_index, j])])
                     s_map[i, j] = interp_map_sal(tlevels[i][0])
 
-                    interp_map_sal_err = interpolate.interp1d([ptmp[theta_index, j],
-                                                               ptmp[k_index, j]],
-                                                              [map_sal_errors[theta_index, j],
-                                                               map_sal_errors[k_index, j]])
+                    interp_map_sal_err = interpolate.interp1d([float(ptmp[theta_index, j]),
+                                                               float(ptmp[k_index, j])],
+                                                              [float(map_sal_errors[theta_index, j]),
+                                                               float(map_sal_errors[k_index, j])])
 
                     s_map_err[i, j] = interp_map_sal_err(tlevels[i][0])
 
@@ -508,14 +509,14 @@ def sal_var_plot(levels, sal, pres, ptmp, map_sal, map_sal_errors,
                         ~np.isnan(cal_sal[k_index, j]) and ~np.isnan(ptmp[theta_index, j]) and
                         ~np.isnan(ptmp[k_index, j])):
 
-                    interp_cal_sal = interpolate.interp1d([ptmp[theta_index, j],
-                                                           ptmp[k_index, j]],
-                                                          [cal_sal[theta_index, j],
-                                                           cal_sal[k_index, j]])
-                    interp_cal_sal_err = interpolate.interp1d([ptmp[theta_index, j],
-                                                               ptmp[k_index, j]],
-                                                              [cal_sal_errors[theta_index, j],
-                                                               cal_sal_errors[k_index, j]])
+                    interp_cal_sal = interpolate.interp1d([float(ptmp[theta_index, j]),
+                                                           float(ptmp[k_index, j])],
+                                                          [float(cal_sal[theta_index, j]),
+                                                           float(cal_sal[k_index, j])])
+                    interp_cal_sal_err = interpolate.interp1d([float(ptmp[theta_index, j]),
+                                                               float(ptmp[k_index, j])],
+                                                              [float(cal_sal_errors[theta_index, j]),
+                                                               float(cal_sal_errors[k_index, j])])
 
                     s_cal[i, j] = interp_cal_sal(tlevels[i][0])
                     s_cal_err[i, j] = interp_cal_sal_err(tlevels[i][0])

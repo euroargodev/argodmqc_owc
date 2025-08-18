@@ -662,11 +662,17 @@ def find_10thetas(sal, ptmp, pres, la_ptmp,
                 if (k_index != theta_index and ~np.isnan(sal[theta_index, depth]) and
                         ~np.isnan(sal[k_index, depth]) and ~np.isnan(ptmp[theta_index, depth]) and
                         ~np.isnan(ptmp[k_index, depth])):
-                    interp_ptmp_sal = interpolate.interp1d([ptmp[theta_index, depth],
-                                                            ptmp[k_index, depth]],
-                                                           [sal[theta_index, depth],
-                                                            sal[k_index, depth]])
+                    
+                    x_vals = [
+                        float(ptmp[theta_index, depth]),
+                        float(np.asarray(ptmp[k_index, depth]).squeeze())
+                    ]
+                    y_vals = [
+                        float(sal[theta_index, depth]),
+                        float(np.asarray(sal[k_index, depth]).squeeze())
+                    ]
 
+                    interp_ptmp_sal = interpolate.interp1d(x_vals, y_vals)
                     sal_temp[level, depth] = interp_ptmp_sal(theta_levels[level])
 
                 # else we use the closest points

@@ -434,18 +434,27 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         else:
             long_1 = copy.deepcopy(long)
 
-        elev, x_grid, y_grid = get_topo_grid(np.nanmin(long_1) - 1, np.nanmax(long_1) + 1,
-                                             np.nanmin(lat) - 1, np.nanmax(lat) + 1, system_config)
+        elev, x_grid, y_grid = get_topo_grid(
+            np.nanmin(long_1) - 1, np.nanmax(long_1) + 1,
+            np.nanmin(lat) - 1,  np.nanmax(lat)  + 1,
+            system_config
+        )
 
-        grid_interp = interpolate.interp2d(x_grid[0, :], y_grid[:, 0],
-                                           elev, kind='linear')
+        grid_interp = interpolate.RegularGridInterpolator(
+            (y_grid[:, 0], x_grid[0, :]),
+            elev,
+            method="linear"
+        )
 
-        z_grid = []
-        for i in range(long_1[0].__len__()):
-            z_grid.append(grid_interp(long_1[0][i], lat[0][i]))
+        points = np.column_stack((lat.ravel(), long_1.ravel()))
 
-        z_grid = -np.array(z_grid)
-        coord_float = np.column_stack((long.T, lat.T, z_grid))
+
+        z_grid = grid_interp(points).reshape(lat.shape)
+        z_grid = -z_grid
+
+        coord_float = np.column_stack((long.ravel(), lat.ravel(), z_grid.ravel()))
+
+
 
     # load the calibration settings
     float_calseries_path = os.path.sep.join([system_config['FLOAT_CALIB_DIRECTORY'], float_dir,
