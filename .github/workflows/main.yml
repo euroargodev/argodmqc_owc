@@ -30,7 +30,7 @@ jobs:
 
       - name: Build documentation
         working-directory: docs
-        run: sphinx-build -M html source build -W
+        run: poetry run sphinx-build -M html source build -W
   tests:
 
     runs-on: ${{ matrix.os }}
