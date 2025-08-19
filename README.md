@@ -14,7 +14,7 @@ Assuming your virtual environment is activated:
 pip install git+https://github.com/euroargodev/argodmqc_owc
 ```
 
-# Installation with Poetry
+## Installation and usage with Poetry
 
 - **Step 1**  
   Make sure you have Python installed, along with `virtualenv`.
@@ -37,6 +37,21 @@ pip install git+https://github.com/euroargodev/argodmqc_owc
   # NOTE: If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
 
 
+**Running the Linter with Poetry**
+
+`poetry install --no-root --with lint`
+`poetry run ruff check`
+
+
+**Running the Docs Builder with Poetry**
+
+`poetry install --with docs`
+`cd docs`
+`poetry run sphinx-build -M html source build -W`
+
+**Running the Tests with Poetry**
+`poetry install --with tests`
+`poetry run pytest`
 
 
 # Software usage
