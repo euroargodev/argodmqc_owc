@@ -41,18 +41,24 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 **Running the Linter with Poetry**
 
 `poetry install --no-root --with lint`
+
 `poetry run ruff check`
 
 
 **Running the Docs Builder with Poetry**
 
 `poetry install --with docs`
+
 `cd docs`
+
 `poetry run sphinx-build -M html source build -W`
 
 **Running the Tests with Poetry**
+
 `poetry install --with tests`
+
 `poetry run pytest`
+
 
 
 # Software usage
