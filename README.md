@@ -19,11 +19,13 @@ pip install git+https://github.com/euroargodev/argodmqc_owc
 
 To create a virtual environment:
 - **Mac/Linux**
+
   python3 -m venv .venv
 
   source .venv/bin/activate
 
 - **Windows**
+
   python -m venv .venv
 
   .\.venv\Scripts\Activate
