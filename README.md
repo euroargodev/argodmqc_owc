@@ -31,9 +31,6 @@ pip install git+https://github.com/euroargodev/argodmqc_owc
 - **Step 5**
   Install the dependencies: `poetry install --no-root.
 
-- **Step 6**
-  Run the code (start.py): `poetry run run-floats`.
-
 If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
 
 
@@ -63,6 +60,8 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 
 ### Software usage
 
+- **Running with Poetry**
+  Run the code (start.py): `poetry run run-floats`.
 A short tutorial is available on the [argopy documentation here](https://argopy.readthedocs.io/en/latest/data_quality_control.html#running-the-calibration).
 
 For Python beginners, you can run the pyowc in this way:
