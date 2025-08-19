@@ -30,11 +30,11 @@ pip install git+https://github.com/euroargodev/argodmqc_owc
 
 - **Step 5**
   Install the dependencies: `poetry install --no-root`
-  # If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
+  If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
 
 - **Step 6**
   Run the code (start.py): `poetry run run-floats`
-  # If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
+  If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
 
 
 **Running the Linter with Poetry**
