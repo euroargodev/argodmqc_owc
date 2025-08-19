@@ -38,14 +38,14 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 
 
 
-**Running the Linter with Poetry**
+## Running the Linter with Poetry
 
 `poetry install --no-root --with lint`
 
 `poetry run ruff check`
 
 
-**Running the Docs Builder with Poetry**
+## Running the Docs Builder with Poetry
 
 `poetry install --with docs`
 
@@ -53,7 +53,7 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 
 `poetry run sphinx-build -M html source build -W`
 
-**Running the Tests with Poetry**
+## Running the Tests with Poetry
 
 `poetry install --with tests`
 
@@ -61,7 +61,7 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 
 
 
-# Software usage
+### Software usage
 
 A short tutorial is available on the [argopy documentation here](https://argopy.readthedocs.io/en/latest/data_quality_control.html#running-the-calibration).
 
