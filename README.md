@@ -30,9 +30,13 @@ pip install git+https://github.com/euroargodev/argodmqc_owc
 
 - **Step 5**
   Install the dependencies: `poetry install --no-root`
+  # NOTE: If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
 
 - **Step 6**
   Run the code (start.py): `poetry run run-floats`
+  # NOTE: If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
+
+
 
 
 # Software usage
@@ -41,7 +45,7 @@ A short tutorial is available on the [argopy documentation here](https://argopy.
 
 For Python beginners, you can run the pyowc in this way:
 
-In start_with_pycharm.py code, you can specify the WMO float number that you want to do analysis.
+In start.py, you can specify the WMO float number that you want to do analysis.
 You can also add more float numbers, then the calculations of all floats will be done at the
 same time.
 
@@ -56,6 +60,8 @@ if __name__ == '__main__':
     USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
     print(owc.configuration.print_cfg(USER_CONFIG))
 ```
+
+
 
 ## Parameters for your analysis
 
@@ -103,46 +109,8 @@ The code will crete two separate plots with set ranges.
         'THETA_BOUNDS': [[0, 5], [5, 20]]
 ```
 
-## Plots
-The plots are automatically generated. It is worth to note that only one plot will be 
-displayed at one time in the PyCharm. The next plot will be displayed after closing
-the window of the current plot. 
 
-The number of generated plots at specific theta levels (from 1 to 10 theta levels) can be
-currently changed in the dashboard.py code. The default is set to 2. The plots will be 
-generated separately for each theta level.
 
-```python
-def plot_diagnostics(float_dir, float_name, config, levels=2):
-```
-
-# Building the documentation
-
-If you wish to build the documentation locally, you will need a virtual environment.
-Assuming your virtual environment is activated, follow these steps:
-
-1. Install the required documentation packages
-    ```bash
-    pip install -r requirements-docs.txt
-    ```
-2. Change directory to the `docs` directory, for example on Linux:
-    ```bash
-    cd docs
-    ```
-3. Run the `sphinx-build` command:
-    ```bash
-    sphinx-build -M html source build -W
-    ```
-
-This will build the HTML documentation under the `docs/build/html` directory and can be viewed
-using your normal web browser.
-
-```{admonition} Note
-:class: note
-
-If you make modifications to the code or documentation configuration, you may need to delete
-the `docs/source/generated` directory for the documentation to build correctly.
-```
 
 # Software history
 
