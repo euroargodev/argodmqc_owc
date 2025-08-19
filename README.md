@@ -14,6 +14,27 @@ Assuming your virtual environment is activated:
 pip install git+https://github.com/euroargodev/argodmqc_owc
 ```
 
+# Installation with Poetry
+
+- **Step 1**  
+  Make sure you have Python installed, along with `virtualenv`.
+
+- **Step 2**  
+  Clone the repository and open it in your code editor.
+
+- **Step 3**  
+  Create a new virtual environment.
+
+- **Step 4**  
+  Install Poetry: `pip install poetry`
+
+- **Step 5**
+  Install the dependencies: `poetry install --no-root`
+
+- **Step 6**
+  Run the code (start.py): `poetry run run-floats`
+
+
 # Software usage
 
 A short tutorial is available on the [argopy documentation here](https://argopy.readthedocs.io/en/latest/data_quality_control.html#running-the-calibration).
