@@ -14,8 +14,7 @@ from . import TESTS_CONFIG
 
 # pylint: disable=bare-except
 class UpdateSalinityMapping(unittest.TestCase):
-    """Test cases for update_salinity_mapping function
-    """
+    """Test cases for update_salinity_mapping function"""
 
     def setUp(self):
         """Only run if we are missing our test file
@@ -174,8 +173,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
 
 class CalcPiecewiseFit(unittest.TestCase):
-    """Test cases for 'calc_piecewisefit' function
-    """
+    """Test cases for 'calc_piecewisefit' function"""
 
     def test_custom(self):
         """Change variables in this test to use different mapped outputs

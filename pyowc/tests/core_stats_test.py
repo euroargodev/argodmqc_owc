@@ -13,8 +13,7 @@ from . import TESTS_CONFIG
 
 
 class BrkPtFit(unittest.TestCase):
-    """Test case for 'brk_pt_fit' function
-    """
+    """Test case for 'brk_pt_fit' function"""
 
     def setUp(self):
         self.x_obvs = np.arange(-1, 1 + 0.1, 0.1)
@@ -191,8 +190,7 @@ class BrkPtFit(unittest.TestCase):
 
 
 class BuildCov(unittest.TestCase):
-    """Test cases for build_cov function
-    """
+    """Test cases for build_cov function"""
 
     def setUp(self):
         """Set up for test
@@ -266,8 +264,7 @@ class BuildCov(unittest.TestCase):
 
 
 class Covarxytpv(unittest.TestCase):
-    """Test cases for covar_xyt_pv function
-    """
+    """Test cases for covar_xyt_pv function"""
 
     def setUp(self):
         """Set up variables to use for testing
@@ -449,8 +446,7 @@ class Covarxytpv(unittest.TestCase):
 
 
 class Covarxypv(unittest.TestCase):
-    """Test cases for covarxy_pv function
-    """
+    """Test cases for covarxy_pv function"""
 
     def setUp(self):
         """Set up for test
@@ -516,8 +512,7 @@ class Covarxypv(unittest.TestCase):
 
 # pylint: disable=too-many-instance-attributes
 class FitCond(unittest.TestCase):
-    """Test cases for 'fit_cond' function
-    """
+    """Test cases for 'fit_cond' function"""
 
     def setUp(self):
         # fit_input = loadmat("../../data/test_data/fit_cond/fit_cond_input.mat")
@@ -581,8 +576,7 @@ class FitCond(unittest.TestCase):
 
 
 class NoiseVariance(unittest.TestCase):
-    """Test cases for noise_variance function
-    """
+    """Test cases for noise_variance function"""
 
     def setUp(self):
         self.sal = np.array([34.4988, 34.3267, 34.0346])
@@ -629,8 +623,7 @@ class NoiseVariance(unittest.TestCase):
 
 
 class SignalVariance(unittest.TestCase):
-    """Test cases for signal_variance function
-    """
+    """Test cases for signal_variance function"""
 
     def test_returns_float(self):
         """Check that we return a float if given some data

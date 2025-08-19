@@ -11,8 +11,7 @@ from . import TESTS_CONFIG
 
 
 class GetData(unittest.TestCase):
-    """Test cases for get_data function
-    """
+    """Test cases for get_data function"""
 
     def setUp(self):
         """Sets up some constant variables for testing
@@ -98,8 +97,7 @@ class GetData(unittest.TestCase):
 
 
 class GetRegionData(unittest.TestCase):
-    """Test cases for get_region_data function
-    """
+    """Test cases for get_region_data function"""
 
     def setUp(self):
         self.float_name = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
@@ -216,8 +214,7 @@ class GetRegionData(unittest.TestCase):
 
 
 class GetRegionHistLoc(unittest.TestCase):
-    """Test cases for get_hist_region_locations function
-    """
+    """Test cases for get_hist_region_locations function"""
 
     def setUp(self):
         """Set up values that will be used for testing

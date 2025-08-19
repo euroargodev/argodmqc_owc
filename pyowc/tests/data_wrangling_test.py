@@ -17,8 +17,7 @@ from . import TESTS_CONFIG
 
 # pylint: disable=too-many-instance-attributes
 class InterpClimatology(unittest.TestCase):
-    """Test cases for interp_climatology function
-    """
+    """Test cases for interp_climatology function"""
 
     def setUp(self):
         """Set up some values for testing, pulling from matlab matrices.
@@ -56,8 +55,7 @@ class InterpClimatology(unittest.TestCase):
         self.assertTrue(np.all(np.isnan(pres)))
 
     def test_no_finite_grid_data_returns_nans(self):
-        """Test that an we get NaNs for grid data with all values infinite.
-        """
+        """Test that an we get NaNs for grid data with all values infinite."""
         bad_grid_sal = bad_grid_theta = bad_grid_pres = np.full((5, 5), np.inf)
 
         sal, pres = interp_climatology(
@@ -145,8 +143,7 @@ class InterpClimatology(unittest.TestCase):
 
 # pylint: disable=too-many-instance-attributes
 class MapDataGrid(unittest.TestCase):
-    """Test cases for map_data_grid function
-    """
+    """Test cases for map_data_grid function"""
 
     def setUp(self):
         self.sal = np.array([34.5, 34.3, 34])

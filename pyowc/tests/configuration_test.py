@@ -20,8 +20,7 @@ class PrintCFG(unittest.TestCase):
 
 
 class LoadConfiguration(unittest.TestCase):
-    """Test cases for load_configuration function
-    """
+    """Test cases for load_configuration function"""
 
     def setUp(self):
         self.lo_system_configuration = load_configuration()
@@ -52,8 +51,7 @@ class LoadConfiguration(unittest.TestCase):
 
 
 class SetCalSeries(unittest.TestCase):
-    """Test cases forset_calseries function
-    """
+    """Test cases forset_calseries function"""
 
     def setUp(self):
         """Only run if we are missing our test file

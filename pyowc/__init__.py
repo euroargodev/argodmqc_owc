@@ -24,5 +24,6 @@ __all__ = (
     "dashboard",
     "utilities",
     # Constants
-    "__version__", "helper",
+    "__version__",
+    "helper",
 )

@@ -15,8 +15,7 @@ from . import TESTS_CONFIG
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
 class CalSalCurve(unittest.TestCase):
-    """Test cases for cal_sal_curve_plot function
-    """
+    """Test cases for cal_sal_curve_plot function"""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
@@ -81,8 +80,7 @@ class CalSalCurve(unittest.TestCase):
 # pylint: disable=unused-argument
 # pylint: disable=too-many-locals
 class SalVar(unittest.TestCase):
-    """Test cases for sal_var_plot function
-    """
+    """Test cases for sal_var_plot function"""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
@@ -244,8 +242,7 @@ class SalVar(unittest.TestCase):
 # pylint: disable=unused-argument
 # pylint: disable=too-many-locals
 class TS(unittest.TestCase):
-    """Test cases for t_s_plot function
-    """
+    """Test cases for t_s_plot function"""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
@@ -301,8 +298,7 @@ class TS(unittest.TestCase):
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
 class ThetaSal(unittest.TestCase):
-    """Test cases for theta_sal_plot function
-    """
+    """Test cases for theta_sal_plot function"""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
@@ -363,8 +359,7 @@ class ThetaSal(unittest.TestCase):
 
 # pylint: disable=bare-except
 class Trajectory(unittest.TestCase):
-    """Test cases for trajectory_plot function
-    """
+    """Test cases for trajectory_plot function"""
 
     def test_plot_runs(self):
         """Check we get no errors during the plotting routine

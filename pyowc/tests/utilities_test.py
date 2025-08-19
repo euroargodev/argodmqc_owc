@@ -7,8 +7,7 @@ from pyowc import utilities as utils
 
 
 class Cal2dec(unittest.TestCase):
-    """Test cases for cal2dec function
-    """
+    """Test cases for cal2dec function"""
 
     def test_returns_float(self):
         """Check return type is a float
@@ -56,8 +55,7 @@ class Cal2dec(unittest.TestCase):
 
 
 class ChangeDates(unittest.TestCase):
-    """Test cases for change_dates function
-    """
+    """Test cases for change_dates function"""
 
     def setUp(self):
         """Set up variables for testing
@@ -162,8 +160,7 @@ class ChangeDates(unittest.TestCase):
 
 
 class PotentialVorticity(unittest.TestCase):
-    """Test cases for potential_vorticity function
-    """
+    """Test cases for potential_vorticity function"""
 
     def test_bpv_returns_float(self):
         """Checks that potential_vorticity returns a float if
@@ -228,8 +225,7 @@ class PotentialVorticity(unittest.TestCase):
 
 
 class Sorter(unittest.TestCase):
-    """Sorter test case
-    """
+    """Sorter test case"""
 
     def setUp(self):
         """Set up repeated test values
@@ -285,8 +281,7 @@ class Sorter(unittest.TestCase):
 
 
 class SpatialCorrelation(unittest.TestCase):
-    """Test cases for "spatial_correlation" function
-    """
+    """Test cases for "spatial_correlation" function"""
 
     def test_spatial_correlation_returns_float(self):
         """Check that spatial_correlation returns a float if given a float
@@ -430,8 +425,7 @@ class SpatialCorrelation(unittest.TestCase):
 
 
 class WrapLongitude(unittest.TestCase):
-    """Test cases for wrap_longitude function
-    """
+    """Test cases for wrap_longitude function"""
 
     def test_does_not_wrap(self):
         """Shouldn't wrap if longitude values are > 40 and < 320

@@ -1,5 +1,4 @@
-"""A set of helper method to size of update_salinity_mapping
-"""
+"""A set of helper method to size of update_salinity_mapping"""
 
 from copy import deepcopy
 from pathlib import Path
