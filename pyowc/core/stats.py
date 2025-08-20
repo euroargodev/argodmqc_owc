@@ -459,7 +459,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     if best > 2:
         breaks = b_pts[np.arange(0, best - 2), best - 2].T
-
     else:
         breaks = []
 
@@ -539,15 +538,19 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 nbr = real_breaks.__len__()
                 b_g = np.concatenate(([-1], real_breaks))
 
+                ubrk_g = []
                 for n in range(nbr):
-                    ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
+                    denom = 1 - b_g[n+1]  # use the *next break*, not the last one
+                    if denom <= 0:
+                        denom = 1e-10  # small positive number to avoid log(negative)
+                    ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / denom))
 
                 optim = least_squares(nlbpfun, ubrk_g, method="lm", ftol=tol, max_nfev=max_fun_evals)
 
                 ubrk = optim["x"][0]
                 residual = optim["fun"]
 
-                btem = np.concatenate([xfit[0]], breaks)
+                btem = np.concatenate([np.array([xfit[0]]), breaks])
                 E = np.zeros((xfit.__len__(), best))
                 E[:, 0] = np.ones((xfit.__len__(), 1)).T
                 ixb = sorter(btem, xfit)
