@@ -1,4 +1,4 @@
-"""Core utility functions"""
+"""Core utility functions."""
 
 import math
 
@@ -62,7 +62,7 @@ def spatial_correlation(
 
 
 def sorter(msites, sites):
-    """Function to fill out arrays for the piecewise-fit
+    """Function to fill out arrays for the piecewise-fit.
 
     Used to find the interval in a linear fit.
 
@@ -119,7 +119,7 @@ def wrap_longitude(grid_long):
 
 
 def potential_vorticity(lat, z_value):
-    """Calculates barotropic potential vorticity (pv)
+    """Calculates barotropic potential vorticity (pv).
 
     Calculates the potential vorticity for a given latitude and z
 
@@ -146,7 +146,7 @@ def potential_vorticity(lat, z_value):
 
 
 def cal2dec(pa_month, pa_day, pa_hour=0, pa_minute=0):
-    """Converts a calendar date (month, day, hour, minute) to a decimal date (float)
+    """Converts a calendar date (month, day, hour, minute) to a decimal date (float).
 
     Parameters
     ----------
@@ -172,7 +172,7 @@ def cal2dec(pa_month, pa_day, pa_hour=0, pa_minute=0):
 
 
 def change_dates(cal_dates):
-    """Seperates date into year, month, day, hour, minute
+    """Seperates date into year, month, day, hour, minute.
 
     Converts calendar date from one input into year, month, day, hour, minute.
     Passes these variables to cal2dec to get a decimalised date and returns it

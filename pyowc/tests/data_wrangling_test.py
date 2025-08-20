@@ -1,3 +1,4 @@
+"""Tests for the Data Wrangling code."""
 import os
 import unittest
 
@@ -17,12 +18,12 @@ from . import TESTS_CONFIG
 
 # pylint: disable=too-many-instance-attributes
 class InterpClimatology(unittest.TestCase):
-    """Test cases for interp_climatology function"""
+    """Test cases for interp_climatology function."""
 
     def setUp(self):
         """Set up some values for testing, pulling from matlab matrices.
+
         The matlab matrices were used in the matlab version of this code, so answers should match
-        :return: Nothing
         """
         # load in the data for testing
         test = loadmat(os.path.sep.join([TESTS_CONFIG["TEST_DIRECTORY"], "interp_climatology", "testfile.mat"]))
@@ -40,9 +41,7 @@ class InterpClimatology(unittest.TestCase):
         self.expected_interp_sal = results["S_h"]
 
     def test_mismatched_grid_data_returns_nans(self):
-        """Test that an we get NaNs for bad data
-        :return: Nothing
-        """
+        """Test that an we get NaNs for bad data."""
         print("Testing that interp_climatology gives NaNs if all data is bad")
 
         bad_grid_sal = np.full((5, 5), np.inf)
@@ -66,9 +65,7 @@ class InterpClimatology(unittest.TestCase):
         self.assertTrue(np.all(np.isnan(pres)))
 
     def test_returns_correct_shape(self):
-        """Test that the returned matrix is the shape we expect it to be
-        :return: Nothing
-        """
+        """Test that the returned matrix is the shape we expect it to be."""
         print("Testing that interp_climatology returns a matrix of the correct shape")
 
         sal, pres = interp_climatology(
@@ -79,9 +76,7 @@ class InterpClimatology(unittest.TestCase):
         self.assertTrue(pres.shape == self.expected_interp_pres.shape, "pressure matrix shape is incorrect")
 
     def test_returns_same_shape(self):
-        """Test that the salinity and pressures matrices are equal shapes
-        :return: Nothing
-        """
+        """Test that the salinity and pressures matrices are equal shapes."""
         print("Testing that interp_climatology returns a matrices of the same shape")
 
         sal, pres = interp_climatology(
@@ -92,9 +87,9 @@ class InterpClimatology(unittest.TestCase):
 
     def test_returns_correct_values(self):
         """Test that the output of this function matches the matlab version value by value.
+
         We cannot compare NaNs directly (as it will always give false, so only do a direct
-        comparison if they are both not NaN
-        :return: Nothing
+        comparison if they are both not NaN.
         """
         print("Testing that interp_climatology returns matrices with correct values")
 
@@ -143,7 +138,7 @@ class InterpClimatology(unittest.TestCase):
 
 # pylint: disable=too-many-instance-attributes
 class MapDataGrid(unittest.TestCase):
-    """Test cases for map_data_grid function"""
+    """Test cases for map_data_grid function."""
 
     def setUp(self):
         self.sal = np.array([34.5, 34.3, 34])
@@ -158,9 +153,7 @@ class MapDataGrid(unittest.TestCase):
         self.map_pv_use = 0
 
     def test_return_types(self):
-        """Test that the return types are what we expect
-        :return: Nothing
-        """
+        """Test that the return types are what we expect."""
         print("Testing that map_data_grid returns the correct types")
         ans = map_data_grid(
             self.sal,
@@ -182,9 +175,7 @@ class MapDataGrid(unittest.TestCase):
         self.assertTrue(isinstance(ans[3], np.ndarray), "4th return should be a numpy array")
 
     def test_return_sizes(self):
-        """Test that the returned values are the expected size
-        :return: Nothing
-        """
+        """Test that the returned values are the expected size."""
         print("Testing that map_data_grid returns the expected sizes for each return")
 
         ans = map_data_grid(
@@ -207,9 +198,7 @@ class MapDataGrid(unittest.TestCase):
         self.assertEqual(ans[3].__len__(), expected, "Should contain same amount of values as unique points in grid")
 
     def test_return_values(self):
-        """Test that we get the expected values
-        :return: Nothing
-        """
+        """Test that we get the expected values."""
         print("Testing that map_data_grid returns the expected values")
 
         ans = map_data_grid(

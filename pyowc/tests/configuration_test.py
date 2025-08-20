@@ -1,3 +1,4 @@
+"""Tests for the Configuration code."""
 import os
 import unittest
 
@@ -10,7 +11,7 @@ from . import TESTS_CONFIG
 
 
 class PrintCFG(unittest.TestCase):
-    """Test print_cfg"""
+    """Test print_cfg."""
 
     def setUp(self):
         self.config = TESTS_CONFIG
@@ -20,14 +21,14 @@ class PrintCFG(unittest.TestCase):
 
 
 class LoadConfiguration(unittest.TestCase):
-    """Test cases for load_configuration function"""
+    """Test cases for load_configuration function."""
 
     def setUp(self):
         self.lo_system_configuration = load_configuration()
 
     def test_is_dict(self):
         """Check return type is dictionary
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that load_configuration() returns a dictionary...\n")
         self.assertTrue(isinstance(self.lo_system_configuration, dict))
@@ -35,14 +36,14 @@ class LoadConfiguration(unittest.TestCase):
     def test_contains_correct_number_of_keys(self):
         """Check returned dictionary contains the correct number of
         pairs
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing length of dictionary...\n")
         self.assertEqual(len(self.lo_system_configuration), 33)
 
     def test_all_keys_have_value(self):
         """Check that each pair is non-empty
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that the keys in the dictionary all have a value...\n")
         for i in self.lo_system_configuration:
@@ -51,11 +52,11 @@ class LoadConfiguration(unittest.TestCase):
 
 
 class SetCalSeries(unittest.TestCase):
-    """Test cases forset_calseries function"""
+    """Test cases forset_calseries function."""
 
     def setUp(self):
         """Only run if we are missing our test file
-        :return: Nothing
+        :return: Nothing.
         """
         self.float_source = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
         self.float_dir = "/"
@@ -87,7 +88,7 @@ class SetCalSeries(unittest.TestCase):
 
     def test_set_calseries(self):
         """Check that the function runs and saves
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that set_calseries saves file")
 
@@ -106,7 +107,7 @@ class SetCalSeries(unittest.TestCase):
 
     def test_bad_boundaries(self):
         """Check that, even if we pass  in bad boundaries, we still get values
-        :return: nothing
+        :return: nothing.
         """
         print("Testing that set_calseries sets parameters even if boundaries are bad")
 

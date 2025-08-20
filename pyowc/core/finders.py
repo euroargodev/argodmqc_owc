@@ -1,12 +1,4 @@
-"""Functions dedicated to search
-
-Parameters
-----------
-
-Returns:
--------
-
-"""
+"""Functions dedicated to search."""
 
 import copy
 import math
@@ -21,7 +13,7 @@ from ..utilities import potential_vorticity, spatial_correlation
 def find_ellipse(
     data_long, ellipse_long, ellipse_size_long, data_lat, ellipse_lat, ellipse_size_lat, phi, data_pv=0, ellipse_pv=0
 ):
-    """Finds whether a data point exists inside an ellipse
+    """Finds whether a data point exists inside an ellipse.
 
     Calculates whether or not a value exists inside of an ellipse
     of specifed size. If the answer is <1, it exists in the ellipse
@@ -86,7 +78,7 @@ def find_besthist(
     map_pv_use,
     max_casts,
 ):
-    """Find correlated points in historical data
+    """Find correlated points in historical data.
 
     Finds ln_max_casts number of unique historical data points that are most
     strongly correlated with the float profile being processed
@@ -336,7 +328,7 @@ def find_besthist(
 
 
 def nearest_neighbour(x_axis, y_axis, table, x_input, y_input):
-    """Find the nearest neighbour
+    """Find the nearest neighbour.
 
     Parameters
     ----------
@@ -356,7 +348,7 @@ def nearest_neighbour(x_axis, y_axis, table, x_input, y_input):
 
 
 def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
-    """Find WMO boxes centered on profile
+    """Find WMO boxes centered on profile.
 
     Finds the 5 x 5 = 25 WMO boxes with the float profile in the centre
     The WMO box numbers, between 90N and 90S are stored in /data/constants/wmo_boxes.mat
@@ -466,7 +458,7 @@ def find_25boxes(pn_float_long, pn_float_lat, pa_wmo_boxes):
 # pylint:disable=too-many-branches
 # pylint:disable=too-many-statements
 def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres_lt, use_pres_gt, use_percent_gt=0.5):
-    """Find on which theta levels salinity variance is lowest
+    """Find on which theta levels salinity variance is lowest.
 
     Chooses 10 theta levels from the float series for use in the linear fit.
     These 10 theta levels are the ones with the minimum S variance on theta.

@@ -1,3 +1,4 @@
+"""Tests for the Utilities code."""
 import math
 import unittest
 
@@ -7,22 +8,18 @@ from pyowc import utilities as utils
 
 
 class Cal2dec(unittest.TestCase):
-    """Test cases for cal2dec function"""
+    """Test cases for cal2dec function."""
 
     def test_returns_float(self):
-        """Check return type is a float
-        :return: Nothing
-        """
+        """Check return type is a float."""
         print("Testing return type is a float...")
         date = utils.cal2dec(0, 1)
         self.assertTrue(isinstance(date, float), "cal2dec should return a float")
 
-    # PUT RETURN HERE
+
 
     def test_throws_error_if_month_too_large(self):
-        """Check that an error is thrown if the month exceeds 12
-        :return: Nothing
-        """
+        """Check that an error is thrown if the month exceeds 12."""
         print("Testing exception is thrown if month is out of scope...")
         with self.assertRaises(Exception) as month_out_of_scope:
             utils.cal2dec(13, 1, 0, 0)
@@ -30,23 +27,17 @@ class Cal2dec(unittest.TestCase):
         self.assertTrue("Month is out of scope" in str(month_out_of_scope.exception))
 
     def test_returns_0_for_first_day(self):
-        """Check that the first possible day is 0
-        :return: Nothing
-        """
+        """Check that the first possible day is 0."""
         print("Testing that day 1 returns 0...")
         self.assertEqual(utils.cal2dec(0, 1, 0, 0), 0, "Should return 0 on first day")
 
     def test_returns_365_for_last_day(self):
-        """Check that the last hour in the last day of the last month return 365
-        :return: Nothing
-        """
+        """Check that the last hour in the last day of the last month return 365."""
         print("Testing that the 24th hour on the last day returns 365")
         self.assertEqual(utils.cal2dec(11, 31, 24, 0), 365, "last value should be 365")
 
     def test_no_day_larger_than_366(self):
-        """Check for error if day is larger than 366 (leap year)
-        :return: Nothing
-        """
+        """Check for error if day is larger than 366 (leap year)."""
         print("Testing that an error is thrown if a date exceeds 365")
         with self.assertRaises(Exception) as date_out_of_scope:
             utils.cal2dec(11, 31, 300, 300)
@@ -55,12 +46,10 @@ class Cal2dec(unittest.TestCase):
 
 
 class ChangeDates(unittest.TestCase):
-    """Test cases for change_dates function"""
+    """Test cases for change_dates function."""
 
     def setUp(self):
-        """Set up variables for testing
-        :return: Nothing
-        """
+        """Set up variables for testing."""
         self.good_date1 = 19740201223748
         self.good_date2 = 19740202171947
         self.good_date3 = 19740326211012
@@ -69,9 +58,7 @@ class ChangeDates(unittest.TestCase):
         self.bad_date3 = -5
 
     def test_returns_array(self):
-        """Check that the function returns an array
-        :return: Nothing
-        """
+        """Check that the function returns an array."""
         print("Testing that change_dates returns an array")
 
         date = utils.change_dates([self.good_date1, self.good_date2, self.good_date3])
@@ -79,9 +66,7 @@ class ChangeDates(unittest.TestCase):
         self.assertTrue(isinstance(date, np.ndarray), "return type is not array")
 
     def test_returns_correct_array(self):
-        """Check that the function returns the expected values
-        :return: Nothing
-        """
+        """Check that the function returns the expected values."""
         print("Testing that change_dates returns expected values")
 
         expected = [1974.087513318113, 1974.089648021309, 1974.232553272451]
@@ -91,10 +76,7 @@ class ChangeDates(unittest.TestCase):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
     def test_returns_date_for_missing_minutes(self):
-        """Check that, even if the calendar date has no minutes, we can
-        still get a decimalised date
-        :return: Nothing
-        """
+        """Check that, even if the calendar date has no minutes, we can still get a decimalised date."""
         print("Testing that change_dates returns date if minutes missing")
 
         not_expected = [0, 0]
@@ -105,10 +87,7 @@ class ChangeDates(unittest.TestCase):
             self.assertNotEqual(round(date[i], 6), round(not_expected[i], 6))
 
     def test_returns_date_for_missing_hours(self):
-        """Check that, even if the calendar date has no hours, we can
-        still get a decimalised date
-        :return: Nothing
-        """
+        """Check that, even if the calendar date has no hours, we can still get a decimalised date."""
         print("Testing that change_dates returns date if hours missing")
 
         not_expected = [0, 0]
@@ -119,10 +98,7 @@ class ChangeDates(unittest.TestCase):
             self.assertNotEqual(round(date[i], 6), round(not_expected[i], 6))
 
     def test_returns_zeroes_for_negative_date(self):
-        """Check that giving n negative dates will force the function to
-        return array of 0's of length n
-        :return: Nothing
-        """
+        """Check that giving n negative dates will force the function to return array of 0's of length n."""
         print("Testing that change_dates returns 0's for negatives")
 
         expected = [0, 0, 0]
@@ -133,9 +109,7 @@ class ChangeDates(unittest.TestCase):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
     def test_returns_zeroes_for_short_date(self):
-        """Check that giving dates that are too short returns 0s
-        :return: Nothing
-        """
+        """Check that giving dates that are too short returns 0s."""
         print("Testing that change_dates returns 0's for short dates")
 
         expected = [0, 0, 0]
@@ -146,9 +120,7 @@ class ChangeDates(unittest.TestCase):
             self.assertEqual(round(date[i], 6), round(expected[i], 6))
 
     def test_returns_zeroes_for_character_date(self):
-        """Check that giving dates that are not numbers reutnrs 0's
-        :return: Nothing
-        """
+        """Check that giving dates that are not numbers reutnrs 0's."""
         print("Testing that change_dates returns 0's for character dates")
 
         expected = [0, 0, 0]
@@ -160,13 +132,10 @@ class ChangeDates(unittest.TestCase):
 
 
 class PotentialVorticity(unittest.TestCase):
-    """Test cases for potential_vorticity function"""
+    """Test cases for potential_vorticity function."""
 
     def test_bpv_returns_float(self):
-        """Checks that potential_vorticity returns a float if
-        inputs are just floats.
-        :return: Nothing
-        """
+        """Checks that potential_vorticity returns a float if inputs are just floats."""
         print("Testing that potential_vorticity returns float...")
 
         pv_result = utils.potential_vorticity(1, 1)
@@ -187,10 +156,7 @@ class PotentialVorticity(unittest.TestCase):
             self.assertEqual(actual_result, expected_output, "potential vorticity value is not correct!")
 
     def test_bpv_vectorised_returns_array(self):
-        """Check that potential_vorticity returns an array if the function
-        is vectorised and given lists as inputs
-        :return: Nothing
-        """
+        """Check that potential_vorticity returns array if func is vectorised and given lists as inputs."""
         print("Testing that potential_vorticity returns array...")
 
         lat = [1, 2, 3, 4]
@@ -200,10 +166,7 @@ class PotentialVorticity(unittest.TestCase):
         self.assertTrue(isinstance(pv_result, np.ndarray), "potential vorticity vec is not list")
 
     def test_bpv_never_returns_0(self):
-        """Check that potential_vorticity doesn't return 0 if the equation equals
-        0. Should return a very small number.
-        :return: Nothing
-        """
+        """Check that potential_vorticity doesn't return 0 if the equation equals 0."""
         print("Testing that potential_vorticity returns non-zero...")
 
         pv_result = utils.potential_vorticity(0, 1)
@@ -211,9 +174,7 @@ class PotentialVorticity(unittest.TestCase):
         self.assertLess(pv_result, 0.001, "potential vorticity should be very small")
 
     def test_bpv_returns_expected_float(self):
-        """Check that potential_vorticity returns the expected value after calculation
-        :return: Nothing
-        """
+        """Check that potential_vorticity returns the expected value after calculation."""
         print("Testing that potential_vorticity returns correct value")
 
         lat = -59.1868
@@ -222,9 +183,7 @@ class PotentialVorticity(unittest.TestCase):
         self.assertAlmostEqual(pv_result * 1000, -2.452 * 10**-8 * 1000)
 
     def test_bpv_returns_expected_array(self):
-        """Check that potential_vorticity returns the expected array after calculation
-        :return: Nothing
-        """
+        """Check that potential_vorticity returns the expected array after calculation."""
         print("Testing that potential_vorticity returns correct array")
 
         lat = [-57.996, -56.375, -54.496]
@@ -239,19 +198,15 @@ class PotentialVorticity(unittest.TestCase):
 
 
 class Sorter(unittest.TestCase):
-    """Sorter test case"""
+    """Sorter test case."""
 
     def setUp(self):
-        """Set up repeated test values
-        :return: Nothing
-        """
+        """Set up repeated test values."""
         self.sites = np.array([-1, 0])
         self.msites = np.arange(-1, 1.01, 0.01)
 
     def test_returns_array(self):
-        """Check that the sorter returns a numpy array
-        :return: Nothing
-        """
+        """Check that the sorter returns a numpy array."""
         print("Testing that sorter returns numpy array")
 
         sorted_test = utils.sorter(self.sites, self.msites)
@@ -259,9 +214,7 @@ class Sorter(unittest.TestCase):
         self.assertEqual(type(sorted_test), np.ndarray, "Return type for sorter is incorrect")
 
     def test_returns_length(self):
-        """Check that the sorter returns a numpy array of the correct length
-        :return: Nothing
-        """
+        """Check that the sorter returns a numpy array of the correct length."""
         print("Testing that sorter returns numpy array of correct length")
 
         sorted_test = utils.sorter(self.sites, self.msites)
@@ -269,9 +222,7 @@ class Sorter(unittest.TestCase):
         self.assertEqual(sorted_test.__len__(), self.msites.__len__(), "Return for sorter is incorrect length")
 
     def test_returns_ones(self):
-        """Check that the sorter returns a numpy array of the correct length
-        :return: Nothing
-        """
+        """Check that the sorter returns a numpy array of the correct length."""
         print("Testing that sorter returns numpy array of ones " "if boundaries are bad")
 
         sorted_test = utils.sorter(np.array([-1, -1]), self.msites)
@@ -280,9 +231,7 @@ class Sorter(unittest.TestCase):
             self.assertEqual(sorted_test[i], 1, "Expected all ones")
 
     def test_returns_in_bounds(self):
-        """Check that the sorter returns 0's for in bounds, 1's for out bounds
-        :return: Nothing
-        """
+        """Check that the sorter returns 0's for in bounds, 1's for out bounds."""
         print("Testing sorter boundaries")
 
         sorted_test = utils.sorter(self.sites, self.msites)
@@ -295,12 +244,10 @@ class Sorter(unittest.TestCase):
 
 
 class SpatialCorrelation(unittest.TestCase):
-    """Test cases for "spatial_correlation" function"""
+    """Test cases for "spatial_correlation" function."""
 
     def test_spatial_correlation_returns_float(self):
-        """Check that spatial_correlation returns a float if given a float
-        :return: Nothing
-        """
+        """Check that spatial_correlation returns a float if given a float."""
         print("Testing that spatial_correlation returns a float")
 
         sc_result = utils.spatial_correlation(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
@@ -309,9 +256,7 @@ class SpatialCorrelation(unittest.TestCase):
 
     # pylint: disable=too-many-locals
     def test_spatial_correlation_returns_array(self):
-        """Check that spatial_correlation returns an array if given an array
-        :return: Nothing
-        """
+        """Check that spatial_correlation returns an array if given an array."""
         print("Testing that spatial_correlation returns an array")
 
         hist_long = [53.195, 51.954, 53.107]
@@ -346,9 +291,7 @@ class SpatialCorrelation(unittest.TestCase):
 
     # pylint: disable=too-many-locals
     def test_spatial_correlation_returns_expected_float(self):
-        """Check that spatial_correlation returns the correct answer if given a float
-        with or without potential vorticity
-        :return: Nothing
+        """Check that spatial_correlation returns correct answer if given float with or without potential vorticity.
         """
         print("Testing that spatial_correlation returns correct float value")
 
@@ -400,9 +343,7 @@ class SpatialCorrelation(unittest.TestCase):
 
     # pylint: disable=too-many-locals
     def test_spatial_correlation_returns_expected_array(self):
-        """Check that spatial_correlation returns an array if given an array
-        :return: Nothing
-        """
+        """Check that spatial_correlation returns an array if given an array."""
         print("Testing that spatial_correlation returns an array")
 
         hist_long = [53.195, 51.954, 53.107]
@@ -439,12 +380,10 @@ class SpatialCorrelation(unittest.TestCase):
 
 
 class WrapLongitude(unittest.TestCase):
-    """Test cases for wrap_longitude function"""
+    """Test cases for wrap_longitude function."""
 
     def test_does_not_wrap(self):
-        """Shouldn't wrap if longitude values are > 40 and < 320
-        :return: Nothing
-        """
+        """Shouldn't wrap if longitude values are > 40 and < 320."""
         print("Testing that wrap_longitude does not wrap values unnecessarily")
 
         long = np.array([50, 100, 150, 68, 300])
@@ -454,8 +393,9 @@ class WrapLongitude(unittest.TestCase):
             self.assertTrue(long[i] == new_long[i], "Shouldn't wrap values if they are > 40 and < 320")
 
     def test_wraps_values(self):
-        """Should wrap values of the longitudes are around 0 or 360
-        :return: Nothing
+        """Should wrap values of the longitudes are around 0 or 360.
+
+        :return: Nothing.
         """
         print("Testing that wrap_longitude wraps values of they are near 0 or 360")
 
@@ -467,8 +407,9 @@ class WrapLongitude(unittest.TestCase):
             self.assertTrue(new_long[i] == expected_long[i], "Should wrap values if they are < 40 and > 320")
 
     def test_length_equal(self):
-        """This function shouldn't throw away any spatial values. Output length should equal input
-        :return: Nothing
+        """This function shouldn't throw away any spatial values. Output length should equal input.
+
+        :return: Nothing.
         """
         print("Testing that wrap_longitude returns array of equal length to input")
 

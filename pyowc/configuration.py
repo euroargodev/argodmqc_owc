@@ -1,4 +1,4 @@
-"""Configuration loader"""
+"""Configuration loader."""
 
 import collections
 import os
@@ -8,7 +8,7 @@ from scipy.io import loadmat, savemat
 
 
 def print_cfg(config):
-    """Return a string of the configuration dictionnary"""
+    """Return a string of the configuration dictionnary."""
     cfg_str = []
     for k in config:
         cfg_str.append(f"{k:>30}: {config[k]}\n")
@@ -18,34 +18,34 @@ def print_cfg(config):
 def load():
     """Takes in no arguments
     :return: A dictionary containing mapped pairs of
-    {PARAMETER_NAME: parameter_value}
+    {PARAMETER_NAME: parameter_value}.
     """
     cfg = {
         # ===============================
         #
         #    Climatology Data Input Paths
-        "HISTORICAL_DIRECTORY": "data/climatology/",
-        "HISTORICAL_CTD_PREFIX": "/historical_ctd/ctd_",
-        "HISTORICAL_BOTTLE_PREFIX": "/historical_bot/bot_",
-        "HISTORICAL_ARGO_PREFIX": "/historical_argo/argo_",
+        "HISTORICAL_DIRECTORY": r"l:\bodc2\vault\archive\argo\cls100061",
+        "HISTORICAL_CTD_PREFIX": r"\historical_ctd\CTD_for_DMQC_2024V01\ctd_",
+        "HISTORICAL_BOTTLE_PREFIX": r"\historical_bot\WOD2001_v2\bot_",
+        "HISTORICAL_ARGO_PREFIX": r"\argo_profiles\ARGO_for_DMQC_2023V03\argo_",
         # ===============================
         #
         #    Float Input Path
         #
-        "FLOAT_SOURCE_DIRECTORY": "data/float_source/",
+        "FLOAT_SOURCE_DIRECTORY": r"data\float_source",
         "FLOAT_SOURCE_POSTFIX": ".mat",
         # ===============================
         #
         #    Mapping Output Path
         #
-        "FLOAT_MAPPED_DIRECTORY": "data/float_mapped/",
+        "FLOAT_MAPPED_DIRECTORY": r"data\float_mapped",
         "FLOAT_MAPPED_PREFIX": "map_",
         "FLOAT_MAPPED_POSTFIX": ".mat",
         # ===============================
         #
         #    Calibration Output Path
         #
-        "FLOAT_CALIB_DIRECTORY": "data/float_calib",
+        "FLOAT_CALIB_DIRECTORY": r"data\float_calib",
         "FLOAT_CALIB_PREFIX": "cal_",
         "FLOAT_CALSERIES_PREFIX": "calseries_",
         "FLOAT_CALIB_POSTFIX": ".mat",
@@ -59,35 +59,35 @@ def load():
         #
         #    Constants File Path
         #
-        "CONFIG_DIRECTORY": "data/constants/",
+        "CONFIG_DIRECTORY": r"L:\users\argo\ow\matlabow-2.0.1\data\constants",
         "CONFIG_COASTLINES": "coastdat.mat",
-        "CONFIG_WMO_BOXES": "wmo_boxes.mat",
+        "CONFIG_WMO_BOXES": r"wmo_boxes_ctd_argo.mat",
         "CONFIG_SAF": "TypicalProfileAroundSAF.mat",
         # ===============================
         #
         #    Objective Mapping Parameters
         #
         # max number of historical casts used in objective mapping
-        "CONFIG_MAX_CASTS": 300,
+        "CONFIG_MAX_CASTS": 310,
         # 1=use PV constraint, 0=don't use PV constraint, in objective mapping
-        "MAP_USE_PV": 0,
+        "MAP_USE_PV": 1,
         # 1=use SAF separation criteria, 0=don't use SAF separation criteria, in objective mapping
-        "MAP_USE_SAF": 0,
+        "MAP_USE_SAF": 1,
         # spatial decorrelation scales, in degrees
-        "MAPSCALE_LONGITUDE_LARGE": 8,
-        "MAPSCALE_LONGITUDE_SMALL": 4,
-        "MAPSCALE_LATITUDE_LARGE": 4,
-        "MAPSCALE_LATITUDE_SMALL": 2,
+        "MAPSCALE_LONGITUDE_LARGE": 4,
+        "MAPSCALE_LONGITUDE_SMALL": 2.5,
+        "MAPSCALE_LATITUDE_LARGE": 3,
+        "MAPSCALE_LATITUDE_SMALL": 1.5,
         # cross-isobath scales, dimensionless, see BS(2005)
         "MAPSCALE_PHI_LARGE": 0.1,
         "MAPSCALE_PHI_SMALL": 0.02,
         # temporal decorrelation scale, in years
-        "MAPSCALE_AGE_LARGE": 20,
-        "MAPSCALE_AGE_SMALL": 10,
+        "MAPSCALE_AGE_LARGE": 5,
+        "MAPSCALE_AGE_SMALL": 20,
         # exclude the top xxx dbar of the water column
         "MAP_P_EXCLUDE": 100,
         # only use historical data that are within +/- yyy dbar from float data
-        "MAP_P_DELTA": 250,
+        "MAP_P_DELTA": 150,
         # ===============================
         #
         #    Plotting Parameters
@@ -105,7 +105,7 @@ def load():
 # pylint: disable=invalid-name
 # pylint: disable=fixme
 def set_calseries(float_dir, float_name, system_config):
-    """Set the calseries parameters for analysis and line fitting
+    """Set the calseries parameters for analysis and line fitting.
 
     Parameters
     ----------

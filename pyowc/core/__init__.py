@@ -1,1 +1,1 @@
-"""Core functions"""
+"""Core functions."""

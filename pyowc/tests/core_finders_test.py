@@ -1,4 +1,4 @@
-"""Tests for core.finders module functions"""
+"""Tests for core.finders module functions."""
 
 import os
 import random
@@ -15,7 +15,7 @@ from . import TESTS_CONFIG
 # pylint: disable=fixme
 # pylint: disable=too-many-instance-attributes
 class Find10Thetas(unittest.TestCase):
-    """Test cases for find_10thetas function"""
+    """Test cases for find_10thetas function."""
 
     def setUp(self):
         # set up data to run find_10thetas
@@ -158,7 +158,7 @@ class Find10Thetas(unittest.TestCase):
 
     def test_theta_levels_shape(self):
         """Check that we get 10 levels
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that we only get 10 theta levels")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
@@ -173,7 +173,7 @@ class Find10Thetas(unittest.TestCase):
 
     def test_theta_levels_values(self):
         """Check that we get 10 levels
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that we only get 10 theta levels")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
@@ -201,7 +201,7 @@ class Find10Thetas(unittest.TestCase):
 
     def test_theta_levels_mid(self):
         """Check that we get 10 levels
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that we can include the middle band of data")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
@@ -221,7 +221,7 @@ class Find10Thetas(unittest.TestCase):
 
     def test_theta_levels_no_mid(self):
         """Check that we get 10 levels
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that we can exclude the middle band of data")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
@@ -242,7 +242,7 @@ class Find10Thetas(unittest.TestCase):
 
     def test_theta_levels_bounds(self):
         """Check that we get 10 levels
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that we can exclude data above/below points")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
@@ -276,7 +276,7 @@ class Find10Thetas(unittest.TestCase):
 
     def test_less_50_bar(self):
         """Check that we still get 10 thetas if intervals smaller than 50 bar
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing we still get theta levels at <50 bar intervals")
         t_levels, p_levels, index, var_sal_theta, theta_levels = core.finders.find_10thetas(
@@ -287,12 +287,12 @@ class Find10Thetas(unittest.TestCase):
 
 
 class Find25Boxes(unittest.TestCase):
-    """Test cases for find_25boxes function"""
+    """Test cases for find_25boxes function."""
 
     def setUp(self):
         """Setting up variables to be used in test cases
         Is run before each test case
-        :return: Nothing
+        :return: Nothing.
         """
         self.pa_wmo_boxes = loadmat(
             os.path.sep.join([TESTS_CONFIG["CONFIG_DIRECTORY"], TESTS_CONFIG["CONFIG_WMO_BOXES"]])
@@ -302,14 +302,14 @@ class Find25Boxes(unittest.TestCase):
 
     def test_can_load_matrix(self):
         """Check that we can open a matlab matrix file (.mat)
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that a matlab matrix can be loaded in...")
         self.assertNotEqual(self.pa_wmo_boxes, "", "Failed to load matlab matrix")
 
     def test_nearest_neighbour_nan(self):
         """Check that the nearest neighbour algorithm returns grid point
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing nearest_neighbour returns correct grid point")
         x_axis = np.arange(0, 3, 1, int)
@@ -322,7 +322,7 @@ class Find25Boxes(unittest.TestCase):
     def test_nearest_neighbour_returns_point_in_grid(self):
         """Check that, even if the nearest neighbour function is given a number outside
         the grid, it still returns a value that exists within the grid
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing nearest_neighbour returns data from the grid")
         x_axis = np.arange(0, 10000, 5, int)
@@ -336,7 +336,7 @@ class Find25Boxes(unittest.TestCase):
 
     def test_returned_array_is_correct_size(self):
         """Check that we get back 25 boxes, each with 4 values
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that the returned value is 25x4 matrix")
         pa_wmo_numbers = core.finders.find_25boxes(self.pn_float_long, self.pn_float_lat, self.pa_wmo_boxes)
@@ -344,7 +344,7 @@ class Find25Boxes(unittest.TestCase):
 
     def test_returns_array_of_nan_for_nan_input(self):
         """Check that even if we get empty inputs, we still receive boxes
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing nan input")
         pa_wmo_numbers = core.finders.find_25boxes(np.nan, np.nan, self.pa_wmo_boxes)
@@ -355,9 +355,7 @@ class Find25Boxes(unittest.TestCase):
         )
 
     def test_returned_value_exists_in_wmo_boxes(self):
-        """Check that each of the 25 boxes we receive definitely exists in the original
-        collection of wmo boxes
-        :return:
+        """Check that each of the 25 boxes we receive definitely exists in the original collection of wmo boxes.
         """
         print("Testing returned value exists in wmo_boxes.mat")
         pa_wmo_numbers = core.finders.find_25boxes(self.pn_float_long, self.pn_float_lat, self.pa_wmo_boxes)
@@ -374,7 +372,7 @@ class Find25Boxes(unittest.TestCase):
 
 
 class FindBestHist(unittest.TestCase):
-    """Test cases for find_besthist function"""
+    """Test cases for find_besthist function."""
 
     # pylint: disable=too-many-instance-attributes
     def setUp(self):
@@ -382,7 +380,7 @@ class FindBestHist(unittest.TestCase):
         are the float data points +/- 5. This could fail randomly if, by pure
         chance, none of the generated data is in the ellipse, so use pseudo random
         numbers just in case
-        :return: nothing
+        :return: nothing.
         """
         random.seed(1)
         self.grid_lat = np.random.rand(1000) * 5 * random.choice([-1, 1]) + -59.1868
@@ -406,7 +404,7 @@ class FindBestHist(unittest.TestCase):
 
     def test_returns_array(self):
         """Check that find_besthist gives back an array
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_besthist gives back a numpy array")
 
@@ -436,7 +434,7 @@ class FindBestHist(unittest.TestCase):
     def test_returns_empty(self):
         """Check that find_besthist gives back an empty array if no data fits inside
         the ellipse
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_besthist gives back an empty array if no data inside ellipse")
 
@@ -470,7 +468,7 @@ class FindBestHist(unittest.TestCase):
 
     def test_returns_array_of_right_size(self):
         """Check that find_besthist gives back an array that is the size we asked
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_besthist gives back the right sized array")
 
@@ -501,7 +499,7 @@ class FindBestHist(unittest.TestCase):
         """Check that find_besthist gives us the values we expect
         Since 1/3 of the data could be selected randomly, we will just check
         that it removes data that isn't inside the ellipse
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_besthist gives back an array containing expected values")
         grid_lat = np.array([1, 1, -60, -58])
@@ -536,11 +534,11 @@ class FindBestHist(unittest.TestCase):
 
 
 class FindEllipse(unittest.TestCase):
-    """Test cases for "find ellipse" function"""
+    """Test cases for "find ellipse" function."""
 
     def test_find_ellipse_returns_float(self):
         """Check that find_ellipse returns a float if only given floats
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_ellipse will return a float")
 
@@ -550,7 +548,7 @@ class FindEllipse(unittest.TestCase):
 
     def test_find_ellipse_returns_array(self):
         """Check that find_ellipse returns an array if vectorised
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_ellipse vectorised returns an array")
 
@@ -561,7 +559,7 @@ class FindEllipse(unittest.TestCase):
 
     def test_find_ellipse_returns_expected_float(self):
         """Check that find_ellipse returns the correct float
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_ellipse returns the right answer")
 
@@ -573,7 +571,7 @@ class FindEllipse(unittest.TestCase):
 
     def test_find_ellipse_returns_expected_float_without_pv(self):
         """Check that find_ellipse returns the correct float without potential vorticity
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_ellipse returns the right answer without potential vorticity")
 
@@ -585,7 +583,7 @@ class FindEllipse(unittest.TestCase):
 
     def test_find_ellipse_returns_expected_array(self):
         """Check that find_ellipse returns the correct array
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_ellipse returns the right array answer")
 
@@ -601,7 +599,7 @@ class FindEllipse(unittest.TestCase):
 
     def test_find_ellipse_returns_expected_array_without_pv(self):
         """Check that find_ellipse returns the correct array
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that find_ellipse returns the right array answer")
 

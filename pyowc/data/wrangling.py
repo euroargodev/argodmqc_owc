@@ -1,12 +1,4 @@
-"""Functions to manipulate and process data
-
-Parameters
-----------
-
-Returns:
--------
-
-"""
+"""Functions to manipulate and process data."""
 
 import numpy as np
 
@@ -16,7 +8,7 @@ from ..core.stats import covar_xyt_pv
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 def map_data_grid(sal, grid_pos, data_pos, lat, long, age, signal_variance, noise_variance, phi, map_pv_use):
-    """Maps historical float data onto a single float
+    """Maps historical float data onto a single float.
 
     An optimal mapping routine, taking data measured in arbitrary geographic locations and
     mapping these data onto a more regular grid. As should happen in every mapping problem
@@ -41,9 +33,8 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age, signal_variance, nois
     phi: scalar cross isobaric scale
     map_pv_use: flag for including vorticity (1=include)
 
-    Returns:
-    -------
-    Tuple containing mapped fields, error estimates of mapped fields, mapped fields on original locations, and their error estimates
+    Returns: Tuple containing mapped fields, error estimates of mapped fields, mapped fields on original locations,
+    and their error estimates
     """
     # create the data-data covariance matrix
     data_pos_covar = covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
@@ -78,7 +69,7 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age, signal_variance, nois
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
-    """Interpolate historical salinity and pressure data on the float theta
+    """Interpolate historical salinity and pressure data on the float theta.
 
     Routine to interpolate climatological salinity and pressure data onto float's potential temperature.
 
@@ -93,7 +84,8 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
 
     Returns:
     -------
-    Matrices [number of floats x number of historical profiles] of interpolated salinity and interpolated pressure on float theta surface
+    Matrices [number of floats x number of historical profiles] of interpolated salinity and
+    interpolated pressure on float theta surface
     """
     # get the shape of the data inputs (float and climatology)
     grid_stations = grid_sal.shape[1]

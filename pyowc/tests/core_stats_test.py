@@ -1,4 +1,4 @@
-"""Tests for core.stats module functions"""
+"""Tests for core.stats module functions."""
 
 import os
 import unittest
@@ -13,7 +13,7 @@ from . import TESTS_CONFIG
 
 
 class BrkPtFit(unittest.TestCase):
-    """Test case for 'brk_pt_fit' function"""
+    """Test case for 'brk_pt_fit' function."""
 
     def setUp(self):
         self.x_obvs = np.arange(-1, 1 + 0.1, 0.1)
@@ -76,7 +76,7 @@ class BrkPtFit(unittest.TestCase):
 
     def test_bad_inputs_gives_outputs(self):
         """Check that, if observations are the wrong shape, we get a bad output
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing brk_pt_fit returns values for bad arrays")
 
@@ -95,7 +95,7 @@ class BrkPtFit(unittest.TestCase):
 
     def test_needs_no_weights(self):
         """Check that, even without weights, we get an estimate
-        :return: Nothing
+        :return: Nothing.
         """
         print("testing brk_pt_fit runs without weights")
         fit_param_ans = np.array([1.37597459912525, -0.501251340026727])
@@ -134,7 +134,7 @@ class BrkPtFit(unittest.TestCase):
 
     def test_runs_with_weights(self):
         """Check we get the right answer when running with weights
-        :return: nothing
+        :return: nothing.
         """
         print("Testing brk_pt_ft runs using weighted values")
 
@@ -174,7 +174,7 @@ class BrkPtFit(unittest.TestCase):
 
     def test_det_zero(self):
         """Check that we still get an answer if determinant is o
-        :return: nothing
+        :return: nothing.
         """
         print("Testing brk_pt_fit returns if det(A) == 0")
 
@@ -190,11 +190,11 @@ class BrkPtFit(unittest.TestCase):
 
 
 class BuildCov(unittest.TestCase):
-    """Test cases for build_cov function"""
+    """Test cases for build_cov function."""
 
     def setUp(self):
         """Set up for test
-        :return: Nothing
+        :return: Nothing.
         """
         self.config = {
             "MAPSCALE_LONGITUDE_SMALL": 4,
@@ -222,7 +222,7 @@ class BuildCov(unittest.TestCase):
 
     def test_returns_numpy_array(self):
         """Check that build_cov returns a numpy array
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that build_cov returns a numpy array")
 
@@ -232,7 +232,7 @@ class BuildCov(unittest.TestCase):
 
     def test_returns_correct_size(self):
         """Check that build_cov returns a matrix that is the correct size
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that build_cov returns correct shape matrix")
 
@@ -246,7 +246,7 @@ class BuildCov(unittest.TestCase):
 
     def test_returns_correct_elements(self):
         """Check that build_cov returns a matrix that is the correct size
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that build_cov returns correct shape matrix")
 
@@ -264,11 +264,11 @@ class BuildCov(unittest.TestCase):
 
 
 class Covarxytpv(unittest.TestCase):
-    """Test cases for covar_xyt_pv function"""
+    """Test cases for covar_xyt_pv function."""
 
     def setUp(self):
         """Set up variables to use for testing
-        :return: Nothing
+        :return: Nothing.
         """
         self.points1 = (
             np.array(
@@ -289,7 +289,7 @@ class Covarxytpv(unittest.TestCase):
 
     def test_returns_array(self):
         """Check that the function returns an array if given an array
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv returns an array")
         covar = core.stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
@@ -298,7 +298,7 @@ class Covarxytpv(unittest.TestCase):
 
     def test_returns_ones_for_same_value(self):
         """Check that entering the same value for points 1 and 2 gives a matrix of ones
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv return 1's if input points are identical")
 
@@ -319,7 +319,7 @@ class Covarxytpv(unittest.TestCase):
 
     def test_returns_zeroes_for_extremely_different_value(self):
         """Check that entering extreme value for points 1 and 2 gives a matrix of zeroes
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv return 0's if input points are extremely different")
 
@@ -341,7 +341,7 @@ class Covarxytpv(unittest.TestCase):
     def test_return_matrix_shape_correct_multidimensional(self):
         """Check that, if given an m*4 points 1 matrix and a n n*5 points 2 matrix
         the function returns an m*n matrix (m > 1)
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv returns matrix of the correct shape for multidemensional")
 
@@ -355,7 +355,7 @@ class Covarxytpv(unittest.TestCase):
     def test_return_matrix_shape_correct_one_demensional(self):
         """Check that, if given an 1*4 points 1 matrix and a n n*5 points 2 matrix
         the function returns an 1*n matrix (m > 1)
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv returns matrix of the correct shape one dimensional")
 
@@ -374,7 +374,7 @@ class Covarxytpv(unittest.TestCase):
 
     def test_returns_expected_answers(self):
         """Check that we get the answers we expect
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv returns the expected result")
 
@@ -425,7 +425,7 @@ class Covarxytpv(unittest.TestCase):
 
     def test_allows_1_dimensional_data(self):
         """Check that using 1 dimensional data sets does not through an error
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covar_xyt_pv can use one dimensional data")
 
@@ -446,11 +446,11 @@ class Covarxytpv(unittest.TestCase):
 
 
 class Covarxypv(unittest.TestCase):
-    """Test cases for covarxy_pv function"""
+    """Test cases for covarxy_pv function."""
 
     def setUp(self):
         """Set up for test
-        :return: Nothing
+        :return: Nothing.
         """
         self.input_coords = np.array([0.0572, -0.0592, 5.1083]) * 1.0e03
         self.coords = (
@@ -464,7 +464,7 @@ class Covarxypv(unittest.TestCase):
 
     def test_return_shape(self):
         """Check that the returned covariance matrix is the correct size
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covarxy_pv returns 1 dimensional matrix")
 
@@ -474,7 +474,7 @@ class Covarxypv(unittest.TestCase):
 
     def test_returns_correct(self):
         """Check that the returned covriance matrix contains the correct values
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covarxy_pv returns correct values")
 
@@ -488,7 +488,7 @@ class Covarxypv(unittest.TestCase):
     def test_returns_correct_pv(self):
         """Check that the returned covriance matrix contains the correct values with
         potential vorticity
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that covarxy_pv returns correct values with potential vorticity")
 
@@ -501,7 +501,7 @@ class Covarxypv(unittest.TestCase):
 
     def test_returns_ones(self):
         """Check that we get a matrix of almost ones if data is very close (according to scale)
-        :return: nothing
+        :return: nothing.
         """
         print("Testing that covarxy_pv returns almost ones if data is close")
 
@@ -512,7 +512,7 @@ class Covarxypv(unittest.TestCase):
 
 # pylint: disable=too-many-instance-attributes
 class FitCond(unittest.TestCase):
-    """Test cases for 'fit_cond' function"""
+    """Test cases for 'fit_cond' function."""
 
     def setUp(self):
         # fit_input = loadmat("../../data/test_data/fit_cond/fit_cond_input.mat")
@@ -538,7 +538,7 @@ class FitCond(unittest.TestCase):
 
     def test_max_no_breaks(self):
         """Check return values if we specify a maximum number of breaks
-        :return: nothing
+        :return: nothing.
         """
         print("Testing fit_cond for max_no_breaks")
 
@@ -564,7 +564,7 @@ class FitCond(unittest.TestCase):
 
     def test_fixed_breaks(self):
         """Check that we can run this function with set break points
-        :return: nothing
+        :return: nothing.
         """
         print("Testing that fit_cond returns values when using fixed breaks")
 
@@ -576,7 +576,7 @@ class FitCond(unittest.TestCase):
 
 
 class NoiseVariance(unittest.TestCase):
-    """Test cases for noise_variance function"""
+    """Test cases for noise_variance function."""
 
     def setUp(self):
         self.sal = np.array([34.4988, 34.3267, 34.0346])
@@ -585,7 +585,7 @@ class NoiseVariance(unittest.TestCase):
 
     def test_returns_float(self):
         """Check that noise_variance returns a float
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that noise_variance returns a float")
 
@@ -597,7 +597,7 @@ class NoiseVariance(unittest.TestCase):
 
     def test_returns_0_if_no_unique_points(self):
         """Check that noise_variance returns 0 if it cannot find any unique points
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that noise_variance returns 0 for no unique points")
 
@@ -612,7 +612,7 @@ class NoiseVariance(unittest.TestCase):
 
     def test_returns_expected(self):
         """Check that noise_variance returns the expected answer
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that noise_variance returns the expected value")
 
@@ -623,11 +623,11 @@ class NoiseVariance(unittest.TestCase):
 
 
 class SignalVariance(unittest.TestCase):
-    """Test cases for signal_variance function"""
+    """Test cases for signal_variance function."""
 
     def test_returns_float(self):
         """Check that we return a float if given some data
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that signal_variance returns a float")
 
@@ -636,7 +636,7 @@ class SignalVariance(unittest.TestCase):
 
     def test_throws_exception(self):
         """Check that we thrown an exception if no valid salinities are given
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that signal_variance throws an exception for no valid salinities")
 
@@ -649,7 +649,7 @@ class SignalVariance(unittest.TestCase):
 
     def test_nans_are_ignored(self):
         """Check that we ignore 0's and nan values
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that signal_variance ignores 0's/NaNs correctly")
 
@@ -660,7 +660,7 @@ class SignalVariance(unittest.TestCase):
 
     def test_negtive_inputs_against_positive(self):
         """Check that giving a set of negative inputs gives the same result as positive inputs
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing that signal_variance returns the same result for input and -input")
 
@@ -670,9 +670,7 @@ class SignalVariance(unittest.TestCase):
         self.assertEqual(positive, negative, "signal_variance is not returning the same result for input and -input")
 
     def test_returns_correct_result(self):
-        """Check that we get the expected result from some inputs
-        :return: Nothing
-        """
+        """Check that we get the expected result from some inputs."""
         print("Testing that signal_variance gives the expected results")
 
         expected = 0.185000000000001

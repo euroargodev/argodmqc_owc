@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def main() -> None:
     """Entry point for processing."""
-    FLOAT_NAMES = ["3901960"]  # add float names here
+    FLOAT_NAMES = ["7900180"]  # add float names here
     USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
     print(owc.configuration.print_cfg(USER_CONFIG))
 

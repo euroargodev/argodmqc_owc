@@ -1,4 +1,4 @@
-"""A set of helper method to size of update_salinity_mapping"""
+"""A set of helper method to size of update_salinity_mapping."""
 
 from copy import deepcopy
 from pathlib import Path
@@ -17,7 +17,7 @@ def load_varibales_from_file(mapped_data_path, float_level_count) -> dict:
     mapped_data_path :
     float_level_count :
 
-    Returns:
+    Returns: dict
     -------
 
     """
@@ -130,9 +130,7 @@ def get_float_data(float_source_data, missing_profile) -> dict:
     float_source_data :
     missing_profile :
 
-    Returns:
-    -------
-
+    Returns: data
     """
     data = {}
     # get data from float
@@ -154,9 +152,7 @@ def process_profiles_la_variables(data, float_level_count, profile_index):
     float_level_count :
     profile_index :
 
-    Returns:
-    -------
-
+    Returns: data
     """
     # if we are inserting changing a column in existing data
     if profile_index < data["la_ptmp"].shape[1]:
@@ -182,9 +178,7 @@ def process_profiles_grid_variables(grid_data, config):
     grid_data :
     config :
 
-    Returns:
-    -------
-
+    Returns: grid_data
     """
     # tbase.int file requires longitudes from 0 to +/-180
     grid_long_tbase = deepcopy(grid_data["grid_long"])
@@ -227,9 +221,7 @@ def process_profile_hist_variables(grid_data, float_pres, hist_interp_sal, hist_
     n_level :
     map_p_delta :
 
-    Returns:
-    -------
-
+    Returns: dict
     """
     max_hist_casts = np.argwhere(np.isnan(hist_interp_sal[n_level, :]) == 0)
     hist_sal = hist_interp_sal[n_level, max_hist_casts]
@@ -263,9 +255,7 @@ def remove_statical_outliers(outlier, hist_data):
     outlier :
     hist_data :
 
-    Returns:
-    -------
-
+    Returns: hist_data
     """
     if outlier.__len__() > 0:
         hist_data["hist_sal"] = np.delete(hist_data["hist_sal"], outlier)
@@ -283,10 +273,7 @@ def check_and_make_numpy_arry(data):
     ----------
     data : dictory that should contain
 
-    Returns:
-    -------
-    a dictionary where all elements are numpy arrays
-
+    Returns: dictionary where all elements are numpy arrays
     """
     for key, value in data.items():
         if not isinstance(value, np.ndarray):
@@ -302,9 +289,7 @@ def sort_numpy_array(data, index, keys=None):
     data : dictorain of value
     index : index to sort over
 
-    Returns:
-    -------
-    a dictionary where all elements are sorted within themselfes
+    Returns: dictionary where all elements are sorted within themselfes
 
     """
     if keys:
@@ -330,9 +315,7 @@ def selected_historical_points(data, hist_data, profile_index):
     hist_data :
     profile_index :
 
-    Returns:
-    -------
-
+    Returns: data
     """
     # only save selected historical points
     if data["selected_hist"].__len__() == 0:

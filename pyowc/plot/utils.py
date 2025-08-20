@@ -1,10 +1,10 @@
-"""Utilities Functions for plots"""
+"""Utilities Functions for plots."""
 
 import pandas as pd
 
 
 def create_dataframe(grid_data, float_data):
-    """Return data frame of location data for trajectory plotting
+    """Return data frame of location data for trajectory plotting.
 
     Parameters
     ----------

@@ -1,4 +1,4 @@
-"""Functions to create plot dashboards"""
+"""Functions to create plot dashboards."""
 
 import copy
 import os
@@ -21,7 +21,7 @@ from pyowc.plot.utils import create_dataframe
 
 # pylint: disable=too-many-locals
 def plot_diagnostics(float_dir, float_name, config, levels=2):
-    """Run the plotting procedures
+    """Run the plotting procedures.
 
     Parameters
     ----------

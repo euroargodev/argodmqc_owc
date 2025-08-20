@@ -1,4 +1,4 @@
-"""Tests for data.fetchers module functions"""
+"""Tests for data.fetchers module functions."""
 
 import unittest
 
@@ -11,19 +11,15 @@ from . import TESTS_CONFIG
 
 
 class GetData(unittest.TestCase):
-    """Test cases for get_data function"""
+    """Test cases for get_data function."""
 
     def setUp(self):
-        """Sets up some constant variables for testing
-        :return: Nothing
-        """
+        """Sets up some constant variables for testing."""
         self.float_name = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
         self.config = TESTS_CONFIG
 
     def test_returns_no_data(self):
-        """If given some data to find, it returns the correct data
-        :return: Nothing
-        """
+        """If given some data to find, it returns the correct data."""
         print("Testing that get_data will return no data if box is all 0's")
 
         wmo_boxes = np.array([self.config["TEST_FLOAT_WMO_BOXES"][0], 0, 0, 0])
@@ -32,9 +28,7 @@ class GetData(unittest.TestCase):
         self.assertTrue(this_data.__len__() == 0, "should return no data")
 
     def test_returns_correct_data(self):
-        """See if it gets the right type of data each time
-        :return: Nothing
-        """
+        """See if it gets the right type of data each time."""
         print("Testing that get_data returns the expected amount of data")
 
         wmo_boxes = np.array([self.config["TEST_FLOAT_WMO_BOXES"][0], 1, 1, 1])
@@ -58,9 +52,7 @@ class GetData(unittest.TestCase):
         )
 
     def test_removes_argo_float(self):
-        """See if it removes the argo float currently being analysed
-        :return: Nothing
-        """
+        """See if it removes the argo float currently being analysed."""
         print("Testing that get_data will remove the argo being analysed")
 
         wmo_boxes = np.array([self.config["TEST_FLOAT_WMO_BOXES"][0], 0, 0, 1])
@@ -75,9 +67,7 @@ class GetData(unittest.TestCase):
         )
 
     def test_returns_correct_shape(self):
-        """See if the returned data has the expected shape
-        :return: Nothing
-        """
+        """See if the returned data has the expected shape."""
         print("Testing that get_data returns data with the expected shape")
 
         wmo_boxes = np.array([self.config["TEST_FLOAT_WMO_BOXES"][0], 1, 0, 0])
@@ -97,7 +87,7 @@ class GetData(unittest.TestCase):
 
 
 class GetRegionData(unittest.TestCase):
-    """Test cases for get_region_data function"""
+    """Test cases for get_region_data function."""
 
     def setUp(self):
         self.float_name = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
@@ -109,9 +99,7 @@ class GetRegionData(unittest.TestCase):
         self.pres = np.array([3, 5, 15.1, 25.1, 36, 40, 45, 46, 500000])
 
     def test_returns_6(self):
-        """Check that the function returns 6 arrays
-        :return: Nothing
-        """
+        """Check that the function returns 6 arrays."""
         print("Testing that get_region_data returns 6 arrays")
 
         test = get_region_data(self.wmo_boxes, self.float_name, self.config, self.index, self.pres)
@@ -119,9 +107,7 @@ class GetRegionData(unittest.TestCase):
         self.assertTrue(test.__len__() == 6, "Should return 6 arrays")
 
     def test_return_shape(self):
-        """Check that the 6 arrays are the expected shape
-        :return: Nothing
-        """
+        """Check that the 6 arrays are the expected shape."""
         print("Testing that get_region_data return values are the correct shape")
 
         test = get_region_data(self.wmo_boxes, self.float_name, self.config, self.index, self.pres)
@@ -146,9 +132,7 @@ class GetRegionData(unittest.TestCase):
         )
 
     def test_gets_different_data(self):
-        """Check that we can fetch different combinations of data
-        :return: Nothing
-        """
+        """Check that we can fetch different combinations of data."""
         print("Testing that get_region_data can return different data types")
 
         test_ctd = get_region_data(
@@ -183,9 +167,7 @@ class GetRegionData(unittest.TestCase):
         )
 
     def test_should_only_get_specific_indices(self):
-        """If we only give n indices, we should get n data points back
-        :return: Nothing
-        """
+        """If we only give n indices, we should get n data points back."""
         print("Testing that get_region returns correct amount of data")
 
         test_many = get_region_data(self.wmo_boxes, self.float_name, self.config, self.index, self.pres)
@@ -197,9 +179,7 @@ class GetRegionData(unittest.TestCase):
         self.assertTrue(test_one["grid_sal"].shape[1] == 1)
 
     def test_raise_exception_bad_indices(self):
-        """Check that, if only bad indices are given, an exception is raised
-        :return: Nothing
-        """
+        """Check that, if only bad indices are given, an exception is raised."""
         print("Testing exception is raised if indices are bad")
 
         with self.assertRaises(Exception) as no_index:
@@ -214,12 +194,10 @@ class GetRegionData(unittest.TestCase):
 
 
 class GetRegionHistLoc(unittest.TestCase):
-    """Test cases for get_hist_region_locations function"""
+    """Test cases for get_hist_region_locations function."""
 
     def setUp(self):
-        """Set up values that will be used for testing
-        :return: Nothing
-        """
+        """Set up values that will be used for testing."""
         self.config = TESTS_CONFIG
         self.float_name = TESTS_CONFIG["TEST_FLOAT_IN_HIST"]
         self.wmo_box = np.array([[self.config["TEST_FLOAT_WMO_BOXES"][0], 1, 0, 0]])
@@ -228,9 +206,7 @@ class GetRegionHistLoc(unittest.TestCase):
         )
 
     def test_returns_three(self):
-        """Check that the function returns 3 unique values
-        :return: Nothing
-        """
+        """Check that the function returns 3 unique values."""
         print("Testing that get_region_his_locations returns 3 unique values of equal length")
 
         lat, long, age = get_region_hist_locations(self.wmo_box, self.float_name, self.config)
@@ -242,10 +218,7 @@ class GetRegionHistLoc(unittest.TestCase):
             self.assertNotEqual(lat[i], age[i], "spatial and temporal data should be unique")
 
     def test_current_float_removed(self):
-        """Check that if the argo float currently being processed appears in the historical data that
-        it is removed
-        :return: Nothing
-        """
+        """Check that if the argo float currently being processed can be removed."""
         print("Testing that get_region_his_locations removes the current float")
 
         wmo_box_argo = np.array([[self.config["TEST_FLOAT_WMO_BOXES"][0], 0, 0, 1]])
@@ -268,9 +241,7 @@ class GetRegionHistLoc(unittest.TestCase):
         )
 
     def test_no_data(self):
-        """Check that if we receive no data then we return the expected values
-        :return: Nothing
-        """
+        """Check that if we receive no data then we return the expected values."""
         print("Testing that get_region_hist_locations returns expected values for no data")
 
         wmo_boxes_no_data = np.array([[self.config["TEST_FLOAT_WMO_BOXES"][0], 0, 0, 0]])
@@ -284,9 +255,7 @@ class GetRegionHistLoc(unittest.TestCase):
         )
 
     def test_can_choose_data(self):
-        """Check that, by applying different flags, we can fetch differing data types
-        :return: Nothing
-        """
+        """Check that, by applying different flags, we can fetch differing data types."""
         print("Testing that get_region_his_locations can fetch different data types")
 
         wmo_box_argo = np.array([[self.config["TEST_FLOAT_WMO_BOXES"][0], 0, 0, 1]])
@@ -310,9 +279,7 @@ class GetRegionHistLoc(unittest.TestCase):
             )
 
     def test_can_combine_data(self):
-        """Test that flags can be set to retrieve all the data
-        :return: Nothing
-        """
+        """Test that flags can be set to retrieve all the data."""
         print("Testing that get_region_hist_locations can fetch all the data")
 
         wmo_box_all = np.array([[self.config["TEST_FLOAT_WMO_BOXES"][0], 1, 1, 1]])
@@ -324,9 +291,7 @@ class GetRegionHistLoc(unittest.TestCase):
             )
 
     def test_can_combine_boxes(self):
-        """Test that it works with multiple boxes
-        :return: Nothing
-        """
+        """Test that it works with multiple boxes."""
         print("Testing that get_region_hist_loc will fetch data from multiple WMO boxes")
 
         all_data = get_region_hist_locations(self.wmo_boxes, "none", self.config)

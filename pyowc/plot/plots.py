@@ -1,4 +1,4 @@
-"""Functions to create specific plots"""
+"""Functions to create specific plots."""
 
 import copy
 import os
@@ -31,7 +31,7 @@ def draw_shapes_as_patches(axes, shapes, **kwargs):
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-arguments
 def trajectory_plot(bath, reef, floats, climatology, float_name, config):
-    """Plot locations of all the data used in the analysis
+    """Plot locations of all the data used in the analysis.
 
     function for plotting locations of all the data used in the analysis, including:
 
@@ -126,7 +126,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 
     for row in floats.itertuples():
         idx = row.Index
-        if idx == 0 or idx % 3 == 0 or idx == row_count - 1:
+        if idx % 3 == 0 or idx in (0, row_count -1):
             plt.annotate(
                 row.number,
                 (row.Longitude, row.Latitude),
@@ -147,7 +147,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 def theta_sal_plot(
     sal, theta, map_sal, map_theta, map_errors, index, profiles, config, float_name, title="uncalibrated"
 ):
-    """Create the salinity theta curve
+    """Create the salinity theta curve.
 
     Parameters
     ----------
@@ -210,7 +210,7 @@ def theta_sal_plot(
 
 # pylint: disable=too-many-arguments
 def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
-    """Plots profile plots
+    """Plots profile plots.
 
     Parameters
     ----------
@@ -299,7 +299,7 @@ def sal_var_plot(
     float_name,
     config,
 ):
-    """Create the salinity variance plot for each level
+    """Create the salinity variance plot for each level.
 
     Parameters
     ----------
@@ -596,7 +596,7 @@ def cal_sal_curve_plot(
     float_name,
     config,
 ):
-    """Create the calibrated salinity curve plot
+    """Create the calibrated salinity curve plot.
 
     Parameters
     ----------
@@ -731,7 +731,7 @@ def cal_sal_curve_plot(
 
 
 def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated"):
-    """Create the salinity anomoly plot
+    """Create the salinity anomoly plot.
 
     Parameters
     ----------

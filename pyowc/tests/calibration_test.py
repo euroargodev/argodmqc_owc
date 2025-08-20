@@ -1,3 +1,4 @@
+"""Tests for the Calibration code."""
 import io
 import os
 import sys
@@ -14,11 +15,11 @@ from . import TESTS_CONFIG
 
 # pylint: disable=bare-except
 class UpdateSalinityMapping(unittest.TestCase):
-    """Test cases for update_salinity_mapping function"""
+    """Test cases for update_salinity_mapping function."""
 
     def setUp(self):
         """Only run if we are missing our test file
-        :return: Nothing
+        :return: Nothing.
         """
         # self.float_source = "3901960"
         # self.python_output_path = "../../data/float_mapped/map_" + self.float_source + ".mat"
@@ -58,7 +59,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
     def test_salinity_mapping(self):
         """Check that the salinity mapping protocol runs
-        :return: Nothing
+        :return: Nothing.
         """
         print("testing that update salinity mapping runs through")
 
@@ -69,7 +70,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
             try:
                 update_salinity_mapping("/", tmp_config, self.float_source)
-            except:
+            except Exception:
                 self.fail("Update salinity mapping encountered an unexpected error")
 
         # Should use precalculated data
@@ -82,7 +83,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
     def test_ptmp_output(self):
         """Check that ptmp matrices match across version
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing update_salinity_mapping gives correct potential temperature")
 
@@ -101,7 +102,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
     def test_mapped_sal_output(self):
         """Check that mapped salinity matrices match across version
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing update_salinity_mapping gives correct mapped salinity")
 
@@ -119,7 +120,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
     def test_mapped_salerrors_output(self):
         """Check that salinity errors matrices match across version
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing update_salinity_mapping gives correct salinity errors")
 
@@ -137,7 +138,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
     def test_noise_sal_output(self):
         """Check that noise salinity matrices match across version
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing update_salinity_mapping gives correct noise salinity")
 
@@ -155,7 +156,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
     def test_signal_sal_output(self):
         """Check that signal salinity matrices match across version
-        :return: Nothing
+        :return: Nothing.
         """
         print("Testing update_salinity_mapping gives correct signal salinity")
 
@@ -173,11 +174,11 @@ class UpdateSalinityMapping(unittest.TestCase):
 
 
 class CalcPiecewiseFit(unittest.TestCase):
-    """Test cases for 'calc_piecewisefit' function"""
+    """Test cases for 'calc_piecewisefit' function."""
 
     def test_custom(self):
         """Change variables in this test to use different mapped outputs
-        :return: nothing
+        :return: nothing.
         """
         calc_piecewisefit("/", TESTS_CONFIG["TEST_FLOAT_SOURCE"], TESTS_CONFIG)
 

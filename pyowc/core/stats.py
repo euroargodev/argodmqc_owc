@@ -1,12 +1,4 @@
-"""Key functions to run statistics
-
-Parameters
-----------
-
-Returns:
--------
-
-"""
+"""Key functions to run statistics."""
 
 import copy
 
@@ -25,7 +17,7 @@ from ..utilities import potential_vorticity, sorter
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
 def fit_cond(x, y, n_err, lvcov, *args):
-    """Get optimal fit
+    """Get optimal fit.
 
     To decide which fit is optimal, we will use the small sample variation of the
     Akaike Information Criterion.   Having chosen the
@@ -68,7 +60,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     """
 
     def nlbpfun(ubrk_i):
-        """Find residual
+        """Find residual.
 
         Parameters
         ----------
@@ -83,7 +75,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
         if nbr1 > 1:
             ubrk = ubrk_g[0 : nbr1 - 1]
-            for i in range(nbr1, ubrk_g.__len__()):
+            for _ in range(nbr1, ubrk_g.__len__()):
                 ubrk.append(ubrk_i)
 
         else:
@@ -197,11 +189,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     x_0 = (x[npts - 1] + x[0]) / 2
 
-    if x[0] != x[npts - 1]:
-        x_scale = (x[npts - 1] - x[0]) / 2
-
-    else:
-        x_scale = 1
+    x_scale = (x[npts - 1] - x[0]) / 2 if x[0] != x[npts - 1] else 1
 
     # remove the mean of y and scale by the standard deviation
 
@@ -235,15 +223,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     ndf = np.sum(np.ones((npts, 1)) / (np.dot(lvcov, np.ones((npts, 1)))))
 
-    # calculate the residual sum of squares for the initial series
-
-    if x_unique.__len__() > 3:
-        # find 2nd and 2nd to last profile and use them as limits for the break points
-        xblim = [x_unique[1], x_unique[n_prof - 2]]
-
-    else:
-        # too few profiles
-        xblim = [1, 1]
+    xblim = [x_unique[1], x_unique[n_prof - 2]] if len(x_unique) > 3 else [1, 1]
 
     no_args = args.__len__()
 
@@ -390,8 +370,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
             b_g = np.concatenate(([-1], b_guess))
             ubrk_g = []
 
-            nbr = int(nbr)
-            for n in range(nbr):
+            nbr_int = int(nbr)
+            for n in range(nbr_int):
                 ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
             if setbreaks != 0:
@@ -435,16 +415,9 @@ def fit_cond(x, y, n_err, lvcov, *args):
         good = np.array(pbrk + 1, dtype=int)
         best = np.argmin(aic[0, good])
 
-        if isinstance(good, np.ndarray):
-            best = good[best] + 1
-        else:
-            best = good + 1
+        best = good[best] + 1 if isinstance(good, np.ndarray) else good + 1
 
-    if setbreaks & nbr1 == max_brk:
-        comment = "Fit evaluated "
-
-    else:
-        comment = "Best model found with "
+    comment = "Fit evaluated " if setbreaks & nbr1 == max_brk else "Best model found with "
 
     if best > 2:
         comment = comment + str(best - 2) + " break points"
@@ -457,11 +430,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     print(comment)
 
-    if best > 2:
-        breaks = b_pts[np.arange(0, best - 2), best - 2].T
-
-    else:
-        breaks = []
+    breaks = b_pts[np.arange(0, best - 2), best - 2].T if best > 2 else []
 
     best = int(best)
     A = b_A[0:best, best - 1]
@@ -523,7 +492,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     else:
         err = 0
 
-        for i in range(nloops):
+        for _ in range(nloops):
             yf = real_yf + n_err * np.random.randn(yf.size)
 
             if best == 2:
@@ -649,7 +618,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
 
 def signal_variance(sal):
-    """Calculates signal variance
+    """Calculates signal variance.
 
     Calculates an estimate of the signal variance at a given level using:
 
@@ -676,7 +645,7 @@ def signal_variance(sal):
 
 
 def noise_variance(sal, lat, long):
-    """Calculates the variance in noise_variance of salinity at different pressures
+    """Calculates the variance in noise_variance of salinity at different pressures.
 
     Finds the variance for the noise variance of each salinity measurement by comparing it
     to the noise_variance of all the other measurements. Can be thought of as the average
@@ -724,7 +693,7 @@ def noise_variance(sal, lat, long):
 
 # pylint: disable=too-many-arguments
 def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
-    """Calculates how "close" two sets of points are to each other,
+    """Calculates how "close" two sets of points are to each other,.
 
     Calculates how "close" two sets of points are to each other, taking into account
     space, time and (if wanted) potential vorticity. The closer two values are to
@@ -782,7 +751,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
 
 # pylint: disable=too-many-locals
 def build_cov(ptmp, coord_float, config):
-    """Build the covariance matrix
+    """Build the covariance matrix.
 
     Function builds a square covariance matrix that has n*n tiles, and each
     tile is of size m*m
@@ -899,7 +868,7 @@ def build_cov(ptmp, coord_float, config):
 
 # pylint: disable=too-many-arguments
 def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
-    """Returns a matrix for the horizontal covariance
+    """Returns a matrix for the horizontal covariance.
 
     Finds the correlation between spatial and temporal data, and uses this
     to construct the covariance
@@ -947,7 +916,7 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
 
 # pylint: disable=too-many-locals
 def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
-    """Get least-squares estimates for a piecewise linear fit with breakpoints at prescribed points
+    """Get least-squares estimates for a piecewise linear fit with breakpoints at prescribed points.
 
     Routine to get least squares fit for piecewise linear fit with break points at prescribed points
 
@@ -1012,11 +981,7 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
             trends[ixb_g_j, j + 1] = btem[j + 1] - btem[j]
 
     # Get least squares estimate. Use weights, if we have them
-    if w_i.__len__() > 0:
-        ls_est = np.dot(np.dot(trends.T, w_i), trends)
-
-    else:
-        ls_est = np.dot(trends.T, trends)
+    ls_est = np.dot(np.dot(trends.T, w_i), trends) if w_i.__len__() > 0 else np.dot(trends.T, trends)
 
     if np.linalg.det(ls_est) == 0:
         fit_param = np.zeros((b_length + 2, 1))

@@ -1,12 +1,4 @@
-"""Functions to access, load data
-
-Parameters
-----------
-
-Returns:
--------
-
-"""
+"""Functions to access, load data."""
 
 import os
 import struct
@@ -63,7 +55,7 @@ def read_mat_argo(filepath, pa_float_name):
 
 # pylint: disable=too-many-locals
 def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
-    """Find depth grid over given area using tbase.int file
+    """Find depth grid over given area using tbase.int file.
 
     The old matlab version of this uses an old .int file from NOAA which contains
     5 arcminute data of global terrain. Whilst other more complete data sets now
@@ -162,7 +154,7 @@ def get_topo_grid(min_long, max_long, min_lat, max_lat, config):
 
 
 def get_data(wmo_box, data_type, config, pa_float_name):
-    """Gets all the data from regions specified by the WMO boxes
+    """Gets all the data from regions specified by the WMO boxes.
 
     Uses the WMO box numbers to fetch the relevant data for the region.
 
@@ -177,7 +169,8 @@ def get_data(wmo_box, data_type, config, pa_float_name):
 
     Parameters
     ----------
-    wmo_box: 2D array containing the name of the WMO boxes that cover the area of interest, and flags for whether we want to use argo, bottle, and/or CTD data
+    wmo_box: 2D array containing the name of the WMO boxes that cover the area of interest,
+    and flags for whether we want to use argo, bottle, and/or CTD data
     data_type: Which type of data we are checking: 1 (CTD), 2 (BOTTLE) or 3 (ARGO)
     config: Dictionary containing configuration settings. Used to find locations of folders and file containing data
     pa_float_name: String containing the name of the float being profiled
@@ -212,7 +205,8 @@ def get_data(wmo_box, data_type, config, pa_float_name):
 
 # pylint: disable=bare-except
 def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
-    """Uses the WMO boxes and to return all of the historical data in the given area, excluding the float that is currently being analysed.
+    """Uses the WMO boxes and to return all of the historical data in the given area,
+    excluding the float that is currently being analysed.
 
     Function returns the needed spatial and temporal data from each of the historical
     data points inside the WMO boxes it is given, excluding the current float being processed.
@@ -251,8 +245,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
                     grid_long = np.concatenate([grid_long, data["long"]])
                     grid_dates = np.concatenate([grid_dates, data["dates"]])
                     data = []
-
-            except:
+            except Exception:
                 pass
 
     if grid_lat.__len__() == 0:
@@ -275,7 +268,7 @@ def get_region_hist_locations(pa_wmo_numbers, pa_float_name, config):
 # pylint: disable=too-many-nested-blocks
 # pylint: disable=bare-except
 def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres):
-    """Get the historical pressure, salinity, and temperature of selected casts
+    """Get the historical pressure, salinity, and temperature of selected casts.
 
     Function returns the needed spatial, temporal, and ocean characteristic (salinity, temp, pressure)
     data from each of the historical data points inside the WMO boxes it is given, excluding the
@@ -410,7 +403,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
                             max_depth = grid_pres.shape[1]
                             how_many_cols = grid_pres.shape[0]
 
-            except:
+            except Exception:
                 pass
 
     # convert longitude to 0 to 360 degrees
@@ -425,7 +418,7 @@ def get_region_data(pa_wmo_numbers, pa_float_name, config, index, pa_float_pres)
         grid_pres = grid_pres.T
         grid_ptmp = grid_ptmp.T
 
-    except:
+    except Exception:
         raise RuntimeError("NO DATA FOUND") from None
     # we have encountered a problem where some data coming in is all NaN
     # these columns need to be removed from the data set
@@ -470,7 +463,7 @@ def _sync_nans(grid_sal, grid_pres, grid_ptmp):
 
 
 def frontal_constraint_saf(config, grid_data, float_data):
-    """Function to
+    """Function to.
 
     Parameters
     ----------

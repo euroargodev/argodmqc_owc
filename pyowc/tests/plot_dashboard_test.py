@@ -1,3 +1,4 @@
+"""Tests for the Plot Dashboard code."""
 import unittest
 from unittest.mock import patch
 
@@ -7,10 +8,7 @@ from . import TESTS_CONFIG
 
 
 class Dashboard(unittest.TestCase):
-    """Test dashboard function
-    plot_diagnostics(float_dir, float_name, config, levels=2)
-
-    """
+    """Test dashboard function."""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_dashboard(self, mockshow):

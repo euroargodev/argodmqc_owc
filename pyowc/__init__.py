@@ -1,4 +1,4 @@
-"""Global import controler"""
+"""Global import controler."""
 
 # pylint: disable=broad-except
 try:

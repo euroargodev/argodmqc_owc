@@ -1,3 +1,4 @@
+"""Tests for the Plotting code."""
 import copy
 import os
 import unittest
@@ -15,13 +16,11 @@ from . import TESTS_CONFIG
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
 class CalSalCurve(unittest.TestCase):
-    """Test cases for cal_sal_curve_plot function"""
+    """Test cases for cal_sal_curve_plot function."""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
-        """Check we get no errors during the plotting routine
-        :return: nothing
-        """
+        """Check we get no errors during the plotting routine."""
         print("Test that calibrated salinity curve plot throws no errors")
 
         # get the data we need
@@ -80,13 +79,11 @@ class CalSalCurve(unittest.TestCase):
 # pylint: disable=unused-argument
 # pylint: disable=too-many-locals
 class SalVar(unittest.TestCase):
-    """Test cases for sal_var_plot function"""
+    """Test cases for sal_var_plot function."""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
-        """Check we get no errors during the plotting routine
-        :return: nothing
-        """
+        """Check we get no errors during the plotting routine."""
         print("Test that salinity variance plot throws no errors")
 
         # grid_data = loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
@@ -242,13 +239,11 @@ class SalVar(unittest.TestCase):
 # pylint: disable=unused-argument
 # pylint: disable=too-many-locals
 class TS(unittest.TestCase):
-    """Test cases for t_s_plot function"""
+    """Test cases for t_s_plot function."""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
-        """Check we get no errors during the plotting routine
-        :return: nothing
-        """
+        """Check we get no errors during the plotting routine."""
         print("Check t_s_profile_plot runs")
         # float_data = scipy.loadmat("../../data/float_source/3901960.mat")
         # grid_data = scipy.loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
@@ -298,13 +293,11 @@ class TS(unittest.TestCase):
 # pylint: disable=bare-except
 # pylint: disable=unused-argument
 class ThetaSal(unittest.TestCase):
-    """Test cases for theta_sal_plot function"""
+    """Test cases for theta_sal_plot function."""
 
     @patch("pyowc.plot.plots.plt.show")
     def test_plot_runs(self, mockshow):
-        """Check we get no errors during the plotting routine
-        :return: nothing
-        """
+        """Check we get no errors during the plotting routine."""
         print("Test that theta salinity plot throws no errors")
 
         # grid_data = loadmat("../../data/test_data/float_mapped_test/map_3901960.mat")
@@ -359,12 +352,10 @@ class ThetaSal(unittest.TestCase):
 
 # pylint: disable=bare-except
 class Trajectory(unittest.TestCase):
-    """Test cases for trajectory_plot function"""
+    """Test cases for trajectory_plot function."""
 
     def test_plot_runs(self):
-        """Check we get no errors during the plotting routine
-        :return: nothing
-        """
+        """Check we get no errors during the plotting routine."""
         print("Test that trajectory plot throws no errors")
 
         config = TESTS_CONFIG
@@ -395,7 +386,7 @@ class Trajectory(unittest.TestCase):
         try:
             plots.trajectory_plot(1, 1, floats, grid, "3901960", TESTS_CONFIG)
 
-        except:
+        except Exception:
             self.fail("Trajectory plotting routine failed unexpectedly")
 
 

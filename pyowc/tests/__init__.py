@@ -1,4 +1,4 @@
-"""Prepare configuration for unit testing"""
+"""Prepare configuration for unit testing."""
 
 import os
 
@@ -25,5 +25,5 @@ TESTS_CONFIG["TEST_FLOAT_N_TO_REMOVE"] = 30
 TESTS_CONFIG["TEST_FLOAT_N_DATA"] = 830
 
 # Fix paths for tests:
-for path in [k for k in TESTS_CONFIG.keys() if "DIRECTORY" in k]:
+for path in [k for k in TESTS_CONFIG if "DIRECTORY" in k]:
     TESTS_CONFIG[path] = os.path.abspath(TESTS_CONFIG[path].replace("data/", data_root, 1))

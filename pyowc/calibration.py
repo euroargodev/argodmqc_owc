@@ -1,4 +1,4 @@
-"""Functions to calibrate data"""
+"""Functions to calibrate data."""
 
 import copy
 import os
@@ -35,7 +35,7 @@ from .helper import (
 # pylint: disable=invalid-name
 # pylint: disable=fixme
 def update_salinity_mapping(float_dir, config, float_name):
-    """Calculates values needed for analysis and save on file
+    """Calculates values needed for analysis and save on file.
 
     Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used
     to map the large scale field
@@ -209,9 +209,8 @@ def update_salinity_mapping(float_dir, config, float_name):
 
                 # make sure that the grid and float longitudes match at the 0-360 mark
                 float_long_0 = float_data["float_long"]
-                if np.argwhere(grid_long > 360).__len__() > 0:
-                    if 0 <= float_data["float_long"] <= 20:
-                        float_long_0 += 360
+                if np.argwhere(grid_long > 360).__len__() > 0 and 0 <= float_data["float_long"] <= 20:
+                    float_long_0 += 360
 
                 index = find_besthist(
                     grid_data["grid_lat"],
@@ -251,9 +250,8 @@ def update_salinity_mapping(float_dir, config, float_name):
                         best_hist_data.update(best_hist_data_2)
 
                 # make the float longitude wrap around the 0-360 mark if the historical data has
-                if np.argwhere(best_hist_data["grid_long"] > 360).__len__() > 0:
-                    if 0 <= float_data["float_long"] <= 20:
-                        float_data["float_long"] += 360
+                if np.argwhere(best_hist_data["grid_long"] > 360).__len__() > 0 and 0 <= float_data["float_long"] <= 20:
+                    float_data["float_long"] += 360
 
                 # interpolate historical data onto float theta levels
                 hist_interp_sal, hist_interp_pres = interp_climatology(
@@ -426,7 +424,7 @@ def update_salinity_mapping(float_dir, config, float_name):
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
 def calc_piecewisefit(float_dir, float_name, system_config):
-    """Calibrate salinities
+    """Calibrate salinities.
 
     Calculate the fit of each break and calibrate salinities
 
@@ -482,11 +480,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
         if lat.shape[0] > 1:
             lat = lat.flatten()
 
-        if np.any(long > 180):
-            long_1 = copy.deepcopy(long) - 360
-
-        else:
-            long_1 = copy.deepcopy(long)
+        long_1 = copy.deepcopy(long) - 360 if np.any(long > 180) else copy.deepcopy(long)
 
         elev, x_grid, y_grid = get_topo_grid(
             np.nanmin(long_1) - 1, np.nanmax(long_1) + 1, np.nanmin(lat) - 1, np.nanmax(lat) + 1, system_config
