@@ -134,6 +134,8 @@ def potential_vorticity(lat, z_value):
     -------
     z_value: depth
     """
+    if z_value == 0.0:
+        z_value = 0.0001
     earth_angular_velocity = 2 * 7.292 * 10**-5
     lat_radians = lat * math.pi / 180
 

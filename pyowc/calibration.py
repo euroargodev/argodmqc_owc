@@ -146,21 +146,18 @@ def update_salinity_mapping(float_dir, config, float_name):
         data["la_profile_no"] = np.insert(data["la_profile_no"], profile_index, profile_no[missing_profile])
         # Construct elements for this profile
 
-        # initialise matrices to hold and save parameter settings
-        data["scale_long_large"].append(np.nan)
-        data["scale_lat_large"].append(np.nan)
-        data["scale_long_small"].append(np.nan)
-        data["scale_lat_small"].append(np.nan)
-        data["scale_phi_large"].append(np.nan)
-        data["scale_phi_small"].append(np.nan)
-        data["scale_age_large"].append(np.nan)
-        data["scale_age_small"].append(np.nan)
-        data["use_pv"].append(np.nan)
-        data["use_saf"].append(np.nan)
-        data["p_delta"].append(np.nan)
-        data["p_exclude"].append(np.nan)
-
-        # helper method 1
+        data["scale_long_large"] = np.append(data["scale_long_large"], np.nan)
+        data["scale_lat_large"] = np.append(data["scale_lat_large"], np.nan)
+        data["scale_long_small"] = np.append(data["scale_long_small"], np.nan)
+        data["scale_lat_small"] = np.append(data["scale_lat_small"], np.nan)
+        data["scale_phi_large"] = np.append(data["scale_phi_large"], np.nan)
+        data["scale_phi_small"] = np.append(data["scale_phi_small"], np.nan)
+        data["scale_age_large"] = np.append(data["scale_age_large"], np.nan)
+        data["scale_age_small"] = np.append(data["scale_age_small"], np.nan)
+        data["use_pv"] = np.append(data["use_pv"], np.nan)
+        data["use_saf"] = np.append(data["use_saf"], np.nan)
+        data["p_delta"] = np.append(data["p_delta"], np.nan)
+        data["p_exclude"] = np.append(data["p_exclude"], np.nan)
         data = process_profiles_la_variables(data, float_level_count, profile_index)
 
         # get data from float
