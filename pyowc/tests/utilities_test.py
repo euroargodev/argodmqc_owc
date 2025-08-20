@@ -172,6 +172,20 @@ class PotentialVorticity(unittest.TestCase):
         pv_result = utils.potential_vorticity(1, 1)
         self.assertTrue(isinstance(pv_result, float), "potential vorticity is not float")
 
+    def test_bpv_returned_value(self):
+        """Checks that potential_vorticity returns the expected value."""
+        print("Testing that potential_vorticity returns the correct value.")
+
+        test_cases_and_results = [
+            [(1, 1), 2.5452589548134273e-06],
+            [(3, 2), 3.816337929235464e-06],
+            [(3, 3), 2.544225286156976e-06],
+        ]
+
+        for test_input, expected_output in test_cases_and_results:
+            actual_result = utils.potential_vorticity(*test_input)
+            self.assertEqual(actual_result, expected_output, "potential vorticity value is not correct!")
+
     def test_bpv_vectorised_returns_array(self):
         """Check that potential_vorticity returns an array if the function
         is vectorised and given lists as inputs
