@@ -1,55 +1,53 @@
-""" Functions to manipulate and process data
+"""Functions to manipulate and process data
 
-        Parameters
-        ----------
+Parameters
+----------
 
-        Returns
-        -------
+Returns:
+-------
 
 """
 
 import numpy as np
+
 from ..core.stats import covar_xyt_pv
 
 
-#pylint: disable=too-many-arguments
-#pylint: disable=too-many-locals
-def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
-                  signal_variance, noise_variance, phi, map_pv_use):
-    """ Maps historical float data onto a single float
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+def map_data_grid(sal, grid_pos, data_pos, lat, long, age, signal_variance, noise_variance, phi, map_pv_use):
+    """Maps historical float data onto a single float
 
-        An optimal mapping routine, taking data measured in arbitrary geographic locations and
-        mapping these data onto a more regular grid. As should happen in every mapping problem
-        the data are both mapped onto the prescribed grid, and the data locations (so that
-        the mapped field can be checked with the original data to ensure that the statistics
-        are valid and consistent).
+    An optimal mapping routine, taking data measured in arbitrary geographic locations and
+    mapping these data onto a more regular grid. As should happen in every mapping problem
+    the data are both mapped onto the prescribed grid, and the data locations (so that
+    the mapped field can be checked with the original data to ensure that the statistics
+    are valid and consistent).
 
-        Before objectively mapping the data, a mean, using the correlation scales to define the
-        weights for the sum (see Bretherton, etal, 1975) is removed.  The error estimate includes
-        the contributions from both the mapping and the mean estimation.
+    Before objectively mapping the data, a mean, using the correlation scales to define the
+    weights for the sum (see Bretherton, etal, 1975) is removed.  The error estimate includes
+    the contributions from both the mapping and the mean estimation.
 
-        Parameters
-        ----------
-        sal: array of salinities of the historical float data
-        grid_pos: array containing single float data [lat, long, age, depth]
-        data_pos: n*4 array containing historical float data [lat, long, age, depth]
-        lat: scalar latitude
-        long: scalar longitude
-        age: scalar age
-        signal_variance: scalar signal variance
-        noise_variance: scalar noise variance
-        phi: scalar cross isobaric scale
-        map_pv_use: flag for including vorticity (1=include)
+    Parameters
+    ----------
+    sal: array of salinities of the historical float data
+    grid_pos: array containing single float data [lat, long, age, depth]
+    data_pos: n*4 array containing historical float data [lat, long, age, depth]
+    lat: scalar latitude
+    long: scalar longitude
+    age: scalar age
+    signal_variance: scalar signal variance
+    noise_variance: scalar noise variance
+    phi: scalar cross isobaric scale
+    map_pv_use: flag for including vorticity (1=include)
 
-        Returns
-        -------
-        Tuple containing mapped fields, error estimates of mapped fields, mapped fields on original locations, and their error estimates
+    Returns:
+    -------
+    Tuple containing mapped fields, error estimates of mapped fields, mapped fields on original locations, and their error estimates
     """
-
     # create the data-data covariance matrix
     data_pos_covar = covar_xyt_pv(data_pos, data_pos, lat, long, age, phi, map_pv_use)
-    data_data_covar = np.linalg.inv(signal_variance * data_pos_covar +
-                                    noise_variance * np.identity(data_pos.__len__()))
+    data_data_covar = np.linalg.inv(signal_variance * data_pos_covar + noise_variance * np.identity(data_pos.__len__()))
 
     # estimate the mean field and weights
     sum_data_data_covar = sum(sum(data_data_covar))
@@ -61,48 +59,41 @@ def map_data_grid(sal, grid_pos, data_pos, lat, long, age,
     data_weight_covar = np.dot(pos_data_covar, weight) + mean_field
 
     # include the error in the mean (from Brethrerton, 1975)
-    dot_covar_diag = np.diag(np.dot(
-        np.dot(pos_data_covar, data_data_covar),
-        np.transpose(pos_data_covar)))
+    dot_covar_diag = np.diag(np.dot(np.dot(pos_data_covar, data_data_covar), np.transpose(pos_data_covar)))
     covar_sum = np.sum(np.dot(pos_data_covar, data_data_covar), axis=1)
-    data_weight_covar_error = np.sqrt(signal_variance - dot_covar_diag +
-                                      ((1 - covar_sum) ** 2) / sum_data_data_covar)
+    data_weight_covar_error = np.sqrt(signal_variance - dot_covar_diag + ((1 - covar_sum) ** 2) / sum_data_data_covar)
 
     # now map to the data to the regular grid
-    grid_data_covar = (signal_variance * covar_xyt_pv(data_pos, grid_pos, lat, long,
-                                                      age, phi, map_pv_use)).transpose()
+    grid_data_covar = (signal_variance * covar_xyt_pv(data_pos, grid_pos, lat, long, age, phi, map_pv_use)).transpose()
     grid_weight_covar = np.dot(grid_data_covar, weight) + mean_field
-    dot_covar_diag = np.diag(np.dot(
-        np.dot(grid_data_covar, data_data_covar), np.transpose(grid_data_covar)))
+    dot_covar_diag = np.diag(np.dot(np.dot(grid_data_covar, data_data_covar), np.transpose(grid_data_covar)))
     covar_sum = np.sum(np.dot(grid_data_covar, data_data_covar), axis=1)
-    grid_weight_covar_error = np.sqrt(signal_variance - dot_covar_diag +
-                                      ((1 - covar_sum) ** 2) / sum_data_data_covar)
+    grid_weight_covar_error = np.sqrt(signal_variance - dot_covar_diag + ((1 - covar_sum) ** 2) / sum_data_data_covar)
 
-    return grid_weight_covar[0], grid_weight_covar_error[0], \
-           data_weight_covar, data_weight_covar_error
+    return grid_weight_covar[0], grid_weight_covar_error[0], data_weight_covar, data_weight_covar_error
 
 
-#pylint: disable=too-many-arguments
-#pylint: disable=too-many-locals
-#pylint: disable=too-many-branches
-#pylint: disable=too-many-statements
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, float_pres):
-    """ Interpolate historical salinity and pressure data on the float theta
+    """Interpolate historical salinity and pressure data on the float theta
 
-        Routine to interpolate climatological salinity and pressure data onto float's potential temperature.
+    Routine to interpolate climatological salinity and pressure data onto float's potential temperature.
 
-        Parameters
-        ----------
-        grid_sal: historical salinity
-        grid_theta: historical potential temperature
-        grid_pres: historical pressure
-        float_sal: current float salinity
-        float_theta: current float potential temperature
-        float_pres: current float pressure
+    Parameters
+    ----------
+    grid_sal: historical salinity
+    grid_theta: historical potential temperature
+    grid_pres: historical pressure
+    float_sal: current float salinity
+    float_theta: current float potential temperature
+    float_pres: current float pressure
 
-        Returns
-        -------
-        Matrices [number of floats x number of historical profiles] of interpolated salinity and interpolated pressure on float theta surface
+    Returns:
+    -------
+    Matrices [number of floats x number of historical profiles] of interpolated salinity and interpolated pressure on float theta surface
     """
     # get the shape of the data inputs (float and climatology)
     grid_stations = grid_sal.shape[1]
@@ -144,10 +135,14 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         stations_with_possible_interp = np.unique(sign_changes[1])
 
         # find the interpolated pres value which is closest to the float pres for each station
-        min_pres = np.nanargmin(np.abs(output_placeholder[:, stations_with_possible_interp] - float_pres[index]), axis=0)
+        min_pres = np.nanargmin(
+            np.abs(output_placeholder[:, stations_with_possible_interp] - float_pres[index]), axis=0
+        )
 
         # use the closest pres value for the interpolated value
-        interp_pres_final[index, stations_with_possible_interp] = output_placeholder[min_pres, stations_with_possible_interp]
+        interp_pres_final[index, stations_with_possible_interp] = output_placeholder[
+            min_pres, stations_with_possible_interp
+        ]
 
         # clear any values which have been written to the placeholder
         output_placeholder[sign_changes] = np.nan
@@ -156,7 +151,9 @@ def interp_climatology(grid_sal, grid_theta, grid_pres, float_sal, float_theta, 
         output_placeholder[sign_changes] = interpolate_values(interp_factor, sign_changes, grid_sal, grid_sal_diff)
 
         # select the values of sal matching the closest pres values
-        interp_sal_final[index, stations_with_possible_interp] = output_placeholder[min_pres, stations_with_possible_interp]
+        interp_sal_final[index, stations_with_possible_interp] = output_placeholder[
+            min_pres, stations_with_possible_interp
+        ]
 
         # clear any values which have been written to the placeholder
         output_placeholder[sign_changes] = np.nan

@@ -1,3 +1,52 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "argodmqc-owc"
+version = "0.1.0"
+description = "OWC salinity calibration in Python"
+readme = "README.md"
+license = "Apache-2.0"
+packages = [
+    { include = "pyowc" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "2.3.2"
+scipy = "1.16.1"
+pandas = "2.3.1"
+gsw = "3.6.20"
+pymatreader = "1.1.0"
+matplotlib = "3.10.5"
+pyshp = "2.3.1"
+
+
+[tool.poetry.scripts]
+run-floats = "start:main"
+
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^8.2.3"
+myst-parser = "4.0.1"
+pydata-sphinx-theme = "^0.16.1"
+
+
+[tool.poetry.group.tests]
+optional = true
+
+[tool.poetry.group.tests.dependencies]
+pytest = "8.4.1"
+pytest-cov = "6.2.1"
+
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+ruff = "^0.4.2"
+
