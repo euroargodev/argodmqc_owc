@@ -5,6 +5,11 @@ on:
     types: [created, edited]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
+  
 jobs:
   build-artifacts:
     runs-on: ubuntu-latest
