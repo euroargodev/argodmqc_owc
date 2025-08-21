@@ -4,7 +4,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry]
 name = "argodmqc-owc"
-version = "0.1.0"
+version = "0.0.0"
 description = "OWC salinity calibration in Python"
 readme = "README.md"
 license = "Apache-2.0"
@@ -12,8 +12,14 @@ packages = [
     { include = "pyowc" }
 ]
 
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
 [tool.poetry.dependencies]
 python = "^3.12"
+poetry-dynamic-versioning = "^1.1.0"
 numpy = "2.3.2"
 scipy = "1.16.1"
 pandas = "2.3.1"
