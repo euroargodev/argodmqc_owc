@@ -3,9 +3,6 @@ name: Build and upload pyowc to PyPI
 on:
   release:
     types: [created, edited]
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
