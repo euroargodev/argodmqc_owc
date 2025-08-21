@@ -11,7 +11,7 @@ on:
 jobs:
   build-artifacts:
     runs-on: ubuntu-latest
-    if: github.repository == 'euroargodev/argodmqc_owc'
+    # if: github.repository == 'euroargodev/argodmqc_owc'
     steps:
       - uses: actions/checkout@v4
         with:
