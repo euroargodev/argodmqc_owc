@@ -52,16 +52,18 @@ jobs:
     needs: build-artifacts
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: releases
           path: dist
-
       - name: Publish package to Test PyPI
         uses: pypa/gh-action-pypi-publish@v1.10.1
         with:
           repository-url: https://test.pypi.org/legacy/
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
           verbose: true
+          skip-existing: false
+
