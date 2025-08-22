@@ -3,12 +3,14 @@
 import os
 
 import pyowc
-from pyowc.configuration import load as load_configuration
+from pyowc.utilities import load_configuration_from_json_file
 
+print(os.getcwd(), os.listdir())
 pyowc_root = os.path.split(os.path.abspath(pyowc.__file__))[0]
 data_root = pyowc_root.replace("pyowc", "data/")
 
-TESTS_CONFIG = load_configuration()
+TESTS_CONFIG = load_configuration_from_json_file("pyowc/tests/test_config.json")
+
 TESTS_CONFIG["TEST_DIRECTORY"] = "data/test_data"
 TESTS_CONFIG["FLOAT_PLOTS_DIRECTORY"] = "data/test_data/float_plots/"
 TESTS_CONFIG["FLOAT_PLOTS_FORMAT"] = "eps"

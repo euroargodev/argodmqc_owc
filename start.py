@@ -12,8 +12,10 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def main() -> None:
     """Entry point for processing."""
-    FLOAT_NAMES = ["3901960"]  # add float names here
-    USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
+    FLOAT_NAMES = ["3901960"]
+    config_file_location = "owc_config.json"
+
+    USER_CONFIG = owc.utilities.load_configuration_from_json_file(config_file_location)
     print(owc.configuration.print_cfg(USER_CONFIG))
 
     start = time.time()
@@ -35,7 +37,6 @@ def main() -> None:
         owc.dashboard("/", flt, USER_CONFIG)
         mid = time.time()
         print("Time for float: ", mid - start)
-
 
 if __name__ == "__main__":
     main()

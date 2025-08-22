@@ -3,7 +3,7 @@ requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry]
-name = "argodmqc-owc"
+name = "argodmqc_owc"
 version = "0.0.0"
 description = "OWC salinity calibration in Python"
 readme = "README.md"
@@ -27,6 +27,7 @@ gsw = "3.6.20"
 pymatreader = "1.1.0"
 matplotlib = "3.10.5"
 pyshp = "2.3.1"
+pydantic = "^2.11.7"
 
 
 [tool.poetry.scripts]
