@@ -19,13 +19,11 @@ If you intend to use the software this way, follow the documentation from the **
 
 ## 2. Installation and Development Work via GitHub
 
-This method is intended for development work and gives access to the codebase.  
-It is intended for those wanting to develop the code.  
-If this is what you intend to do, follow the documentation from the **Developer Usage** section.
+This method is intended for development work and gives access to the codebase, it is intended for those wanting to develop the code. If this is what you intend to do, follow the documentation from the **Developer Usage** section.
 
 ---
 
-## General Usage
+## Overview
 
 To use the app installed via PyPi there are 3 steps to follow.
 
@@ -36,15 +34,20 @@ To use the app installed via PyPi there are 3 steps to follow.
 2. Setup folder structure
   The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
   The example structure here is reflected in the example config JSON file.
+
+
+
 ## General Usage
 
 To use the app installed via PyPi there are 3 steps to follow.
 
 1. Pip install it
+
   Run `pip install argodmqc-owc`
 
 
 2. Setup folder structure
+
   The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
   The example structure here is reflected in the example config JSON file.
   - data
@@ -62,10 +65,13 @@ To use the app installed via PyPi there are 3 steps to follow.
     - float_source
 
 3. Create the config JSON file
+
   See the example config JSON file: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/owc_config.json)
 
 
-4. Use the example script provided here: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start.py) to run the DMQC software.
+4. Run the software
+
+  Use the example script provided here: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start.py) to run the DMQC software.
 
 ---
 
