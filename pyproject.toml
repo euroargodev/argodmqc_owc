@@ -33,7 +33,7 @@ pydantic = "^2.11.7"
 
 
 [tool.poetry.scripts]
-run-floats = "start:main"
+run-floats = "start_owc_python:main"
 
 
 [tool.poetry.group.docs]
