@@ -5,16 +5,39 @@ This software is a python implementation of the "OWC" salinity calibration metho
 
 [Post an issue to get involved if you're interested](https://github.com/euroargodev/argodmqc_owc/issues/new/choose).
 
-# Installation
+# General Guidance
 
-If you are using Linux, Windows or macOS, you can simply install this package using `pip` in a virtual environment.
-Assuming your virtual environment is activated:
+To use this software, you'll need Python, and ideally a virtual environment with the package installed.  
+A virtual environment is not absolutely essential — you can install the package globally — but it is recommended to avoid issues.
 
-```bash
-pip install git+https://github.com/euroargodev/argodmqc_owc
-```
+There are two ways of working with this software:
 
-## Virtual Environments
+### 1. Installation and General Usage via PyPI
+
+This method is intended for general usage, without modifying the codebase.  
+If you intend to use the software this way, you may skip to the section titled **General Usage**.
+
+### 2. Installation and Development Work via GitHub
+
+This method is intended for development work and gives access to the codebase.  
+It is intended for those wanting to develop the code.  
+If this is what you intend to do, follow the documentation from **Developer Usage**.
+
+---
+
+# General Usage
+
+TODO
+
+---
+
+# Developer Usage
+
+TODO
+
+---
+
+# Virtual Environments
 
 
 To create a virtual environment:
@@ -79,7 +102,6 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 ### Software usage
 
 - **Running with Poetry**
-  
   
 
 Run the code (start.py): `poetry run run-floats`.
