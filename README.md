@@ -27,7 +27,62 @@ If this is what you intend to do, follow the documentation from the **Developer 
 
 ## General Usage
 
+To use the app installed via PyPi there are 3 steps to follow.
+
+1. Pip install it
+  Run `pip install argodmqc-owc`
+
+
+2. Setup folder structure
+  The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
+  The example structure here is reflected in the example config JSON file.
+## General Usage
+
+To use the app installed via PyPi there are 3 steps to follow.
+
+1. Pip install it
+  Run `pip install argodmqc-owc`
+
+
+2. Setup folder structure
+  The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
+  The example structure here is reflected in the example config JSON file.
+  - data
+    - climatology
+      - historical_argo
+      - historical_bot
+      - historical_ctd
+    - constants
+      - bathymetry
+      - coastline
+      - reefs
+    - float_calib
+    - float_mapped
+    - float_plots
+    - float_source
+
+3. Create the config JSON file
+  See the example config JSON file: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/owc_config.json)
+
+
+4. Use the example script provided here: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start.py) to run the DMQC software.
+
+---
+
+## Developer Usage
+
 TODO
+
+---
+
+
+3. Create the config JSON file
+  See the example config JSON file here: 
+
+
+
+4. Create the script to import and then use the DMQC software
+  See the example python file here:
 
 ---
 
@@ -191,28 +246,3 @@ The code will crete two separate plots with set ranges.
 - BODC created [the first version of the code](https://git.noc.ac.uk/bodc/owc-software-python), following the [Matlab implementation](https://github.com/ArgoDMQC/matlab_owc).
   Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc),
    [K. Walicka](https://github.com/kamwal), [A. Hale](https://github.com/halebodc), [T. Gardner](https://github.com/thogar-computer).
-
-
-## New positioning of functions 
-Note that functions name are not changed !
-
-- **pyowc/core**
-  - **stats.py**: brk_pt_fit, build_cov, covarxy_pv, covar_xyt_pv, noise_variance, signal_variance, fit_cond, nlbpfun
-  - **finders.py**: find_10thetas, find_25boxes, find_besthit, find_ellipse, nearest_neighbour
-
-- **pyowc/data**
-  - **fetchers.py**: get_region_data, get_region_hist_locations, get_data, get_topo_grid, frontal_constraint_saf
-  - **wrangling.py**: interp_climatology, map_data_grid 
-
-- **pyowc/plot**
-  - **dashboard.py**: plot_diagnostics
-  - **plots.py**: cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, theta_sal_plot, trajectory_plot
-  - **utils.py**: create_dataframe
-
-- **pyowc/calibration.py**: update_salinity_mapping, calc_piecewisefit
-
-- **pyowc/configuration.py**: load_configuration, set_calseries, print_cfg
-
-- **pyowc/tests**  # Contain all the unit tests !
-
-- **pyowc/utilities.py**: change_dates, cal2dec, potential_vorticity, wrap_longitudes, sorter, spatial_correlation
