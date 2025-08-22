@@ -12,32 +12,32 @@ A virtual environment is not absolutely essential — you can install the packag
 
 There are two ways of working with this software:
 
-### 1. Installation and General Usage via PyPI
+## 1. Installation and General Usage via PyPI
 
 This method is intended for general usage, without modifying the codebase.  
-If you intend to use the software this way, you may skip to the section titled **General Usage**.
+If you intend to use the software this way, follow the documentation from the **General Usage** section.
 
-### 2. Installation and Development Work via GitHub
+## 2. Installation and Development Work via GitHub
 
 This method is intended for development work and gives access to the codebase.  
 It is intended for those wanting to develop the code.  
-If this is what you intend to do, follow the documentation from **Developer Usage**.
+If this is what you intend to do, follow the documentation from the **Developer Usage** section.
 
 ---
 
-# General Usage
+## General Usage
 
 TODO
 
 ---
 
-# Developer Usage
+## Developer Usage
 
 TODO
 
 ---
 
-# Virtual Environments
+## Virtual Environments
 
 
 To create a virtual environment:
@@ -99,7 +99,7 @@ If any messages appear with 'poetry not found', try prefixing your command with 
 
 
 
-### Software usage
+## Software usage
 
 - **Running with Poetry**
   
@@ -178,7 +178,7 @@ The code will crete two separate plots with set ranges.
 
 
 
-# Software history
+## Software history
 
 - Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this !
 
