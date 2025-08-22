@@ -49,7 +49,7 @@ To use the app installed via PyPi there are 3 steps to follow.
 2. Setup folder structure
 
   The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
-  The example structure here is reflected in the example config JSON file.
+  The example structure here is reflected in the example config JSON file. Please note that the `data` folder is available [here](https://github.com/euroargodev/argodmqc_owc/tree/feature/pypi-preparation/data)
   - data
     - climatology
       - historical_argo
@@ -66,12 +66,12 @@ To use the app installed via PyPi there are 3 steps to follow.
 
 3. Create the config JSON file
 
-  See the example config JSON file: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/owc_config.json)
+  See the example config JSON file [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/owc_config.json)
 
 
 4. Run the software
 
-  Use the example script provided here: [Here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start.py) to run the DMQC software.
+  Use the example script provided here [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start.py) to run the DMQC software.
 
 ---
 
