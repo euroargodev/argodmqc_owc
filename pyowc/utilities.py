@@ -1,9 +1,90 @@
 """Core utility functions"""
 
+import json
 import math
 
 import numpy as np
+from pydantic import BaseModel, model_validator
 
+
+class ConfigFileNotFoundError(Exception):
+    """Raised when the config file is not found."""
+
+class Config(BaseModel):
+    """A representation of a config, to ensure correct types are passed to the rest of the app."""
+
+    HISTORICAL_DIRECTORY: str
+    HISTORICAL_CTD_PREFIX: str
+    HISTORICAL_BOTTLE_PREFIX: str
+    HISTORICAL_ARGO_PREFIX: str
+
+    FLOAT_SOURCE_DIRECTORY: str
+    FLOAT_SOURCE_POSTFIX: str
+    FLOAT_MAPPED_DIRECTORY: str
+    FLOAT_MAPPED_PREFIX: str
+    FLOAT_MAPPED_POSTFIX: str
+
+    FLOAT_CALIB_DIRECTORY: str
+    FLOAT_CALIB_PREFIX: str
+    FLOAT_CALSERIES_PREFIX: str
+    FLOAT_CALIB_POSTFIX: str
+
+    FLOAT_PLOTS_DIRECTORY: str
+    FLOAT_PLOTS_FORMAT: str
+
+    CONFIG_DIRECTORY: str
+    CONFIG_COASTLINES: str
+    CONFIG_WMO_BOXES: str
+    CONFIG_SAF: str
+
+    CONFIG_MAX_CASTS: int = 300
+    MAP_USE_PV: int = 0
+    MAP_USE_SAF: int = 0
+
+    MAPSCALE_LONGITUDE_LARGE: int = 8
+    MAPSCALE_LONGITUDE_SMALL: int = 4
+    MAPSCALE_LATITUDE_LARGE: int = 4
+    MAPSCALE_LATITUDE_SMALL: int = 2
+
+    MAPSCALE_PHI_LARGE: float = 0.1
+    MAPSCALE_PHI_SMALL: float = 0.02
+
+    MAPSCALE_AGE_LARGE: int = 20
+    MAPSCALE_AGE_SMALL: int = 10
+
+    MAP_P_EXCLUDE: int = 100
+    MAP_P_DELTA: int = 250
+
+    THETA_BOUNDS: list[list[int]]
+
+
+    @model_validator(mode="before")
+    def check_for_empty_strings(cls, values):
+        """Check for any empty strings."""
+        for key, value in values.items():
+            if isinstance(value, str) and not value:
+                raise ValueError(f"The key {key} has an empty value in your config file!")
+        return values
+
+
+def load_configuration_from_json_file(filepath: str) -> dict:
+    """Read the config JSON file and return the contents as a dict.
+
+    Function will raise a ConfigFileNotFoundError for an invalid path.
+
+    Args:
+        filepath(str): The path to the JSON file on the users machine.
+
+    Returns:
+        A dictionary of values to run the dmqc.
+
+    """
+    try:
+        with open(filepath) as file:
+            model = Config(**json.loads(file.read()))
+            return model.model_dump()
+    except FileNotFoundError:
+        raise ConfigFileNotFoundError(f"Config file not found: - {filepath}") from None
 
 # pylint: disable=too-many-arguments
 def spatial_correlation(

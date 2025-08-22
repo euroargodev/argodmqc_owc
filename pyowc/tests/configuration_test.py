@@ -3,8 +3,8 @@ import unittest
 
 from scipy.io import loadmat
 
-from pyowc.configuration import load as load_configuration
 from pyowc.configuration import print_cfg, set_calseries
+from pyowc.utilities import load_configuration_from_json_file
 
 from . import TESTS_CONFIG
 
@@ -23,7 +23,7 @@ class LoadConfiguration(unittest.TestCase):
     """Test cases for load_configuration function"""
 
     def setUp(self):
-        self.lo_system_configuration = load_configuration()
+        self.lo_system_configuration = load_configuration_from_json_file("pyowc/tests/test_config.json")
 
     def test_is_dict(self):
         """Check return type is dictionary
