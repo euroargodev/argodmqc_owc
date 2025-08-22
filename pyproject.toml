@@ -12,6 +12,8 @@ packages = [
     { include = "pyowc" }
 ]
 
+urls = { "Homepage" = "https://github.com/euroargodev/argodmqc_owc", "Bug Tracker" = "https://github.com/euroargodev/argodmqc_owc/issues" }
+
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"
