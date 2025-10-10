@@ -6,14 +6,6 @@ import os
 import numpy as np
 from scipy.io import loadmat, savemat
 
-
-def print_cfg(config):
-    """Return a string of the configuration dictionnary"""
-    cfg_str = []
-    for k in config:
-        cfg_str.append(f"{k:>30}: {config[k]}\n")
-    return "\n" + "".join(cfg_str)
-
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
@@ -89,34 +81,8 @@ def set_calseries(float_dir, float_name, system_config):
         #   np.ones((1, 18)).flatten(),
         #    2 * np.ones((1, no_profiles - 18)).flatten()))
         calib_profile_no = profile_no
-        use_percent_gt = 0.5
-        use_theta_lt = []
-        use_theta_gt = []
-        use_pres_lt = []
-        use_pres_gt = []
-
-    # ensure values are in a realistic range
-
-    if use_theta_lt.__len__() > 1:
-        print("More than one potential temperature boundary used, removing boundary...")
-        use_theta_lt = []
-
-    if use_theta_gt.__len__() > 1:
-        print("More than one potential temperature boundary used, removing boundary...")
-        use_theta_gt = []
-
-    if use_pres_lt.__len__() > 1:
-        print("More than one pressure boundary used, removing boundary...")
-        use_pres_lt = []
-
-    if use_pres_gt.__len__() > 1:
-        print("More than one pressure boundary used, removing boundary...")
-        use_pres_gt = []
-
-    # Check that there are no missing profiles between source and calseries files
 
     missing_profiles_index = []
-
     for i in range(no_profiles):
         profiles = np.argwhere(calib_profile_no == profile_no[i])
         if profiles.__len__() == 0:
@@ -153,14 +119,14 @@ def set_calseries(float_dir, float_name, system_config):
     savemat(
         calseries_filename,
         {
-            "breaks": breaks,
-            "max_breaks": max_breaks,
-            "calseries": calseries,
-            "calib_profile_no": calib_profile_no,
-            "use_theta_lt": use_theta_lt,
-            "use_theta_gt": use_theta_gt,
-            "use_pres_lt": use_pres_lt,
-            "use_pres_gt": use_pres_gt,
-            "use_percent_gt": use_percent_gt,
+            "breaks": system_config["BREAKS"],
+            "max_breaks": system_config["MAX_BREAKS"],
+            "calseries": system_config["CALSERIES"],
+            "calib_profile_no": system_config["CALIB_PROFILE_NO"],
+            "use_theta_lt": system_config["USE_THETA_LT"],
+            "use_theta_gt": system_config["USE_THETA_GT"],
+            "use_pres_lt": system_config["USE_PRES_LT"],
+            "use_pres_gt": system_config["USE_PRES_GT"],
+            "use_percent_gt": system_config["USE_PERCENT_GT"],
         },
     )

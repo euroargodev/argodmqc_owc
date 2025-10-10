@@ -16,7 +16,6 @@ def main() -> None:
     config_file_location = "owc_config.json"
 
     USER_CONFIG = owc.utilities.load_configuration_from_json_file(config_file_location)
-    print(owc.configuration.print_cfg(USER_CONFIG))
 
     start = time.time()
 
