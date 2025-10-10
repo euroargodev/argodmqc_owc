@@ -105,6 +105,16 @@ def update_salinity_mapping(float_dir, config, float_name):
     print("map_age_small: ", map_age_small)
     print("map_p_delta: ", map_p_delta)
     print("map_p_exclude: ", map_p_exclude)
+    print("theta_bounds", config["THETA_BOUNDS"])
+    print("calib_profile_no",config["CALIB_PROFILE_NO"])
+    print("use_theta_lt", config["USE_THETA_LT"])
+    print("use_theta_gt", config["USE_THETA_GT"])
+    print("use_pres_lt", config["USE_PRES_LT"])
+    print("use_pres_gt", config["USE_PRES_GT"])
+    print("breaks", config["BREAKS"])
+    print("max_breaks", config["MAX_BREAKS"])
+    print("calseries", config["CALSERIES"])
+    print("use_percent_gt", config["USE_PERCENT_GT"])
     print("__________________________________________________________")
 
     # Load precalculated mapped data -------------------------------------
