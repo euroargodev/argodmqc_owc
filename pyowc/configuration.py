@@ -57,46 +57,43 @@ def set_calseries(float_dir, float_name, system_config):
         ]
     )
 
+
     # if we already have a calseries file, use those values. Else, use new ones
     try:
         calseries_data = loadmat(calseries_filename)
-        breaks = calseries_data["breaks"]
-        max_breaks = calseries_data["max_breaks"]
+        breaks = calseries_data["breaks"] # DONE
+        max_breaks = calseries_data["max_breaks"] # DONE
         calseries = calseries_data["calseries"].flatten()
         calib_profile_no = calseries_data["calib_profile_no"].flatten()
-        use_theta_lt = calseries_data["use_theta_lt"]
-        use_theta_gt = calseries_data["use_theta_gt"]
-        use_pres_lt = calseries_data["use_pres_lt"]
-        use_pres_gt = calseries_data["use_pres_gt"]
+        use_theta_lt = calseries_data["use_theta_lt"] # DONE
+        use_theta_gt = calseries_data["use_theta_gt"] # DONE
+        use_pres_lt = calseries_data["use_pres_lt"] # DONE
+        use_pres_gt = calseries_data["use_pres_gt"] # DONE
 
         # use percent may not exist, as it was added later
         try:
             use_percent_gt = calseries_data["use_percent_gt"]
 
         except NameError:
-            use_percent_gt = 0.5
+            use_percent_gt = 0.5 # DONE
 
         print("Using parameters found in ", calseries_filename, "\nTo use new parameters, delete this file")
 
     except FileNotFoundError:
-        # Config calseries parameters
-
-        breaks = []
-        max_breaks = 4  # 0 for linear trend, -1 for offset
+        print("MAT File not found.. using the JSON config to establish values.\n",)
+        print(f"Number of profiles: {no_profiles}")
+        breaks = system_config["BREAKS"]
+        max_breaks = system_config["MAX_BREAKS"]
         calseries = np.ones((1, no_profiles)).flatten()
-        # example for splitting time series at profile 33
-        # calseries = np.concatenate((
-        #   np.ones((1, 18)).flatten(),
-        #    2 * np.ones((1, no_profiles - 18)).flatten()))
         calib_profile_no = profile_no
-        use_percent_gt = 0.5
-        use_theta_lt = []
-        use_theta_gt = []
-        use_pres_lt = []
-        use_pres_gt = []
+        use_percent_gt = system_config["USE_PERCENT_GT"]
+        use_theta_lt = system_config["USE_THETA_LT"]
+        use_theta_gt = system_config["USE_THETA_GT"]
+        use_pres_lt = system_config["USE_PRES_LT"]
+        use_pres_gt = system_config["USE_PRES_GT"]
+
 
     # ensure values are in a realistic range
-
     if use_theta_lt.__len__() > 1:
         print("More than one potential temperature boundary used, removing boundary...")
         use_theta_lt = []

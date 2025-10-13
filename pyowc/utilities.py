@@ -57,6 +57,16 @@ class Config(BaseModel):
 
     THETA_BOUNDS: list[list[int]]
 
+    CALIB_PROFILE_NO: list
+    USE_THETA_LT: list
+    USE_THETA_GT: list
+    USE_PRES_LT: list
+    USE_PRES_GT: list
+
+    BREAKS: list
+    MAX_BREAKS: int
+    CALSERIES: list
+    USE_PERCENT_GT: float
 
     @model_validator(mode="before")
     def check_for_empty_strings(cls, values):
