@@ -84,13 +84,38 @@ def set_calseries(float_dir, float_name, system_config):
         print(f"Number of profiles: {no_profiles}")
         breaks = system_config["BREAKS"]
         max_breaks = system_config["MAX_BREAKS"]
-        calseries = np.ones((1, no_profiles)).flatten()
         calib_profile_no = profile_no
         use_percent_gt = system_config["USE_PERCENT_GT"]
         use_theta_lt = system_config["USE_THETA_LT"]
         use_theta_gt = system_config["USE_THETA_GT"]
         use_pres_lt = system_config["USE_PRES_LT"]
         use_pres_gt = system_config["USE_PRES_GT"]
+
+        if not system_config["SPLITS"]:
+            print("No splits required")
+            calseries = np.ones((1, no_profiles)).flatten()
+        else:
+            print("Applying splits for profiles:", system_config["SPLITS"])
+            starting_split = 1
+            calseries = [starting_split for _ in range(1, no_profiles+1)]
+
+            for item in system_config["SPLITS"]:
+                starting_split += 1
+                for i in range(item, len(calseries)):
+                    calseries[i] = starting_split
+
+            calseries = np.array(calseries)
+
+        if not system_config["EXCLUSIONS"]:
+            print("No exclusions required.")
+        else:
+            print("Applying exclusions profiles: ", system_config["EXCLUSIONS"])
+            for item in system_config["EXCLUSIONS"]:
+                calseries[item-1] = 0
+
+
+
+
 
 
     # ensure values are in a realistic range

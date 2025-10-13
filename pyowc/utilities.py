@@ -65,8 +65,9 @@ class Config(BaseModel):
 
     BREAKS: list
     MAX_BREAKS: int
-    CALSERIES: list
     USE_PERCENT_GT: float
+    SPLITS: list
+    EXCLUSIONS: list
 
     @model_validator(mode="before")
     def check_for_empty_strings(cls, values):
