@@ -67,7 +67,7 @@ jobs:
         file: ./cov.xml # optional
         flags: unittests # optional
         name: codecov-github # optional
-        fail_ci_if_error: true # optional (default = false)
+        fail_ci_if_error: false # optional (default = false)
 
     - name: Install Dependencies for Linting with Ruff
       run: |
