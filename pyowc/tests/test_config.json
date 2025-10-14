@@ -39,7 +39,7 @@
     "USE_PRES_GT": [],
     "BREAKS": [],
     "MAX_BREAKS": 4,
-    "SPLITS": [],
+    "SPLITS": [10],
     "EXCLUSIONS": [],
     "USE_PERCENT_GT": 0.5
 }

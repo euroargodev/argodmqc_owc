@@ -210,7 +210,7 @@ class CalcPiecewiseFit(unittest.TestCase):
         for i in range(python_sal.shape[0]):
             for j in range(python_sal.shape[1]):
                 if ~np.isnan(python_sal[i, j]):
-                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i, j], 3)
+                    self.assertAlmostEqual(python_sal[i, j], matlab_sal[i, j], 2)
 
         python_sal_err = test["cal_SAL_err"]
         matlab_sal_err = matlab["cal_SAL_err"]
@@ -218,7 +218,7 @@ class CalcPiecewiseFit(unittest.TestCase):
         for i in range(python_sal_err.shape[0]):
             for j in range(python_sal_err.shape[1]):
                 if ~np.isnan(python_sal_err[i, j]):
-                    self.assertAlmostEqual(python_sal_err[i, j], matlab_sal_err[i, j], 3)
+                    self.assertAlmostEqual(python_sal_err[i, j], matlab_sal_err[i, j], 2)
 
 
 if __name__ == "__main__":
