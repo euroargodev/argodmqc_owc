@@ -38,7 +38,7 @@ class LoadConfiguration(unittest.TestCase):
         :return: Nothing
         """
         print("Testing length of dictionary...\n")
-        self.assertEqual(len(self.lo_system_configuration), 33)
+        self.assertEqual(len(self.lo_system_configuration), 43)
 
     def test_all_keys_have_value(self):
         """Check that each pair is non-empty
