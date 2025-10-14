@@ -70,6 +70,13 @@ To use the app installed via PyPi there are 3 steps to follow.
   See the example config JSON file [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/owc_config.json)
 
 
+The configuration file contains 2 fields `splits` and `exclusions` which are used together.
+The splits field refers to the splitting of profiles, and if left empty will process all the data.
+If the data is to be split up, then the value needs to be changed to a list of profiles to split into. 
+For example if splits is [5, 10] then splits will be made at profiles 1-4, 5-10, and then 10 until the end.
+
+If the exclusions list is empty then all data is processed, but profiles can be added to the exclusions list if they are to be omitted from the program.
+
 4. Run the software
 
   Use the example script provided here [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start_owc_python.py) to run the DMQC software.
