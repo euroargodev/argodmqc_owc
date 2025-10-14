@@ -61,21 +61,21 @@ def set_calseries(float_dir, float_name, system_config):
     # if we already have a calseries file, use those values. Else, use new ones
     try:
         calseries_data = loadmat(calseries_filename)
-        breaks = calseries_data["breaks"] # DONE
-        max_breaks = calseries_data["max_breaks"] # DONE
+        breaks = calseries_data["breaks"]
+        max_breaks = calseries_data["max_breaks"]
         calseries = calseries_data["calseries"].flatten()
         calib_profile_no = calseries_data["calib_profile_no"].flatten()
-        use_theta_lt = calseries_data["use_theta_lt"] # DONE
-        use_theta_gt = calseries_data["use_theta_gt"] # DONE
-        use_pres_lt = calseries_data["use_pres_lt"] # DONE
-        use_pres_gt = calseries_data["use_pres_gt"] # DONE
+        use_theta_lt = calseries_data["use_theta_lt"]
+        use_theta_gt = calseries_data["use_theta_gt"]
+        use_pres_lt = calseries_data["use_pres_lt"]
+        use_pres_gt = calseries_data["use_pres_gt"]
 
         # use percent may not exist, as it was added later
         try:
             use_percent_gt = calseries_data["use_percent_gt"]
 
         except NameError:
-            use_percent_gt = 0.5 # DONE
+            use_percent_gt = 0.5
 
         print("Using parameters found in ", calseries_filename, "\nTo use new parameters, delete this file")
 
