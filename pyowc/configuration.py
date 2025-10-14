@@ -57,6 +57,7 @@ def set_calseries(float_dir, float_name, system_config):
         ]
     )
 
+
     # if we already have a calseries file, use those values. Else, use new ones
     try:
         calseries_data = loadmat(calseries_filename)
@@ -79,24 +80,45 @@ def set_calseries(float_dir, float_name, system_config):
         print("Using parameters found in ", calseries_filename, "\nTo use new parameters, delete this file")
 
     except FileNotFoundError:
-        # Config calseries parameters
-
-        breaks = []
-        max_breaks = 4  # 0 for linear trend, -1 for offset
-        calseries = np.ones((1, no_profiles)).flatten()
-        # example for splitting time series at profile 33
-        # calseries = np.concatenate((
-        #   np.ones((1, 18)).flatten(),
-        #    2 * np.ones((1, no_profiles - 18)).flatten()))
+        print("MAT File not found.. using the JSON config to establish values.\n",)
+        print(f"Number of profiles: {no_profiles}")
+        breaks = system_config["BREAKS"]
+        max_breaks = system_config["MAX_BREAKS"]
         calib_profile_no = profile_no
-        use_percent_gt = 0.5
-        use_theta_lt = []
-        use_theta_gt = []
-        use_pres_lt = []
-        use_pres_gt = []
+        use_percent_gt = system_config["USE_PERCENT_GT"]
+        use_theta_lt = system_config["USE_THETA_LT"]
+        use_theta_gt = system_config["USE_THETA_GT"]
+        use_pres_lt = system_config["USE_PRES_LT"]
+        use_pres_gt = system_config["USE_PRES_GT"]
+
+        if not system_config["SPLITS"]:
+            print("No splits required")
+            calseries = np.ones((1, no_profiles)).flatten()
+        else:
+            print("Applying splits for profiles:", system_config["SPLITS"])
+            starting_split = 1
+            calseries = [starting_split for _ in range(1, no_profiles+1)]
+
+            for item in system_config["SPLITS"]:
+                starting_split += 1
+                for i in range(item, len(calseries)):
+                    calseries[i] = starting_split
+
+            calseries = np.array(calseries)
+
+        if not system_config["EXCLUSIONS"]:
+            print("No exclusions required.")
+        else:
+            print("Applying exclusions profiles: ", system_config["EXCLUSIONS"])
+            for item in system_config["EXCLUSIONS"]:
+                calseries[item-1] = 0
+
+
+
+
+
 
     # ensure values are in a realistic range
-
     if use_theta_lt.__len__() > 1:
         print("More than one potential temperature boundary used, removing boundary...")
         use_theta_lt = []

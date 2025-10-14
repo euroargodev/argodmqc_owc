@@ -31,5 +31,15 @@
     "MAPSCALE_AGE_SMALL": 10,
     "MAP_P_EXCLUDE": 100,
     "MAP_P_DELTA": 250,
-    "THETA_BOUNDS": [[0, 5], [5, 20]]
+    "THETA_BOUNDS": [[0, 5], [5, 20]],
+    "CALIB_PROFILE_NO": [],
+    "USE_THETA_LT": [],
+    "USE_THETA_GT": [],
+    "USE_PRES_LT": [],
+    "USE_PRES_GT": [],
+    "BREAKS": [],
+    "MAX_BREAKS": 4,
+    "SPLITS": [10, 20],
+    "EXCLUSIONS": [3,4],
+    "USE_PERCENT_GT": 0.5
 }
