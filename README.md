@@ -233,25 +233,23 @@ the default directories to locations of your constants.
 - To manually set the calibration values update the following entires below.
 The calibration contains two additional fields `splits` and `exclusions`. The splits field refers to the splitting of profiles, and if left empty will process all the data. If the data is to be split up, then the value needs to be changed to a list of profiles to split into. 
 For example if splits is [5, 10] then splits will be made at profiles 1-4, 5-10, and then 10 until the end.
-
 If the exclusions list is empty then all data is processed, but profiles can be added to the exclusions list if they are to be omitted from the program.
 
-      "CALIB_PROFILE_NO": [],
-      "BREAKS": [],
-      "MAX_BREAKS": 4,
-      "SPLITS": [],
-      "EXCLUSIONS": [],
-      "USE_THETA_LT": [],
-      "USE_THETA_GT": [],
-      "USE_PRES_LT": [],
-      "USE_PRES_GT": [],
-      "USE_PERCENT_GT": 0.5,
+      'CALIB_PROFILE_NO': [],
+      'BREAKS': [],
+      'MAX_BREAKS': 4,
+      'SPLITS': [],
+      'EXCLUSIONS': [],
+      'USE_THETA_LT': [],
+      'USE_THETA_GT': [],
+      'USE_PRES_LT': [],
+      'USE_PRES_GT': [],
+      'USE_PERCENT_GT': 0.5,
 
 - Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
 The code will crete two separate plots with set ranges 'THETA_BOUNDS': [[0, 5], [5, 20]]. To create only one plot with a specific range use the 'THETA_BOUNDS': [[0, 20]].
- 
-     #    Plotting Parameters
-     # Theta bounds for salinity anomaly plot
+
+      #    Plotting Parameters
       'THETA_BOUNDS': [[0, 5], [5, 20]]
 
 
