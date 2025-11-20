@@ -198,7 +198,7 @@ Parameters for the analysis are set in a owc_config.json python code.
 The configuration has the same parameters as the Matlab software (https://github.com/ArgoDMQC/matlab_owc).
 
 - You can change the default directories to locations of your historical data.
-```json 
+ 
       #    Climatology Data Input Paths
       'HISTORICAL_DIRECTORY': "data/climatology/"
       'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_"
@@ -206,14 +206,14 @@ The configuration has the same parameters as the Matlab software (https://github
       'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"
 
 - To run the analysis,you need to have the float source file in .mat format. 
-```json
+
       #    Float Input Path
       'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
       'FLOAT_SOURCE_POSTFIX': ".mat"
 
 - The output from the analysis will be saved in default directory of the code.You can change 
 the default directories to locations of your constants.
-```json
+
       #    Constants File Path
       'CONFIG_DIRECTORY': "data/constants/"
       'CONFIG_COASTLINES': "coastdat.mat"
@@ -221,7 +221,7 @@ the default directories to locations of your constants.
       'CONFIG_SAF': "TypicalProfileAroundSAF.mat"
 
 - To set your objective mapping parameters update the following, e.g.
-```json
+
       'MAP_USE_PV': 0
       'MAP_USE_SAF': 0
 
@@ -235,7 +235,7 @@ The calibration contains two additional fields `splits` and `exclusions`. The sp
 For example if splits is [5, 10] then splits will be made at profiles 1-4, 5-10, and then 10 until the end.
 
 If the exclusions list is empty then all data is processed, but profiles can be added to the exclusions list if they are to be omitted from the program.
-```json
+
       "CALIB_PROFILE_NO": [],
       "BREAKS": [],
       "MAX_BREAKS": 4,
@@ -249,7 +249,7 @@ If the exclusions list is empty then all data is processed, but profiles can be 
 
 - Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
 The code will crete two separate plots with set ranges 'THETA_BOUNDS': [[0, 5], [5, 20]]. To create only one plot with a specific range use the 'THETA_BOUNDS': [[0, 20]].
-```json 
+ 
      #    Plotting Parameters
      # Theta bounds for salinity anomaly plot
       'THETA_BOUNDS': [[0, 5], [5, 20]]
