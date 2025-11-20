@@ -199,43 +199,48 @@ The configuration has the same parameters as the Matlab software (https://github
 
 - You can change the default directories to locations of your historical data.
 ```json 
-        #    Climatology Data Input Paths
-        'HISTORICAL_DIRECTORY': "data/climatology/"
-        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_"
-        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_"
-        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"
-```
+{
+      #    Climatology Data Input Paths
+      'HISTORICAL_DIRECTORY': "data/climatology/"
+      'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_"
+      'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_"
+      'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"
+}
 - To run the analysis,you need to have the float source file in .mat format. 
 ```json
-        #    Float Input Path
-        'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
-        'FLOAT_SOURCE_POSTFIX': ".mat"
-```
+{
+      #    Float Input Path
+      'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
+      'FLOAT_SOURCE_POSTFIX': ".mat"
+}
 - The output from the analysis will be saved in default directory of the code.You can change 
 the default directories to locations of your constants.
 ```json
-        #    Constants File Path
-        'CONFIG_DIRECTORY': "data/constants/"
-        'CONFIG_COASTLINES': "coastdat.mat"
-        'CONFIG_WMO_BOXES': "wmo_boxes.mat"
-        'CONFIG_SAF': "TypicalProfileAroundSAF.mat"
-```
+{
+      #    Constants File Path
+      'CONFIG_DIRECTORY': "data/constants/"
+      'CONFIG_COASTLINES': "coastdat.mat"
+      'CONFIG_WMO_BOXES': "wmo_boxes.mat"
+      'CONFIG_SAF': "TypicalProfileAroundSAF.mat"
+}
 - To set your objective mapping parameters update the following, e.g.
 ```json
-        'MAP_USE_PV': 0
-        'MAP_USE_SAF': 0
+{
+      'MAP_USE_PV': 0
+      'MAP_USE_SAF': 0
 
-        'MAPSCALE_LONGITUDE_LARGE': 8
-        'MAPSCALE_LONGITUDE_SMALL': 4
-        'MAPSCALE_LATITUDE_LARGE': 4
-        'MAPSCALE_LATITUDE_SMALL': 2
- ```
+      'MAPSCALE_LONGITUDE_LARGE': 8
+      'MAPSCALE_LONGITUDE_SMALL': 4
+      'MAPSCALE_LATITUDE_LARGE': 4
+      'MAPSCALE_LATITUDE_SMALL': 2
+}
 - To manually set the calibration values update the following entires below.
 The calibration contains two additional fields `splits` and `exclusions`. The splits field refers to the splitting of profiles, and if left empty will process all the data. If the data is to be split up, then the value needs to be changed to a list of profiles to split into. 
 For example if splits is [5, 10] then splits will be made at profiles 1-4, 5-10, and then 10 until the end.
 
 If the exclusions list is empty then all data is processed, but profiles can be added to the exclusions list if they are to be omitted from the program.
 ```json
+{
       "CALIB_PROFILE_NO": [],
       "BREAKS": [],
       "MAX_BREAKS": 4,
@@ -246,15 +251,15 @@ If the exclusions list is empty then all data is processed, but profiles can be 
       "USE_PRES_LT": [],
       "USE_PRES_GT": [],
       "USE_PERCENT_GT": 0.5,
-```
+}
 - Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
 The code will crete two separate plots with set ranges 'THETA_BOUNDS': [[0, 5], [5, 20]]. To create only one plot with a specific range use the 'THETA_BOUNDS': [[0, 20]].
 ```json 
+{
      #    Plotting Parameters
         # Theta bounds for salinity anomaly plot
         'THETA_BOUNDS': [[0, 5], [5, 20]]
-```
-
+}
 
 
 
