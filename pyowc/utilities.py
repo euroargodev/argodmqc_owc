@@ -41,16 +41,16 @@ class Config(BaseModel):
     MAP_USE_PV: int = 0
     MAP_USE_SAF: int = 0
 
-    MAPSCALE_LONGITUDE_LARGE: int = 8
-    MAPSCALE_LONGITUDE_SMALL: int = 4
-    MAPSCALE_LATITUDE_LARGE: int = 4
-    MAPSCALE_LATITUDE_SMALL: int = 2
+    MAPSCALE_LONGITUDE_LARGE: float = 8
+    MAPSCALE_LONGITUDE_SMALL: float = 4
+    MAPSCALE_LATITUDE_LARGE: float = 4
+    MAPSCALE_LATITUDE_SMALL: float = 2
 
     MAPSCALE_PHI_LARGE: float = 0.1
     MAPSCALE_PHI_SMALL: float = 0.02
 
-    MAPSCALE_AGE_LARGE: int = 20
-    MAPSCALE_AGE_SMALL: int = 10
+    MAPSCALE_AGE_LARGE: float = 20
+    MAPSCALE_AGE_SMALL: float = 10
 
     MAP_P_EXCLUDE: int = 100
     MAP_P_DELTA: int = 250
