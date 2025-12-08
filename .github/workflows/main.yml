@@ -65,7 +65,7 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        file: ./cov.xml # optional
+        files: ./cov.xml # optional
         flags: unittests # optional
         name: codecov-github # optional
         fail_ci_if_error: true # optional (default = false)
