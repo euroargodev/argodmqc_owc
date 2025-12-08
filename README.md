@@ -1,9 +1,10 @@
-|<img src="https://raw.githubusercontent.com/euroargodev/argodmqc_owc/master/docs/_static/pyowc-logo.png" alt="pyowc logo" width="100"/>|``pyowc`` is a python library for OWC salinity calibration in Python <br><br> [![Status](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://www.tidyverse.org/lifecycle/#stable) [![Pypi][pip-badge]][pip-link] [![Chat][chat-badge]][chat-link] <br> ![codecov][cov-badge] ![CI][ci-badge]|
-|:---------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|<img src="https://raw.githubusercontent.com/euroargodev/argodmqc_owc/master/docs/_static/pyowc-logo.png" alt="pyowc logo" width="100"/>| ``pyowc`` is a python library for OWC salinity calibration in Python <br><br> [![Status](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://www.tidyverse.org/lifecycle/#stable) [![Pypi][pip-badge]][pip-link] <br>  [![Chat][chat-badge]][chat-link] <br> ![codecov][cov-badge] ![CI][ci-badge] ![python-badge] |
+|:---------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 
 [ci-badge]: https://github.com/euroargodev/argodmqc_owc/actions/workflows/main.yml/badge.svg
-[pip-badge]: https://img.shields.io/pypi/v/argopy
-[pip-link]: https://pypi.org/project/argopy/
+[python-badge]: https://img.shields.io/pypi/pyversions/argodmqc_owc
+[pip-badge]: https://img.shields.io/pypi/v/argodmqc_owc
+[pip-link]: https://pypi.org/project/argodmqc_owc
 [chat-badge]: https://badges.gitter.im/Argo-floats/owc-python.svg
 [chat-link]: https://gitter.im/Argo-floats/owc-python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 [cov-badge]: https://codecov.io/gh/euroargodev/argodmqc_owc/branch/master/graph/badge.svg
