@@ -1,4 +1,0 @@
-check-manifest
-setuptools_scm
-twine
-wheel

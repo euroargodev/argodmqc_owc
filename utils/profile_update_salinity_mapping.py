@@ -8,12 +8,12 @@ This will export the results to the ``baseline.stats`` file, which can be read u
 
 python -m pstats baseline.stats
 """
+
 import tempfile
 
 import pyowc
 
 if __name__ == "__main__":
-
     FLOAT_NAME = "3901960"
     USER_CONFIG = pyowc.configuration.load()
 

@@ -5,125 +5,256 @@ This software is a python implementation of the "OWC" salinity calibration metho
 
 [Post an issue to get involved if you're interested](https://github.com/euroargodev/argodmqc_owc/issues/new/choose).
 
-# Installation
+# General Guidance
 
-If you are using Linux, Windows or macOS, you can simply install this package using `pip` in a virtual environment.
-Assuming your virtual environment is activated:
+To use this software, you'll need Python, and ideally a virtual environment with the package installed.  
+A virtual environment is not absolutely essential — you can install the package globally — but it is recommended to avoid issues.
 
-```bash
-pip install git+https://github.com/euroargodev/argodmqc_owc
-```
+There are two ways of working with this software:
 
-# Software usage
+## 1. Installation and General Usage via PyPI
+
+This method is intended for general usage, without modifying the codebase.  
+If you intend to use the software this way, follow the documentation from the **General Usage** section.
+
+## 2. Installation and Development Work via GitHub
+
+This method is intended for development work and gives access to the codebase, it is intended for those wanting to develop the code. If this is what you intend to do, follow the documentation from the **Developer Usage** section.
+
+---
+
+## Overview
+
+To use the app installed via PyPi there are 3 steps to follow.
+
+1. Pip install it
+
+Run `pip install argodmqc-owc`
+
+
+2. Setup folder structure
+  The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
+  The example structure here is reflected in the example config JSON file.
+
+
+
+## General Usage
+
+To use the app installed via PyPi there are 3 steps to follow.
+
+1. Pip install it
+
+  Run `pip install argodmqc-owc`
+
+
+2. Setup folder structure
+
+  The app requires a specific folder structure, and these folders & files are referenced in the config JSON file.
+  The example structure here is reflected in the example config JSON file. Please note that the `data` folder is available [here](https://github.com/euroargodev/argodmqc_owc/tree/feature/pypi-preparation/data)
+  - data
+    - climatology
+      - historical_argo
+      - historical_bot
+      - historical_ctd
+    - constants
+      - bathymetry
+      - coastline
+      - reefs
+    - float_calib
+    - float_mapped
+    - float_plots
+    - float_source
+
+3. Create the config JSON file
+  The JSON file includes all data directory and float configurations and settings. 
+  
+  See the example config JSON file [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/owc_config.json)
+
+
+4. Run the software
+
+  Use the example script provided here [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start_owc_python.py) to run the DMQC software.
+  
+  Please note that the config JSON is checked before any processing runs, so any errors in the config will be reported back.
+
+  The script contains a line which has the floats to be processed: `FLOAT_NAMES = ["3901960"]`.
+  This can be one or more floats, and when the code is ran they will be processed in turn.
+
+---
+
+## Developer Usage
+
+Using the app as a developer requires git-cloning rather than pip-installing so direct access to the code is possible, and modifying the code is easy. To use the app as a developer it is recommended you follow the sections below in the order prescribed
+
+1. Virtual Environments
+2. Installing Poetry
+3. Cloning the repository
+4. Installing the dependencies
+5. Running the linting & tests and docs builder
+6. Executing the DMQC code
+
+---
+
+## Virtual Environments
+
+A virtual environment is recommended to work in as the dependencies wont conflict with any globally installed packages.
+
+To create a virtual environment:
+
+- **Mac/Linux**
+
+  `python3 -m venv .venv`
+
+  `source .venv/bin/activate`
+
+- **Windows**
+
+  `python -m venv .venv`
+
+  `.\.venv\Scripts\Activate`
+
+
+
+## Installing Poetry
+
+Poetry is a dependency management tool and the software uses a `pyproject.toml` file to handle the dependencies.
+
+
+To Install Poetry, run: `pip install poetry`
+
+If any messages appear with 'poetry not found', try prefixing your command with `python` or `python -m`
+
+
+## Cloning the Repository
+
+The repository can be cloned by clicking the green `<> Code` button near the top of the main page on Github. Follow the prompts to either clone it via the command line, or open with Github Desktop.
+
+It is recommended to clone the repository to a new folder. Make sure you are in this folder with your virtual environment activated and the repository cloned before moving to the next step. You need to make sure you are at the same level as the `pyproject.toml` file.
+
+
+## Installing the dependencies
+
+Install the dependencies with: `poetry install --no-root`
+
+This will take a few seconds, and you should see a list of the installed packages in the terminal window.
+
+
+## Running the linting & tests and docs builder
+
+The dependencies for running these utiltiies are also packaged up with Poetry, and they can be ran as follows:
+
+### Running the Linter with Poetry
+
+`poetry install --no-root --with lint`
+
+`poetry run ruff check`
+
+
+### Running the Docs Builder with Poetry
+
+`poetry install --with docs`
+
+`cd docs`
+
+`poetry run sphinx-build -M html source build -W`
+
+### Running the Tests with Poetry
+
+`poetry install --with tests`
+
+`poetry run pytest`
+
+
+
+
+## Executing the DMQC code
+  
+
+Open the file `start_owc_python.py`
+
+Look at lines 15 & 16, these are to be changed if different floats are to be processed, or a different configuration is to be used.
+
+
+Run the code (start_owc_python.py): `poetry run run-floats`.
+
 
 A short tutorial is available on the [argopy documentation here](https://argopy.readthedocs.io/en/latest/data_quality_control.html#running-the-calibration).
 
 For Python beginners, you can run the pyowc in this way:
 
-In start_with_pycharm.py code, you can specify the WMO float number that you want to do analysis.
+In start_owc_python.py, you can specify the WMO float number that you want to run the analysis on.
 You can also add more float numbers, then the calculations of all floats will be done at the
 same time.
 
 ```python
-import pyowc as owc
-
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-
-if __name__ == '__main__':
 
     FLOAT_NAMES = ["3901960"]  # add float names here e.g. ["3901960","3901961","3901962"]
-    USER_CONFIG = owc.configuration.load()  # fetch the default configuration and parameters
-    print(owc.configuration.print_cfg(USER_CONFIG))
 ```
+
 
 ## Parameters for your analysis
 
-Parameters for the analysis are set in a configuration.py python code. 
+Parameters for the analysis are set in a owc_config.json python code. 
 The configuration has the same parameters as the Matlab software (https://github.com/ArgoDMQC/matlab_owc).
 
 - You can change the default directories to locations of your historical data.
-```python
-        #    Climatology Data Input Paths
-        'HISTORICAL_DIRECTORY': "data/climatology/"
-        'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_"
-        'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_"
-        'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"
-```
+ 
+      #    Climatology Data Input Paths
+      'HISTORICAL_DIRECTORY': "data/climatology/"
+      'HISTORICAL_CTD_PREFIX': "/historical_ctd/ctd_"
+      'HISTORICAL_BOTTLE_PREFIX': "/historical_bot/bot_"
+      'HISTORICAL_ARGO_PREFIX': "/historical_argo/argo_"
+
 - To run the analysis,you need to have the float source file in .mat format. 
-```python
-        #    Float Input Path
-        'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
-        'FLOAT_SOURCE_POSTFIX': ".mat"
-```
+
+      #    Float Input Path
+      'FLOAT_SOURCE_DIRECTORY': "data/float_source/"
+      'FLOAT_SOURCE_POSTFIX': ".mat"
+
 - The output from the analysis will be saved in default directory of the code.You can change 
 the default directories to locations of your constants.
-```python
-        #    Constants File Path
-        'CONFIG_DIRECTORY': "data/constants/"
-        'CONFIG_COASTLINES': "coastdat.mat"
-        'CONFIG_WMO_BOXES': "wmo_boxes.mat"
-        'CONFIG_SAF': "TypicalProfileAroundSAF.mat"
-```
-- Final step is to set your objective mapping parameters, e.g.
-```python
-        'MAP_USE_PV': 0
-        'MAP_USE_SAF': 0
 
-        'MAPSCALE_LONGITUDE_LARGE': 8
-        'MAPSCALE_LONGITUDE_SMALL': 4
-        'MAPSCALE_LATITUDE_LARGE': 4
-        'MAPSCALE_LATITUDE_SMALL': 2
- ```
+      #    Constants File Path
+      'CONFIG_DIRECTORY': "data/constants/"
+      'CONFIG_COASTLINES': "coastdat.mat"
+      'CONFIG_WMO_BOXES': "wmo_boxes.mat"
+      'CONFIG_SAF': "TypicalProfileAroundSAF.mat"
+
+- To set your objective mapping parameters update the following, e.g.
+
+      'MAP_USE_PV': 0
+      'MAP_USE_SAF': 0
+
+      'MAPSCALE_LONGITUDE_LARGE': 8
+      'MAPSCALE_LONGITUDE_SMALL': 4
+      'MAPSCALE_LATITUDE_LARGE': 4
+      'MAPSCALE_LATITUDE_SMALL': 2
+
+- To manually set the calibration values update the following entires below.
+The calibration contains two additional fields `splits` and `exclusions`. The splits field refers to the splitting of profiles, and if left empty will process all the data. If the data is to be split up, then the value needs to be changed to a list of profiles to split into. 
+For example if splits is [5, 10] then splits will be made at profiles 1-4, 5-10, and then 10 until the end.
+If the exclusions list is empty then all data is processed, but profiles can be added to the exclusions list if they are to be omitted from the program.
+
+      'CALIB_PROFILE_NO': [],
+      'BREAKS': [],
+      'MAX_BREAKS': 4,
+      'SPLITS': [],
+      'EXCLUSIONS': [],
+      'USE_THETA_LT': [],
+      'USE_THETA_GT': [],
+      'USE_PRES_LT': [],
+      'USE_PRES_GT': [],
+      'USE_PERCENT_GT': 0.5,
+
 - Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
-The code will crete two separate plots with set ranges.
-```python 
-     #    Plotting Parameters
-        # Theta bounds for salinity anomaly plot
-        'THETA_BOUNDS': [[0, 5], [5, 20]]
-```
+The code will crete two separate plots with set ranges 'THETA_BOUNDS': [[0, 5], [5, 20]]. To create only one plot with a specific range use the 'THETA_BOUNDS': [[0, 20]].
 
-## Plots
-The plots are automatically generated. It is worth to note that only one plot will be 
-displayed at one time in the PyCharm. The next plot will be displayed after closing
-the window of the current plot. 
+      #    Plotting Parameters
+      'THETA_BOUNDS': [[0, 5], [5, 20]]
 
-The number of generated plots at specific theta levels (from 1 to 10 theta levels) can be
-currently changed in the dashboard.py code. The default is set to 2. The plots will be 
-generated separately for each theta level.
 
-```python
-def plot_diagnostics(float_dir, float_name, config, levels=2):
-```
 
-# Building the documentation
-
-If you wish to build the documentation locally, you will need a virtual environment.
-Assuming your virtual environment is activated, follow these steps:
-
-1. Install the required documentation packages
-    ```bash
-    pip install -r requirements-docs.txt
-    ```
-2. Change directory to the `docs` directory, for example on Linux:
-    ```bash
-    cd docs
-    ```
-3. Run the `sphinx-build` command:
-    ```bash
-    sphinx-build -M html source build -W
-    ```
-
-This will build the HTML documentation under the `docs/build/html` directory and can be viewed
-using your normal web browser.
-
-```{admonition} Note
-:class: note
-
-If you make modifications to the code or documentation configuration, you may need to delete
-the `docs/source/generated` directory for the documentation to build correctly.
-```
-
-# Software history
+## Software history
 
 - Major refactoring of the software for performance optimisation and to fully embrace the Pythonic way of doing this !
 
@@ -136,28 +267,3 @@ the `docs/source/generated` directory for the documentation to build correctly.
 - BODC created [the first version of the code](https://git.noc.ac.uk/bodc/owc-software-python), following the [Matlab implementation](https://github.com/ArgoDMQC/matlab_owc).
   Contributions from: [M. Donnelly](https://github.com/matdon17), [E. Small](https://github.com/edsmall-bodc),
    [K. Walicka](https://github.com/kamwal), [A. Hale](https://github.com/halebodc), [T. Gardner](https://github.com/thogar-computer).
-
-
-## New positioning of functions 
-Note that functions name are not changed !
-
-- **pyowc/core**
-  - **stats.py**: brk_pt_fit, build_cov, covarxy_pv, covar_xyt_pv, noise_variance, signal_variance, fit_cond, nlbpfun
-  - **finders.py**: find_10thetas, find_25boxes, find_besthit, find_ellipse, nearest_neighbour
-
-- **pyowc/data**
-  - **fetchers.py**: get_region_data, get_region_hist_locations, get_data, get_topo_grid, frontal_constraint_saf
-  - **wrangling.py**: interp_climatology, map_data_grid 
-
-- **pyowc/plot**
-  - **dashboard.py**: plot_diagnostics
-  - **plots.py**: cal_sal_curve_plot, sal_var_plot, t_s_profile_plot, theta_sal_plot, trajectory_plot
-  - **utils.py**: create_dataframe
-
-- **pyowc/calibration.py**: update_salinity_mapping, calc_piecewisefit
-
-- **pyowc/configuration.py**: load_configuration, set_calseries, print_cfg
-
-- **pyowc/tests**  # Contain all the unit tests !
-
-- **pyowc/utilities.py**: change_dates, cal2dec, potential_vorticity, wrap_longitudes, sorter, spatial_correlation

@@ -1,98 +1,69 @@
-name: Build and upload pyowc to PyPI
-on:
-#  release:
-#    types: [created, edited]
-#  push:
-#    tags:
-#      - 'v*'
-  workflow_dispatch:
+name: Build and Upload pyowc
 
+on:
+  release:
+    types:
+      - created
+      - edited
+  workflow_dispatch:  # Allows manual triggering
+
+permissions:
+  contents: read
+  id-token: write  # Only needed if you use OIDC; optional here
 
 jobs:
   build-artifacts:
     runs-on: ubuntu-latest
-    if: github.repository == 'euroargodev/argodmqc_owc'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: 3.8
 
-      - name: Install dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Install dependencies and build package
         run: |
           python -m pip install --upgrade pip
-          python -m pip install setuptools setuptools-scm wheel twine check-manifest
-
-      - name: Build tarball and wheels
-        run: |
-          git clean -xdf
-          git restore -SW .
-          python -m build --sdist --wheel .
+          pip install poetry twine
+          poetry install --no-root
+          poetry build
 
       - name: Check built artifacts
         run: |
-          python -m twine check dist/*
-          pwd
-          if [ -f dist/pyowc-0.0.0.tar.gz ]; then
-            echo "❌ INVALID VERSION NUMBER"
+          if [ ! -d dist ] || [ -z "$(ls -A dist)" ]; then
+            echo "❌ Build failed: dist/ is empty or missing"
             exit 1
-          else
-            echo "✅ Looks good"
           fi
-      - uses: actions/upload-artifact@v4
+          python -m twine check dist/*
+          echo "✅ Artifacts look good"
+          ls -la dist
+
+      - name: Upload artifacts for downstream jobs
+        uses: actions/upload-artifact@v4
         with:
           name: releases
           path: dist
 
-  test-built-dist:
+  upload-to-pypi:
     needs: build-artifacts
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v5
-        name: Install Python
-        with:
-          python-version: 3.8
-      - uses: actions/download-artifact@v4.1.8
+      - name: Download built artifacts
+        uses: actions/download-artifact@v4
         with:
           name: releases
           path: dist
-      - name: List contents of built dist
-        run: |
-          ls -ltrh
-          ls -ltrh dist
 
-      - name: Verify the built dist/wheel is valid
-#        if: github.event_name == 'push'
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install dist/pyowc*.whl
-#          python -m parcels.util.print_versions
-
-      - name: Publish package to TestPyPI
-#        if: github.event_name == 'push'
-        uses: pypa/gh-action-pypi-publish@v1.12.3
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.10.1
         with:
           user: __token__
-          password: ${{ secrets.PYPITEST_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_TOKEN }}
           verbose: true
-
-
-#  upload-to-pypi:
-#    needs: test-built-dist
-#    if: github.event_name == 'release'
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/download-artifact@v4.1.8
-#        with:
-#          name: releases
-#          path: dist
-#      - name: Publish package to PyPI
-#        uses: pypa/gh-action-pypi-publish@v1.12.3
-#        with:
-#          user: __token__
-#          password: ${{ secrets.PYPI_TOKEN }}
-#          verbose: true
+          skip-existing: false
+          repository-url: https://upload.pypi.org/legacy/

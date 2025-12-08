@@ -1,87 +1,88 @@
-""" Key functions to run statistics
+"""Key functions to run statistics
 
-        Parameters
-        ----------
+Parameters
+----------
 
-        Returns
-        -------
+Returns:
+-------
 
 """
+
 import copy
+
 import numpy as np
-from scipy import interpolate
+from scipy import interpolate, linalg
 from scipy.optimize import least_squares
-from scipy import linalg
 
-from ..utilities import sorter, potential_vorticity
+from ..utilities import potential_vorticity, sorter
 
 
-#pylint: disable=too-many-lines
-#pylint: disable=global-variable-undefined
-#pylint: disable=redefined-outer-name
-#pylint: disable=invalid-name
-#pylint: disable=too-many-locals
-#pylint: disable=too-many-branches
-#pylint: disable=too-many-statements
+# pylint: disable=too-many-lines
+# pylint: disable=global-variable-undefined
+# pylint: disable=redefined-outer-name
+# pylint: disable=invalid-name
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def fit_cond(x, y, n_err, lvcov, *args):
-    """ Get optimal fit
+    """Get optimal fit
 
-        To decide which fit is optimal, we will use the small sample variation of the
-        Akaike Information Criterion.   Having chosen the
-        number of parameters, we then use the F-test to see if the reduction in
-        variance relative to the original variance is statistically significant.
+    To decide which fit is optimal, we will use the small sample variation of the
+    Akaike Information Criterion.   Having chosen the
+    number of parameters, we then use the F-test to see if the reduction in
+    variance relative to the original variance is statistically significant.
 
-        We have also used the correlation matrix for the horizontal and vertical
-        scales to estimate the number of effective degrees of freedom for the
-        fits and for estimating the uncertainties of the fits
-        This function implements a non-linear fit of a piecewise linear fit.  The
-        methodology is described in:
-        Jones, R.H. and I. Dey, 1995, Determining one or more change points.
-        Chemistry and Physics of Lipids, 76, 1-6.
+    We have also used the correlation matrix for the horizontal and vertical
+    scales to estimate the number of effective degrees of freedom for the
+    fits and for estimating the uncertainties of the fits
+    This function implements a non-linear fit of a piecewise linear fit.  The
+    methodology is described in:
+    Jones, R.H. and I. Dey, 1995, Determining one or more change points.
+    Chemistry and Physics of Lipids, 76, 1-6.
 
-        Cecile Cabanes, 2017: force the fit to an offset only if NDF <13. and display
-        a warning : to track change see change config 129
+    Cecile Cabanes, 2017: force the fit to an offset only if NDF <13. and display
+    a warning : to track change see change config 129
+
+    Parameters
+    ----------
+    x: observations
+    y: observations
+    n_err: error estimate for each observation
+    lvcov: covariance matrix
+    param: parameter for our breaks
+    br: break points
+
+    Returns:
+    -------
+    xfit              profile number (unique of x)
+    condslope         fit estimate for each profile
+    condslope_err     estimated rms error for each profile
+    time_deriv        estimated change per profile
+    time_deriv_err    estimated rms error in change per profile
+    sta_mean          mean difference between estimate and actual values
+                      averaged over each profile
+    sta_rms           rms difference between estimates and actual values
+                      averaged over each profile
+                      the off-diagonal coariance (lvcov) is taken into
+                      account
+    """
+
+    def nlbpfun(ubrk_i):
+        """Find residual
 
         Parameters
         ----------
-        x: observations
-        y: observations
-        n_err: error estimate for each observation
-        lvcov: covariance matrix
-        param: parameter for our breaks
-        br: break points
+        ubrk_i: input
 
-        Returns
+        Returns:
         -------
-        xfit              profile number (unique of x)
-        condslope         fit estimate for each profile
-        condslope_err     estimated rms error for each profile
-        time_deriv        estimated change per profile
-        time_deriv_err    estimated rms error in change per profile
-        sta_mean          mean difference between estimate and actual values
-                          averaged over each profile
-        sta_rms           rms difference between estimates and actual values
-                          averaged over each profile
-                          the off-diagonal coariance (lvcov) is taken into
-                          account
-    """
-    def nlbpfun(ubrk_i):
-        """ Find residual
-
-            Parameters
-            ----------
-            ubrk_i: input
-
-            Returns
-            -------
-            residual
+        residual
         """
-
         # TODO Address the use of globals in this file.
         global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim  # pylint: disable=global-variable-not-assigned
 
         if nbr1 > 1:
-            ubrk = ubrk_g[0:nbr1 - 1]
+            ubrk = ubrk_g[0 : nbr1 - 1]
             for i in range(nbr1, ubrk_g.__len__()):
                 ubrk.append(ubrk_i)
 
@@ -112,13 +113,12 @@ def fit_cond(x, y, n_err, lvcov, *args):
     # define global variables needed for line fitting
     global A, breaks, nbr1, ubrk_g, xf, yf, w_i, xblim
 
-
     # Set up some default values
     tol = 1e-06
     max_brk_dflt = 4
     max_brk_in = []
     nbr1 = -1
-    brk_init = [] # guesses for break point
+    brk_init = []  # guesses for break point
     breaks = np.array([])
     setbreaks = 0
 
@@ -172,14 +172,24 @@ def fit_cond(x, y, n_err, lvcov, *args):
         fit_coef = []
         fit_breaks = []
 
-        return (xfit, condslope, condslope_err, time_deriv, time_deriv_err, sta_mean,
-                sta_rms, NDF, fit_coef, fit_breaks)
+        return (
+            xfit,
+            condslope,
+            condslope_err,
+            time_deriv,
+            time_deriv_err,
+            sta_mean,
+            sta_rms,
+            NDF,
+            fit_coef,
+            fit_breaks,
+        )
 
     # condition the series so that the fit is well behaved
     # sort by the independent variable
 
     x = np.sort(x)
-    sorted_index = np.argsort(x, kind='stable')
+    sorted_index = np.argsort(x, kind="stable")
     y = y[sorted_index]
     n_err = n_err[sorted_index]
 
@@ -250,7 +260,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
             param = str.lower(parm)
 
-            if param == 'initial_breaks':
+            if param == "initial_breaks":
                 # initial guess for breakpoints
                 brk_init = value
 
@@ -258,19 +268,19 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 brk_init = (brk_init - x_0) / x_scale
                 brk_init = (brk_init - xblim[0]) / np.diff(xblim)
 
-            elif param == 'max_no_breaks':
+            elif param == "max_no_breaks":
                 max_brk_in = value
                 nbr1 = -1
 
-            elif param == 'number_breaks':
+            elif param == "number_breaks":
                 pbrk = value
                 nbr1 = pbrk
                 max_brk_in = pbrk
 
-            elif param == 'nloops':
+            elif param == "nloops":
                 nloops = value
 
-            elif param == 'breaks':
+            elif param == "breaks":
                 if value.__len__() > 0:
                     breaks = value
                     breaks = (breaks - x_0) / x_scale
@@ -305,11 +315,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
             nbr1 = nbr + 1
             A, residual = brk_pt_fit(xf, yf, w_i, breaks)
             b_pts[0:nbr, nbr + 1] = breaks.T
-            b_A[0:nbr + 2, nbr + 2] = A[0:nbr + 2]
-            rss[0, nbr + 2] = np.sum(residual ** 2 / err_var)
+            b_A[0 : nbr + 2, nbr + 2] = A[0 : nbr + 2]
+            rss[0, nbr + 2] = np.sum(residual**2 / err_var)
             no_param = 2 * (nbr + 1)
-            aic[0, nbr + 2] = ndf * np.log(rss[0, nbr + 2] / npts) + \
-                              ndf * (ndf + no_param) / (ndf - no_param - 2)
+            aic[0, nbr + 2] = ndf * np.log(rss[0, nbr + 2] / npts) + ndf * (ndf + no_param) / (ndf - no_param - 2)
 
         # we have the same number of specified breaks
         else:
@@ -332,39 +341,36 @@ def fit_cond(x, y, n_err, lvcov, *args):
             print("WARNING: only have " + str(ndf) + " degrees of freedom")
             print("Maximum breakpoints to be tried: " + str(np.max(pbrk)))
 
-        else:
-            if setbreaks == 1:
-                pbrk = np.array([nbr])
-                max_brk = nbr
-                nbr1 = nbr
-                print("WARNING: Only have " + str(ndf) + " degrees of freedom")
-                print("Estimate fit with fixed breakpoints")
+        elif setbreaks == 1:
+            pbrk = np.array([nbr])
+            max_brk = nbr
+            nbr1 = nbr
+            print("WARNING: Only have " + str(ndf) + " degrees of freedom")
+            print("Estimate fit with fixed breakpoints")
 
-            else:
-                pbrk = np.array([-1])
-                print("WARNING: Only have " + str(ndf) + " degrees of freedom")
-                print("Estimate offset only")
+        else:
+            pbrk = np.array([-1])
+            print("WARNING: Only have " + str(ndf) + " degrees of freedom")
+            print("Estimate offset only")
 
     for nbr in pbrk:
         if nbr == -1:
             # offset only
             # since this is an error weighted average, yx won't necessarily be 0
             ones_column = np.ones((npts, 1))
-            b_A[0, 0] = np.dot(np.dot(np.dot(np.linalg.inv(np.dot(np.dot(ones_column.T, w_i),
-                                                                  ones_column)),
-                                             ones_column.T),
-                                      w_i),
-                               yf)
+            b_A[0, 0] = np.dot(
+                np.dot(np.dot(np.linalg.inv(np.dot(np.dot(ones_column.T, w_i), ones_column)), ones_column.T), w_i), yf
+            )
 
             residual = yf - (ones_column * b_A[0, 0]).flatten()
-            rss[0, 0] = np.sum(residual ** 2 / err_var)
+            rss[0, 0] = np.sum(residual**2 / err_var)
             aic[0, 0] = ndf * np.log(rss[0, 0] / npts) + ndf * (ndf + 1) / (ndf - 3)
 
         elif nbr == 0:
             # linear fit, no break points
             A, residual = brk_pt_fit(xf, yf, w_i)
             b_A[0:2, 1] = A[0:2]
-            rss[0, 1] = np.sum(residual ** 2 / err_var)
+            rss[0, 1] = np.sum(residual**2 / err_var)
             aic[0, 1] = ndf * np.log(rss[0, 1] / npts) + ndf * (ndf + 2) / (ndf - 4)
 
         else:
@@ -395,19 +401,17 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
                 # fit over limited number of breaks
                 else:
-                    optim = least_squares(nlbpfun, ubrk_g[nbr1:nbr],
-                                          method='lm', ftol=tol, max_nfev=max_fun_evals)
-                    ubrk = optim['x'][0]
-                    residual = optim['fun']
+                    optim = least_squares(nlbpfun, ubrk_g[nbr1:nbr], method="lm", ftol=tol, max_nfev=max_fun_evals)
+                    ubrk = optim["x"][0]
+                    residual = optim["fun"]
 
-                    ubrk = np.concatenate((ubrk_g[0:nbr1 - 1], ubrk))
+                    ubrk = np.concatenate((ubrk_g[0 : nbr1 - 1], ubrk))
             # get non-linear least squares for break points
             else:
                 ubrk_g = np.array(ubrk_g)
-                optim = least_squares(nlbpfun, ubrk_g,
-                                      method='lm', ftol=tol, max_nfev=max_fun_evals)
-                ubrk = optim['x'][0]
-                residual = optim['fun']
+                optim = least_squares(nlbpfun, ubrk_g, method="lm", ftol=tol, max_nfev=max_fun_evals)
+                ubrk = optim["x"][0]
+                residual = optim["fun"]
 
             if breaks.__len__() > 0:
                 b_pts[0:nbr, nbr] = breaks.T
@@ -415,8 +419,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
             else:
                 b_pts[0:nbr, nbr] = np.nan
 
-            b_A[0:nbr + 2, nbr + 1] = A[0:nbr + 2]
-            rss[0, nbr + 1] = np.sum(residual ** 2 / err_var)
+            b_A[0 : nbr + 2, nbr + 1] = A[0 : nbr + 2]
+            rss[0, nbr + 1] = np.sum(residual**2 / err_var)
             p = 2 * (nbr + 1)
             aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
 
@@ -476,20 +480,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 E[ii, j + 1] = btem[j + 1] - btem[j]
 
     # get uncertainnties in fit parameters
-    B_i = np.linalg.inv((np.dot(np.dot(E.T, w_i), E)))
-    P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
-                                           w_i), np.diag(err_var)),
-                             w_i),
-                      E),
-               B_i)
+    B_i = np.linalg.inv(np.dot(np.dot(E.T, w_i), E))
+    P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T), w_i), np.diag(err_var)), w_i), E), B_i)
     P_1 = np.diag(P)
-    P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T),
-                                                  w_i),
-                                           np.diag(err_var)),
-                                    lvcov),
-                             w_i),
-                      E),
-               B_i)
+    P = np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(np.dot(B_i, E.T), w_i), np.diag(err_var)), lvcov), w_i), E), B_i)
     P_2 = np.diag(P)
 
     # reduce matrix to have only one value per profile
@@ -530,7 +524,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
         err = 0
 
         for i in range(nloops):
-
             yf = real_yf + n_err * np.random.randn(yf.size)
 
             if best == 2:
@@ -549,11 +542,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 for n in range(nbr):
                     ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
-                optim = least_squares(nlbpfun, ubrk_g,
-                                      method='lm', ftol=tol, max_nfev=max_fun_evals)
+                optim = least_squares(nlbpfun, ubrk_g, method="lm", ftol=tol, max_nfev=max_fun_evals)
 
-                ubrk = optim['x'][0]
-                residual = optim['fun']
+                ubrk = optim["x"][0]
+                residual = optim["fun"]
 
                 btem = np.concatenate([xfit[0]], breaks)
                 E = np.zeros((xfit.__len__(), best))
@@ -653,28 +645,27 @@ def fit_cond(x, y, n_err, lvcov, *args):
     fit_coef = A
     fit_breaks = break_pts
 
-    return (xfit, condslope, condslope_err, time_deriv, time_deriv_err,
-            sta_mean, sta_rms, ndf, fit_coef, fit_breaks)
+    return (xfit, condslope, condslope_err, time_deriv, time_deriv_err, sta_mean, sta_rms, ndf, fit_coef, fit_breaks)
 
 
 def signal_variance(sal):
-    """ Calculates signal variance
+    """Calculates signal variance
 
-        Calculates an estimate of the signal variance at a given level using:
+    Calculates an estimate of the signal variance at a given level using:
 
-        (sum({di - <d>}^2))/N
+    (sum({di - <d>}^2))/N
 
-        where di is a data point in d (which is a collection of salinities at a given level,
-         <d> is the mean of all the data points in d, and N is the number of data points
-         in d.
+    where di is a data point in d (which is a collection of salinities at a given level,
+     <d> is the mean of all the data points in d, and N is the number of data points
+     in d.
 
-        Parameters
-        ----------
-        sal: vector of salinities at a given level
+    Parameters
+    ----------
+    sal: vector of salinities at a given level
 
-        Returns
-        -------
-        float estimate of the variance of the signal of the given data
+    Returns:
+    -------
+    float estimate of the variance of the signal of the given data
     """
     sal = np.array(sal)
 
@@ -685,35 +676,37 @@ def signal_variance(sal):
 
 
 def noise_variance(sal, lat, long):
-    """ Calculates the variance in noise_variance of salinity at different pressures
+    """Calculates the variance in noise_variance of salinity at different pressures
 
-        Finds the variance for the noise variance of each salinity measurement by comparing it
-        to the noise_variance of all the other measurements. Can be thought of as the average
-        difference between measured salinity and expected salinity:
+    Finds the variance for the noise variance of each salinity measurement by comparing it
+    to the noise_variance of all the other measurements. Can be thought of as the average
+    difference between measured salinity and expected salinity:
 
-        noise_variance = (sum({x - y}^2)) / 2*N where
-        x is the current observation
-        y is the closest observation (spatially)
-        N is the number of elements
+    noise_variance = (sum({x - y}^2)) / 2*N where
+    x is the current observation
+    y is the closest observation (spatially)
+    N is the number of elements
 
-        This is because we assume that the noise variance is uncorrelated over distance, that it has
-        uniform variance, and that the signal has a longer correlation distance than the
-        data separation (WJO 2003, Delayed-Mode Calibration of Autonomous CTD Profiling
-        Float Salinity Data by θS Climatology).
+    This is because we assume that the noise variance is uncorrelated over distance, that it has
+    uniform variance, and that the signal has a longer correlation distance than the
+    data separation (WJO 2003, Delayed-Mode Calibration of Autonomous CTD Profiling
+    Float Salinity Data by θS Climatology).
 
-        Parameters
-        ----------
-        sal: m*n matrix containing m layers and n casts
-        lat: vector of latitudes of each cast
-        long: vector of longitudes of each cast
+    Parameters
+    ----------
+    sal: m*n matrix containing m layers and n casts
+    lat: vector of latitudes of each cast
+    long: vector of longitudes of each cast
 
-        Returns
-        -------
-        the variance in the noise_variance
+    Returns:
+    -------
+    the variance in the noise_variance
     """
     # note: currently we don't use a kd-tree or other structure as the original implementation
     #       ignored distinct points which have the same lat/long, and we want match it.
-    dist = ((lat[:, np.newaxis] - lat[np.newaxis, :])**2 + (long[:, np.newaxis] - long[np.newaxis, :])**2).astype(float)
+    dist = ((lat[:, np.newaxis] - lat[np.newaxis, :]) ** 2 + (long[:, np.newaxis] - long[np.newaxis, :]) ** 2).astype(
+        float
+    )
 
     if np.all(dist == 0.0):
         print("WARNING: no unique points")
@@ -729,47 +722,47 @@ def noise_variance(sal, lat, long):
     return sal_noise_var
 
 
-#pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments
 def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
-    """ Calculates how "close" two sets of points are to each other,
+    """Calculates how "close" two sets of points are to each other,
 
-        Calculates how "close" two sets of points are to each other, taking into account
-        space, time and (if wanted) potential vorticity. The closer two values are to
-        each other, the closer their value will be to 1. Points that differ greatly will be
-        nearer to 0.
+    Calculates how "close" two sets of points are to each other, taking into account
+    space, time and (if wanted) potential vorticity. The closer two values are to
+    each other, the closer their value will be to 1. Points that differ greatly will be
+    nearer to 0.
 
-        Calculates covariance of each point against every other point using the
-        Squared Exponential (SE) covariance function:
+    Calculates covariance of each point against every other point using the
+    Squared Exponential (SE) covariance function:
 
-        SE(x,y) = exp(-(x-y)^2/2l) where (x-y) is the difference between points (could be distance,
-        time, etc), and l is the characteristic length scale (how close points have to be
-        to influence each other significantly).
+    SE(x,y) = exp(-(x-y)^2/2l) where (x-y) is the difference between points (could be distance,
+    time, etc), and l is the characteristic length scale (how close points have to be
+    to influence each other significantly).
 
-        Parameters
-        ----------
-        points1: m*4 model matrix containing the latitude, longitude, date, and depth of each data point
-        points2: n*4 data matrix containing the latitude, longitude, date, and depth of each data point
-        lat: float, the characteristic latitude
-        long: float, the characteristic longitude
-        age: float, the characteristic time scale
-        phi: float, the characteristic cross-isobaric scale (for depth dependence)
-        map_pv_use: int, flag for using vorticity (1=include)
+    Parameters
+    ----------
+    points1: m*4 model matrix containing the latitude, longitude, date, and depth of each data point
+    points2: n*4 data matrix containing the latitude, longitude, date, and depth of each data point
+    lat: float, the characteristic latitude
+    long: float, the characteristic longitude
+    age: float, the characteristic time scale
+    phi: float, the characteristic cross-isobaric scale (for depth dependence)
+    map_pv_use: int, flag for using vorticity (1=include)
 
-        Returns
-        -------
-        m*n matrix containing the covariance of each point
+    Returns:
+    -------
+    m*n matrix containing the covariance of each point
     """
     points1 = np.atleast_2d(points1)
     points2 = np.atleast_2d(points2)
 
-    long_covar = ((points1[:, np.newaxis, 0] - points2[np.newaxis, :, 0]) / long)**2
-    lat_covar = ((points1[:, np.newaxis, 1] - points2[np.newaxis, :, 1]) / lat)**2
+    long_covar = ((points1[:, np.newaxis, 0] - points2[np.newaxis, :, 0]) / long) ** 2
+    lat_covar = ((points1[:, np.newaxis, 1] - points2[np.newaxis, :, 1]) / lat) ** 2
     age_covar = 0.0
     p_v_covar = 0.0
 
     # pylint: disable=fixme
     if age != 0:
-        age_covar = ((points1[:, np.newaxis, 2] - points2[np.newaxis, :, 2]) / age)**2
+        age_covar = ((points1[:, np.newaxis, 2] - points2[np.newaxis, :, 2]) / age) ** 2
 
     if map_pv_use == 1:
         # define a vectorized function to calculation potential vorticity
@@ -778,49 +771,51 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
         pv_lat1 = potential_vorticity_vec(points1[:, 0], points1[:, 3])
         pv_lat2 = potential_vorticity_vec(points2[:, 0], points2[:, 3])
 
-        p_v_covar = ((pv_lat1[:, np.newaxis] - pv_lat2[np.newaxis, :]) /
-                     np.sqrt(pv_lat1[:, np.newaxis]**2 + pv_lat2[np.newaxis, :]**2) / phi)**2
+        p_v_covar = (
+            (pv_lat1[:, np.newaxis] - pv_lat2[np.newaxis, :])
+            / np.sqrt(pv_lat1[:, np.newaxis] ** 2 + pv_lat2[np.newaxis, :] ** 2)
+            / phi
+        ) ** 2
 
     return np.exp(-(lat_covar + long_covar + age_covar + p_v_covar))
 
 
-#pylint: disable=too-many-locals
+# pylint: disable=too-many-locals
 def build_cov(ptmp, coord_float, config):
-    """ Build the covariance matrix
+    """Build the covariance matrix
 
-        Function builds a square covariance matrix that has n*n tiles, and each
-        tile is of size m*m
+    Function builds a square covariance matrix that has n*n tiles, and each
+    tile is of size m*m
 
-        The vertical covariance is the building tile. It contains a 1 down its diagonal,
-        which decreases exponentially in the off-diagonals (representing the vertical covariance
-        between water masses).
+    The vertical covariance is the building tile. It contains a 1 down its diagonal,
+    which decreases exponentially in the off-diagonals (representing the vertical covariance
+    between water masses).
 
-        We assume that each profile is independent from the other profiles
+    We assume that each profile is independent from the other profiles
 
-        N.B. Change to code on the xx/11/2007: Undefined - Breck Owens
+    N.B. Change to code on the xx/11/2007: Undefined - Breck Owens
 
-        N.B. Change to code on the xx/06/2013: Take into account the horizontal covariance between
-        different mapped profiles. This lateral covariance takes into account the fact that a mapped
-        profile on an Argo position is built from a set of historical profiles that are not very
-        different from the set used to build a mapped profile for the next or previous Argo position.
-        This lateral covariance between two mapped profiles is constructed using a Guassian function
-        and the large spatial scales - Cecile Cabanes
+    N.B. Change to code on the xx/06/2013: Take into account the horizontal covariance between
+    different mapped profiles. This lateral covariance takes into account the fact that a mapped
+    profile on an Argo position is built from a set of historical profiles that are not very
+    different from the set used to build a mapped profile for the next or previous Argo position.
+    This lateral covariance between two mapped profiles is constructed using a Guassian function
+    and the large spatial scales - Cecile Cabanes
 
-        N.B. Change to code on the xx/xx/2017: Use the small spatial scales instead of the large spatial
-        scales to build the lateral covariance. This has been found to be the best comprimise between the
-        informative errors and large enough NDF for AIC criterion, at least for the scales defined for the
-        North Atlantic basin - Cecile Cabanes
+    N.B. Change to code on the xx/xx/2017: Use the small spatial scales instead of the large spatial
+    scales to build the lateral covariance. This has been found to be the best comprimise between the
+    informative errors and large enough NDF for AIC criterion, at least for the scales defined for the
+    North Atlantic basin - Cecile Cabanes
 
-        Parameters
-        ----------
-        ptmp: matrix of potential temperatures
-        coord_float_config: the x, y, z position of the float
+    Parameters
+    ----------
+    ptmp: matrix of potential temperatures
+    coord_float_config: the x, y, z position of the float
 
-        Returns
-        -------
-        covariance matrix
+    Returns:
+    -------
+    covariance matrix
     """
-
     # Set up theta boundaries for water masses
 
     ptboundaries = np.array([30, 24, 18, 12, 8, 4, 2.5, 1, -2])
@@ -846,24 +841,20 @@ def build_cov(ptmp, coord_float, config):
 
     # go through each profile
     for profile in range(0, ptmp_columns):
-
         profile_1 = profile * ptmp_rows
 
         # go through each level
         for i in range(0, ptmp_rows):
             for j in range(0, ptmp_rows):
-
                 # belongs in the upper triangle, look down water column for vertical scale
                 if i < j:
                     l_theta = upper_interp(ptmp[i, profile])
-                    cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2
-                                                   / l_theta ** 2)
+                    cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2 / l_theta**2)
 
                 # belongs in the lower triangle, look up water column for vertical scale
                 elif i > j:
                     l_theta = lower_interp(ptmp[i, profile])
-                    cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2
-                                                   / l_theta ** 2)
+                    cov[i + profile_1, j] = np.exp(-1 * (ptmp[j, profile] - ptmp[i, profile]) ** 2 / l_theta**2)
 
                 # it is in the leading diagonal, so make it equal to 1
                 else:
@@ -877,11 +868,14 @@ def build_cov(ptmp, coord_float, config):
     h_cov = np.ones((ptmp_columns, ptmp_columns)) * np.nan
 
     for profile in range(0, ptmp_columns):
-        h_cov[profile, :] = covarxy_pv(coord_float[profile], coord_float,
-                                       config['MAPSCALE_LONGITUDE_SMALL'],
-                                       config['MAPSCALE_LATITUDE_SMALL'],
-                                       config['MAPSCALE_PHI_SMALL'],
-                                       config['MAP_USE_PV'])
+        h_cov[profile, :] = covarxy_pv(
+            coord_float[profile],
+            coord_float,
+            config["MAPSCALE_LONGITUDE_SMALL"],
+            config["MAPSCALE_LATITUDE_SMALL"],
+            config["MAPSCALE_PHI_SMALL"],
+            config["MAP_USE_PV"],
+        )
 
     h_cov = h_cov[:, 0:ptmp_columns]
 
@@ -891,7 +885,6 @@ def build_cov(ptmp, coord_float, config):
 
     # Have to find the covariance for each profile against all other profiles
     for profile in range(0, ptmp_columns):
-
         lower = profile * ptmp_rows
         upper = (profile + 1) * ptmp_rows
 
@@ -899,33 +892,31 @@ def build_cov(ptmp, coord_float, config):
         for profile_1 in range(0, ptmp_columns):
             lower_1 = profile_1 * ptmp_rows
             upper_1 = (profile_1 + 1) * ptmp_rows
-            n_cov[lower:upper, lower_1:upper_1] = h_cov[profile, profile_1] * \
-                                                  n_cov[lower:upper, lower_1:upper_1]
+            n_cov[lower:upper, lower_1:upper_1] = h_cov[profile, profile_1] * n_cov[lower:upper, lower_1:upper_1]
 
     return n_cov
 
 
-#pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments
 def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
-    """ Returns a matrix for the horizontal covariance
+    """Returns a matrix for the horizontal covariance
 
-        Finds the correlation between spatial and temporal data, and uses this
-        to construct the covariance
+    Finds the correlation between spatial and temporal data, and uses this
+    to construct the covariance
 
-        Parameters
-        ----------
-        input_coords: the input coordinates of the the float profile
-        coords: coordinates for all the float profiles
-        long: longitude scale
-        lat: latitude scale
-        phi: potential gradient
-        use_pv: whether or not to use potential vorticity
+    Parameters
+    ----------
+    input_coords: the input coordinates of the the float profile
+    coords: coordinates for all the float profiles
+    long: longitude scale
+    lat: latitude scale
+    phi: potential gradient
+    use_pv: whether or not to use potential vorticity
 
-        Returns
-        -------
-        horizontal covariance matrix
+    Returns:
+    -------
+    horizontal covariance matrix
     """
-
     # Derive the planetary vorticity at each point
 
     # Get the depth for each data point
@@ -933,61 +924,57 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     z_coords = coords[:, 2]
 
     # define a vectorized function to calculation potential vorticity
-    potential_vorticity = np.vectorize(lambda latitude, depth:
-                                       (2 * 7.292 * 10 ** -5 *
-                                        np.sin(latitude * np.pi / 180)) / depth)
+    potential_vorticity = np.vectorize(
+        lambda latitude, depth: (2 * 7.292 * 10**-5 * np.sin(latitude * np.pi / 180)) / depth
+    )
 
     # calculate potential vorticity
     pv_input_coords = potential_vorticity(input_coords[0], z_input_coords)
     pv_coords = potential_vorticity(coords[:, 0], z_coords)
 
     # calculate correlation
-    cor_term = ((input_coords[0] - coords[:, 0]) / lat) ** 2 + \
-               ((input_coords[1] - coords[:, 1]) / long) ** 2
+    cor_term = ((input_coords[0] - coords[:, 0]) / lat) ** 2 + ((input_coords[1] - coords[:, 1]) / long) ** 2
 
     # include potential vorticity in correlation, if the user has asked for it
 
     if use_pv and pv_input_coords.any() and pv_coords.any() != 0:
-        cor_term = cor_term + ((pv_input_coords - pv_coords) /
-                               np.sqrt(pv_input_coords ** 2 + pv_coords ** 2) /
-                               phi) ** 2
+        cor_term = cor_term + ((pv_input_coords - pv_coords) / np.sqrt(pv_input_coords**2 + pv_coords**2) / phi) ** 2
 
     cov_term = np.exp(-cor_term.transpose())
 
     return cov_term
 
 
-#pylint: disable=too-many-locals
+# pylint: disable=too-many-locals
 def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
-    """ Get least-squares estimates for a piecewise linear fit with breakpoints at prescribed points
+    """Get least-squares estimates for a piecewise linear fit with breakpoints at prescribed points
 
-        Routine to get least squares fit for piecewise linear fit with break points at prescribed points
+    Routine to get least squares fit for piecewise linear fit with break points at prescribed points
 
-        y = A(1) + A(2)*x+eps                     for x(1) <= x <= b(1)
-        y = A(1) + A(2)*b(1) + A(3)*(x-b(1))+eps  for b(1) <= x <= b(2)
-        ...                                            ...
-        y = A(1) + A(2)*(b(2)-b(1)) + ... + A(m+2)*(x-b(m)+eps for b(m) <= x <= x(n)
+    y = A(1) + A(2)*x+eps                     for x(1) <= x <= b(1)
+    y = A(1) + A(2)*b(1) + A(3)*(x-b(1))+eps  for b(1) <= x <= b(2)
+    ...                                            ...
+    y = A(1) + A(2)*(b(2)-b(1)) + ... + A(m+2)*(x-b(m)+eps for b(m) <= x <= x(n)
 
-        where:
-        x = vector of observed indepedent variables [n]
-        y = vector of observed dependent variables  [n]
-        W_i = inverse of weights for fit [n] if W_i is empty, then equal weighting for each point
-        b = vector of break points as values of x   [m]
-        A = fitting coefficients                    [m+1]
-        yg = fitted estimate of y
+    where:
+    x = vector of observed indepedent variables [n]
+    y = vector of observed dependent variables  [n]
+    W_i = inverse of weights for fit [n] if W_i is empty, then equal weighting for each point
+    b = vector of break points as values of x   [m]
+    A = fitting coefficients                    [m+1]
+    yg = fitted estimate of y
 
-        Parameters
-        ----------
-        x_obvs: indendent variables
-        y_obvs: dependent variables
-        w_i: inverse of weights for fit
-        breaks: vector of break points
+    Parameters
+    ----------
+    x_obvs: indendent variables
+    y_obvs: dependent variables
+    w_i: inverse of weights for fit
+    breaks: vector of break points
 
-        Returns
-        -------
-        fit_param, residual: Matrix relating observations to the fit parameters of the linear fit
+    Returns:
+    -------
+    fit_param, residual: Matrix relating observations to the fit parameters of the linear fit
     """
-
     if breaks is None:
         breaks = []
 
@@ -1043,7 +1030,6 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
 
     else:
         fit_param = linalg.solve(ls_est, np.dot(trends.T, y_obvs))
-
 
     # calculate fit estimate
     residual = y_obvs - np.dot(trends, fit_param)
