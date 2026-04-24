@@ -675,6 +675,9 @@ def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres
                 if ptmp[theta_index, depth] == theta_levels[level]:
                     k_index = theta_index
 
+                if isinstance(k_index, np.ndarray) and len(k_index) > 1:
+                    k_index = k_index[0]
+
                 # interpolate theta level, if possible
                 if (
                     k_index != theta_index
