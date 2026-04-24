@@ -573,8 +573,8 @@ def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres
             ptmp[i[0], i[1]] = np.nan
 
     # find minimum and maximum theta
-    min_theta = np.ceil(np.nanmin(ptmp) * 10) / 10
-    max_theta = np.floor(np.nanmax(ptmp) * 10) / 10
+    min_theta = np.ceil(np.nanmin(ptmp) * 100) / 100
+    max_theta = np.floor(np.nanmax(ptmp) * 100) / 100
 
     # only find levels if we have a valid theta range
     if min_theta < max_theta:
