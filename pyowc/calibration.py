@@ -381,10 +381,17 @@ def update_salinity_mapping(float_dir, config, float_name):
         print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
         profile_index += 1
 
-    # as a quality control check, just make sure salinities are between 30 and 40
-    bad_sal_30 = np.argwhere(data["la_mapped_sal"] < 30)
-    bad_sal_40 = np.argwhere(data["la_mapped_sal"] > 40)
-    bad_sal = np.concatenate((bad_sal_30, bad_sal_40))
+    # as a quality control check check salinity is in appropriate ranges
+    float_lat = float_source_data["LAT"]
+    float_long = float_source_data["LONG"]
+    if np.min(float_lat) > 41 and np.max(float_lat) < 48 and np.min(float_long) > 27 and np.max(float_long) < 42:
+        # Black Sea has different acceptable salinity range
+        bad_sal_lower = np.argwhere(data["la_mapped_sal"] < 15)
+        bad_sal_upper = np.argwhere(data["la_mapped_sal"] > 25)
+    else:
+        bad_sal_lower = np.argwhere(data["la_mapped_sal"] < 30)
+        bad_sal_upper = np.argwhere(data["la_mapped_sal"] > 40)
+    bad_sal = np.concatenate((bad_sal_lower, bad_sal_upper))
 
     for sal in bad_sal:
         data["la_mapped_sal"][sal[0], sal[1]] = np.nan
