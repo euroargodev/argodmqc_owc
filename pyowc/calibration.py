@@ -820,8 +820,6 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             "cal_SAL_err": cal_sal_err,
             "pcond_factor": pcond_factor,
             "pcond_factor_err": pcond_factor_err,
-            "cal_COND": cal_cond,
-            "cal_COND_err": cal_cond_err,
             "time_deriv": time_deriv,
             "time_deriv_err": time_deriv_err,
             "sta_mean": sta_mean,
