@@ -493,6 +493,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
     ixb = sorter(btem, xfit)
 
     if best >= 2:
+        # recompute A(1) in case xfit(1) is not equal to xf(1)
+        A[1] = A[1] + A[2] * (xfit[1] - xf[1])
         for j in range(best - 1):
             # point to x values greater than break j
             ib = np.argwhere(ixb == j)
@@ -530,9 +532,15 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 # E for linear case is already calculated
                 A, residual = brk_pt_fit(xf, yf, w_i)
 
+                # recompute A(1) in case xfit(1) is not equal to xf(1)
+                A[1] = A[1] + A[2] * (xfit[1] - xf[1])
+
             elif setbreaks:
                 # E stays fixed if breaks are specified
                 A, residual = brk_pt_fit(xf, yf, w_i, breaks)
+
+                # recompute A(1) in case xfit(1) is not equal to xf(1)
+                A[1] = A[1] + A[2] * (xfit[1] - xf[1])
 
             else:
                 # give an initial guess as the fitted break points to speed up calculation
@@ -551,6 +559,9 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 E = np.zeros((xfit.__len__(), best))
                 E[:, 0] = np.ones((xfit.__len__(), 1)).T
                 ixb = sorter(btem, xfit)
+
+                # recompute A(1) in case xfit(1) is not equal to xf(1)
+                A[1] = A[1] + A[2] * (xfit[1] - xf[1])
 
                 for j in range(best - 1):
                     # pointer to x values greater than break point j
