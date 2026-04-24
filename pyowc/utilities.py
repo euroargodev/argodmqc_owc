@@ -64,7 +64,7 @@ class Config(BaseModel):
     USE_PRES_GT: list
 
     BREAKS: list
-    MAX_BREAKS: int
+    MAX_BREAKS: int = 3
     USE_PERCENT_GT: float
     SPLITS: list
     EXCLUSIONS: list
