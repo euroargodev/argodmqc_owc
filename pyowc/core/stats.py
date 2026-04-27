@@ -879,7 +879,7 @@ def build_cov(ptmp, coord_float, config):
     h_cov = np.ones((ptmp_columns, ptmp_columns)) * np.nan
 
     for profile in range(0, ptmp_columns):
-        h_cov[profile, :] = covarxy_pv(
+        h_cov[profile, :] = covarxyt_pv(
             coord_float[profile],
             coord_float,
             config["MAPSCALE_LONGITUDE_SMALL"],
@@ -909,7 +909,7 @@ def build_cov(ptmp, coord_float, config):
 
 
 # pylint: disable=too-many-arguments
-def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
+def covarxyt_pv(input_coords, coords, long, lat, phi, use_pv):
     """Returns a matrix for the horizontal covariance
 
     Finds the correlation between spatial and temporal data, and uses this
