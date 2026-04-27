@@ -482,31 +482,33 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     selected_hist = float_mapped_data["selected_hist"]
 
     # retrieve XYZ of float position used to build covariance
-    if selected_hist.__len__() > 0:
-        if long.shape[0] > 1:
-            long = long.flatten()
+    if long.shape[0] > 1:
+        long = long.flatten()
 
-        if lat.shape[0] > 1:
-            lat = lat.flatten()
+    if lat.shape[0] > 1:
+        lat = lat.flatten()
 
-        if np.any(long > 180):
-            long_1 = copy.deepcopy(long) - 360
+    if np.any(long > 180):
+        long_1 = copy.deepcopy(long) - 360
 
-        else:
-            long_1 = copy.deepcopy(long)
+    else:
+        long_1 = copy.deepcopy(long)
 
-        elev, x_grid, y_grid = get_topo_grid(
-            np.nanmin(long_1) - 1, np.nanmax(long_1) + 1, np.nanmin(lat) - 1, np.nanmax(lat) + 1, system_config
-        )
+    elev, x_grid, y_grid = get_topo_grid(
+        np.nanmin(long_1) - 1, np.nanmax(long_1) + 1, np.nanmin(lat) - 1, np.nanmax(lat) + 1, system_config
+    )
 
-        grid_interp = interpolate.RegularGridInterpolator((y_grid[:, 0], x_grid[0, :]), elev, method="linear")
+    grid_interp = interpolate.RegularGridInterpolator((y_grid[:, 0], x_grid[0, :]), elev, method="linear")
 
-        points = np.column_stack((lat.ravel(), long_1.ravel()))
+    points = np.column_stack((lat.ravel(), long_1.ravel()))
 
-        z_grid = grid_interp(points).reshape(lat.shape)
-        z_grid = -z_grid
+    z_grid = grid_interp(points).reshape(lat.shape)
+    z_grid = -z_grid
 
-        coord_float = np.column_stack((long.ravel(), lat.ravel(), z_grid.ravel()))
+    coord_float = np.column_stack((long.ravel(), lat.ravel(), z_grid.ravel()))
+
+    if len(selected_hist) == 0:
+        print("WARNING: No reference data selected for any profiles")
 
     # load the calibration settings
     float_calseries_path = os.path.sep.join(
