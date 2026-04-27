@@ -283,19 +283,24 @@ def update_salinity_mapping(float_dir, config, float_name):
                             map_p_delta=map_p_delta,
                         )
 
-                        # only proceed with analysis if we have more than 5 points
-                        if hist_data["hist_sal"].__len__() > 5:
-                            # Need to check for statistical outliers
-                            mean_sal = np.mean(hist_data["hist_sal"])
-                            signal_sal = signal_variance(hist_data["hist_sal"])
+                        # Need to check for statistical outliers
+                        mean_sal = np.mean(hist_data["hist_sal"])
+                        signal_sal = signal_variance(hist_data["hist_sal"])
+
+                        if signal_sal > 0:
                             outlier1 = np.argwhere(np.abs(hist_data["hist_sal"] - mean_sal) / np.sqrt(signal_sal) > 3)
                             outlier = outlier1[:, 0]
 
                             # remove the statical outliers
                             hist_data = remove_statical_outliers(outlier, hist_data)
 
+                        # require more than one historical salinity profile with unique position for noise; and
+                        # require more than five historical salinity profiles to produce realistic mapping error estimates
+                        hist_lat_flatten = hist_data["hist_lat"].flatten()
+                        hist_long_flatten = hist_data["hist_long"].flatten()
+                        hist_sal_flatten = hist_data["hist_sal"].flatten()
+                        if (np.unique(hist_long_flatten).size > 1 or np.unique(hist_lat_flatten).size > 1) and hist_sal_flatten.size > 5:
                             # calculate signal and noise for complete data
-                            hist_sal_flatten = hist_data["hist_sal"].flatten()
                             noise_sal = noise_variance(
                                 hist_sal_flatten, hist_data["hist_lat"].flatten(), hist_data["hist_long"].flatten()
                             )
