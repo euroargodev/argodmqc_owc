@@ -2,7 +2,7 @@
 
 import copy
 import os
-
+import pathlib
 import matplotlib.pylab as pl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -137,8 +137,10 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.legend(loc=4, prop={"size": 6})
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
+    file_name = float_name + "_trajectory." + save_format
+    plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+    plot_loc.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(plot_loc, format=save_format)
 
 
 # pylint: disable=too-many-arguments
@@ -203,8 +205,10 @@ def theta_sal_plot(
     plt.ylabel(r"$\theta$ $^\circ$C")
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-    plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format, format=save_format)
+    file_name = float_name + "_" + title + "_theta_sal." + save_format
+    plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+    plot_loc.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(plot_loc, format=save_format)
     plt.show()
 
 
@@ -273,8 +277,10 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.tight_layout(pad=1)
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-    plt.savefig(plot_loc + "_salinity_profile." + save_format, format=save_format, bbox_inches="tight")
+    file_name = float_name + "_salinity_profile." + save_format
+    plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+    plot_loc.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
     plt.show()
 
@@ -571,10 +577,10 @@ def sal_var_plot(
         plt.legend()
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-        plt.savefig(
-            plot_loc + "_salinity_variance_" + str(i + 1) + "." + save_format, format=save_format, bbox_inches="tight"
-        )
+        file_name = float_name + "_salinity_variance_" + str(i + 1) + "." + save_format
+        plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+        plot_loc.parent.mkdir(exist_ok=True, parents=True)
+        plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
         plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
         plt.show()
@@ -724,8 +730,10 @@ def cal_sal_curve_plot(
         )
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-        plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format, bbox_inches="tight")
+        file_name = float_name + "_salinity_curve." + save_format
+        plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+        plot_loc.parent.mkdir(exist_ok=True, parents=True)
+        plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
         plt.show()
 
@@ -824,10 +832,8 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
         )
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-        plt.savefig(
-            plot_loc + "_" + title + "_salinity_anomaly_" + str(bounds) + "." + save_format,
-            format=save_format,
-            bbox_inches="tight",
-        )
+        file_name = float_name + "_" + title + "_salinity_anomaly_" + str(bounds) + "." + save_format
+        plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+        plot_loc.parent.mkdir(exist_ok=True, parents=True)
+        plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
         plt.show()

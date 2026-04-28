@@ -113,6 +113,8 @@ def update_salinity_mapping(float_dir, config, float_name):
 
     # Load precalculated mapped data -------------------------------------
 
+    # Create directory if not exists
+    Path(config["FLOAT_MAPPED_DIRECTORY"], float_dir).mkdir(exist_ok=True)
     # Check to see if we have any precalculated mapped data
     mapped_data_path = os.path.sep.join(
         [

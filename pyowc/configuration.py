@@ -2,6 +2,7 @@
 
 import collections
 import os
+from pathlib import Path
 
 import numpy as np
 from scipy.io import loadmat, savemat
@@ -57,6 +58,8 @@ def set_calseries(float_dir, float_name, system_config):
         ]
     )
 
+    # Create directory if not exists
+    Path(calseries_filename).parent.mkdir(exist_ok=True)
 
     # if we already have a calseries file, use those values. Else, use new ones
     try:
