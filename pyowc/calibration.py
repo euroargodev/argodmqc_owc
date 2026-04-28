@@ -3,6 +3,7 @@
 import copy
 import os
 import time
+from pathlib import Path
 
 import gsw
 import numpy as np
@@ -15,6 +16,7 @@ from .data.fetchers import frontal_constraint_saf, get_region_data, get_region_h
 from .data.wrangling import interp_climatology, map_data_grid
 from .helper import (
     check_and_make_numpy_arry,
+    create_la_wmo_boxes_file,
     get_float_data,
     load_varibales_from_file,
     process_profile_hist_variables,
@@ -71,8 +73,10 @@ def update_salinity_mapping(float_dir, config, float_name):
     float_level_count = float_source_data["SAL"].shape[0]
 
     # Load all the mapping parameters, including the WMO boxes -----------
-
-    wmo_boxes = loadmat(os.path.sep.join([config["CONFIG_DIRECTORY"], config["CONFIG_WMO_BOXES"]]))
+    la_wmo_boxes_file = os.path.sep.join([config["CONFIG_DIRECTORY"], config["CONFIG_WMO_BOXES"]])
+    if not Path(la_wmo_boxes_file).exists():
+        create_la_wmo_boxes_file(config)
+    wmo_boxes = loadmat(la_wmo_boxes_file)
     max_casts = config["CONFIG_MAX_CASTS"]
     map_use_pv = config["MAP_USE_PV"]
     map_use_saf = config["MAP_USE_SAF"]
