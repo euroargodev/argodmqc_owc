@@ -723,7 +723,7 @@ def cal_sal_curve_plot(
         plt.xlim((np.nanmin(profile_no), np.nanmax(profile_no)))
 
         plt.legend()
-        plt.ylabel(r"$\Delta$ S")
+        plt.ylabel(r"$\Delta$ S (PSS-78)")
         plt.xlabel("Profile number")
         plt.title(
             float_name + r" vertically averaged salinity (PSS-78) additive " + r"correction $\Delta$ S with errors"

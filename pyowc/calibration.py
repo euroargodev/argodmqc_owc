@@ -648,10 +648,15 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
         return
 
+    # Initialisation of arrays to be saved in a file
+    theta_nseq = np.nan * np.zeros((10, n_seq))
+    index_arr = np.nan * np.zeros((10, n))
+    p_levels = np.nan * np.zeros((10, n_seq))
+
     # loop through sequences of calseries
 
-    for i in range(n_seq):
-        calindex = np.argwhere(calseries == unique_cal[i])[:, 1]
+    for i_seq in range(n_seq):
+        calindex = np.argwhere(calseries == unique_cal[i_seq])[:, 1]
         k = calindex.__len__()
 
         # chose 10 float theta levels to use for the piecewise linear fit
@@ -688,6 +693,29 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             use_pres_gt,
             use_percent_gt,
         )
+
+        # Save theta-related information for plotting functions
+        index_arr[:,calindex] = index
+        p_levels[:,i_seq] = p.flatten()
+        mvth = var_s_th.shape[0]
+        theta_nseq[:,i_seq] = theta.flatten()
+        if i_seq == 0:
+            var_s_thetas = np.nan * np.ones((mvth, n_seq))
+            thetas = np.nan * np.ones((mvth, n_seq))
+            var_s_thetas[:, i_seq] = var_s_th.flatten()
+            thetas[:,i_seq] = th.flatten()
+        else:
+            mVth = var_s_thetas.shape[0]
+            tmp_1 = var_s_thetas
+            tmp_2 = thetas
+            mm = max(mvth, mVth)
+            var_s_thetas = np.nan * np.ones((mm, n_seq))
+            thetas = np.nan * np.ones((mm, n_seq))
+            var_s_thetas[0:mVth,:] = tmp_1
+            var_s_thetas[0:mvth,i_seq] = var_s_th.flatten()
+            thetas[0:mVth,:] = tmp_2
+            thetas[0:mvth,i_seq] = th.flatten()
+
 
         index = np.array(index, dtype=int)
         pp = np.argwhere(np.isnan(index) == 0)
@@ -737,7 +765,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                     ndf,
                     fit_coef,
                     fit_breaks,
-                ) = fit_cond(x, y, err, covariance, "max_no_breaks", max_breaks[i][0])
+                ) = fit_cond(x, y, err, covariance, "max_no_breaks", max_breaks[i_seq][0])
                 pcond_factor[0][calindex] = condslope
                 pcond_factor_err[0][calindex] = condslope_err
                 time_deriv[0][calindex] = time_deriv_temp.flatten()
@@ -746,10 +774,10 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 sta_rms[0][calindex] = sta_rms_temp
 
             else:
-                breaks_in = breaks[i, :]
+                breaks_in = breaks[i_seq, :]
                 breaks_in = breaks_in[np.argwhere(np.isfinite(breaks_in))]
 
-                if max_breaks[i]:
+                if max_breaks[i_seq]:
                     (
                         xfit,
                         condslope,
@@ -761,7 +789,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                         ndf,
                         fit_coef,
                         fit_breaks,
-                    ) = fit_cond(x, y, err, covariance, "breaks", breaks_in, "max_no_breaks", max_breaks[i][0])
+                    ) = fit_cond(x, y, err, covariance, "breaks", breaks_in, "max_no_breaks", max_breaks[i_seq][0])
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
                     time_deriv[calindex] = time_deriv_temp
@@ -816,6 +844,22 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 if fit_breaks.__len__() > 0:
                     fbreaks.append(fit_breaks)
 
+    # Save theta levels information inside a file
+    ls_theta = os.path.sep.join([
+        system_config["FLOAT_CALIB_DIRECTORY"],
+        float_dir,
+        "selected_theta_" + float_name + ".mat",
+    ])
+    savemat(
+        ls_theta,
+        {
+            "Theta": theta_nseq,
+            "Index": index_arr,
+            "Plevels": p_levels,
+            "Var_s_Thetas": var_s_thetas,
+            "Thetas": thetas,
+        }
+    )
     # save calibration data
 
     float_calib_name = os.path.sep.join(
