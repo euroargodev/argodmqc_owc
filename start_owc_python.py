@@ -1,6 +1,7 @@
 """starting code"""
 
 import multiprocessing
+import sys
 import time
 import warnings
 from functools import partial
@@ -12,6 +13,18 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def main() -> None:
     """Entry point for processing."""
+    # Handle any input args
+    args = sys.argv[1:]
+    headless = "--headless" in args
+    plot_file_suffix = ""
+    try:
+        append_index = args.index("-appendRef")
+        if len(args) > append_index + 1:
+            plot_file_suffix = args[append_index + 1]
+            if not plot_file_suffix.startswith("_"):
+                raise Exception("appendRef must start with an underscore")
+    except ValueError:
+        pass
     FLOAT_NAMES = ["3901960"]
     config_file_location = "owc_config.json"
 
@@ -34,7 +47,7 @@ def main() -> None:
     for flt in FLOAT_NAMES:
         owc.configuration.set_calseries("/", flt, USER_CONFIG)
         owc.calibration.calc_piecewisefit("/", flt, USER_CONFIG)
-        owc.dashboard("/", flt, USER_CONFIG)
+        owc.dashboard("/", flt, USER_CONFIG, headless=headless, file_suffix=plot_file_suffix)
         mid = time.time()
         print("Time for float: ", mid - start)
 

@@ -30,7 +30,7 @@ def draw_shapes_as_patches(axes, shapes, **kwargs):
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-arguments
-def trajectory_plot(bath, reef, floats, climatology, float_name, config):
+def trajectory_plot(bath, reef, floats, climatology, float_name, config, headless = False, file_suffix: str = ""):
     """Plot locations of all the data used in the analysis
 
     function for plotting locations of all the data used in the analysis, including:
@@ -47,6 +47,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     floats: float location data frame
     climatology: climatology location dataframe
     float_name: name of float
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -137,17 +138,18 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.legend(loc=4, prop={"size": 6})
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    file_name = float_name + "_trajectory." + save_format
+    file_name = f"{float_name}_trajectory{file_suffix}.{save_format}"
     plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
     plot_loc.parent.mkdir(exist_ok=True, parents=True)
     plt.savefig(plot_loc, format=save_format)
+    plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
 def theta_sal_plot(
-    sal, theta, map_sal, map_theta, map_errors, index, profiles, config, float_name, title="uncalibrated"
+    sal, theta, map_sal, map_theta, map_errors, index, profiles, config, float_name, title="uncalibrated", headless = False, file_suffix: str = ""
 ):
     """Create the salinity theta curve
 
@@ -163,6 +165,7 @@ def theta_sal_plot(
     profiles: profile numbers array
     config: user configuration
     float_name: name of the float
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -209,11 +212,11 @@ def theta_sal_plot(
     plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
     plot_loc.parent.mkdir(exist_ok=True, parents=True)
     plt.savefig(plot_loc, format=save_format)
-    plt.show()
+    plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
-def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
+def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config, headless = False, file_suffix: str = ""):
     """Plots profile plots
 
     Parameters
@@ -227,6 +230,7 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plevels: pressure at theta levels
     float_name: name of the float
     config: user configuration
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -277,12 +281,12 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.tight_layout(pad=1)
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    file_name = float_name + "_salinity_profile." + save_format
+    file_name = f"{float_name}_salinity_profile{file_suffix}.{save_format}"
     plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
     plot_loc.parent.mkdir(exist_ok=True, parents=True)
     plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
-    plt.show()
+    plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
@@ -304,6 +308,8 @@ def sal_var_plot(
     profile_no,
     float_name,
     config,
+    headless = False,
+    file_suffix: str = "",
 ):
     """Create the salinity variance plot for each level
 
@@ -322,6 +328,7 @@ def sal_var_plot(
     cal_sal_errors: calibrated salinity errors
     boundaries: pressure and temperature boundaries
     config: user configuration
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -577,13 +584,13 @@ def sal_var_plot(
         plt.legend()
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        file_name = float_name + "_salinity_variance_" + str(i + 1) + "." + save_format
+        file_name = f"{float_name}_salinity_variance_{str(i+1)}{file_suffix}.{save_format}"
         plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
         plot_loc.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
         plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
-        plt.show()
+        plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
@@ -601,6 +608,8 @@ def cal_sal_curve_plot(
     profile_no,
     float_name,
     config,
+    headless = False,
+    file_suffix: str = "",
 ):
     """Create the calibrated salinity curve plot
 
@@ -617,6 +626,7 @@ def cal_sal_curve_plot(
     pcond_factor_err: slope error
     float_name: name of the float
     config: user configuration
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -730,15 +740,15 @@ def cal_sal_curve_plot(
         )
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        file_name = float_name + "_salinity_curve." + save_format
+        file_name = f"{float_name}_salinity_curve{file_suffix}.{save_format}"
         plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
         plot_loc.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
-        plt.show()
+        plt.show() if not headless else plt.close()
 
 
-def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated"):
+def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated", headless = False, file_suffix: str = ""):
     """Create the salinity anomoly plot
 
     Parameters
@@ -750,6 +760,7 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
     config: user configuration
     float_name: name of the float
     title: Addition to the title
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -832,8 +843,8 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
         )
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        file_name = float_name + "_" + title + "_salinity_anomaly_" + str(bounds) + "." + save_format
+        file_name = f"{float_name}_{title}_salinity_anomaly_{str(bounds)}{file_suffix}.{save_format}"
         plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
         plot_loc.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
-        plt.show()
+        plt.show() if not headless else plt.close()

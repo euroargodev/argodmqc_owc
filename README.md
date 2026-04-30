@@ -200,6 +200,13 @@ same time.
     FLOAT_NAMES = ["3901960"]  # add float names here e.g. ["3901960","3901961","3901962"]
 ```
 
+### Extra command line arguments
+
+There are several additional options that can be optionally used when running this code
+
+- `--headless`: Running in headless mode will create the plots but not display them on screen
+- `-appendRef {suffix}`: Appends the provided suffix to the filename of all produced plots (should begin with _)
+
 
 ## Parameters for your analysis
 
