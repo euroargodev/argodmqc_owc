@@ -1,6 +1,7 @@
 """Functions to create specific plots"""
 
 import copy
+import math
 import os
 import pathlib
 import matplotlib.pylab as pl
@@ -748,13 +749,15 @@ def cal_sal_curve_plot(
         plt.show() if not headless else plt.close()
 
 
-def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated", headless = False, file_suffix: str = ""):
+def sal_anom_plot(sal, ptmp, temp, tlevels, profile_no, config, float_name, title="uncalibrated", headless = False, file_suffix: str = ""):
     """Create the salinity anomoly plot
 
     Parameters
     ----------
     sal: salinity
     ptmp: potential temperature,
+    temp: temperature
+    tlevels: theta levels
     pres: pressure
     profile_no: profile numbers
     config: user configuration
@@ -781,9 +784,9 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
     prof_range[1] = int(np.nanmax(good_ptmp[0]))
 
     for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
-        temp = ptmp[:, k]
+        tmp = ptmp[:, k]
         sal1 = sal[:, k]
-        sal_temp = np.vstack((temp, sal1)).T
+        sal_temp = np.vstack((tmp, sal1)).T
         sal_temp_sorted = sal_temp[sal_temp[:, 0].argsort()]
 
         # make sure the values are unique
@@ -819,7 +822,17 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
 
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
-    for bounds in config["THETA_BOUNDS"]:
+    brk1 = math.floor(min(np.nanmin(temp), 2))
+    brk2 = math.ceil(min(np.nanmax(tlevels), 5))
+    brk3 = math.ceil(min(np.nanmax(temp), 20))
+    if brk2 == brk3:
+        brk3 += 1
+    yaxes = [
+        [brk1, brk2],
+        [brk2, brk3]
+    ]
+
+    for bounds in yaxes:
         plt.figure(figsize=(10, 6))
         c_bounds = plt.contourf(profile_no[0], theta_base, sal_anom, levels=levels, cmap="seismic")
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors="red")

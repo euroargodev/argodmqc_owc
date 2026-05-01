@@ -124,6 +124,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2, headless: bool = F
     sal_anom_plot(
         copy.deepcopy(sal),
         copy.deepcopy(ptmp),
+        copy.deepcopy(float_data["TEMP"]),
+        thetas[0],
         profile_no,
         config,
         float_name,
@@ -202,6 +204,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2, headless: bool = F
     sal_anom_plot(
         copy.deepcopy(cal_sal),
         copy.deepcopy(ptmp),
+        copy.deepcopy(float_data["TEMP"]),
+        thetas[0],
         profile_no,
         config,
         float_name,
