@@ -792,7 +792,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
 
 
 # pylint: disable=too-many-locals
-def build_cov(ptmp, coord_float, config):
+def build_ptmp_xyt_cov(ptmp, coord_float, config):
     """Build the covariance matrix
 
     Function builds a square covariance matrix that has n*n tiles, and each
@@ -821,7 +821,7 @@ def build_cov(ptmp, coord_float, config):
     Parameters
     ----------
     ptmp: matrix of potential temperatures
-    coord_float_config: the x, y, z position of the float
+    coord_float_config: the x, y, z, t position of the float
 
     Returns:
     -------
@@ -884,6 +884,7 @@ def build_cov(ptmp, coord_float, config):
             coord_float,
             config["MAPSCALE_LONGITUDE_SMALL"],
             config["MAPSCALE_LATITUDE_SMALL"],
+            config["MAPSCALE_AGE_SMALL"],
             config["MAPSCALE_PHI_SMALL"],
             config["MAP_USE_PV"],
         )
@@ -909,7 +910,7 @@ def build_cov(ptmp, coord_float, config):
 
 
 # pylint: disable=too-many-arguments
-def covarxyt_pv(input_coords, coords, long, lat, phi, use_pv):
+def covarxyt_pv(input_coords, coords, long, lat, time_scale, phi, use_pv):
     """Returns a matrix for the horizontal covariance
 
     Finds the correlation between spatial and temporal data, and uses this
@@ -917,10 +918,11 @@ def covarxyt_pv(input_coords, coords, long, lat, phi, use_pv):
 
     Parameters
     ----------
-    input_coords: the input coordinates of the the float profile
-    coords: coordinates for all the float profiles
+    input_coords: the input coordinates of the the float profile (lat, long, date, depth)
+    coords: coordinates for all the float profiles (lat, long, date, depth)
     long: longitude scale
     lat: latitude scale
+    time_scale: scalar, time scale (years)
     phi: potential gradient
     use_pv: whether or not to use potential vorticity
 
@@ -931,8 +933,8 @@ def covarxyt_pv(input_coords, coords, long, lat, phi, use_pv):
     # Derive the planetary vorticity at each point
 
     # Get the depth for each data point
-    z_input_coords = input_coords[2]
-    z_coords = coords[:, 2]
+    z_input_coords = input_coords[3]
+    z_coords = coords[:, 3]
 
     # define a vectorized function to calculation potential vorticity
     potential_vorticity = np.vectorize(
@@ -950,6 +952,9 @@ def covarxyt_pv(input_coords, coords, long, lat, phi, use_pv):
 
     if use_pv and pv_input_coords.any() and pv_coords.any() != 0:
         cor_term = cor_term + ((pv_input_coords - pv_coords) / np.sqrt(pv_input_coords**2 + pv_coords**2) / phi) ** 2
+
+    if time_scale and not np.isnan(time_scale):
+        cor_term = cor_term + ((input_coords[2] - coords[:, 2]) / time_scale) ** 2
 
     cov_term = np.exp(-cor_term.transpose())
 

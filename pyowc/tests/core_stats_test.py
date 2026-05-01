@@ -190,7 +190,7 @@ class BrkPtFit(unittest.TestCase):
 
 
 class BuildCov(unittest.TestCase):
-    """Test cases for build_cov function"""
+    """Test cases for build_ptmp_xyt_cov function"""
 
     def setUp(self):
         """Set up for test
@@ -201,6 +201,7 @@ class BuildCov(unittest.TestCase):
             "MAPSCALE_LATITUDE_SMALL": 2,
             "MAPSCALE_PHI_SMALL": 0.1,
             "MAP_USE_PV": 0,
+            "MAPSCALE_AGE_SMALL": 2,
         }
         self.ptmp = np.array(
             [
@@ -217,38 +218,38 @@ class BuildCov(unittest.TestCase):
             ]
         )
         self.coord_float = (
-            np.array([[0.0572, -0.0592, 5.1083], [0.0578, -0.0591, 5.0993], [0.0586, -0.0585, 5.0861]]) * 1.0e03
+            np.array([[0.0572, -0.0592, 1.1, 5.1083], [0.0578, -0.0591, 1.2, 5.0993], [0.0586, -0.0585, 1.3, 5.0861]]) * 1.0e03
         )
 
     def test_returns_numpy_array(self):
-        """Check that build_cov returns a numpy array
+        """Check that build_ptmp_xyt_cov returns a numpy array
         :return: Nothing
         """
-        print("Testing that build_cov returns a numpy array")
+        print("Testing that build_ptmp_xyt_cov returns a numpy array")
 
-        test = stats.build_cov(self.ptmp, self.coord_float, self.config)
+        test = stats.build_ptmp_xyt_cov(self.ptmp, self.coord_float, self.config)
 
-        self.assertEqual(type(test), np.ndarray, "build_cov did not return a numpy array")
+        self.assertEqual(type(test), np.ndarray, "build_ptmp_xyt_cov did not return a numpy array")
 
     def test_returns_correct_size(self):
-        """Check that build_cov returns a matrix that is the correct size
+        """Check that build_ptmp_xyt_cov returns a matrix that is the correct size
         :return: Nothing
         """
-        print("Testing that build_cov returns correct shape matrix")
+        print("Testing that build_ptmp_xyt_cov returns correct shape matrix")
 
-        test = stats.build_cov(self.ptmp, self.coord_float, self.config)
+        test = stats.build_ptmp_xyt_cov(self.ptmp, self.coord_float, self.config)
 
         self.assertEqual(
             test.shape,
             (self.coord_float.shape[0] * self.ptmp.shape[0], self.coord_float.shape[0] * self.ptmp.shape[0]),
-            "build_cov returned a matrix of incorrect size",
+            "build_ptmp_xyt_cov returned a matrix of incorrect size",
         )
 
     def test_returns_correct_elements(self):
-        """Check that build_cov returns a matrix that is the correct size
+        """Check that build_ptmp_xyt_cov returns a matrix that is the correct size
         :return: Nothing
         """
-        print("Testing that build_cov returns correct shape matrix")
+        print("Testing that build_ptmp_xyt_cov returns correct shape matrix")
 
         # expected = loadmat("../../data/test_data/build_cov/cov.mat")['test_cov_1']
         expected_path = os.path.sep.join([TESTS_CONFIG["TEST_DIRECTORY"], "build_cov", "cov.mat"])
@@ -256,7 +257,7 @@ class BuildCov(unittest.TestCase):
 
         expected_size = expected.shape
 
-        test = stats.build_cov(self.ptmp, self.coord_float, self.config)
+        test = stats.build_ptmp_xyt_cov(self.ptmp, self.coord_float, {**self.config, "MAPSCALE_AGE_SMALL": None})
 
         for i in range(0, expected_size[0]):
             for j in range(0, expected_size[1]):
@@ -452,12 +453,13 @@ class Covarxypv(unittest.TestCase):
         """Set up for test
         :return: Nothing
         """
-        self.input_coords = np.array([0.0572, -0.0592, 5.1083]) * 1.0e03
+        self.input_coords = np.array([0.0572, -0.0592, 1.23, 5.1083]) * 1.0e03
         self.coords = (
-            np.array([[0.0572, -0.0592, 5.1083], [0.0578, -0.0591, 5.0993], [0.0586, -0.0585, 5.0861]]) * 1.0e03
+            np.array([[0.0572, -0.0592, 1.23, 5.1083], [0.0578, -0.0591, 1.23, 5.0993], [0.0586, -0.0585, 1.23, 5.0861]]) * 1.0e03
         )
         self.long = 4
         self.lat = 2
+        self.time_scale = 5
         self.phi = 0.1
         self.no_pv = 0
         self.yes_pv = 1
@@ -468,7 +470,7 @@ class Covarxypv(unittest.TestCase):
         """
         print("Testing that covarxyt_pv returns 1 dimensional matrix")
 
-        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.phi, self.no_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.time_scale, self.phi, self.no_pv)
 
         self.assertEqual(cov.shape, (3,), "covarxyt_pv matrix is incorrect shape")
 
@@ -479,8 +481,7 @@ class Covarxypv(unittest.TestCase):
         print("Testing that covarxyt_pv returns correct values")
 
         ans = np.array([1, 0.9134, 0.5941])
-
-        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.phi, self.no_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.time_scale, self.phi, self.no_pv)
 
         for i in range(0, ans.size):
             self.assertAlmostEqual(ans[i], cov[i], 4, "elements in covarxyt_pv matrix are not correct")
@@ -493,8 +494,7 @@ class Covarxypv(unittest.TestCase):
         print("Testing that covarxyt_pv returns correct values with potential vorticity")
 
         ans = np.array([1, 0.9101, 0.5828])
-
-        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.phi, self.yes_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.time_scale, self.phi, self.yes_pv)
 
         for i in range(0, ans.size):
             self.assertAlmostEqual(ans[i], cov[i], 4, "elements in covarxyt_pv matrix are not correct")
@@ -505,7 +505,7 @@ class Covarxypv(unittest.TestCase):
         """
         print("Testing that covarxyt_pv returns almost ones if data is close")
 
-        cov = stats.covarxyt_pv(self.input_coords, self.coords, 99999999, 99999999, self.phi, self.no_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, 99999999, 99999999, self.time_scale, self.phi, self.no_pv)
         for i in cov:
             self.assertAlmostEqual(i, 1, 15, "elements in covarxyt_pv matrix are not correct")
 

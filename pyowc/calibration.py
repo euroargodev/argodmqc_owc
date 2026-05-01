@@ -11,7 +11,7 @@ from scipy import interpolate
 from scipy.io import loadmat, savemat
 
 from .core.finders import find_10thetas, find_25boxes, find_besthist
-from .core.stats import build_cov, fit_cond, noise_variance, signal_variance
+from .core.stats import build_ptmp_xyt_cov, fit_cond, noise_variance, signal_variance
 from .data.fetchers import frontal_constraint_saf, get_region_data, get_region_hist_locations, get_topo_grid
 from .data.wrangling import interp_climatology, map_data_grid
 from .helper import (
@@ -471,6 +471,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
     lat = float_source_data["LAT"]
     long = float_source_data["LONG"]
+    dates = float_source_data["DATES"]
     sal = float_source_data["SAL"]
     ptmp = float_source_data["PTMP"]
     pres = float_source_data["PRES"]
@@ -492,16 +493,19 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     mapped_ptmp = float_mapped_data["la_ptmp"]
     selected_hist = float_mapped_data["selected_hist"]
 
-    # retrieve XYZ of float position used to build covariance
+    # retrieve XYZT of float position used to build covariance
     if long.shape[0] > 1:
         long = long.flatten()
 
     if lat.shape[0] > 1:
         lat = lat.flatten()
 
+    if dates.shape[0] > 1:
+        dates = dates.flatten()
+
+    # Calculate elevation at the float position
     if np.any(long > 180):
         long_1 = copy.deepcopy(long) - 360
-
     else:
         long_1 = copy.deepcopy(long)
 
@@ -516,7 +520,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     z_grid = grid_interp(points).reshape(lat.shape)
     z_grid = -z_grid
 
-    coord_float = np.column_stack((long.ravel(), lat.ravel(), z_grid.ravel()))
+    coord_float = np.column_stack((long.ravel(), lat.ravel(), dates.ravel(), z_grid.ravel()))
 
     if len(selected_hist) == 0:
         print("WARNING: No reference data selected for any profiles")
@@ -750,7 +754,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
             # calculate off-diagonal terms for error estimate
 
-            covariance = build_cov(ten_ptmp, unique_coord_float, system_config)
+            covariance = build_ptmp_xyt_cov(ten_ptmp, unique_coord_float, system_config)
 
             # if no break points are set
             if breaks.__len__() == 0:
