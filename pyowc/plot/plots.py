@@ -4,13 +4,14 @@ import copy
 import math
 import os
 import pathlib
+
 import matplotlib.pylab as pl
 import matplotlib.pyplot as plt
 import numpy as np
 import shapefile
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
-from scipy.interpolate import interpolate
+from scipy.interpolate import interp1d
 
 from ..core.finders import find_10thetas
 
@@ -117,7 +118,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config, headles
     plt.title("Locations of float " + float_name + " with historical data")
     plt.xlabel("Longitude")
     plt.ylabel("Latitude")
-    plt.axis([-180, 180, -90, 90])
+    plt.axis((-180.0, 180.0, -90.0, 90.0))
     plt.xlim(np.min(climatology["Longitude"]) - 20, np.max(climatology["Longitude"]) + 20)
     plt.ylim(np.min(climatology["Latitude"]) - 15, np.max(climatology["Latitude"]) + 15)
 
@@ -176,7 +177,7 @@ def theta_sal_plot(
     plt.figure(figsize=(10, 6))
     # plt.subplots()
     color_n = sal.__len__()
-    colors = pl.cm.jet(np.linspace(0, 1, color_n))
+    colors = plt.get_cmap("jet")(np.linspace(0, 1, color_n))
 
     # can only fit 30 profiles on legend
     n_legend = np.arange(0, profiles[profiles.__len__() - 1], np.ceil(color_n / 30))
@@ -506,7 +507,7 @@ def sal_var_plot(
                     and ~np.isnan(ptmp[theta_index, j])
                     and ~np.isnan(ptmp[k_index, j])
                 ):
-                    interp_ptmp_sal = interpolate.interp1d(
+                    interp_ptmp_sal = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(sal[theta_index, j]), float(sal[k_index, j])],
                     )
@@ -522,13 +523,13 @@ def sal_var_plot(
                     and ~np.isnan(ptmp[theta_index, j])
                     and ~np.isnan(ptmp[k_index, j])
                 ):
-                    interp_map_sal = interpolate.interp1d(
+                    interp_map_sal = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(map_sal[theta_index, j]), float(map_sal[k_index, j])],
                     )
                     s_map[i, j] = interp_map_sal(tlevels[i][0])
 
-                    interp_map_sal_err = interpolate.interp1d(
+                    interp_map_sal_err = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(map_sal_errors[theta_index, j]), float(map_sal_errors[k_index, j])],
                     )
@@ -545,11 +546,11 @@ def sal_var_plot(
                     and ~np.isnan(ptmp[theta_index, j])
                     and ~np.isnan(ptmp[k_index, j])
                 ):
-                    interp_cal_sal = interpolate.interp1d(
+                    interp_cal_sal = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(cal_sal[theta_index, j]), float(cal_sal[k_index, j])],
                     )
-                    interp_cal_sal_err = interpolate.interp1d(
+                    interp_cal_sal_err = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(cal_sal_errors[theta_index, j]), float(cal_sal_errors[k_index, j])],
                     )
@@ -590,7 +591,7 @@ def sal_var_plot(
         plot_loc.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
-        plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
+        # plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
         plt.show() if not headless else plt.close()
 
 
@@ -798,7 +799,7 @@ def sal_anom_plot(sal, ptmp, temp, tlevels, profile_no, config, float_name, titl
         good_data = np.argwhere(np.logical_and(~np.isnan(good_temp), ~np.isnan(good_sal)))
 
         if good_data.__len__() >= 3:
-            sal_int_interp = interpolate.interp1d(
+            sal_int_interp = interp1d(
                 good_temp[good_data].flatten(), good_sal[good_data].flatten(), bounds_error=False
             )
             sal_int[:, k] = sal_int_interp(theta_base[:])
@@ -822,15 +823,9 @@ def sal_anom_plot(sal, ptmp, temp, tlevels, profile_no, config, float_name, titl
 
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
-    brk1 = math.floor(min(np.nanmin(temp), 2))
-    brk2 = math.ceil(min(np.nanmax(tlevels), 5))
-    brk3 = math.ceil(min(np.nanmax(temp), 20))
-    if brk2 == brk3:
-        brk3 += 1
-    yaxes = [
-        [brk1, brk2],
-        [brk2, brk3]
-    ]
+    lower_bound = math.floor(min(np.nanmin(temp), 2))
+    upper_bound = math.ceil(min(np.nanmax(temp), 20))
+    yaxes = [[lower_bound, upper_bound]]
 
     for bounds in yaxes:
         plt.figure(figsize=(10, 6))
