@@ -622,18 +622,14 @@ class SignalVariance(unittest.TestCase):
         var = signal_variance([1, 2, 3, 4, 5])
         self.assertTrue(isinstance(var, float), "signal variance is not a float")
 
-    def test_throws_exception(self):
-        """Check that we thrown an exception if no valid salinities are given
+    def test_correct_for_nan_vals(self):
+        """Check that we return correct result if no valid salinities are given
         :return: Nothing
         """
-        print("Testing that signal_variance throws an exception for no valid salinities")
+        print("Testing that signal_variance returns 0 for no valid salinities")
 
-        with self.assertRaises(Exception) as no_valid_sal:
-            signal_variance([float("nan"), float("nan")])
+        self.assertEqual(signal_variance([float("nan"), float("nan")]), 0)
 
-        self.assertTrue(
-            "Received no valid salinity values when calculating signal variance" in str(no_valid_sal.exception)
-        )
 
     def test_nans_are_ignored(self):
         """Check that we ignore 0's and nan values

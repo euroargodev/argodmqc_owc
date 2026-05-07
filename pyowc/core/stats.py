@@ -118,6 +118,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     max_brk_dflt = 4
     max_brk_in = []
     nbr1 = -1
+    nbr0 = -1
     brk_init = []  # guesses for break point
     breaks = np.array([])
     setbreaks = 0
@@ -285,6 +286,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                     breaks = value
                     breaks = (breaks - x_0) / x_scale
                     nbr = breaks.__len__()
+                    nbr0 = nbr
                     setbreaks = 1
 
             else:
@@ -386,7 +388,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
             if setbreaks != 0:
                 # break points are already set
-                if nbr1 == max_brk:
+                if nbr0 == max_brk:
                     A, residual = brk_pt_fit(xf, yf, w_i, breaks)
 
                 # fit over limited number of breaks
@@ -417,7 +419,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             p = 2 * (nbr + 1)
             aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
 
-    if setbreaks and nbr1 == max_brk:
+    if setbreaks and nbr0 == max_brk:
         best = pbrk + 2
 
     # decide which fit to use (offset, linear, piecewise)
@@ -433,7 +435,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
         else:
             best = good + 1
 
-    if setbreaks & nbr1 == max_brk:
+    if setbreaks & nbr0 == max_brk:
         comment = "Fit evaluated "
 
     else:
@@ -664,7 +666,7 @@ def signal_variance(sal):
     sal = np.array(sal)
 
     if np.all(np.isnan(sal)):
-        raise RuntimeError("Received no valid salinity values when calculating signal variance") from None
+        return 0
 
     return np.nanvar(sal)
 
