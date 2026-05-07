@@ -335,23 +335,13 @@ def fit_cond(x, y, n_err, lvcov, *args):
         max_brk = max_brk_in
         pbrk = np.arange(nbr1, max_brk + 1)
 
-    if ndf < 2 * (max_brk + 2) + 1:
-        if ndf > 2 * (nbr1 + 2) + 1:
-            pbrk = np.arange(nbr1, np.floor((ndf - 1) / 2 - 2) + 1)
-            print("WARNING: only have " + str(ndf) + " degrees of freedom")
-            print("Maximum breakpoints to be tried: " + str(np.max(pbrk)))
+    if n_prof < 6:
+        print(f"WARNING: only have {n_prof} good profiles, will estimate offset only")
+        pbrk = np.array([-1])
 
-        elif setbreaks == 1:
-            pbrk = np.array([nbr])
-            max_brk = nbr
-            nbr1 = nbr
-            print("WARNING: Only have " + str(ndf) + " degrees of freedom")
-            print("Estimate fit with fixed breakpoints")
-
-        else:
-            pbrk = np.array([-1])
-            print("WARNING: Only have " + str(ndf) + " degrees of freedom")
-            print("Estimate offset only")
+    if ndf < 2 * (max_brk + 2) + 1 and not setbreaks:
+        print("WARNING: Only have " + str(ndf) + " degrees of freedom, the fit selected by the software might not be the \"best\" one")
+        print("You can change the small spatial and temporal scales in the configuration file which are used to estimate NDF, or define your own breakpoints.")
 
     for nbr in pbrk:
         if nbr == -1:
@@ -401,7 +391,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
                 # fit over limited number of breaks
                 else:
+                    ubrk_g = np.array(ubrk_g)
                     optim = least_squares(nlbpfun, ubrk_g[nbr1:nbr], method="lm", ftol=tol, max_nfev=max_fun_evals)
+                    print("######")
+                    print(optim)
                     ubrk = optim["x"][0]
                     residual = optim["fun"]
 
@@ -531,22 +524,15 @@ def fit_cond(x, y, n_err, lvcov, *args):
             if best == 2:
                 # E for linear case is already calculated
                 A, residual = brk_pt_fit(xf, yf, w_i)
-
-                # recompute A(1) in case xfit(1) is not equal to xf(1)
-                A[1] = A[1] + A[2] * (xfit[1] - xf[1])
-
             elif setbreaks:
                 # E stays fixed if breaks are specified
                 A, residual = brk_pt_fit(xf, yf, w_i, breaks)
-
-                # recompute A(1) in case xfit(1) is not equal to xf(1)
-                A[1] = A[1] + A[2] * (xfit[1] - xf[1])
-
             else:
                 # give an initial guess as the fitted break points to speed up calculation
                 nbr = real_breaks.__len__()
                 b_g = np.concatenate(([-1], real_breaks))
 
+                ubrk_g = []
                 for n in range(nbr):
                     ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
@@ -555,13 +541,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 ubrk = optim["x"][0]
                 residual = optim["fun"]
 
-                btem = np.concatenate([xfit[0]], breaks)
+                btem = np.concatenate(([xfit[0]], breaks))
                 E = np.zeros((xfit.__len__(), best))
-                E[:, 0] = np.ones((xfit.__len__(), 1)).T
+                E[:, 0] = np.ones((xfit.__len__(),))
                 ixb = sorter(btem, xfit)
-
-                # recompute A(1) in case xfit(1) is not equal to xf(1)
-                A[1] = A[1] + A[2] * (xfit[1] - xf[1])
 
                 for j in range(best - 1):
                     # pointer to x values greater than break point j
@@ -1035,14 +1018,15 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
         ls_est = np.dot(trends.T, trends)
 
     if np.linalg.det(ls_est) == 0:
-        fit_param = np.zeros((b_length + 2, 1))
+        fit_param = np.zeros(b_length + 2)
         residual = y_obvs
         print("ERROR in brk_pt_fit: DET(A) == 0")
         return fit_param, residual
 
     # calculate fit parameters
     if w_i.__len__() > 0:
-        fit_param = np.dot(np.dot(linalg.solve(ls_est, trends.T), w_i), y_obvs)
+        fit_param = np.linalg.solve(ls_est, trends.T @ w_i @ y_obvs)
+        fit_param0 = np.dot(np.dot(linalg.solve(ls_est, trends.T), w_i), y_obvs)
 
     else:
         fit_param = linalg.solve(ls_est, np.dot(trends.T, y_obvs))
