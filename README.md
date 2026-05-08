@@ -262,11 +262,10 @@ If the exclusions list is empty then all data is processed, but profiles can be 
       'USE_PRES_GT': [],
       'USE_PERCENT_GT': 0.5,
 
-- Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
-The code will crete two separate plots with set ranges 'THETA_BOUNDS': [[0, 5], [5, 20]]. To create only one plot with a specific range use the 'THETA_BOUNDS': [[0, 20]].
+- Optionally you can include bathymetry data on the trajectory plots. Note that turning this on will significantly slow the plot generation speed
 
       #    Plotting Parameters
-      'THETA_BOUNDS': [[0, 5], [5, 20]]
+      "USE_BATHYMETRY_ON_PLOT": 1
 
 
 

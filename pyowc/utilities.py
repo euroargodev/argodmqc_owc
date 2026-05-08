@@ -55,8 +55,6 @@ class Config(BaseModel):
     MAP_P_EXCLUDE: int = 100
     MAP_P_DELTA: int = 250
 
-    THETA_BOUNDS: list[list[int]]
-
     CALIB_PROFILE_NO: list
     USE_THETA_LT: list
     USE_THETA_GT: list
@@ -68,6 +66,8 @@ class Config(BaseModel):
     USE_PERCENT_GT: float
     SPLITS: list
     EXCLUSIONS: list
+
+    USE_BATHYMETRY_ON_PLOT: int = 0
 
     @model_validator(mode="before")
     def check_for_empty_strings(cls, values):

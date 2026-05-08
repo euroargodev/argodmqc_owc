@@ -72,7 +72,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2, headless: bool = F
     # create trajectory plot ------------------------------
     grid, floats = create_dataframe(grid_data, float_data)
 
-    trajectory_plot(1, 0, floats, grid, float_name, config, headless=headless, file_suffix=file_suffix)
+    use_bathymetry = config["USE_BATHYMETRY_ON_PLOT"]
+    trajectory_plot(use_bathymetry, 0, floats, grid, float_name, config, headless=headless, file_suffix=file_suffix)
 
     # get data ---------------
     sal = np.array(float_data["SAL"])
