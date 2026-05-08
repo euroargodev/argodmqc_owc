@@ -16,7 +16,7 @@ from scipy.interpolate import interp1d
 from ..core.finders import find_10thetas
 
 
-def draw_shapes_as_patches(axes, shapes, **kwargs):
+def draw_shapes_as_patches(axes, shapes: list[shapefile.Shape], **kwargs):
     """Draw a series of shapes as PathPatches on a given Matplotlib axis."""
     for shape in shapes:
         points = np.array(shape.points)
@@ -61,7 +61,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config, headles
     # load in the coastline data
     coastline = os.path.sep.join([config["CONFIG_DIRECTORY"], "coastline", "ne_10m_coastline.shp"])
     with shapefile.Reader(coastline) as shp:
-        shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYLINE]
+        shapes = [shape for shape in shp.shapes() if shape is not None and shape.shapeType == shapefile.POLYLINE]
         draw_shapes_as_patches(axes, shapes, linewidth=0.5, edgecolor="black", facecolor="None")
 
     # if wanted, load in bathymetric data and plot it
@@ -83,14 +83,14 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config, headles
 
         for filename, plot_config in bathymetry_config.items():
             with shapefile.Reader(os.path.join(root_path, filename)) as shp:
-                shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYGON]
+                shapes = [shape for shape in shp.shapes() if shape is not None and shape.shapeType == shapefile.POLYGON]
                 draw_shapes_as_patches(axes, shapes, linewidth=0.0, **plot_config)
 
     # if we want reef data, load it in and plot it
     if reef:
         reef = os.path.sep.join([config["CONFIG_DIRECTORY"], "reefs", "ne_10m_reefs.shp"])
         with shapefile.Reader(reef) as shp:
-            shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYGON]
+            shapes = [shape for shape in shp.shapes() if shape is not None and shape.shapeType == shapefile.POLYGON]
             draw_shapes_as_patches(axes, shapes, linewidth=0.0, facecolor="green", label="Reef")
 
     # set up the latitude and longitude data
