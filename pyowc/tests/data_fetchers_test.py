@@ -1,14 +1,45 @@
 """Tests for data.fetchers module functions"""
 
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 # from pyowc import data
-from pyowc.data.fetchers import get_data, get_region_data, get_region_hist_locations
+from pyowc.data.fetchers import get_data, get_region_data, get_region_hist_locations, read_mat_bottle
 
 from . import TESTS_CONFIG
 
+
+class ReadMatTests(unittest.TestCase):
+    """Test cases for various read_mat functions."""
+
+    def setUp(self):
+        """Sets up some constant variables for testing
+        :return: Nothing
+        """
+        self.float_name = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
+        self.config = TESTS_CONFIG
+
+    @patch(
+        "pyowc.data.fetchers.read_mat",
+        return_value={
+            "lat": np.array([[1, 2], [3, 4]]),
+            "pres": np.array([[4, 5], [6, 7]]),
+            "ptmp": np.array([1, 2]),
+            "sal": np.array([5, 6]),
+            "temp": np.array([8, 9])
+        }
+    )
+    def test_read_mat_bottle(self, mock_read_mat):
+        data = read_mat_bottle("not_a_real_file.com")
+
+        mock_read_mat.assert_called_once_with("not_a_real_file.com")
+
+        assert (data["pres"] == np.array([[4, 5], [6, 7]]).T).all()
+        assert (data["ptmp"] == np.array([1, 2]).T).all()
+        assert (data["sal"] == np.array([5, 6]).T).all()
+        assert (data["temp"] == np.array([8, 9]).T).all()
 
 class GetData(unittest.TestCase):
     """Test cases for get_data function"""

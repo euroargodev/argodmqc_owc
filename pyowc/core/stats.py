@@ -395,8 +395,6 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 else:
                     ubrk_g = np.array(ubrk_g)
                     optim = least_squares(nlbpfun, ubrk_g[nbr1:nbr], method="lm", ftol=tol, max_nfev=max_fun_evals)
-                    print("######")
-                    print(optim)
                     ubrk = optim["x"][0]
                     residual = optim["fun"]
 
