@@ -459,6 +459,6 @@ def create_la_wmo_boxes_file(config: dict):
                 box_no = file_name.replace(clim_type, "").replace(".mat", "")
                 box_no = float(box_no)
                 i_box=(la_wmo_boxes[:,1]==box_no)
-                la_wmo_boxes[i_box,i_hist_type] = 1
+                la_wmo_boxes[i_box,i_hist_type - 1] = 1
 
     savemat(la_wmo_boxes_file,'la_wmo_boxes')
