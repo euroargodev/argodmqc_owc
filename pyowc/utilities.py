@@ -109,8 +109,8 @@ def spatial_correlation(
     dates_2,
     ellipse_age,
     phi,
-    pv_1=0,
-    pv_2=0,
+    pv_1=0.0,
+    pv_2=0.0,
 ):
     """Calculates the spatial correlation between two points.
 
@@ -228,6 +228,9 @@ def potential_vorticity(lat, z_value):
     """
     earth_angular_velocity = 2 * 7.292 * 10**-5
     lat_radians = lat * math.pi / 180
+
+    if z_value == 0:
+        return np.inf
 
     p_v = (earth_angular_velocity * math.sin(lat_radians)) / z_value
 
