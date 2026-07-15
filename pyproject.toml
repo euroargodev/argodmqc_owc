@@ -9,7 +9,8 @@ description = "OWC salinity calibration in Python"
 readme = "README.md"
 license = "Apache-2.0"
 packages = [
-    { include = "pyowc" }
+    { include = "pyowc" },
+    { include = "start_owc_python.py" }
 ]
 
 urls = { "Homepage" = "https://github.com/euroargodev/argodmqc_owc", "Bug Tracker" = "https://github.com/euroargodev/argodmqc_owc/issues" }
@@ -30,7 +31,7 @@ pymatreader = "1.1.0"
 matplotlib = "3.10.5"
 pyshp = "2.3.1"
 pydantic = "^2.11.7"
-
+click = "^8.4.2"
 
 [tool.poetry.scripts]
 run-floats = "start_owc_python:main"
