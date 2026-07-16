@@ -2,6 +2,7 @@
 
 import json
 import math
+from pathlib import Path
 
 import numpy as np
 from pydantic import BaseModel, model_validator
@@ -13,26 +14,26 @@ class ConfigFileNotFoundError(Exception):
 class Config(BaseModel):
     """A representation of a config, to ensure correct types are passed to the rest of the app."""
 
-    HISTORICAL_DIRECTORY: str
+    HISTORICAL_DIRECTORY: Path
     HISTORICAL_CTD_PREFIX: str
     HISTORICAL_BOTTLE_PREFIX: str
     HISTORICAL_ARGO_PREFIX: str
 
-    FLOAT_SOURCE_DIRECTORY: str
+    FLOAT_SOURCE_DIRECTORY: Path
     FLOAT_SOURCE_POSTFIX: str
-    FLOAT_MAPPED_DIRECTORY: str
+    FLOAT_MAPPED_DIRECTORY: Path
     FLOAT_MAPPED_PREFIX: str
     FLOAT_MAPPED_POSTFIX: str
 
-    FLOAT_CALIB_DIRECTORY: str
+    FLOAT_CALIB_DIRECTORY: Path
     FLOAT_CALIB_PREFIX: str
     FLOAT_CALSERIES_PREFIX: str
     FLOAT_CALIB_POSTFIX: str
 
-    FLOAT_PLOTS_DIRECTORY: str
+    FLOAT_PLOTS_DIRECTORY: Path
     FLOAT_PLOTS_FORMAT: str
 
-    CONFIG_DIRECTORY: str
+    CONFIG_DIRECTORY: Path
     CONFIG_COASTLINES: str
     CONFIG_WMO_BOXES: str
     CONFIG_SAF: str
@@ -93,7 +94,11 @@ def load_configuration_from_json_file(filepath: str) -> dict:
     try:
         with open(filepath) as file:
             model = Config(**json.loads(file.read()))
-            return model.model_dump()
+            dumped = model.model_dump()
+            for k,v in dumped.items():
+                if isinstance(v, Path):
+                    dumped[k] = str(v)
+            return dumped
     except FileNotFoundError:
         raise ConfigFileNotFoundError(f"Config file not found: - {filepath}") from None
 
