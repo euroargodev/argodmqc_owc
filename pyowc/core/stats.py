@@ -149,7 +149,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     ity = 0
     for i in good:
         for j in good:
-            temp_lvcov[ity, itx] = lvcov[i, j]
+            temp_lvcov[ity, itx] = lvcov[i, j][0]
             itx += 1
         itx = 0
         ity += 1
@@ -418,7 +418,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
             aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
 
     if setbreaks and nbr0 == max_brk:
-        best = (pbrk + 2)
+        best = (pbrk + 2)[0]
 
     # decide which fit to use (offset, linear, piecewise)
     else:

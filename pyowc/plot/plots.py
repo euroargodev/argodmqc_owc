@@ -483,7 +483,7 @@ def sal_var_plot(
 
                     if pos_diff.__len__() > 0:
                         min_diff = np.argwhere(ptmp_diff == np.nanmin(ptmp_diff[pos_diff]))
-                        k_index = inter[min_diff]
+                        k_index = inter[min_diff][0][0]
 
                     else:
                         k_index = theta_index
@@ -493,7 +493,7 @@ def sal_var_plot(
 
                     if neg_diff.__len__() > 0:
                         min_diff = np.argwhere(-ptmp_diff == np.nanmin(-ptmp_diff[neg_diff]))
-                        k_index = inter[min_diff]
+                        k_index = inter[min_diff][0][0]
 
                     else:
                         k_index = theta_index
