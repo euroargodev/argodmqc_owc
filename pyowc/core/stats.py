@@ -196,10 +196,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     # scale x from -1 to 1
 
-    x_0 = (x[npts - 1] + x[0]) / 2
+    x_0 = (float(x[npts - 1]) + float(x[0])) / 2
 
     if x[0] != x[npts - 1]:
-        x_scale = (x[npts - 1] - x[0]) / 2
+        x_scale = (float(x[npts - 1]) - float(x[0])) / 2
 
     else:
         x_scale = 1
@@ -1031,8 +1031,7 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
 
     # calculate fit parameters
     if w_i.__len__() > 0:
-        fit_param = np.linalg.solve(ls_est, trends.T @ w_i @ y_obvs)
-        fit_param0 = np.dot(np.dot(linalg.solve(ls_est, trends.T), w_i), y_obvs)
+        fit_param = np.dot(np.dot(linalg.solve(ls_est, trends.T), w_i), y_obvs)
 
     else:
         fit_param = linalg.solve(ls_est, np.dot(trends.T, y_obvs))
