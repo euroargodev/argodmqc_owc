@@ -541,7 +541,7 @@ def frontal_constraint_saf(config, grid_data, float_data):
         isok = np.argwhere((~np.isnan(float_pres)) & (~np.isnan(float_tmp)))
 
         if (
-            not np.argwhere(np.diff(float_pres[isok].T) == 0)
+            np.argwhere(np.diff(float_pres[isok].T) == 0).size > 0
             and (isok.__len__() > 2)
             and (np.min(float_pres[isok].T) < 300 < np.max(float_pres[isok].T))
         ):

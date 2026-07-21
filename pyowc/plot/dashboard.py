@@ -20,7 +20,7 @@ from pyowc.plot.utils import create_dataframe
 
 
 # pylint: disable=too-many-locals
-def plot_diagnostics(float_dir, float_name, config, levels=2):
+def plot_diagnostics(float_dir, float_name, config, levels=2, headless: bool = False, file_suffix: str = ""):
     """Run the plotting procedures
 
     Parameters
@@ -29,6 +29,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     float_dir: location of float source
     float_name: name of the float source
     config: user configuration dictionary
+    headless: if True then figures are generated but not shown
+    file_suffix: optional suffix to append to figure names. If provided should start with "_" e.g. "_ctd"
 
     Returns:
     -------
@@ -70,8 +72,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     # create trajectory plot ------------------------------
     grid, floats = create_dataframe(grid_data, float_data)
 
-    trajectory_plot(1, 0, floats, grid, float_name, config)
-    plt.show()
+    use_bathymetry = config["USE_BATHYMETRY_ON_PLOT"]
+    trajectory_plot(use_bathymetry, 0, floats, grid, float_name, config, headless=headless, file_suffix=file_suffix)
 
     # get data ---------------
     sal = np.array(float_data["SAL"])
@@ -114,11 +116,24 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
         profile_no[0],
         config,
         float_name,
+        headless=headless,
+        file_suffix=file_suffix
     )
 
     # create the calibrated salinity anomaly plot for float
 
-    sal_anom_plot(copy.deepcopy(sal), copy.deepcopy(ptmp), profile_no, config, float_name, "uncalibrated")
+    sal_anom_plot(
+        copy.deepcopy(sal),
+        copy.deepcopy(ptmp),
+        copy.deepcopy(float_data["TEMP"]),
+        thetas[0],
+        profile_no,
+        config,
+        float_name,
+        "uncalibrated",
+        headless=headless,
+        file_suffix=file_suffix,
+    )
 
     # plot the calibration curve --------------------------
 
@@ -142,6 +157,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
         profile_no,
         float_name,
         config,
+        headless=headless,
+        file_suffix=file_suffix,
     )
 
     # plot the calibrated theta-S curve from float ----------
@@ -157,6 +174,8 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
         config,
         float_name,
         "calibrated",
+        headless=headless,
+        file_suffix=file_suffix,
     )
 
     # plot the salinity time series on theta levels ----------
@@ -177,11 +196,24 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
         profile_no,
         float_name,
         config,
+        headless=headless,
+        file_suffix=file_suffix,
     )
 
     # create the calibrated salinity anomaly plot for float
 
-    sal_anom_plot(copy.deepcopy(cal_sal), copy.deepcopy(ptmp), profile_no, config, float_name, "calibrated")
+    sal_anom_plot(
+        copy.deepcopy(cal_sal),
+        copy.deepcopy(ptmp),
+        copy.deepcopy(float_data["TEMP"]),
+        thetas[0],
+        profile_no,
+        config,
+        float_name,
+        "calibrated",
+        headless=headless,
+        file_suffix=file_suffix,
+    )
 
     # plot the analysis plots ----------------------------------
 
@@ -190,4 +222,16 @@ def plot_diagnostics(float_dir, float_name, config, levels=2):
     tlevels = thetas[0]
     plevels = thetas[1]
 
-    t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config)
+    t_s_profile_plot(
+        sal,
+        ptmp,
+        pres,
+        sal_var,
+        theta_levels,
+        tlevels,
+        plevels,
+        float_name,
+        config,
+        headless=headless,
+        file_suffix=file_suffix,
+    )

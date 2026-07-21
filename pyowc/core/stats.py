@@ -118,6 +118,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     max_brk_dflt = 4
     max_brk_in = []
     nbr1 = -1
+    nbr0 = -1
     brk_init = []  # guesses for break point
     breaks = np.array([])
     setbreaks = 0
@@ -148,7 +149,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
     ity = 0
     for i in good:
         for j in good:
-            temp_lvcov[ity, itx] = lvcov[i, j]
+            temp_lvcov[ity, itx] = lvcov[i, j][0]
             itx += 1
         itx = 0
         ity += 1
@@ -195,10 +196,10 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
     # scale x from -1 to 1
 
-    x_0 = (x[npts - 1] + x[0]) / 2
+    x_0 = (float(x[npts - 1]) + float(x[0])) / 2
 
     if x[0] != x[npts - 1]:
-        x_scale = (x[npts - 1] - x[0]) / 2
+        x_scale = (float(x[npts - 1]) - float(x[0])) / 2
 
     else:
         x_scale = 1
@@ -285,6 +286,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
                     breaks = value
                     breaks = (breaks - x_0) / x_scale
                     nbr = breaks.__len__()
+                    nbr0 = nbr
                     setbreaks = 1
 
             else:
@@ -335,23 +337,13 @@ def fit_cond(x, y, n_err, lvcov, *args):
         max_brk = max_brk_in
         pbrk = np.arange(nbr1, max_brk + 1)
 
-    if ndf < 2 * (max_brk + 2) + 1:
-        if ndf > 2 * (nbr1 + 2) + 1:
-            pbrk = np.arange(nbr1, np.floor((ndf - 1) / 2 - 2) + 1)
-            print("WARNING: only have " + str(ndf) + " degrees of freedom")
-            print("Maximum breakpoints to be tried: " + str(np.max(pbrk)))
+    if n_prof < 6:
+        print(f"WARNING: only have {n_prof} good profiles, will estimate offset only")
+        pbrk = np.array([-1])
 
-        elif setbreaks == 1:
-            pbrk = np.array([nbr])
-            max_brk = nbr
-            nbr1 = nbr
-            print("WARNING: Only have " + str(ndf) + " degrees of freedom")
-            print("Estimate fit with fixed breakpoints")
-
-        else:
-            pbrk = np.array([-1])
-            print("WARNING: Only have " + str(ndf) + " degrees of freedom")
-            print("Estimate offset only")
+    if ndf < 2 * (max_brk + 2) + 1 and not setbreaks:
+        print("WARNING: Only have " + str(ndf) + " degrees of freedom, the fit selected by the software might not be the \"best\" one")
+        print("You can change the small spatial and temporal scales in the configuration file which are used to estimate NDF, or define your own breakpoints.")
 
     for nbr in pbrk:
         if nbr == -1:
@@ -396,16 +388,17 @@ def fit_cond(x, y, n_err, lvcov, *args):
 
             if setbreaks != 0:
                 # break points are already set
-                if nbr1 == max_brk:
+                if nbr0 == max_brk:
                     A, residual = brk_pt_fit(xf, yf, w_i, breaks)
 
                 # fit over limited number of breaks
                 else:
-                    optim = least_squares(nlbpfun, ubrk_g[nbr1:nbr], method="lm", ftol=tol, max_nfev=max_fun_evals)
+                    ubrk_g = np.array(ubrk_g)
+                    optim = least_squares(nlbpfun, ubrk_g[nbr1 - 1:nbr], method="lm", ftol=tol, max_nfev=max_fun_evals)
                     ubrk = optim["x"][0]
                     residual = optim["fun"]
 
-                    ubrk = np.concatenate((ubrk_g[0 : nbr1 - 1], ubrk))
+                    ubrk = np.concatenate((ubrk_g[0 : nbr1 - 1], [ubrk]))
             # get non-linear least squares for break points
             else:
                 ubrk_g = np.array(ubrk_g)
@@ -424,8 +417,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
             p = 2 * (nbr + 1)
             aic[0, nbr + 1] = ndf * np.log(rss[0, nbr + 1] / npts) + ndf * (ndf + p) / (ndf - p - 2)
 
-    if setbreaks and nbr1 == max_brk:
-        best = pbrk + 2
+    if setbreaks and nbr0 == max_brk:
+        best = (pbrk + 2)[0]
 
     # decide which fit to use (offset, linear, piecewise)
     else:
@@ -440,7 +433,7 @@ def fit_cond(x, y, n_err, lvcov, *args):
         else:
             best = good + 1
 
-    if setbreaks & nbr1 == max_brk:
+    if setbreaks & nbr0 == max_brk:
         comment = "Fit evaluated "
 
     else:
@@ -493,6 +486,8 @@ def fit_cond(x, y, n_err, lvcov, *args):
     ixb = sorter(btem, xfit)
 
     if best >= 2:
+        # recompute A(0) in case xfit(0) is not equal to xf(0)
+        A[0] = A[0] + A[1] * (xfit[0] - xf[0])
         for j in range(best - 1):
             # point to x values greater than break j
             ib = np.argwhere(ixb == j)
@@ -529,16 +524,19 @@ def fit_cond(x, y, n_err, lvcov, *args):
             if best == 2:
                 # E for linear case is already calculated
                 A, residual = brk_pt_fit(xf, yf, w_i)
-
+                # recompute A(0) in case xfit(0) is not equal to xf(0)
+                A[0] = A[0] + A[1] * (xfit[0] - xf[0])
             elif setbreaks:
                 # E stays fixed if breaks are specified
                 A, residual = brk_pt_fit(xf, yf, w_i, breaks)
-
+                # recompute A(0) in case xfit(0) is not equal to xf(0)
+                A[0] = A[0] + A[1] * (xfit[0] - xf[0])
             else:
                 # give an initial guess as the fitted break points to speed up calculation
                 nbr = real_breaks.__len__()
                 b_g = np.concatenate(([-1], real_breaks))
 
+                ubrk_g = []
                 for n in range(nbr):
                     ubrk_g.append(np.log((b_g[n + 1] - b_g[n]) / (1 - b_g[nbr])))
 
@@ -547,10 +545,12 @@ def fit_cond(x, y, n_err, lvcov, *args):
                 ubrk = optim["x"][0]
                 residual = optim["fun"]
 
-                btem = np.concatenate([xfit[0]], breaks)
+                btem = np.concatenate(([xfit[0]], breaks))
                 E = np.zeros((xfit.__len__(), best))
-                E[:, 0] = np.ones((xfit.__len__(), 1)).T
+                E[:, 0] = np.ones((xfit.__len__(),))
                 ixb = sorter(btem, xfit)
+                # recompute A(0) in case xfit(0) is not equal to xf(0)
+                A[0] = A[0] + A[1] * (xfit[0] - xf[0])
 
                 for j in range(best - 1):
                     # pointer to x values greater than break point j
@@ -670,7 +670,7 @@ def signal_variance(sal):
     sal = np.array(sal)
 
     if np.all(np.isnan(sal)):
-        raise RuntimeError("Received no valid salinity values when calculating signal variance") from None
+        return 0
 
     return np.nanvar(sal)
 
@@ -781,7 +781,7 @@ def covar_xyt_pv(points1, points2, lat, long, age, phi, map_pv_use):
 
 
 # pylint: disable=too-many-locals
-def build_cov(ptmp, coord_float, config):
+def build_ptmp_xyt_cov(ptmp, coord_float, config):
     """Build the covariance matrix
 
     Function builds a square covariance matrix that has n*n tiles, and each
@@ -810,7 +810,7 @@ def build_cov(ptmp, coord_float, config):
     Parameters
     ----------
     ptmp: matrix of potential temperatures
-    coord_float_config: the x, y, z position of the float
+    coord_float_config: the x, y, z, t position of the float
 
     Returns:
     -------
@@ -868,11 +868,12 @@ def build_cov(ptmp, coord_float, config):
     h_cov = np.ones((ptmp_columns, ptmp_columns)) * np.nan
 
     for profile in range(0, ptmp_columns):
-        h_cov[profile, :] = covarxy_pv(
+        h_cov[profile, :] = covarxyt_pv(
             coord_float[profile],
             coord_float,
             config["MAPSCALE_LONGITUDE_SMALL"],
             config["MAPSCALE_LATITUDE_SMALL"],
+            config["MAPSCALE_AGE_SMALL"],
             config["MAPSCALE_PHI_SMALL"],
             config["MAP_USE_PV"],
         )
@@ -898,7 +899,7 @@ def build_cov(ptmp, coord_float, config):
 
 
 # pylint: disable=too-many-arguments
-def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
+def covarxyt_pv(input_coords, coords, long, lat, time_scale, phi, use_pv):
     """Returns a matrix for the horizontal covariance
 
     Finds the correlation between spatial and temporal data, and uses this
@@ -906,10 +907,11 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
 
     Parameters
     ----------
-    input_coords: the input coordinates of the the float profile
-    coords: coordinates for all the float profiles
+    input_coords: the input coordinates of the the float profile (lat, long, date, depth)
+    coords: coordinates for all the float profiles (lat, long, date, depth)
     long: longitude scale
     lat: latitude scale
+    time_scale: scalar, time scale (years)
     phi: potential gradient
     use_pv: whether or not to use potential vorticity
 
@@ -920,8 +922,8 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
     # Derive the planetary vorticity at each point
 
     # Get the depth for each data point
-    z_input_coords = input_coords[2]
-    z_coords = coords[:, 2]
+    z_input_coords = input_coords[3]
+    z_coords = coords[:, 3]
 
     # define a vectorized function to calculation potential vorticity
     potential_vorticity = np.vectorize(
@@ -939,6 +941,9 @@ def covarxy_pv(input_coords, coords, long, lat, phi, use_pv):
 
     if use_pv and pv_input_coords.any() and pv_coords.any() != 0:
         cor_term = cor_term + ((pv_input_coords - pv_coords) / np.sqrt(pv_input_coords**2 + pv_coords**2) / phi) ** 2
+
+    if time_scale and not np.isnan(time_scale):
+        cor_term = cor_term + ((input_coords[2] - coords[:, 2]) / time_scale) ** 2
 
     cov_term = np.exp(-cor_term.transpose())
 
@@ -1019,7 +1024,7 @@ def brk_pt_fit(x_obvs, y_obvs, w_i, breaks=None):
         ls_est = np.dot(trends.T, trends)
 
     if np.linalg.det(ls_est) == 0:
-        fit_param = np.zeros((b_length + 2, 1))
+        fit_param = np.zeros(b_length + 2)
         residual = y_obvs
         print("ERROR in brk_pt_fit: DET(A) == 0")
         return fit_param, residual

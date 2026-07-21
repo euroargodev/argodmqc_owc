@@ -2,6 +2,7 @@
 
 import json
 import math
+from pathlib import Path
 
 import numpy as np
 from pydantic import BaseModel, model_validator
@@ -13,26 +14,26 @@ class ConfigFileNotFoundError(Exception):
 class Config(BaseModel):
     """A representation of a config, to ensure correct types are passed to the rest of the app."""
 
-    HISTORICAL_DIRECTORY: str
+    HISTORICAL_DIRECTORY: Path
     HISTORICAL_CTD_PREFIX: str
     HISTORICAL_BOTTLE_PREFIX: str
     HISTORICAL_ARGO_PREFIX: str
 
-    FLOAT_SOURCE_DIRECTORY: str
+    FLOAT_SOURCE_DIRECTORY: Path
     FLOAT_SOURCE_POSTFIX: str
-    FLOAT_MAPPED_DIRECTORY: str
+    FLOAT_MAPPED_DIRECTORY: Path
     FLOAT_MAPPED_PREFIX: str
     FLOAT_MAPPED_POSTFIX: str
 
-    FLOAT_CALIB_DIRECTORY: str
+    FLOAT_CALIB_DIRECTORY: Path
     FLOAT_CALIB_PREFIX: str
     FLOAT_CALSERIES_PREFIX: str
     FLOAT_CALIB_POSTFIX: str
 
-    FLOAT_PLOTS_DIRECTORY: str
+    FLOAT_PLOTS_DIRECTORY: Path
     FLOAT_PLOTS_FORMAT: str
 
-    CONFIG_DIRECTORY: str
+    CONFIG_DIRECTORY: Path
     CONFIG_COASTLINES: str
     CONFIG_WMO_BOXES: str
     CONFIG_SAF: str
@@ -41,10 +42,10 @@ class Config(BaseModel):
     MAP_USE_PV: int = 0
     MAP_USE_SAF: int = 0
 
-    MAPSCALE_LONGITUDE_LARGE: float = 8
-    MAPSCALE_LONGITUDE_SMALL: float = 4
-    MAPSCALE_LATITUDE_LARGE: float = 4
-    MAPSCALE_LATITUDE_SMALL: float = 2
+    MAPSCALE_LONGITUDE_LARGE: float = 6
+    MAPSCALE_LONGITUDE_SMALL: float = 3
+    MAPSCALE_LATITUDE_LARGE: float = 3
+    MAPSCALE_LATITUDE_SMALL: float = 1
 
     MAPSCALE_PHI_LARGE: float = 0.1
     MAPSCALE_PHI_SMALL: float = 0.02
@@ -55,8 +56,6 @@ class Config(BaseModel):
     MAP_P_EXCLUDE: int = 100
     MAP_P_DELTA: int = 250
 
-    THETA_BOUNDS: list[list[int]]
-
     CALIB_PROFILE_NO: list
     USE_THETA_LT: list
     USE_THETA_GT: list
@@ -64,10 +63,12 @@ class Config(BaseModel):
     USE_PRES_GT: list
 
     BREAKS: list
-    MAX_BREAKS: int
+    MAX_BREAKS: int = 3
     USE_PERCENT_GT: float
     SPLITS: list
     EXCLUSIONS: list
+
+    USE_BATHYMETRY_ON_PLOT: int = 0
 
     @model_validator(mode="before")
     def check_for_empty_strings(cls, values):
@@ -93,7 +94,11 @@ def load_configuration_from_json_file(filepath: str) -> dict:
     try:
         with open(filepath) as file:
             model = Config(**json.loads(file.read()))
-            return model.model_dump()
+            dumped = model.model_dump()
+            for k,v in dumped.items():
+                if isinstance(v, Path):
+                    dumped[k] = str(v)
+            return dumped
     except FileNotFoundError:
         raise ConfigFileNotFoundError(f"Config file not found: - {filepath}") from None
 
@@ -109,8 +114,8 @@ def spatial_correlation(
     dates_2,
     ellipse_age,
     phi,
-    pv_1=0,
-    pv_2=0,
+    pv_1=0.0,
+    pv_2=0.0,
 ):
     """Calculates the spatial correlation between two points.
 
@@ -228,6 +233,9 @@ def potential_vorticity(lat, z_value):
     """
     earth_angular_velocity = 2 * 7.292 * 10**-5
     lat_radians = lat * math.pi / 180
+
+    if z_value == 0:
+        return np.inf
 
     p_v = (earth_angular_velocity * math.sin(lat_radians)) / z_value
 

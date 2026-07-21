@@ -12,12 +12,11 @@ class Dashboard(unittest.TestCase):
 
     """
 
-    @patch("pyowc.plot.plots.plt.show")
-    def test_dashboard(self, mockshow):
+    def test_dashboard(self):
         print("Test that dashboard plot throws no errors")
         float_dir = "/"
         float_name = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
         config = TESTS_CONFIG
         config["FLOAT_PLOTS_DIRECTORY"] = "data/test_data/float_plots/"
         config["FLOAT_PLOTS_FORMAT"] = "eps"
-        self.assertEqual(dashboard(float_dir, float_name, config, levels=2), None)
+        self.assertEqual(dashboard(float_dir, float_name, config, levels=2, headless=True), None)

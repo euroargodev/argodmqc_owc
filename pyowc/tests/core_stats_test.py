@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 from scipy.io import loadmat
 
-from pyowc import core
+from pyowc.core import stats
 from pyowc.core.stats import fit_cond, noise_variance, signal_variance
 
 from . import TESTS_CONFIG
@@ -83,7 +83,7 @@ class BrkPtFit(unittest.TestCase):
         breaks = [1, 2, 3]
         y_obvs = [1, 2]
 
-        fit_param, residual = core.stats.brk_pt_fit([1, 2, 3], y_obvs, [1, 2, 3], breaks)
+        fit_param, residual = stats.brk_pt_fit([1, 2, 3], y_obvs, [1, 2, 3], breaks)
 
         for i in range(y_obvs.__len__()):
             self.assertEqual(residual[i], y_obvs[i], "residuals should equal independent observations for bad inputs")
@@ -124,7 +124,7 @@ class BrkPtFit(unittest.TestCase):
                 -4.44089209850063e-16,
             ]
         )
-        fit_param, residual = core.stats.brk_pt_fit(self.x_obvs, self.y_obvs, [])
+        fit_param, residual = stats.brk_pt_fit(self.x_obvs, self.y_obvs, [])
 
         for i in range(fit_param.__len__()):
             self.assertAlmostEqual(fit_param[i], fit_param_ans[i], 12, "matlab parameters should match python ones")
@@ -164,7 +164,7 @@ class BrkPtFit(unittest.TestCase):
             ]
         )
 
-        fit_param, residual = core.stats.brk_pt_fit(self.x_obvs, self.y_obvs, self.w_i)
+        fit_param, residual = stats.brk_pt_fit(self.x_obvs, self.y_obvs, self.w_i)
 
         for i in range(fit_param.__len__()):
             self.assertAlmostEqual(fit_param[i], fit_param_ans[i], 12, "matlab parameters should match python ones")
@@ -180,7 +180,7 @@ class BrkPtFit(unittest.TestCase):
 
         y_obvs = np.array([0, 0, 0])
 
-        fit_param, residual = core.stats.brk_pt_fit(np.array([0, 0, 0]), y_obvs, [])
+        fit_param, residual = stats.brk_pt_fit(np.array([0, 0, 0]), y_obvs, [])
 
         for i in range(fit_param.__len__()):
             self.assertEqual(fit_param[i], 0, "should be all zeroes when det(a) == 0")
@@ -190,7 +190,7 @@ class BrkPtFit(unittest.TestCase):
 
 
 class BuildCov(unittest.TestCase):
-    """Test cases for build_cov function"""
+    """Test cases for build_ptmp_xyt_cov function"""
 
     def setUp(self):
         """Set up for test
@@ -201,6 +201,7 @@ class BuildCov(unittest.TestCase):
             "MAPSCALE_LATITUDE_SMALL": 2,
             "MAPSCALE_PHI_SMALL": 0.1,
             "MAP_USE_PV": 0,
+            "MAPSCALE_AGE_SMALL": 2,
         }
         self.ptmp = np.array(
             [
@@ -217,38 +218,38 @@ class BuildCov(unittest.TestCase):
             ]
         )
         self.coord_float = (
-            np.array([[0.0572, -0.0592, 5.1083], [0.0578, -0.0591, 5.0993], [0.0586, -0.0585, 5.0861]]) * 1.0e03
+            np.array([[0.0572, -0.0592, 1.1, 5.1083], [0.0578, -0.0591, 1.2, 5.0993], [0.0586, -0.0585, 1.3, 5.0861]]) * 1.0e03
         )
 
     def test_returns_numpy_array(self):
-        """Check that build_cov returns a numpy array
+        """Check that build_ptmp_xyt_cov returns a numpy array
         :return: Nothing
         """
-        print("Testing that build_cov returns a numpy array")
+        print("Testing that build_ptmp_xyt_cov returns a numpy array")
 
-        test = core.stats.build_cov(self.ptmp, self.coord_float, self.config)
+        test = stats.build_ptmp_xyt_cov(self.ptmp, self.coord_float, self.config)
 
-        self.assertEqual(type(test), np.ndarray, "build_cov did not return a numpy array")
+        self.assertEqual(type(test), np.ndarray, "build_ptmp_xyt_cov did not return a numpy array")
 
     def test_returns_correct_size(self):
-        """Check that build_cov returns a matrix that is the correct size
+        """Check that build_ptmp_xyt_cov returns a matrix that is the correct size
         :return: Nothing
         """
-        print("Testing that build_cov returns correct shape matrix")
+        print("Testing that build_ptmp_xyt_cov returns correct shape matrix")
 
-        test = core.stats.build_cov(self.ptmp, self.coord_float, self.config)
+        test = stats.build_ptmp_xyt_cov(self.ptmp, self.coord_float, self.config)
 
         self.assertEqual(
             test.shape,
             (self.coord_float.shape[0] * self.ptmp.shape[0], self.coord_float.shape[0] * self.ptmp.shape[0]),
-            "build_cov returned a matrix of incorrect size",
+            "build_ptmp_xyt_cov returned a matrix of incorrect size",
         )
 
     def test_returns_correct_elements(self):
-        """Check that build_cov returns a matrix that is the correct size
+        """Check that build_ptmp_xyt_cov returns a matrix that is the correct size
         :return: Nothing
         """
-        print("Testing that build_cov returns correct shape matrix")
+        print("Testing that build_ptmp_xyt_cov returns correct shape matrix")
 
         # expected = loadmat("../../data/test_data/build_cov/cov.mat")['test_cov_1']
         expected_path = os.path.sep.join([TESTS_CONFIG["TEST_DIRECTORY"], "build_cov", "cov.mat"])
@@ -256,7 +257,7 @@ class BuildCov(unittest.TestCase):
 
         expected_size = expected.shape
 
-        test = core.stats.build_cov(self.ptmp, self.coord_float, self.config)
+        test = stats.build_ptmp_xyt_cov(self.ptmp, self.coord_float, {**self.config, "MAPSCALE_AGE_SMALL": None})
 
         for i in range(0, expected_size[0]):
             for j in range(0, expected_size[1]):
@@ -292,7 +293,7 @@ class Covarxytpv(unittest.TestCase):
         :return: Nothing
         """
         print("Testing that covar_xyt_pv returns an array")
-        covar = core.stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
+        covar = stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
 
         self.assertTrue(isinstance(covar, np.ndarray), "Covariance isn't numpy array")
 
@@ -302,7 +303,7 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that covar_xyt_pv return 1's if input points are identical")
 
-        covar = core.stats.covar_xyt_pv(
+        covar = stats.covar_xyt_pv(
             np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
             np.array([[1, 2, 3, 4], [1, 2, 3, 4]]),
             self.lat,
@@ -323,7 +324,7 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that covar_xyt_pv return 0's if input points are extremely different")
 
-        covar = core.stats.covar_xyt_pv(
+        covar = stats.covar_xyt_pv(
             np.array([[1, 2, 3, 4], [1000, 2000, 3000, 4000]]),
             np.array([[-1000, -2000, -3000, 4000], [-1 * 9999, 2 * 9999, -3 * 9999, -4 * 999]]),
             self.lat,
@@ -345,7 +346,7 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that covar_xyt_pv returns matrix of the correct shape for multidemensional")
 
-        covar = core.stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
+        covar = stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
 
         expected = (3, 3)
 
@@ -359,7 +360,7 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that covar_xyt_pv returns matrix of the correct shape one dimensional")
 
-        covar = core.stats.covar_xyt_pv(
+        covar = stats.covar_xyt_pv(
             np.array([-0.057996, 0.053195, 1.9740875, 5.229838]) * 10**3,
             self.points2,
             self.lat,
@@ -385,7 +386,7 @@ class Covarxytpv(unittest.TestCase):
                 [0.001712995003897, 0.600332430927527, 1],
             ]
         )
-        covar = core.stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
+        covar = stats.covar_xyt_pv(self.points1, self.points2, self.lat, self.long, self.age, self.phi, self.p_v)
 
         for i in range(0, covar.__len__()):
             for j in range(0, covar[i].__len__()):
@@ -419,7 +420,7 @@ class Covarxytpv(unittest.TestCase):
             ]
         )
 
-        output = core.stats.covar_xyt_pv(inp1, inp2, self.lat, self.long, self.age, self.phi, self.p_v)
+        output = stats.covar_xyt_pv(inp1, inp2, self.lat, self.long, self.age, self.phi, self.p_v)
 
         self.assertTrue(np.allclose(expected, output, rtol=0.0, atol=1.0e-15))
 
@@ -429,7 +430,7 @@ class Covarxytpv(unittest.TestCase):
         """
         print("Testing that covar_xyt_pv can use one dimensional data")
 
-        covar = core.stats.covar_xyt_pv(
+        covar = stats.covar_xyt_pv(
             np.array([-0.057996, 0.053195, 1.9740875, 5.229838]) * 10**3,
             self.points2,
             self.lat,
@@ -446,18 +447,19 @@ class Covarxytpv(unittest.TestCase):
 
 
 class Covarxypv(unittest.TestCase):
-    """Test cases for covarxy_pv function"""
+    """Test cases for covarxyt_pv function"""
 
     def setUp(self):
         """Set up for test
         :return: Nothing
         """
-        self.input_coords = np.array([0.0572, -0.0592, 5.1083]) * 1.0e03
+        self.input_coords = np.array([0.0572, -0.0592, 1.23, 5.1083]) * 1.0e03
         self.coords = (
-            np.array([[0.0572, -0.0592, 5.1083], [0.0578, -0.0591, 5.0993], [0.0586, -0.0585, 5.0861]]) * 1.0e03
+            np.array([[0.0572, -0.0592, 1.23, 5.1083], [0.0578, -0.0591, 1.23, 5.0993], [0.0586, -0.0585, 1.23, 5.0861]]) * 1.0e03
         )
         self.long = 4
         self.lat = 2
+        self.time_scale = 5
         self.phi = 0.1
         self.no_pv = 0
         self.yes_pv = 1
@@ -466,48 +468,46 @@ class Covarxypv(unittest.TestCase):
         """Check that the returned covariance matrix is the correct size
         :return: Nothing
         """
-        print("Testing that covarxy_pv returns 1 dimensional matrix")
+        print("Testing that covarxyt_pv returns 1 dimensional matrix")
 
-        cov = core.stats.covarxy_pv(self.input_coords, self.coords, self.long, self.lat, self.phi, self.no_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.time_scale, self.phi, self.no_pv)
 
-        self.assertEqual(cov.shape, (3,), "covarxy_pv matrix is incorrect shape")
+        self.assertEqual(cov.shape, (3,), "covarxyt_pv matrix is incorrect shape")
 
     def test_returns_correct(self):
         """Check that the returned covriance matrix contains the correct values
         :return: Nothing
         """
-        print("Testing that covarxy_pv returns correct values")
+        print("Testing that covarxyt_pv returns correct values")
 
         ans = np.array([1, 0.9134, 0.5941])
-
-        cov = core.stats.covarxy_pv(self.input_coords, self.coords, self.long, self.lat, self.phi, self.no_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.time_scale, self.phi, self.no_pv)
 
         for i in range(0, ans.size):
-            self.assertAlmostEqual(ans[i], cov[i], 4, "elements in covarxy_pv matrix are not correct")
+            self.assertAlmostEqual(ans[i], cov[i], 4, "elements in covarxyt_pv matrix are not correct")
 
     def test_returns_correct_pv(self):
         """Check that the returned covriance matrix contains the correct values with
         potential vorticity
         :return: Nothing
         """
-        print("Testing that covarxy_pv returns correct values with potential vorticity")
+        print("Testing that covarxyt_pv returns correct values with potential vorticity")
 
         ans = np.array([1, 0.9101, 0.5828])
-
-        cov = core.stats.covarxy_pv(self.input_coords, self.coords, self.long, self.lat, self.phi, self.yes_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, self.long, self.lat, self.time_scale, self.phi, self.yes_pv)
 
         for i in range(0, ans.size):
-            self.assertAlmostEqual(ans[i], cov[i], 4, "elements in covarxy_pv matrix are not correct")
+            self.assertAlmostEqual(ans[i], cov[i], 4, "elements in covarxyt_pv matrix are not correct")
 
     def test_returns_ones(self):
         """Check that we get a matrix of almost ones if data is very close (according to scale)
         :return: nothing
         """
-        print("Testing that covarxy_pv returns almost ones if data is close")
+        print("Testing that covarxyt_pv returns almost ones if data is close")
 
-        cov = core.stats.covarxy_pv(self.input_coords, self.coords, 99999999, 99999999, self.phi, self.no_pv)
+        cov = stats.covarxyt_pv(self.input_coords, self.coords, 99999999, 99999999, self.time_scale, self.phi, self.no_pv)
         for i in cov:
-            self.assertAlmostEqual(i, 1, 15, "elements in covarxy_pv matrix are not correct")
+            self.assertAlmostEqual(i, 1, 15, "elements in covarxyt_pv matrix are not correct")
 
 
 # pylint: disable=too-many-instance-attributes
@@ -569,7 +569,7 @@ class FitCond(unittest.TestCase):
         print("Testing that fit_cond returns values when using fixed breaks")
 
         python_test = fit_cond(
-            self.in_x, self.in_y, self.in_err, self.in_cov, "breaks", np.array([0.3, 0.7]), "max_no_breaks", 4
+            self.in_x, self.in_y, self.in_err, self.in_cov, "breaks", np.array([0.3, 0.7]), "max_no_breaks", 2
         )
 
         self.assertEqual(python_test.__len__(), 10, "should return 10 outputs")
@@ -634,18 +634,14 @@ class SignalVariance(unittest.TestCase):
         var = signal_variance([1, 2, 3, 4, 5])
         self.assertTrue(isinstance(var, float), "signal variance is not a float")
 
-    def test_throws_exception(self):
-        """Check that we thrown an exception if no valid salinities are given
+    def test_correct_for_nan_vals(self):
+        """Check that we return correct result if no valid salinities are given
         :return: Nothing
         """
-        print("Testing that signal_variance throws an exception for no valid salinities")
+        print("Testing that signal_variance returns 0 for no valid salinities")
 
-        with self.assertRaises(Exception) as no_valid_sal:
-            signal_variance([float("nan"), float("nan")])
+        self.assertEqual(signal_variance([float("nan"), float("nan")]), 0)
 
-        self.assertTrue(
-            "Received no valid salinity values when calculating signal variance" in str(no_valid_sal.exception)
-        )
 
     def test_nans_are_ignored(self):
         """Check that we ignore 0's and nan values

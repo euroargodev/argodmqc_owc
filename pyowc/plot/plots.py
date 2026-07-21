@@ -1,7 +1,9 @@
 """Functions to create specific plots"""
 
 import copy
+import math
 import os
+import pathlib
 
 import matplotlib.pylab as pl
 import matplotlib.pyplot as plt
@@ -9,12 +11,12 @@ import numpy as np
 import shapefile
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
-from scipy.interpolate import interpolate
+from scipy.interpolate import interp1d
 
 from ..core.finders import find_10thetas
 
 
-def draw_shapes_as_patches(axes, shapes, **kwargs):
+def draw_shapes_as_patches(axes, shapes: list[shapefile.Shape], **kwargs):
     """Draw a series of shapes as PathPatches on a given Matplotlib axis."""
     for shape in shapes:
         points = np.array(shape.points)
@@ -30,7 +32,7 @@ def draw_shapes_as_patches(axes, shapes, **kwargs):
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
 # pylint: disable=too-many-arguments
-def trajectory_plot(bath, reef, floats, climatology, float_name, config):
+def trajectory_plot(bath, reef, floats, climatology, float_name, config, headless = False, file_suffix: str = ""):
     """Plot locations of all the data used in the analysis
 
     function for plotting locations of all the data used in the analysis, including:
@@ -47,6 +49,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     floats: float location data frame
     climatology: climatology location dataframe
     float_name: name of float
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -58,7 +61,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     # load in the coastline data
     coastline = os.path.sep.join([config["CONFIG_DIRECTORY"], "coastline", "ne_10m_coastline.shp"])
     with shapefile.Reader(coastline) as shp:
-        shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYLINE]
+        shapes = [shape for shape in shp.shapes() if shape is not None and shape.shapeType == shapefile.POLYLINE]
         draw_shapes_as_patches(axes, shapes, linewidth=0.5, edgecolor="black", facecolor="None")
 
     # if wanted, load in bathymetric data and plot it
@@ -80,14 +83,14 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
 
         for filename, plot_config in bathymetry_config.items():
             with shapefile.Reader(os.path.join(root_path, filename)) as shp:
-                shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYGON]
+                shapes = [shape for shape in shp.shapes() if shape is not None and shape.shapeType == shapefile.POLYGON]
                 draw_shapes_as_patches(axes, shapes, linewidth=0.0, **plot_config)
 
     # if we want reef data, load it in and plot it
     if reef:
         reef = os.path.sep.join([config["CONFIG_DIRECTORY"], "reefs", "ne_10m_reefs.shp"])
         with shapefile.Reader(reef) as shp:
-            shapes = [shape for shape in shp.shapes() if shape.shapeType == shapefile.POLYGON]
+            shapes = [shape for shape in shp.shapes() if shape is not None and shape.shapeType == shapefile.POLYGON]
             draw_shapes_as_patches(axes, shapes, linewidth=0.0, facecolor="green", label="Reef")
 
     # set up the latitude and longitude data
@@ -115,7 +118,7 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.title("Locations of float " + float_name + " with historical data")
     plt.xlabel("Longitude")
     plt.ylabel("Latitude")
-    plt.axis([-180, 180, -90, 90])
+    plt.axis((-180.0, 180.0, -90.0, 90.0))
     plt.xlim(np.min(climatology["Longitude"]) - 20, np.max(climatology["Longitude"]) + 20)
     plt.ylim(np.min(climatology["Latitude"]) - 15, np.max(climatology["Latitude"]) + 15)
 
@@ -137,15 +140,18 @@ def trajectory_plot(bath, reef, floats, climatology, float_name, config):
     plt.legend(loc=4, prop={"size": 6})
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-    plt.savefig(plot_loc + "_trajectory." + save_format, format=save_format)
+    file_name = f"{float_name}_trajectory{file_suffix}.{save_format}"
+    plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+    plot_loc.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(plot_loc, format=save_format)
+    plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 # pylint: disable=no-member
 def theta_sal_plot(
-    sal, theta, map_sal, map_theta, map_errors, index, profiles, config, float_name, title="uncalibrated"
+    sal, theta, map_sal, map_theta, map_errors, index, profiles, config, float_name, title="uncalibrated", headless = False, file_suffix: str = ""
 ):
     """Create the salinity theta curve
 
@@ -161,6 +167,7 @@ def theta_sal_plot(
     profiles: profile numbers array
     config: user configuration
     float_name: name of the float
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -170,7 +177,7 @@ def theta_sal_plot(
     plt.figure(figsize=(10, 6))
     # plt.subplots()
     color_n = sal.__len__()
-    colors = pl.cm.jet(np.linspace(0, 1, color_n))
+    colors = plt.get_cmap("jet")(np.linspace(0, 1, color_n))
 
     # can only fit 30 profiles on legend
     n_legend = np.arange(0, profiles[profiles.__len__() - 1], np.ceil(color_n / 30))
@@ -203,13 +210,15 @@ def theta_sal_plot(
     plt.ylabel(r"$\theta$ $^\circ$C")
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-    plt.savefig(plot_loc + "_" + title + "_theta_sal." + save_format, format=save_format)
-    plt.show()
+    file_name = float_name + "_" + title + "_theta_sal." + save_format
+    plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+    plot_loc.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(plot_loc, format=save_format)
+    plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
-def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config):
+def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, float_name, config, headless = False, file_suffix: str = ""):
     """Plots profile plots
 
     Parameters
@@ -223,6 +232,7 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plevels: pressure at theta levels
     float_name: name of the float
     config: user configuration
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -273,10 +283,12 @@ def t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, f
     plt.tight_layout(pad=1)
 
     save_format = config["FLOAT_PLOTS_FORMAT"]
-    plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-    plt.savefig(plot_loc + "_salinity_profile." + save_format, format=save_format, bbox_inches="tight")
+    file_name = f"{float_name}_salinity_profile{file_suffix}.{save_format}"
+    plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+    plot_loc.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
-    plt.show()
+    plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
@@ -298,6 +310,8 @@ def sal_var_plot(
     profile_no,
     float_name,
     config,
+    headless = False,
+    file_suffix: str = "",
 ):
     """Create the salinity variance plot for each level
 
@@ -316,6 +330,7 @@ def sal_var_plot(
     cal_sal_errors: calibrated salinity errors
     boundaries: pressure and temperature boundaries
     config: user configuration
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -468,7 +483,7 @@ def sal_var_plot(
 
                     if pos_diff.__len__() > 0:
                         min_diff = np.argwhere(ptmp_diff == np.nanmin(ptmp_diff[pos_diff]))
-                        k_index = inter[min_diff]
+                        k_index = inter[min_diff][0][0]
 
                     else:
                         k_index = theta_index
@@ -478,7 +493,7 @@ def sal_var_plot(
 
                     if neg_diff.__len__() > 0:
                         min_diff = np.argwhere(-ptmp_diff == np.nanmin(-ptmp_diff[neg_diff]))
-                        k_index = inter[min_diff]
+                        k_index = inter[min_diff][0][0]
 
                     else:
                         k_index = theta_index
@@ -492,7 +507,7 @@ def sal_var_plot(
                     and ~np.isnan(ptmp[theta_index, j])
                     and ~np.isnan(ptmp[k_index, j])
                 ):
-                    interp_ptmp_sal = interpolate.interp1d(
+                    interp_ptmp_sal = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(sal[theta_index, j]), float(sal[k_index, j])],
                     )
@@ -508,13 +523,13 @@ def sal_var_plot(
                     and ~np.isnan(ptmp[theta_index, j])
                     and ~np.isnan(ptmp[k_index, j])
                 ):
-                    interp_map_sal = interpolate.interp1d(
+                    interp_map_sal = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(map_sal[theta_index, j]), float(map_sal[k_index, j])],
                     )
                     s_map[i, j] = interp_map_sal(tlevels[i][0])
 
-                    interp_map_sal_err = interpolate.interp1d(
+                    interp_map_sal_err = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(map_sal_errors[theta_index, j]), float(map_sal_errors[k_index, j])],
                     )
@@ -531,11 +546,11 @@ def sal_var_plot(
                     and ~np.isnan(ptmp[theta_index, j])
                     and ~np.isnan(ptmp[k_index, j])
                 ):
-                    interp_cal_sal = interpolate.interp1d(
+                    interp_cal_sal = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(cal_sal[theta_index, j]), float(cal_sal[k_index, j])],
                     )
-                    interp_cal_sal_err = interpolate.interp1d(
+                    interp_cal_sal_err = interp1d(
                         [float(ptmp[theta_index, j]), float(ptmp[k_index, j])],
                         [float(cal_sal_errors[theta_index, j]), float(cal_sal_errors[k_index, j])],
                     )
@@ -571,13 +586,13 @@ def sal_var_plot(
         plt.legend()
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-        plt.savefig(
-            plot_loc + "_salinity_variance_" + str(i + 1) + "." + save_format, format=save_format, bbox_inches="tight"
-        )
+        file_name = f"{float_name}_salinity_variance_{str(i+1)}{file_suffix}.{save_format}"
+        plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+        plot_loc.parent.mkdir(exist_ok=True, parents=True)
+        plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
-        plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
-        plt.show()
+        # plt.ylim((np.nanmin(s_int) - 0.05, np.nanmax(s_int) + 0.05))
+        plt.show() if not headless else plt.close()
 
 
 # pylint: disable=too-many-arguments
@@ -595,6 +610,8 @@ def cal_sal_curve_plot(
     profile_no,
     float_name,
     config,
+    headless = False,
+    file_suffix: str = "",
 ):
     """Create the calibrated salinity curve plot
 
@@ -611,6 +628,7 @@ def cal_sal_curve_plot(
     pcond_factor_err: slope error
     float_name: name of the float
     config: user configuration
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -717,31 +735,36 @@ def cal_sal_curve_plot(
         plt.xlim((np.nanmin(profile_no), np.nanmax(profile_no)))
 
         plt.legend()
-        plt.ylabel(r"$\Delta$ S")
+        plt.ylabel(r"$\Delta$ S (PSS-78)")
         plt.xlabel("Profile number")
         plt.title(
             float_name + r" vertically averaged salinity (PSS-78) additive " + r"correction $\Delta$ S with errors"
         )
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-        plt.savefig(plot_loc + "_salinity_curve." + save_format, format=save_format, bbox_inches="tight")
+        file_name = f"{float_name}_salinity_curve{file_suffix}.{save_format}"
+        plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+        plot_loc.parent.mkdir(exist_ok=True, parents=True)
+        plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
 
-        plt.show()
+        plt.show() if not headless else plt.close()
 
 
-def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated"):
+def sal_anom_plot(sal, ptmp, temp, tlevels, profile_no, config, float_name, title="uncalibrated", headless = False, file_suffix: str = ""):
     """Create the salinity anomoly plot
 
     Parameters
     ----------
     sal: salinity
     ptmp: potential temperature,
+    temp: temperature
+    tlevels: theta levels
     pres: pressure
     profile_no: profile numbers
     config: user configuration
     float_name: name of the float
     title: Addition to the title
+    headless: if True then figures are generated but not shown
 
     Returns:
     -------
@@ -762,9 +785,9 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
     prof_range[1] = int(np.nanmax(good_ptmp[0]))
 
     for k in range(int(prof_range[0]), int(prof_range[1] + 1)):
-        temp = ptmp[:, k]
+        tmp = ptmp[:, k]
         sal1 = sal[:, k]
-        sal_temp = np.vstack((temp, sal1)).T
+        sal_temp = np.vstack((tmp, sal1)).T
         sal_temp_sorted = sal_temp[sal_temp[:, 0].argsort()]
 
         # make sure the values are unique
@@ -776,7 +799,7 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
         good_data = np.argwhere(np.logical_and(~np.isnan(good_temp), ~np.isnan(good_sal)))
 
         if good_data.__len__() >= 3:
-            sal_int_interp = interpolate.interp1d(
+            sal_int_interp = interp1d(
                 good_temp[good_data].flatten(), good_sal[good_data].flatten(), bounds_error=False
             )
             sal_int[:, k] = sal_int_interp(theta_base[:])
@@ -800,7 +823,11 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
 
     levels = [-0.1, -0.06, -0.04, -0.02, -0.01, -0.005, 0.005, 0.01, 0.02, 0.04, 0.06, 0.1]
 
-    for bounds in config["THETA_BOUNDS"]:
+    lower_bound = math.floor(min(np.nanmin(temp), 2))
+    upper_bound = math.ceil(min(np.nanmax(temp), 20))
+    yaxes = [[lower_bound, upper_bound]]
+
+    for bounds in yaxes:
         plt.figure(figsize=(10, 6))
         c_bounds = plt.contourf(profile_no[0], theta_base, sal_anom, levels=levels, cmap="seismic")
         plt.contourf(profile_no[0], theta_base, sal_anom, levels=[0.1, 1000], colors="red")
@@ -824,10 +851,8 @@ def sal_anom_plot(sal, ptmp, profile_no, config, float_name, title="uncalibrated
         )
 
         save_format = config["FLOAT_PLOTS_FORMAT"]
-        plot_loc = os.path.sep.join([config["FLOAT_PLOTS_DIRECTORY"], float_name])
-        plt.savefig(
-            plot_loc + "_" + title + "_salinity_anomaly_" + str(bounds) + "." + save_format,
-            format=save_format,
-            bbox_inches="tight",
-        )
-        plt.show()
+        file_name = f"{float_name}_{title}_salinity_anomaly_{str(bounds)}{file_suffix}.{save_format}"
+        plot_loc = pathlib.Path(config["FLOAT_PLOTS_DIRECTORY"], file_name)
+        plot_loc.parent.mkdir(exist_ok=True, parents=True)
+        plt.savefig(plot_loc, format=save_format, bbox_inches="tight")
+        plt.show() if not headless else plt.close()

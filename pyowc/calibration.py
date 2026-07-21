@@ -3,6 +3,7 @@
 import copy
 import os
 import time
+from pathlib import Path
 
 import gsw
 import numpy as np
@@ -10,11 +11,12 @@ from scipy import interpolate
 from scipy.io import loadmat, savemat
 
 from .core.finders import find_10thetas, find_25boxes, find_besthist
-from .core.stats import build_cov, fit_cond, noise_variance, signal_variance
+from .core.stats import build_ptmp_xyt_cov, fit_cond, noise_variance, signal_variance
 from .data.fetchers import frontal_constraint_saf, get_region_data, get_region_hist_locations, get_topo_grid
 from .data.wrangling import interp_climatology, map_data_grid
 from .helper import (
     check_and_make_numpy_arry,
+    create_la_wmo_boxes_file,
     get_float_data,
     load_varibales_from_file,
     process_profile_hist_variables,
@@ -71,8 +73,10 @@ def update_salinity_mapping(float_dir, config, float_name):
     float_level_count = float_source_data["SAL"].shape[0]
 
     # Load all the mapping parameters, including the WMO boxes -----------
-
-    wmo_boxes = loadmat(os.path.sep.join([config["CONFIG_DIRECTORY"], config["CONFIG_WMO_BOXES"]]))
+    la_wmo_boxes_file = os.path.sep.join([config["CONFIG_DIRECTORY"], config["CONFIG_WMO_BOXES"]])
+    if not Path(la_wmo_boxes_file).exists():
+        create_la_wmo_boxes_file(config)
+    wmo_boxes = loadmat(la_wmo_boxes_file)
     max_casts = config["CONFIG_MAX_CASTS"]
     map_use_pv = config["MAP_USE_PV"]
     map_use_saf = config["MAP_USE_SAF"]
@@ -109,6 +113,8 @@ def update_salinity_mapping(float_dir, config, float_name):
 
     # Load precalculated mapped data -------------------------------------
 
+    # Create directory if not exists
+    Path(config["FLOAT_MAPPED_DIRECTORY"], float_dir).mkdir(exist_ok=True)
     # Check to see if we have any precalculated mapped data
     mapped_data_path = os.path.sep.join(
         [
@@ -283,19 +289,24 @@ def update_salinity_mapping(float_dir, config, float_name):
                             map_p_delta=map_p_delta,
                         )
 
-                        # only proceed with analysis if we have more than 5 points
-                        if hist_data["hist_sal"].__len__() > 5:
-                            # Need to check for statistical outliers
-                            mean_sal = np.mean(hist_data["hist_sal"])
-                            signal_sal = signal_variance(hist_data["hist_sal"])
+                        # Need to check for statistical outliers
+                        mean_sal = np.mean(hist_data["hist_sal"])
+                        signal_sal = signal_variance(hist_data["hist_sal"])
+
+                        if signal_sal > 0:
                             outlier1 = np.argwhere(np.abs(hist_data["hist_sal"] - mean_sal) / np.sqrt(signal_sal) > 3)
                             outlier = outlier1[:, 0]
 
                             # remove the statical outliers
                             hist_data = remove_statical_outliers(outlier, hist_data)
 
+                        # require more than one historical salinity profile with unique position for noise; and
+                        # require more than five historical salinity profiles to produce realistic mapping error estimates
+                        hist_lat_flatten = hist_data["hist_lat"].flatten()
+                        hist_long_flatten = hist_data["hist_long"].flatten()
+                        hist_sal_flatten = hist_data["hist_sal"].flatten()
+                        if (np.unique(hist_long_flatten).size > 1 or np.unique(hist_lat_flatten).size > 1) and hist_sal_flatten.size > 5:
                             # calculate signal and noise for complete data
-                            hist_sal_flatten = hist_data["hist_sal"].flatten()
                             noise_sal = noise_variance(
                                 hist_sal_flatten, hist_data["hist_lat"].flatten(), hist_data["hist_long"].flatten()
                             )
@@ -381,10 +392,17 @@ def update_salinity_mapping(float_dir, config, float_name):
         print("time elapsed: ", round(time.time() - start_time, 2), " seconds")
         profile_index += 1
 
-    # as a quality control check, just make sure salinities are between 30 and 40
-    bad_sal_30 = np.argwhere(data["la_mapped_sal"] < 30)
-    bad_sal_40 = np.argwhere(data["la_mapped_sal"] > 40)
-    bad_sal = np.concatenate((bad_sal_30, bad_sal_40))
+    # as a quality control check check salinity is in appropriate ranges
+    float_lat = float_source_data["LAT"]
+    float_long = float_source_data["LONG"]
+    if np.min(float_lat) > 41 and np.max(float_lat) < 48 and np.min(float_long) > 27 and np.max(float_long) < 42:
+        # Black Sea has different acceptable salinity range
+        bad_sal_lower = np.argwhere(data["la_mapped_sal"] < 15)
+        bad_sal_upper = np.argwhere(data["la_mapped_sal"] > 25)
+    else:
+        bad_sal_lower = np.argwhere(data["la_mapped_sal"] < 30)
+        bad_sal_upper = np.argwhere(data["la_mapped_sal"] > 40)
+    bad_sal = np.concatenate((bad_sal_lower, bad_sal_upper))
 
     for sal in bad_sal:
         data["la_mapped_sal"][sal[0], sal[1]] = np.nan
@@ -453,6 +471,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
     lat = float_source_data["LAT"]
     long = float_source_data["LONG"]
+    dates = float_source_data["DATES"]
     sal = float_source_data["SAL"]
     ptmp = float_source_data["PTMP"]
     pres = float_source_data["PRES"]
@@ -474,32 +493,37 @@ def calc_piecewisefit(float_dir, float_name, system_config):
     mapped_ptmp = float_mapped_data["la_ptmp"]
     selected_hist = float_mapped_data["selected_hist"]
 
-    # retrieve XYZ of float position used to build covariance
-    if selected_hist.__len__() > 0:
-        if long.shape[0] > 1:
-            long = long.flatten()
+    # retrieve XYZT of float position used to build covariance
+    if long.shape[0] > 1:
+        long = long.flatten()
 
-        if lat.shape[0] > 1:
-            lat = lat.flatten()
+    if lat.shape[0] > 1:
+        lat = lat.flatten()
 
-        if np.any(long > 180):
-            long_1 = copy.deepcopy(long) - 360
+    if dates.shape[0] > 1:
+        dates = dates.flatten()
 
-        else:
-            long_1 = copy.deepcopy(long)
+    # Calculate elevation at the float position
+    if np.any(long > 180):
+        long_1 = copy.deepcopy(long) - 360
+    else:
+        long_1 = copy.deepcopy(long)
 
-        elev, x_grid, y_grid = get_topo_grid(
-            np.nanmin(long_1) - 1, np.nanmax(long_1) + 1, np.nanmin(lat) - 1, np.nanmax(lat) + 1, system_config
-        )
+    elev, x_grid, y_grid = get_topo_grid(
+        np.nanmin(long_1) - 1, np.nanmax(long_1) + 1, np.nanmin(lat) - 1, np.nanmax(lat) + 1, system_config
+    )
 
-        grid_interp = interpolate.RegularGridInterpolator((y_grid[:, 0], x_grid[0, :]), elev, method="linear")
+    grid_interp = interpolate.RegularGridInterpolator((y_grid[:, 0], x_grid[0, :]), elev, method="linear")
 
-        points = np.column_stack((lat.ravel(), long_1.ravel()))
+    points = np.column_stack((lat.ravel(), long_1.ravel()))
 
-        z_grid = grid_interp(points).reshape(lat.shape)
-        z_grid = -z_grid
+    z_grid = grid_interp(points).reshape(lat.shape)
+    z_grid = -z_grid
 
-        coord_float = np.column_stack((long.ravel(), lat.ravel(), z_grid.ravel()))
+    coord_float = np.column_stack((long.ravel(), lat.ravel(), dates.ravel(), z_grid.ravel()))
+
+    if len(selected_hist) == 0:
+        print("WARNING: No reference data selected for any profiles")
 
     # load the calibration settings
     float_calseries_path = os.path.sep.join(
@@ -628,10 +652,15 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
         return
 
+    # Initialisation of arrays to be saved in a file
+    theta_nseq = np.nan * np.zeros((10, n_seq))
+    index_arr = np.nan * np.zeros((10, n))
+    p_levels = np.nan * np.zeros((10, n_seq))
+
     # loop through sequences of calseries
 
-    for i in range(n_seq):
-        calindex = np.argwhere(calseries == unique_cal[i])[:, 1]
+    for i_seq in range(n_seq):
+        calindex = np.argwhere(calseries == unique_cal[i_seq])[:, 1]
         k = calindex.__len__()
 
         # chose 10 float theta levels to use for the piecewise linear fit
@@ -669,6 +698,29 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             use_percent_gt,
         )
 
+        # Save theta-related information for plotting functions
+        index_arr[:,calindex] = index
+        p_levels[:,i_seq] = p.flatten()
+        mvth = var_s_th.shape[0]
+        theta_nseq[:,i_seq] = theta.flatten()
+        if i_seq == 0:
+            var_s_thetas = np.nan * np.ones((mvth, n_seq))
+            thetas = np.nan * np.ones((mvth, n_seq))
+            var_s_thetas[:, i_seq] = var_s_th.flatten()
+            thetas[:,i_seq] = th.flatten()
+        else:
+            mVth = var_s_thetas.shape[0]
+            tmp_1 = var_s_thetas
+            tmp_2 = thetas
+            mm = max(mvth, mVth)
+            var_s_thetas = np.nan * np.ones((mm, n_seq))
+            thetas = np.nan * np.ones((mm, n_seq))
+            var_s_thetas[0:mVth,:] = tmp_1
+            var_s_thetas[0:mvth,i_seq] = var_s_th.flatten()
+            thetas[0:mVth,:] = tmp_2
+            thetas[0:mvth,i_seq] = th.flatten()
+
+
         index = np.array(index, dtype=int)
         pp = np.argwhere(np.isnan(index) == 0)
         # only proceed if we have valied theta levels
@@ -702,7 +754,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
 
             # calculate off-diagonal terms for error estimate
 
-            covariance = build_cov(ten_ptmp, unique_coord_float, system_config)
+            covariance = build_ptmp_xyt_cov(ten_ptmp, unique_coord_float, system_config)
 
             # if no break points are set
             if breaks.__len__() == 0:
@@ -717,7 +769,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                     ndf,
                     fit_coef,
                     fit_breaks,
-                ) = fit_cond(x, y, err, covariance, "max_no_breaks", max_breaks[i][0])
+                ) = fit_cond(x, y, err, covariance, "max_no_breaks", max_breaks[i_seq][0])
                 pcond_factor[0][calindex] = condslope
                 pcond_factor_err[0][calindex] = condslope_err
                 time_deriv[0][calindex] = time_deriv_temp.flatten()
@@ -726,10 +778,10 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 sta_rms[0][calindex] = sta_rms_temp
 
             else:
-                breaks_in = breaks[i, :]
+                breaks_in = breaks[i_seq, :]
                 breaks_in = breaks_in[np.argwhere(np.isfinite(breaks_in))]
 
-                if max_breaks[i]:
+                if max_breaks[i_seq]:
                     (
                         xfit,
                         condslope,
@@ -741,7 +793,7 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                         ndf,
                         fit_coef,
                         fit_breaks,
-                    ) = fit_cond(x, y, err, covariance, "breaks", breaks_in, "max_no_breaks", max_breaks[i][0])
+                    ) = fit_cond(x, y, err, covariance, "breaks", breaks_in, "max_no_breaks", max_breaks[i_seq][0])
                     pcond_factor[0][calindex] = condslope
                     pcond_factor_err[0][calindex] = condslope_err
                     time_deriv[calindex] = time_deriv_temp
@@ -796,6 +848,22 @@ def calc_piecewisefit(float_dir, float_name, system_config):
                 if fit_breaks.__len__() > 0:
                     fbreaks.append(fit_breaks)
 
+    # Save theta levels information inside a file
+    ls_theta = os.path.sep.join([
+        system_config["FLOAT_CALIB_DIRECTORY"],
+        float_dir,
+        "selected_theta_" + float_name + ".mat",
+    ])
+    savemat(
+        ls_theta,
+        {
+            "Theta": theta_nseq,
+            "Index": index_arr,
+            "Plevels": p_levels,
+            "Var_s_Thetas": var_s_thetas,
+            "Thetas": thetas,
+        }
+    )
     # save calibration data
 
     float_calib_name = os.path.sep.join(
@@ -813,8 +881,6 @@ def calc_piecewisefit(float_dir, float_name, system_config):
             "cal_SAL_err": cal_sal_err,
             "pcond_factor": pcond_factor,
             "pcond_factor_err": pcond_factor_err,
-            "cal_COND": cal_cond,
-            "cal_COND_err": cal_cond_err,
             "time_deriv": time_deriv,
             "time_deriv_err": time_deriv_err,
             "sta_mean": sta_mean,

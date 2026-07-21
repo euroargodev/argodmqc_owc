@@ -12,7 +12,7 @@ import copy
 import math
 
 import numpy as np
-from scipy.interpolate import interpolate
+from scipy.interpolate import interp1d
 
 from ..utilities import potential_vorticity, spatial_correlation
 
@@ -573,8 +573,8 @@ def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres
             ptmp[i[0], i[1]] = np.nan
 
     # find minimum and maximum theta
-    min_theta = np.ceil(np.nanmin(ptmp) * 10) / 10
-    max_theta = np.floor(np.nanmax(ptmp) * 10) / 10
+    min_theta = np.ceil(np.nanmin(ptmp) * 100) / 100
+    max_theta = np.floor(np.nanmax(ptmp) * 100) / 100
 
     # only find levels if we have a valid theta range
     if min_theta < max_theta:
@@ -599,7 +599,7 @@ def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres
         if good.__len__() > 0:
             for pres_i in range(pres_levels.__len__()):
                 if np.nanmax(pres[good, depth]) > pres_levels[pres_i] > np.nanmin(pres[good, depth]):
-                    interp = interpolate.interp1d(pres[good, depth].flatten(), ptmp[good, depth].flatten())
+                    interp = interp1d(pres[good, depth].flatten(), ptmp[good, depth].flatten())
                     interp_t[pres_i, depth] = interp(pres_levels[pres_i])
 
     # find mean of the interpolated pressure at each level
@@ -675,6 +675,8 @@ def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres
                 if ptmp[theta_index, depth] == theta_levels[level]:
                     k_index = theta_index
 
+                k_index = k_index[0] if isinstance(k_index, np.ndarray) and len(k_index) > 1 else k_index
+
                 # interpolate theta level, if possible
                 if (
                     k_index != theta_index
@@ -686,8 +688,8 @@ def find_10thetas(sal, ptmp, pres, la_ptmp, use_theta_lt, use_theta_gt, use_pres
                     x_vals = [float(ptmp[theta_index, depth]), float(np.asarray(ptmp[k_index, depth]).squeeze())]
                     y_vals = [float(sal[theta_index, depth]), float(np.asarray(sal[k_index, depth]).squeeze())]
 
-                    interp_ptmp_sal = interpolate.interp1d(x_vals, y_vals)
-                    sal_temp[level, depth] = interp_ptmp_sal(theta_levels[level])
+                    interp_ptmp_sal = interp1d(x_vals, y_vals)
+                    sal_temp[level, depth] = interp_ptmp_sal(theta_levels[level][0])
 
                 # else we use the closest points
                 else:

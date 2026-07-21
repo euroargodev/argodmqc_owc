@@ -180,6 +180,7 @@ class PotentialVorticity(unittest.TestCase):
             [(1, 1), 2.5452589548134273e-06],
             [(3, 2), 3.816337929235464e-06],
             [(3, 3), 2.544225286156976e-06],
+            [(1, 0), np.inf],
         ]
 
         for test_input, expected_output in test_cases_and_results:

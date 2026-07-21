@@ -1,18 +1,28 @@
 """starting code"""
 
 import multiprocessing
+import sys
 import time
 import warnings
 from functools import partial
+
+import click
 
 import pyowc as owc
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-def main() -> None:
+@click.command
+@click.option("--headless", is_flag=True)
+@click.option("--floats", required=True)
+@click.option("-appendRef", "plot_file_suffix")
+def main(headless, plot_file_suffix, floats) -> None:
     """Entry point for processing."""
-    FLOAT_NAMES = ["3901960"]
+    if plot_file_suffix and not plot_file_suffix.startswith("_"):
+        raise Exception("appendRef must start with an underscore")
+
+    FLOAT_NAMES = floats.split(",")
     config_file_location = "owc_config.json"
 
     USER_CONFIG = owc.utilities.load_configuration_from_json_file(config_file_location)
@@ -32,9 +42,10 @@ def main() -> None:
 
     # loop for sequential run
     for flt in FLOAT_NAMES:
+        start = time.time()
         owc.configuration.set_calseries("/", flt, USER_CONFIG)
         owc.calibration.calc_piecewisefit("/", flt, USER_CONFIG)
-        owc.dashboard("/", flt, USER_CONFIG)
+        owc.dashboard("/", flt, USER_CONFIG, headless=headless, file_suffix=plot_file_suffix)
         mid = time.time()
         print("Time for float: ", mid - start)
 

@@ -1,7 +1,6 @@
 import copy
 import os
 import unittest
-from unittest.mock import patch
 
 import numpy as np
 from scipy.io import loadmat
@@ -17,8 +16,7 @@ from . import TESTS_CONFIG
 class CalSalCurve(unittest.TestCase):
     """Test cases for cal_sal_curve_plot function"""
 
-    @patch("pyowc.plot.plots.plt.show")
-    def test_plot_runs(self, mockshow):
+    def test_plot_runs(self):
         """Check we get no errors during the plotting routine
         :return: nothing
         """
@@ -71,6 +69,7 @@ class CalSalCurve(unittest.TestCase):
                 profile_no,
                 float_name,
                 config,
+                headless=True,
             ),
             None,
         )
@@ -82,8 +81,7 @@ class CalSalCurve(unittest.TestCase):
 class SalVar(unittest.TestCase):
     """Test cases for sal_var_plot function"""
 
-    @patch("pyowc.plot.plots.plt.show")
-    def test_plot_runs(self, mockshow):
+    def test_plot_runs(self):
         """Check we get no errors during the plotting routine
         :return: nothing
         """
@@ -161,6 +159,7 @@ class SalVar(unittest.TestCase):
                 profile_no,
                 float_name,
                 config,
+                headless=True,
             ),
             None,
         )
@@ -179,6 +178,7 @@ class SalVar(unittest.TestCase):
                 profile_no,
                 float_name,
                 config,
+                headless=True,
             ),
             None,
         )
@@ -197,6 +197,7 @@ class SalVar(unittest.TestCase):
                 profile_no,
                 float_name,
                 config,
+                headless=True,
             ),
             None,
         )
@@ -215,6 +216,7 @@ class SalVar(unittest.TestCase):
                 profile_no,
                 float_name,
                 config,
+                headless=True,
             ),
             None,
         )
@@ -233,6 +235,7 @@ class SalVar(unittest.TestCase):
                 profile_no,
                 float_name,
                 config,
+                headless=True,
             ),
             None,
         )
@@ -244,8 +247,7 @@ class SalVar(unittest.TestCase):
 class TS(unittest.TestCase):
     """Test cases for t_s_plot function"""
 
-    @patch("pyowc.plot.plots.plt.show")
-    def test_plot_runs(self, mockshow):
+    def test_plot_runs(self):
         """Check we get no errors during the plotting routine
         :return: nothing
         """
@@ -291,7 +293,7 @@ class TS(unittest.TestCase):
         config["FLOAT_PLOTS_FORMAT"] = "eps"
 
         self.assertEqual(
-            plots.t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, "3901960", config), None
+            plots.t_s_profile_plot(sal, ptmp, pres, sal_var, theta_levels, tlevels, plevels, "3901960", config, headless=True), None
         )
 
 
@@ -300,8 +302,7 @@ class TS(unittest.TestCase):
 class ThetaSal(unittest.TestCase):
     """Test cases for theta_sal_plot function"""
 
-    @patch("pyowc.plot.plots.plt.show")
-    def test_plot_runs(self, mockshow):
+    def test_plot_runs(self):
         """Check we get no errors during the plotting routine
         :return: nothing
         """
@@ -351,7 +352,7 @@ class ThetaSal(unittest.TestCase):
 
         self.assertEqual(
             plots.theta_sal_plot(
-                sal.transpose(), theta.transpose(), map_sal, map_ptmp, map_errors, index, profiles, config, "3901960"
+                sal.transpose(), theta.transpose(), map_sal, map_ptmp, map_errors, index, profiles, config, "3901960", headless=True
             ),
             None,
         )
@@ -393,7 +394,7 @@ class Trajectory(unittest.TestCase):
         grid, floats = utils.create_dataframe(grid_data, float_data)
 
         try:
-            plots.trajectory_plot(1, 1, floats, grid, "3901960", TESTS_CONFIG)
+            plots.trajectory_plot(1, 1, floats, grid, "3901960", TESTS_CONFIG, headless=True)
 
         except:
             self.fail("Trajectory plotting routine failed unexpectedly")

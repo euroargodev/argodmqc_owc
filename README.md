@@ -82,12 +82,9 @@ To use the app installed via PyPi there are 3 steps to follow.
 
 4. Run the software
 
-  Use the example script provided here [here](https://github.com/euroargodev/argodmqc_owc/blob/feature/pypi-preparation/start_owc_python.py) to run the DMQC software.
+  This can be run with the command `run-floats --floats 3901960`. "3901960" here is the WMO float number to be processed. Multiple floats can be run at once by passing a comma separated list, e.g. `... --floats 1,2,3`
   
   Please note that the config JSON is checked before any processing runs, so any errors in the config will be reported back.
-
-  The script contains a line which has the floats to be processed: `FLOAT_NAMES = ["3901960"]`.
-  This can be one or more floats, and when the code is ran they will be processed in turn.
 
 ---
 
@@ -177,28 +174,21 @@ The dependencies for running these utiltiies are also packaged up with Poetry, a
 
 
 ## Executing the DMQC code
-  
 
-Open the file `start_owc_python.py`
+Run the code: `poetry run run-floats --floats 3901960`.
 
-Look at lines 15 & 16, these are to be changed if different floats are to be processed, or a different configuration is to be used.
-
-
-Run the code (start_owc_python.py): `poetry run run-floats`.
+"3901960" here is the WMO float number to be processed. Multiple floats can be run at once by passing a comma separated list, e.g. `... --floats 1,2,3`
 
 
 A short tutorial is available on the [argopy documentation here](https://argopy.readthedocs.io/en/latest/data_quality_control.html#running-the-calibration).
 
-For Python beginners, you can run the pyowc in this way:
 
-In start_owc_python.py, you can specify the WMO float number that you want to run the analysis on.
-You can also add more float numbers, then the calculations of all floats will be done at the
-same time.
+### Extra command line arguments
 
-```python
+There are several additional options that can be optionally used when running this code
 
-    FLOAT_NAMES = ["3901960"]  # add float names here e.g. ["3901960","3901961","3901962"]
-```
+- `--headless`: Running in headless mode will create the plots but not display them on screen
+- `-appendRef {suffix}`: Appends the provided suffix to the filename of all produced plots (should begin with _)
 
 
 ## Parameters for your analysis
@@ -255,11 +245,10 @@ If the exclusions list is empty then all data is processed, but profiles can be 
       'USE_PRES_GT': [],
       'USE_PERCENT_GT': 0.5,
 
-- Additionally, you can set a specific ranges of theta bounds for salinity anomaly plot.
-The code will crete two separate plots with set ranges 'THETA_BOUNDS': [[0, 5], [5, 20]]. To create only one plot with a specific range use the 'THETA_BOUNDS': [[0, 20]].
+- Optionally you can include bathymetry data on the trajectory plots. Note that turning this on will significantly slow the plot generation speed
 
       #    Plotting Parameters
-      'THETA_BOUNDS': [[0, 5], [5, 20]]
+      "USE_BATHYMETRY_ON_PLOT": 1
 
 
 
