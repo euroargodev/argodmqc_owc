@@ -70,6 +70,8 @@ class Config(BaseModel):
 
     USE_BATHYMETRY_ON_PLOT: int = 0
 
+    USE_PCM: int = 0
+
     @model_validator(mode="before")
     def check_for_empty_strings(cls, values):
         """Check for any empty strings."""

@@ -36,7 +36,7 @@ from .helper import (
 # pylint: disable=too-many-nested-blocks
 # pylint: disable=invalid-name
 # pylint: disable=fixme
-def update_salinity_mapping(float_dir, config, float_name):
+def update_salinity_mapping(float_dir, config, float_name, pcm_classes_dir = None):
     """Calculates values needed for analysis and save on file
 
     Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used
@@ -90,6 +90,7 @@ def update_salinity_mapping(float_dir, config, float_name):
     map_age_small = config["MAPSCALE_AGE_SMALL"]
     map_p_delta = config["MAP_P_DELTA"]
     map_p_exclude = config["MAP_P_EXCLUDE"]
+    use_pcm = config["USE_PCM"]
 
     # Display the configuration to the user ------------------------------
 
@@ -109,6 +110,7 @@ def update_salinity_mapping(float_dir, config, float_name):
     print("map_age_small: ", map_age_small)
     print("map_p_delta: ", map_p_delta)
     print("map_p_exclude: ", map_p_exclude)
+    print("use_pcm", use_pcm)
     print("__________________________________________________________")
 
     # Load precalculated mapped data -------------------------------------
@@ -219,6 +221,14 @@ def update_salinity_mapping(float_dir, config, float_name):
                     if 0 <= float_data["float_long"] <= 20:
                         float_long_0 += 360
 
+                pcm_file_path = None
+                if use_pcm and pcm_classes_dir:
+                    file_list = os.listdir(pcm_classes_dir)
+                    for file_name in file_list:
+                        if float_name in file_name:
+                            pcm_file_path = os.path.join(pcm_classes_dir, file_name)
+                            break
+
                 index = find_besthist(
                     grid_data["grid_lat"],
                     grid_data["grid_long"],
@@ -238,6 +248,8 @@ def update_salinity_mapping(float_dir, config, float_name):
                     map_age_small,
                     map_use_pv,
                     max_casts,
+                    use_pcm,
+                    pcm_file_path,
                 )
 
                 # Now that we have the indices of the best spatial and temporal data
