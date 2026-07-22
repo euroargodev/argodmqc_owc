@@ -86,7 +86,6 @@ def find_besthist(
     age_small,
     map_pv_use,
     max_casts,
-    use_pcm = False,
     pcm_file = None,
 ):
     """Find correlated points in historical data
@@ -335,7 +334,7 @@ def find_besthist(
     index = index.flatten()
     index = index.astype(int)
 
-    if use_pcm and pcm_file:
+    if pcm_file:
         header_rows = 1
         class_matrix_df = pd.read_csv(
             pcm_file,

@@ -90,7 +90,6 @@ def update_salinity_mapping(float_dir, config, float_name, pcm_classes_dir = Non
     map_age_small = config["MAPSCALE_AGE_SMALL"]
     map_p_delta = config["MAP_P_DELTA"]
     map_p_exclude = config["MAP_P_EXCLUDE"]
-    use_pcm = config["USE_PCM"]
 
     # Display the configuration to the user ------------------------------
 
@@ -110,7 +109,6 @@ def update_salinity_mapping(float_dir, config, float_name, pcm_classes_dir = Non
     print("map_age_small: ", map_age_small)
     print("map_p_delta: ", map_p_delta)
     print("map_p_exclude: ", map_p_exclude)
-    print("use_pcm", use_pcm)
     print("__________________________________________________________")
 
     # Load precalculated mapped data -------------------------------------
@@ -222,7 +220,7 @@ def update_salinity_mapping(float_dir, config, float_name, pcm_classes_dir = Non
                         float_long_0 += 360
 
                 pcm_file_path = None
-                if use_pcm and pcm_classes_dir:
+                if pcm_classes_dir:
                     file_list = os.listdir(pcm_classes_dir)
                     for file_name in file_list:
                         if float_name in file_name:
@@ -248,7 +246,6 @@ def update_salinity_mapping(float_dir, config, float_name, pcm_classes_dir = Non
                     map_age_small,
                     map_use_pv,
                     max_casts,
-                    use_pcm,
                     pcm_file_path,
                 )
 

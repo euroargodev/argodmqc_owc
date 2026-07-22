@@ -41,6 +41,5 @@
     "USE_PRES_LT": [],
     "USE_PRES_GT": [],
     "USE_PERCENT_GT": 0.5,
-    "USE_BATHYMETRY_ON_PLOT": 0,
-    "USE_PCM": 0
+    "USE_BATHYMETRY_ON_PLOT": 0
 }
