@@ -1,11 +1,11 @@
 """Tests for core.finders module functions"""
 
-from io import StringIO
 import os
 import random
 import sys
-from tempfile import NamedTemporaryFile, TemporaryDirectory
 import unittest
+from io import StringIO
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 import numpy as np
 from scipy.io import loadmat
