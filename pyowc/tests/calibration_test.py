@@ -1,12 +1,11 @@
 import io
 import os
-from pathlib import Path
 import sys
 import tempfile
 import unittest
-import unittest.mock as mock
+from pathlib import Path
+from unittest import mock
 
-from more_itertools import side_effect
 import numpy as np
 from scipy.io import loadmat
 
