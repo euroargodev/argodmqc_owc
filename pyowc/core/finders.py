@@ -351,20 +351,13 @@ def find_besthist(
         hist_long = grid_long[index]
         hist_lat = grid_lat[index]
 
-        if long >= 360:
-            long_new = long - 360
-        else:
-            long_new = long
+        long_new = long - 360 if long >= 360 else long
 
-        hist_long_new = hist_long
+        hist_long_new = []
         for i in range(len(hist_long)):
-            if hist_long[i] >= 360:
-                hist_long_new[i] = hist_long[i] - 360
+            hist_long_new.append(hist_long[i] - 360 if hist_long[i] >= 360 else hist_long[i])
 
         profile_class = list(class_values[(abs(class_lats - lat) < 1e-3) & (abs(class_lons - long_new) < 1e-3)])
-
-        if profile_class:
-            profile_class = profile_class[0]
 
         class_elip = np.full(len(hist_lat), fill_value=np.nan)
 
@@ -380,6 +373,7 @@ def find_besthist(
         print(f"profiles in class.txt: {np.sum(~np.isnan(class_elip))}")
 
         if profile_class:
+            profile_class = profile_class[0]
             print(f"profiles in the same class: {sum(class_elip == profile_class)}")
 
             if sum(class_elip == profile_class) == 0:

@@ -545,9 +545,12 @@ class FindBestHist(unittest.TestCase):
         captured_output = StringIO()
         sys.stdout = captured_output
 
-        tmp_file = self.enterContext(NamedTemporaryFile(mode="w+"))
-        tmp_file.write("source lat long label")
-        tmp_file.write("1 -59.1868 57.1794 1.0")
+        tmp_file = self.enterContext(NamedTemporaryFile(mode="w+", delete=False))
+        tmp_file.write("source lat long label\n")
+        tmp_file.write("1 -59.1868 57.1794 1.0\n")
+        tmp_file.write("1 -59.1868 417.1794 1.0\n")
+        tmp_file.seek(0)
+        tmp_file.close()
 
         core.finders.find_besthist(
             self.grid_lat,
@@ -568,7 +571,7 @@ class FindBestHist(unittest.TestCase):
             self.age_small,
             self.map_pv_usage,
             self.max_casts,
-            tmp_file,
+            tmp_file.name,
         )
 
         assert("profiles in class.txt:" in captured_output.getvalue())
