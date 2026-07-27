@@ -177,6 +177,7 @@ class UpdateSalinityMapping(unittest.TestCase):
 
 
 def test_update_salinity_mapping_with_pcm():
+    """Test update_salinity_mapping makes correct call to find_besthist if pcm dir provided."""
     float_source = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
     with tempfile.TemporaryDirectory() as tmp_dir:
         Path(tmp_dir, f"{float_source}.txt").touch()
