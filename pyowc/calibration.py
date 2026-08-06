@@ -36,7 +36,7 @@ from .helper import (
 # pylint: disable=too-many-nested-blocks
 # pylint: disable=invalid-name
 # pylint: disable=fixme
-def update_salinity_mapping(float_dir, config, float_name):
+def update_salinity_mapping(float_dir, config, float_name, pcm_classes_dir = None):
     """Calculates values needed for analysis and save on file
 
     Cecile Cabanes, June. 2013: use of "map_large_scale" (time scale) used
@@ -219,6 +219,14 @@ def update_salinity_mapping(float_dir, config, float_name):
                     if 0 <= float_data["float_long"] <= 20:
                         float_long_0 += 360
 
+                pcm_file_path = None
+                if pcm_classes_dir:
+                    file_list = os.listdir(pcm_classes_dir)
+                    for file_name in file_list:
+                        if float_name in file_name:
+                            pcm_file_path = os.path.join(pcm_classes_dir, file_name)
+                            break
+
                 index = find_besthist(
                     grid_data["grid_lat"],
                     grid_data["grid_long"],
@@ -238,6 +246,7 @@ def update_salinity_mapping(float_dir, config, float_name):
                     map_age_small,
                     map_use_pv,
                     max_casts,
+                    pcm_file_path,
                 )
 
                 # Now that we have the indices of the best spatial and temporal data

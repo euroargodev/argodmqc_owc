@@ -12,6 +12,7 @@ import copy
 import math
 
 import numpy as np
+import pandas as pd
 from scipy.interpolate import interp1d
 
 from ..utilities import potential_vorticity, spatial_correlation
@@ -85,6 +86,7 @@ def find_besthist(
     age_small,
     map_pv_use,
     max_casts,
+    pcm_file = None,
 ):
     """Find correlated points in historical data
 
@@ -331,6 +333,56 @@ def find_besthist(
     # ensure that the index is integers
     index = index.flatten()
     index = index.astype(int)
+
+    if pcm_file:
+        header_rows = 1
+        class_matrix_df = pd.read_csv(
+            pcm_file,
+            skiprows=header_rows,
+            sep=" ",
+            skipinitialspace=True,
+            names=["source", "lat", "long", "label"],
+        )
+
+        class_lats = class_matrix_df["lat"]
+        class_lons = class_matrix_df["long"]
+        class_values = class_matrix_df["label"]
+
+        hist_long = grid_long[index]
+        hist_lat = grid_lat[index]
+
+        long_new = long - 360 if long >= 360 else long
+
+        hist_long_new = []
+        for i in range(len(hist_long)):
+            hist_long_new.append(hist_long[i] - 360 if hist_long[i] >= 360 else hist_long[i])
+
+        profile_class = list(class_values[(abs(class_lats - lat) < 1e-3) & (abs(class_lons - long_new) < 1e-3)])
+
+        class_elip = np.full(len(hist_lat), fill_value=np.nan)
+
+        for iprof in range(len(class_lats)):
+            iclass_logical = (abs(hist_lat - class_lats[iprof]) < 1e-3) & (
+                abs(hist_long_new - class_lons[iprof]) < 1e-3
+            )
+
+            if np.sum(iclass_logical) == 1:
+                class_elip[iclass_logical] = list(class_values)[iprof]
+
+        print(f"profiles in ellipse: {len(hist_lat)}")
+        print(f"profiles in class.txt: {np.sum(~np.isnan(class_elip))}")
+
+        if profile_class:
+            profile_class = profile_class[0]
+            print(f"profiles in the same class: {sum(class_elip == profile_class)}")
+
+            if sum(class_elip == profile_class) == 0:
+                print("There is not profiles with the same class in the ellipse. All profiles in ellipse are used")
+            else:
+                index = index[class_elip == profile_class]
+
+        else:
+            print("Profile is not classified. All profiles in ellipse are used")
 
     return index
 

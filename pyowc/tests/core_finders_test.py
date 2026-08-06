@@ -2,7 +2,10 @@
 
 import os
 import random
+import sys
 import unittest
+from io import StringIO
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 import numpy as np
 from scipy.io import loadmat
@@ -533,6 +536,45 @@ class FindBestHist(unittest.TestCase):
 
         for i in range(0, index.__len__()):
             self.assertTrue(index[i] == expected[i], "output is incorrect (wrong index selected)")
+
+
+    def test_with_pcm(self):
+        """Test that the function can run without error when the pcm args are provided.
+        Note: This does not currently test any behaviour beyond not crashing!
+        """
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        tmp_file = self.enterContext(NamedTemporaryFile(mode="w+", delete=False))
+        tmp_file.write("source lat long label\n")
+        tmp_file.write("1 -59.1868 57.1794 1.0\n")
+        tmp_file.write("1 -59.1868 417.1794 1.0\n")
+        tmp_file.seek(0)
+        tmp_file.close()
+
+        core.finders.find_besthist(
+            self.grid_lat,
+            self.grid_long,
+            self.grid_dates,
+            self.grid_z_values,
+            self.lat,
+            self.long,
+            self.date,
+            self.z_value,
+            self.lat_large,
+            self.lat_small,
+            self.long_large,
+            self.long_small,
+            self.phi_large,
+            self.phi_small,
+            self.age_large,
+            self.age_small,
+            self.map_pv_usage,
+            self.max_casts,
+            tmp_file.name,
+        )
+
+        assert("profiles in class.txt:" in captured_output.getvalue())
 
 
 class FindEllipse(unittest.TestCase):

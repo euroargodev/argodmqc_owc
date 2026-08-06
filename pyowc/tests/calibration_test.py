@@ -3,11 +3,15 @@ import os
 import sys
 import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 import numpy as np
 from scipy.io import loadmat
 
 from pyowc.calibration import calc_piecewisefit, update_salinity_mapping
+from pyowc.core.finders import find_besthist
+from pyowc.helper import load_varibales_from_file
 
 from . import TESTS_CONFIG
 
@@ -171,6 +175,19 @@ class UpdateSalinityMapping(unittest.TestCase):
             "error: mean of signal salinity " "differ between python andd matlab",
         )
 
+
+def test_update_salinity_mapping_with_pcm():
+    """Test update_salinity_mapping makes correct call to find_besthist if pcm dir provided."""
+    float_source = TESTS_CONFIG["TEST_FLOAT_SOURCE"]
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        Path(tmp_dir, f"{float_source}.txt").touch()
+        config = {**TESTS_CONFIG, "FLOAT_MAPPED_DIRECTORY": tmp_dir}
+        mock_find_besthist = mock.MagicMock(side_effect=find_besthist)
+        with mock.patch("pyowc.calibration.find_besthist", mock_find_besthist):
+            update_salinity_mapping("/", config, float_source, tmp_dir)
+
+        assert mock_find_besthist.call_count == 35
+        assert f"{tmp_dir}/{float_source}.txt" == mock_find_besthist.mock_calls[0].args[18]
 
 class CalcPiecewiseFit(unittest.TestCase):
     """Test cases for 'calc_piecewisefit' function"""
